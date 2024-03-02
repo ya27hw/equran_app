@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:quran/quran.dart' as quran;
 import 'package:vibration/vibration.dart';
 
@@ -11,13 +13,16 @@ class ReadPage extends StatefulWidget {
 }
 
 class _ReadPageState extends State<ReadPage> {
-  int _currentVerse = 1;
+  late int _currentVerse;
+  late Box _bookmarks;
   late int _currentChapter;
 
   @override
   void initState() {
     super.initState();
+    _bookmarks = Hive.box("bookmarks");
     _currentChapter = widget.chapter;
+    _currentVerse = _bookmarks.get(_currentChapter) ?? 1;
   }
 
   @override
@@ -96,9 +101,10 @@ class _ReadPageState extends State<ReadPage> {
                 ElevatedButton(
                   onPressed: () {
                     // Handle left button action
+                    _vibrate();
                     if (_currentVerse != 1) {
-                      _vibrate();
                       _decrement();
+                      _bookmarks.put(_currentChapter, _currentVerse);
                     }
                   },
                   child: const Padding(
@@ -114,7 +120,9 @@ class _ReadPageState extends State<ReadPage> {
                     _vibrate();
                     if (_currentVerse != _totalVerses) {
                       _increment();
+                      _bookmarks.put(_currentChapter, _currentVerse);
                     } else {
+                      _bookmarks.delete(_currentChapter);
                       _reset();
                       if (_currentChapter != 114) {
                         _incrementChapter();

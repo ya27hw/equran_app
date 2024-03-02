@@ -1,3 +1,4 @@
+import 'package:emushaf/widgets/last_read_cards.dart';
 import 'package:emushaf/widgets/quran_card.dart';
 import 'package:flutter/material.dart';
 import 'package:quran/quran.dart' as quran;
@@ -26,119 +27,114 @@ class _HomePageState extends State<HomePage> {
           icon: Icon(Icons.menu),
         ),
       ),
-      body: SingleChildScrollView(
+      body: ListView(
+        // scrollDirection: Axis.vertical,
         physics: BouncingScrollPhysics(),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Container(
-              margin: const EdgeInsets.only(left: 30),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Recently Read",
-                  textAlign: TextAlign.left,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyLarge
-                      ?.copyWith(fontWeight: FontWeight.bold),
-                ),
+        children: <Widget>[
+          Container(
+            margin: const EdgeInsets.only(left: 30),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Recently Read",
+                textAlign: TextAlign.left,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyLarge
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
-            const SizedBox(
-              height: 15,
-            ),
-            Row(
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          SizedBox(
+            height: 70,
+            child: ListView(
+              clipBehavior: Clip.none,
+              shrinkWrap: true,
+              scrollDirection: Axis.horizontal,
               children: [
-                Expanded(
-                  // Stretch the Row to fill available width
-                  child: ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    scrollDirection: Axis.horizontal,
-                    shrinkWrap: true,
-                    itemCount: 3, // Replace with your item count
-                    itemBuilder: (context, index) {
-                      return Container(
-                        width: 150.0, // Set width for each item
-                        color: Colors.grey[300],
-                        child: Center(child: Text('Item $index')),
-                      );
-                    },
-                  ),
-                ),
+                LastReadCard(),
+                LastReadCard(),
+                LastReadCard(),
+                // LastReadCard(),
+                // LastReadCard(),
               ],
             ),
-            Container(
-              margin: const EdgeInsets.only(left: 30),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Find Surah",
-                  textAlign: TextAlign.left,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyLarge
-                      ?.copyWith(fontWeight: FontWeight.bold),
-                ),
+          ),
+          const SizedBox(
+            height: 30,
+          ),
+          Container(
+            margin: const EdgeInsets.only(left: 30),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Find Surah",
+                textAlign: TextAlign.left,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyLarge
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
-            const SizedBox(
-              height: 15,
-            ),
-            MySearchBar(
-              onChanged: (value) {
-                _changeSearchQuery(value);
-              },
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-            Container(
-              margin: const EdgeInsets.only(left: 30),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Surahs",
-                  textAlign: TextAlign.left,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyLarge
-                      ?.copyWith(fontWeight: FontWeight.bold),
-                ),
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          MySearchBar(
+            onChanged: (value) {
+              _changeSearchQuery(value);
+            },
+          ),
+          const SizedBox(
+            height: 30,
+          ),
+          Container(
+            margin: const EdgeInsets.only(left: 30),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Surahs",
+                textAlign: TextAlign.left,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyLarge
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
-            ListView.builder(
-              padding: const EdgeInsets.only(top: 0),
-              shrinkWrap: true,
-              itemCount: 114,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (context, i) {
-                int index = i + 1;
-                final transliteration = quran.getSurahName(index);
-                final name = quran.getSurahNameArabic(index);
-                final verses = quran.getVerseCount(index);
-                final id = index;
+          ),
+          ListView.builder(
+            shrinkWrap: true,
+            itemCount: 114,
+            physics: const NeverScrollableScrollPhysics(),
+            itemBuilder: (context, i) {
+              int index = i + 1;
+              final transliteration = quran.getSurahName(index);
+              final name = quran.getSurahNameArabic(index);
+              final verses = quran.getVerseCount(index);
+              final id = index;
 
-                if (_searchQuery.isNotEmpty &&
-                    !transliteration.toLowerCase().contains(_searchQuery) &&
-                    !name.toLowerCase().contains(_searchQuery)) {
-                  return const SizedBox
-                      .shrink(); // Hide the item if it doesn't match the search query
-                }
+              if (_searchQuery.isNotEmpty &&
+                  !transliteration.toLowerCase().contains(_searchQuery) &&
+                  !name.toLowerCase().contains(_searchQuery)) {
+                return const SizedBox
+                    .shrink(); // Hide the item if it doesn't match the search query
+              }
 
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: QuranCard(
-                    index: id,
-                    transliteration: transliteration,
-                    name: name,
-                    verses: verses,
-                  ),
-                );
-              },
-            )
-          ],
-        ),
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: QuranCard(
+                  index: id,
+                  transliteration: transliteration,
+                  name: name,
+                  verses: verses,
+                ),
+              );
+            },
+          )
+        ],
       ),
     );
   }

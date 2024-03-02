@@ -1,8 +1,12 @@
-import 'package:emushaf/test.dart';
+import 'package:emushaf/home/home.dart';
 import 'package:emushaf/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
+Future<void> main() async {
+  await Hive.initFlutter("assets");
+  await Hive.openBox("bookmarks");
+
   runApp(const MyApp());
 }
 
@@ -15,6 +19,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         theme: MyTheme.lightThemeData(context),
         darkTheme: MyTheme.darkThemeData(context),
-        home: TestPage());
+        home: HomePage());
   }
 }
