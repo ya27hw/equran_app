@@ -10,11 +10,11 @@ class MySearchBar extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 27),
       child: SearchBar(
+
           padding: const MaterialStatePropertyAll<EdgeInsets>(
               EdgeInsets.symmetric(horizontal: 16)),
           leading: const Icon(Icons.search),
           hintText: "Search...",
-          //controller: _controller,
           trailing: _controller.text.isNotEmpty
               ? [
                   IconButton(

@@ -1,3 +1,4 @@
+import 'package:emushaf/widgets/read_quran_card.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -17,6 +18,8 @@ class _ReadPageState extends State<ReadPage> {
   late Box _bookmarks;
   late int _currentChapter;
   late ScrollController _scrollController;
+  late final int _totalVerses = quran.getVerseCount(_currentChapter);
+
 
   @override
   void initState() {
@@ -35,7 +38,6 @@ class _ReadPageState extends State<ReadPage> {
 
   @override
   Widget build(BuildContext context) {
-    final int _totalVerses = quran.getVerseCount(_currentChapter);
 
     return Scaffold(
       appBar: AppBar(
@@ -52,57 +54,7 @@ class _ReadPageState extends State<ReadPage> {
               child: Center(
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width,
-                  child: Card(
-                    elevation: 4,
-                    margin: const EdgeInsets.symmetric(
-                        horizontal: 15, vertical: 20),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        children: [
-                          Text(
-                            "$_currentVerse/$_totalVerses",
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          _currentChapter != 1 &&
-                                  _currentVerse == 1 &&
-                                  _currentChapter != 9
-                              ? const Text(quran.basmala,
-                                  textDirection: TextDirection.rtl,
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      height: 2.3,
-                                      fontFamily: 'Hafs',
-                                      fontSize: 40))
-                              : const SizedBox(),
-                          Text(
-                            quran.getVerse(
-                              _currentChapter,
-                              _currentVerse,
-                            ),
-                            textDirection: TextDirection.rtl,
-                            textAlign: TextAlign.justify,
-                            style: const TextStyle(
-                                fontFamily: 'Hafs',
-                                height: 2.2,
-                                fontSize: 38,
-                                fontWeight: FontWeight.w500),
-                          ),
-                          Text(
-                            quran.getVerseTranslation(
-                              _currentChapter,
-                              _currentVerse,
-                              translation: quran.Translation.enSaheeh,
-                            ),
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
+                  child: ReadQuranCard(currentChapter: _currentChapter, currentVerse: _currentVerse, totalVerses: _totalVerses,),
                 ),
               ),
             ),

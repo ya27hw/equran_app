@@ -1,13 +1,16 @@
 import 'package:emushaf/home/main_page.dart';
+import 'package:emushaf/home/settings.dart';
 import 'package:emushaf/test.dart';
 import 'package:flutter/material.dart';
 
-class ExampleDestination {
-  const ExampleDestination(this.label, this.icon, this.selectedIcon);
+class Destinations {
+  const Destinations(
+      this.label, this.icon, this.selectedIcon, this.destination);
 
   final String label;
   final Widget icon;
   final Widget selectedIcon;
+  final Widget destination;
 }
 
 class HomePage extends StatefulWidget {
@@ -19,11 +22,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
-  final List<ExampleDestination> _pageDestinations = <ExampleDestination>[
-    ExampleDestination("Quran", Icon(Icons.book_outlined), Icon(Icons.book)),
-    ExampleDestination("Test", Icon(Icons.info_outline), Icon(Icons.info))
+  final List<Destinations> _pageDestinations = <Destinations>[
+    const Destinations(
+        "Quran", Icon(Icons.book_outlined), Icon(Icons.book), MainPage()),
+     Destinations("Settings", Icon(Icons.settings_outlined),
+        Icon(Icons.settings), SettingsPage()),
+    Destinations(
+        "Test", const Icon(Icons.info_outline), const Icon(Icons.info), TestPage())
   ];
-  final List<Widget> _pages = [MainPage(), TestPage()];
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -47,7 +53,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           ..._pageDestinations.map(
-            (ExampleDestination destination) {
+            (Destinations destination) {
               return NavigationDrawerDestination(
                 label: Text(destination.label),
                 icon: destination.icon,
@@ -61,22 +67,29 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: _pages[_selectedIndex],
+      appBar: _selectedIndex != 0
+          ? AppBar(
+              title: Text(_pageDestinations[_selectedIndex].label),
+              iconTheme: IconThemeData(
+                  color: Theme.of(context).colorScheme.onPrimaryContainer),
+              centerTitle: true,
+            )
+          : null,
+      body: _pageDestinations[_selectedIndex].destination,
     );
   }
 
   void _onItemTapped(int index) {
-    print("Chaning Screen to $index");
     setState(() {
       _selectedIndex = index;
     });
   }
 
-  void _scrollUp() {
-    _scrollController.animateTo(
-      _scrollController.position.minScrollExtent,
-      duration: Duration(milliseconds: 800),
-      curve: Curves.easeInOut,
-    );
-  }
+  // void _scrollUp() {
+  //   _scrollController.animateTo(
+  //     _scrollController.position.minScrollExtent,
+  //     duration: const Duration(milliseconds: 800),
+  //     curve: Curves.easeInOut,
+  //   );
+  // }
 }

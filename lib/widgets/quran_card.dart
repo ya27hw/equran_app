@@ -29,7 +29,7 @@ class QuranCard extends StatelessWidget {
               builder: (context) => ReadPage(chapter: index)));
         },
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
           child: ListTile(
             leading: Padding(
               padding: const EdgeInsets.only(right: 5),
@@ -61,6 +61,5 @@ class QuranCard extends StatelessWidget {
         ),
       ),
     );
-    ;
   }
 }

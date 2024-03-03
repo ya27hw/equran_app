@@ -12,13 +12,13 @@ class LastReadCard extends StatelessWidget {
         color: Theme.of(context).colorScheme.tertiaryContainer,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         margin: const EdgeInsets.only(left: 12, right: 5),
-        elevation: 1,
+        elevation: 2,
         child: const ListTile(
           title: Text(
-            "Al Ghaaaashiyah",
+            "Baqarah",
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          subtitle: Text("24/192 Ayahs"),
+          subtitle: Text("3 Surahs"),
         ),
       ),
     );

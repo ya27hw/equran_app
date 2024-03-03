@@ -13,13 +13,13 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   String _searchQuery = '';
+  // bool _isReversed = false;
 
   @override
   Widget build(BuildContext context) {
     return Material(
       child: SafeArea(
         child: CustomScrollView(
-          // scrollDirection: Axis.vertical,
           physics: const BouncingScrollPhysics(),
           slivers: <Widget>[
             SliverAppBar(
@@ -32,16 +32,9 @@ class _MainPageState extends State<MainPage> {
                       bottomRight: Radius.circular(30))),
               pinned: false,
               floating: false,
-              expandedHeight: MediaQuery.of(context).size.height * 0.25,
+              expandedHeight: 200,
               centerTitle: true,
               backgroundColor: Theme.of(context).colorScheme.primary,
-              // leading: IconButton(
-              //   onPressed: () {},
-              //   icon: Icon(
-              //     Icons.menu,
-              //     color: Theme.of(context).colorScheme.onPrimary,
-              //   ),
-              // ),
               flexibleSpace: FlexibleSpaceBar(
                 background: Container(
                   padding: const EdgeInsets.all(10.0),
@@ -54,47 +47,21 @@ class _MainPageState extends State<MainPage> {
                             .textTheme
                             .headlineLarge
                             ?.copyWith(
-                                color: Theme.of(context).colorScheme.onPrimary),
+                                color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.015,
+                        height: 50,
                       ),
-                      Container(
-                        margin: const EdgeInsets.only(left: 20),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            "Continue Reading :",
-                            textAlign: TextAlign.left,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyLarge
-                                ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onPrimary),
-                          ),
-                        ),
-                      ),
+
                       const SizedBox(
                         height: 10,
                       ),
-                      SizedBox(
-                        height: 70,
-                        child: ListView(
-                          clipBehavior: Clip.none,
-                          shrinkWrap: true,
-                          scrollDirection: Axis.horizontal,
-                          children: const [
-                            LastReadCard(),
-                            LastReadCard(),
-                            LastReadCard(),
-                            // LastReadCard(),
-                            // LastReadCard(),
-                          ],
-                        ),
-                      )
+                      MySearchBar(
+                        onChanged: (value) {
+                          _changeSearchQuery(value);
+                        },
+                      ),
+
                     ],
                   ),
                 ),
@@ -105,30 +72,44 @@ class _MainPageState extends State<MainPage> {
               const SizedBox(
                 height: 25,
               ),
-              Container(
-                margin: const EdgeInsets.only(left: 30),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Find Surah",
-                    textAlign: TextAlign.left,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge
-                        ?.copyWith(fontWeight: FontWeight.bold),
+                  Container(
+                    margin: const EdgeInsets.only(left: 20),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Continue Reading :",
+                        textAlign: TextAlign.left,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyLarge
+                            ?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSecondaryContainer),
+                      ),
+                    ),
                   ),
-                ),
-              ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  SizedBox(
+                    height: 70,
+                    child: ListView(
+                      clipBehavior: Clip.none,
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      children: const [
+                        LastReadCard(),
+                        LastReadCard(),
+                        LastReadCard(),
+                        LastReadCard(),
+                        LastReadCard(),
+                      ],
+                    ),
+                  ),
               const SizedBox(
-                height: 15,
-              ),
-              MySearchBar(
-                onChanged: (value) {
-                  _changeSearchQuery(value);
-                },
-              ),
-              const SizedBox(
-                height: 30,
+                height: 20,
               ),
               Container(
                 margin: const EdgeInsets.only(left: 30),
@@ -163,7 +144,7 @@ class _MainPageState extends State<MainPage> {
                   }
 
                   return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    padding: const EdgeInsets.symmetric(vertical: 5.5),
                     child: QuranCard(
                       index: id,
                       transliteration: transliteration,
@@ -178,7 +159,7 @@ class _MainPageState extends State<MainPage> {
         ),
       ),
     );
-    ;
+
   }
 
   void _changeSearchQuery(String value) {
