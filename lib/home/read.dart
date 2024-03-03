@@ -16,13 +16,21 @@ class _ReadPageState extends State<ReadPage> {
   late int _currentVerse;
   late Box _bookmarks;
   late int _currentChapter;
+  late ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
     _bookmarks = Hive.box("bookmarks");
     _currentChapter = widget.chapter;
     _currentVerse = _bookmarks.get(_currentChapter) ?? 1;
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -40,6 +48,7 @@ class _ReadPageState extends State<ReadPage> {
         children: [
           Expanded(
             child: SingleChildScrollView(
+              controller: _scrollController,
               child: Center(
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width,
@@ -58,14 +67,16 @@ class _ReadPageState extends State<ReadPage> {
                           const SizedBox(
                             height: 20,
                           ),
-                          _currentChapter != 1 && _currentVerse == 1
+                          _currentChapter != 1 &&
+                                  _currentVerse == 1 &&
+                                  _currentChapter != 9
                               ? const Text(quran.basmala,
                                   textDirection: TextDirection.rtl,
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       height: 2.3,
                                       fontFamily: 'Hafs',
-                                      fontSize: 35))
+                                      fontSize: 40))
                               : const SizedBox(),
                           Text(
                             quran.getVerse(
@@ -77,12 +88,17 @@ class _ReadPageState extends State<ReadPage> {
                             style: const TextStyle(
                                 fontFamily: 'Hafs',
                                 height: 2.2,
-                                fontSize: 35,
+                                fontSize: 38,
                                 fontWeight: FontWeight.w500),
                           ),
-                          Text(quran.getVerseTranslation(
-                              _currentChapter, _currentVerse,
-                              translation: quran.Translation.enSaheeh))
+                          Text(
+                            quran.getVerseTranslation(
+                              _currentChapter,
+                              _currentVerse,
+                              translation: quran.Translation.enSaheeh,
+                            ),
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          )
                         ],
                       ),
                     ),
@@ -118,6 +134,7 @@ class _ReadPageState extends State<ReadPage> {
                 ElevatedButton(
                   onPressed: () {
                     _vibrate();
+                    _scrollUp();
                     if (_currentVerse != _totalVerses) {
                       _increment();
                       _bookmarks.put(_currentChapter, _currentVerse);
@@ -179,5 +196,9 @@ class _ReadPageState extends State<ReadPage> {
     if (await Vibration.hasVibrator() != null) {
       Vibration.vibrate(duration: 25);
     }
+  }
+
+  void _scrollUp() {
+    _scrollController.jumpTo(_scrollController.position.minScrollExtent);
   }
 }

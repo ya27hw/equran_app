@@ -1,9 +1,14 @@
-import 'package:emushaf/widgets/last_read_cards.dart';
-import 'package:emushaf/widgets/quran_card.dart';
+import 'package:emushaf/home/main_page.dart';
+import 'package:emushaf/test.dart';
 import 'package:flutter/material.dart';
-import 'package:quran/quran.dart' as quran;
 
-import '../widgets/search.dart';
+class ExampleDestination {
+  const ExampleDestination(this.label, this.icon, this.selectedIcon);
+
+  final String label;
+  final Widget icon;
+  final Widget selectedIcon;
+}
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,141 +18,65 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String _searchQuery = '';
   int _selectedIndex = 0;
-  List<Widget> pages = <Widget>[];
+  final List<ExampleDestination> _pageDestinations = <ExampleDestination>[
+    ExampleDestination("Quran", Icon(Icons.book_outlined), Icon(Icons.book)),
+    ExampleDestination("Test", Icon(Icons.info_outline), Icon(Icons.info))
+  ];
+  final List<Widget> _pages = [MainPage(), TestPage()];
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("eMushaf"),
-        leading: IconButton(
-          onPressed: () {},
-          icon: Icon(Icons.menu),
-        ),
-      ),
-      body: ListView(
-        // scrollDirection: Axis.vertical,
-        physics: BouncingScrollPhysics(),
+      drawer: NavigationDrawer(
+        onDestinationSelected: _onItemTapped,
+        selectedIndex: _selectedIndex,
         children: <Widget>[
-          Container(
-            margin: const EdgeInsets.only(left: 30),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Recently Read",
-                textAlign: TextAlign.left,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge
-                    ?.copyWith(fontWeight: FontWeight.bold),
-              ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(28, 16, 16, 10),
+            child: Text(
+              'Header',
+              style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
-          const SizedBox(
-            height: 10,
-          ),
-          SizedBox(
-            height: 70,
-            child: ListView(
-              clipBehavior: Clip.none,
-              shrinkWrap: true,
-              scrollDirection: Axis.horizontal,
-              children: [
-                LastReadCard(),
-                LastReadCard(),
-                LastReadCard(),
-                // LastReadCard(),
-                // LastReadCard(),
-              ],
-            ),
-          ),
-          const SizedBox(
-            height: 30,
-          ),
-          Container(
-            margin: const EdgeInsets.only(left: 30),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Find Surah",
-                textAlign: TextAlign.left,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge
-                    ?.copyWith(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          const SizedBox(
-            height: 15,
-          ),
-          MySearchBar(
-            onChanged: (value) {
-              _changeSearchQuery(value);
-            },
-          ),
-          const SizedBox(
-            height: 30,
-          ),
-          Container(
-            margin: const EdgeInsets.only(left: 30),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Surahs",
-                textAlign: TextAlign.left,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge
-                    ?.copyWith(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          ListView.builder(
-            shrinkWrap: true,
-            itemCount: 114,
-            physics: const NeverScrollableScrollPhysics(),
-            itemBuilder: (context, i) {
-              int index = i + 1;
-              final transliteration = quran.getSurahName(index);
-              final name = quran.getSurahNameArabic(index);
-              final verses = quran.getVerseCount(index);
-              final id = index;
-
-              if (_searchQuery.isNotEmpty &&
-                  !transliteration.toLowerCase().contains(_searchQuery) &&
-                  !name.toLowerCase().contains(_searchQuery)) {
-                return const SizedBox
-                    .shrink(); // Hide the item if it doesn't match the search query
-              }
-
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: QuranCard(
-                  index: id,
-                  transliteration: transliteration,
-                  name: name,
-                  verses: verses,
-                ),
+          ..._pageDestinations.map(
+            (ExampleDestination destination) {
+              return NavigationDrawerDestination(
+                label: Text(destination.label),
+                icon: destination.icon,
+                selectedIcon: destination.selectedIcon,
               );
             },
-          )
+          ),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(28, 16, 28, 10),
+            child: Divider(),
+          ),
         ],
       ),
+      body: _pages[_selectedIndex],
     );
   }
 
-  void _changeSearchQuery(String value) {
-    setState(() {
-      _searchQuery = value;
-    });
-  }
-
   void _onItemTapped(int index) {
+    print("Chaning Screen to $index");
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  void _scrollUp() {
+    _scrollController.animateTo(
+      _scrollController.position.minScrollExtent,
+      duration: Duration(milliseconds: 800),
+      curve: Curves.easeInOut,
+    );
   }
 }

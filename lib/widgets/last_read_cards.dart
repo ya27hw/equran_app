@@ -10,9 +10,9 @@ class LastReadCard extends StatelessWidget {
       width: 190,
       child: Card(
         color: Theme.of(context).colorScheme.tertiaryContainer,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         margin: const EdgeInsets.only(left: 12, right: 5),
-        elevation: 2,
+        elevation: 1,
         child: const ListTile(
           title: Text(
             "Al Ghaaaashiyah",

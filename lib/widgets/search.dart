@@ -8,7 +8,7 @@ class MySearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 27),
+      margin: const EdgeInsets.symmetric(horizontal: 27),
       child: SearchBar(
           padding: const MaterialStatePropertyAll<EdgeInsets>(
               EdgeInsets.symmetric(horizontal: 16)),
