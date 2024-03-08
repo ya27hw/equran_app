@@ -1,5 +1,6 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:emushaf/utils/settings_db.dart';
+import 'package:emushaf/widgets/font_slider.dart';
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -35,13 +36,12 @@ class SettingsPage extends StatelessWidget {
                         return InkWell(
                           onTap: () {
                             _db.set("color", index);
+
                             AdaptiveTheme.of(context).setTheme(
-                                light: ThemeData(
-                                    colorSchemeSeed: color),
+                                light: ThemeData(colorSchemeSeed: color),
                                 dark: ThemeData(
                                     colorSchemeSeed: color,
-                                brightness: Brightness.dark
-                                ));
+                                    brightness: Brightness.dark));
                           },
                           child: CircleAvatar(
                             backgroundColor: color,
@@ -61,6 +61,10 @@ class SettingsPage extends StatelessWidget {
             //   backgroundColor: Theme.of(context).colorScheme.primary,
             //   radius: 12.5, // Adjust radius as needed
             // ),
+          ),
+          ListTile(title: Text("Font Size")),
+          FontSlider(
+            fontSize: 15,
           )
         ],
       ),

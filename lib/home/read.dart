@@ -18,8 +18,7 @@ class _ReadPageState extends State<ReadPage> {
   late Box _bookmarks;
   late int _currentChapter;
   late ScrollController _scrollController;
-  late final int _totalVerses = quran.getVerseCount(_currentChapter);
-
+  late int _totalVerses;
 
   @override
   void initState() {
@@ -28,6 +27,7 @@ class _ReadPageState extends State<ReadPage> {
     _bookmarks = Hive.box("bookmarks");
     _currentChapter = widget.chapter;
     _currentVerse = _bookmarks.get(_currentChapter) ?? 1;
+    _getTotalVerses();
   }
 
   @override
@@ -38,7 +38,6 @@ class _ReadPageState extends State<ReadPage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         leading: const BackButton(),
@@ -54,7 +53,11 @@ class _ReadPageState extends State<ReadPage> {
               child: Center(
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width,
-                  child: ReadQuranCard(currentChapter: _currentChapter, currentVerse: _currentVerse, totalVerses: _totalVerses,),
+                  child: ReadQuranCard(
+                    currentChapter: _currentChapter,
+                    currentVerse: _currentVerse,
+                    totalVerses: _totalVerses,
+                  ),
                 ),
               ),
             ),
@@ -91,6 +94,7 @@ class _ReadPageState extends State<ReadPage> {
                       _increment();
                       _bookmarks.put(_currentChapter, _currentVerse);
                     } else {
+                      // New Chapter
                       _bookmarks.delete(_currentChapter);
                       _reset();
                       if (_currentChapter != 114) {
@@ -98,6 +102,7 @@ class _ReadPageState extends State<ReadPage> {
                       } else {
                         _resetChapter();
                       }
+                      _getTotalVerses();
                     }
                   },
                   child: const Padding(
@@ -129,7 +134,15 @@ class _ReadPageState extends State<ReadPage> {
   }
 
   void _reset() {
-    _currentVerse = 1;
+    setState(() {
+      _currentVerse = 1;
+    });
+  }
+
+  void _getTotalVerses() {
+    setState(() {
+      _totalVerses = quran.getVerseCount(_currentChapter);
+    });
   }
 
   void _incrementChapter() {

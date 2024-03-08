@@ -23,8 +23,8 @@ class _MainPageState extends State<MainPage> {
           physics: const BouncingScrollPhysics(),
           slivers: <Widget>[
             SliverAppBar(
-              iconTheme:
-                  IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
+              iconTheme: IconThemeData(
+                  color: Theme.of(context).colorScheme.onPrimaryContainer),
               elevation: 2,
               shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
@@ -34,7 +34,7 @@ class _MainPageState extends State<MainPage> {
               floating: false,
               expandedHeight: 200,
               centerTitle: true,
-              backgroundColor: Theme.of(context).colorScheme.primary,
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
               flexibleSpace: FlexibleSpaceBar(
                 background: Container(
                   padding: const EdgeInsets.all(10.0),
@@ -47,12 +47,14 @@ class _MainPageState extends State<MainPage> {
                             .textTheme
                             .headlineLarge
                             ?.copyWith(
-                                color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.bold),
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onPrimaryContainer,
+                                fontWeight: FontWeight.bold),
                       ),
                       SizedBox(
                         height: 50,
                       ),
-
                       const SizedBox(
                         height: 10,
                       ),
@@ -61,7 +63,6 @@ class _MainPageState extends State<MainPage> {
                           _changeSearchQuery(value);
                         },
                       ),
-
                     ],
                   ),
                 ),
@@ -72,42 +73,38 @@ class _MainPageState extends State<MainPage> {
               const SizedBox(
                 height: 25,
               ),
-                  Container(
-                    margin: const EdgeInsets.only(left: 20),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "Continue Reading :",
-                        textAlign: TextAlign.left,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge
-                            ?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSecondaryContainer),
-                      ),
-                    ),
+              Container(
+                margin: const EdgeInsets.only(left: 20),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Continue Reading :",
+                    textAlign: TextAlign.left,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color:
+                            Theme.of(context).colorScheme.onSecondaryContainer),
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  SizedBox(
-                    height: 70,
-                    child: ListView(
-                      clipBehavior: Clip.none,
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      children: const [
-                        LastReadCard(),
-                        LastReadCard(),
-                        LastReadCard(),
-                        LastReadCard(),
-                        LastReadCard(),
-                      ],
-                    ),
-                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              SizedBox(
+                height: 70,
+                child: ListView(
+                  clipBehavior: Clip.none,
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  children: const [
+                    LastReadCard(),
+                    LastReadCard(),
+                    LastReadCard(),
+                    LastReadCard(),
+                    LastReadCard(),
+                  ],
+                ),
+              ),
               const SizedBox(
                 height: 20,
               ),
@@ -144,7 +141,7 @@ class _MainPageState extends State<MainPage> {
                   }
 
                   return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5.5),
+                    padding: const EdgeInsets.symmetric(vertical: 4),
                     child: QuranCard(
                       index: id,
                       transliteration: transliteration,
@@ -159,7 +156,6 @@ class _MainPageState extends State<MainPage> {
         ),
       ),
     );
-
   }
 
   void _changeSearchQuery(String value) {

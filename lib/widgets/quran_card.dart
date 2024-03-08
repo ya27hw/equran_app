@@ -20,7 +20,7 @@ class QuranCard extends StatelessWidget {
     return Card(
       elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-      margin: const EdgeInsets.symmetric(horizontal: 12),
+      margin: const EdgeInsets.symmetric(horizontal: 8),
       child: InkWell(
         borderRadius: BorderRadius.circular(30),
         onTap: () async {
@@ -29,7 +29,7 @@ class QuranCard extends StatelessWidget {
               builder: (context) => ReadPage(chapter: index)));
         },
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+          padding: const EdgeInsets.symmetric(vertical: 4),
           child: ListTile(
             leading: Padding(
               padding: const EdgeInsets.only(right: 5),
@@ -37,7 +37,7 @@ class QuranCard extends StatelessWidget {
                   height: 36,
                   width: 36,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.secondaryContainer,
+                    color: Theme.of(context).colorScheme.tertiaryContainer,
                     borderRadius: BorderRadius.circular(50),
                   ),
                   child: Center(
