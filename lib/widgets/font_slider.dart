@@ -1,3 +1,4 @@
+import 'package:emushaf/utils/settings_db.dart';
 import 'package:flutter/material.dart';
 
 class FontSlider extends StatefulWidget {
@@ -13,12 +14,14 @@ class _FontSliderState extends State<FontSlider> {
   Widget build(BuildContext context) {
     return Slider(
         value: widget.fontSize,
-        min: 0.0,
-        max: 80.0,
-        label: widget.fontSize.round().toString(),
+        min: 30.0,
+        max: 70.0,
+        divisions: 20,
+        label: (widget.fontSize / 2).round().toString(),
         onChanged: (double value) {
           setState(() {
             widget.fontSize = value;
+            SettingsDB().set("fontSize", value);
           });
         });
   }

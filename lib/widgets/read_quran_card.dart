@@ -1,42 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:quran/quran.dart' as quran;
 
-
 class ReadQuranCard extends StatelessWidget {
   final int currentChapter;
   final int currentVerse;
   final int totalVerses;
-  ReadQuranCard({super.key, required this.currentChapter, required this.currentVerse, required this.totalVerses});
+  final double fontSize;
+  const ReadQuranCard({
+    super.key,
+    required this.currentChapter,
+    required this.currentVerse,
+    required this.totalVerses,
+    required this.fontSize,
+  });
 
   @override
   Widget build(BuildContext context) {
+    // Get the size of the screen
+    Size screenSize = MediaQuery.of(context).size;
+
+    // Define margin values for different screen sizes
+    double marginValue;
+    if (screenSize.width > 1200) {
+      marginValue = 90.0; // Large screen
+    } else if (screenSize.width > 800) {
+      marginValue = 40.0; // Medium screen
+    } else {
+      marginValue = 16.0; // Small screen
+    }
     return Card(
       elevation: 4,
-      margin: const EdgeInsets.symmetric(
-          horizontal: 15, vertical: 20),
+      margin: EdgeInsets.symmetric(horizontal: marginValue, vertical: 20),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            Text("Juz ${quran.getJuzNumber(currentChapter, currentVerse)}",                             style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            Text(
-              "$currentVerse/$totalVerses",
-              style: Theme.of(context).textTheme.bodyLarge,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text(
+                  "Juz ${quran.getJuzNumber(currentChapter, currentVerse)}\n $currentVerse/$totalVerses",
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ],
             ),
             const SizedBox(
               height: 10,
             ),
-            currentChapter != 1 &&
-                currentVerse == 1 &&
-                currentChapter != 9
-                ? const Text(quran.basmala,
-                textDirection: TextDirection.rtl,
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    height: 2.3,
-                    fontFamily: 'Hafs',
-                    fontSize: 40))
+            currentChapter != 1 && currentVerse == 1 && currentChapter != 9
+                ? Text(quran.basmala,
+                    textDirection: TextDirection.rtl,
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        height: 2.3,
+                        fontFamily: 'Hafs',
+                        fontSize: fontSize))
                 : const SizedBox(),
             Text(
               quran.getVerse(
@@ -45,10 +63,10 @@ class ReadQuranCard extends StatelessWidget {
               ),
               textDirection: TextDirection.rtl,
               textAlign: TextAlign.justify,
-              style: const TextStyle(
+              style: TextStyle(
                   fontFamily: 'Hafs',
                   height: 2.2,
-                  fontSize: 38,
+                  fontSize: fontSize,
                   fontWeight: FontWeight.w500),
             ),
             Text(
@@ -57,7 +75,10 @@ class ReadQuranCard extends StatelessWidget {
                 currentVerse,
                 translation: quran.Translation.enSaheeh,
               ),
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(fontSize: fontSize / 2.55),
             )
           ],
         ),
@@ -65,4 +86,3 @@ class ReadQuranCard extends StatelessWidget {
     );
   }
 }
-

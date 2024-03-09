@@ -1,3 +1,4 @@
+import 'package:emushaf/utils/settings_db.dart';
 import 'package:emushaf/widgets/read_quran_card.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -43,6 +44,29 @@ class _ReadPageState extends State<ReadPage> {
         leading: const BackButton(),
         title: Text(quran.getSurahName(_currentChapter)),
         centerTitle: true,
+        actions: <Widget>[
+          IconButton(
+              icon: Icon(Icons.restart_alt),
+              onPressed: () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                        title: const Text("Reset"),
+                        content: const Text("Would you like to start over?"),
+                        actions: <Widget>[
+                          TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text("Cancel")),
+                          TextButton(
+                            child: const Text("OK"),
+                            onPressed: () {
+                              _reset();
+                              _delete();
+                              Navigator.of(context).pop();
+                            },
+                          )
+                        ],
+                      )))
+        ],
       ),
       body: Column(
         mainAxisSize: MainAxisSize.min,
@@ -57,6 +81,7 @@ class _ReadPageState extends State<ReadPage> {
                     currentChapter: _currentChapter,
                     currentVerse: _currentVerse,
                     totalVerses: _totalVerses,
+                    fontSize: SettingsDB().get("fontSize", 30.0),
                   ),
                 ),
               ),
@@ -75,7 +100,7 @@ class _ReadPageState extends State<ReadPage> {
                     _vibrate();
                     if (_currentVerse != 1) {
                       _decrement();
-                      _bookmarks.put(_currentChapter, _currentVerse);
+                      _updateDB();
                     }
                   },
                   child: const Padding(
@@ -92,10 +117,10 @@ class _ReadPageState extends State<ReadPage> {
                     _scrollUp();
                     if (_currentVerse != _totalVerses) {
                       _increment();
-                      _bookmarks.put(_currentChapter, _currentVerse);
+                      _updateDB();
                     } else {
                       // New Chapter
-                      _bookmarks.delete(_currentChapter);
+                      _delete();
                       _reset();
                       if (_currentChapter != 114) {
                         _incrementChapter();
@@ -165,5 +190,13 @@ class _ReadPageState extends State<ReadPage> {
 
   void _scrollUp() {
     _scrollController.jumpTo(_scrollController.position.minScrollExtent);
+  }
+
+  void _updateDB() {
+    _bookmarks.put(_currentChapter, _currentVerse);
+  }
+
+  void _delete() {
+    _bookmarks.delete(_currentChapter);
   }
 }

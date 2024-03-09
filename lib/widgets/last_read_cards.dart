@@ -9,7 +9,7 @@ class LastReadCard extends StatelessWidget {
       // height: 40,
       width: 190,
       child: Card(
-        color: Theme.of(context).colorScheme.tertiaryContainer,
+        color: Theme.of(context).colorScheme.secondaryContainer,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         margin: const EdgeInsets.only(left: 12, right: 5),
         elevation: 2,

@@ -124,6 +124,7 @@ class _MainPageState extends State<MainPage> {
               ),
               ListView.builder(
                 shrinkWrap: true,
+                // Number of Surahs
                 itemCount: 114,
                 physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (context, i) {

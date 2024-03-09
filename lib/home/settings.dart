@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 
 class SettingsPage extends StatelessWidget {
   SettingsPage({super.key});
-  final SettingsDB _db = SettingsDB();
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +34,7 @@ class SettingsPage extends StatelessWidget {
                         final color = Colors.primaries[index];
                         return InkWell(
                           onTap: () {
-                            _db.set("color", index);
+                            SettingsDB().set("color", index);
 
                             AdaptiveTheme.of(context).setTheme(
                                 light: ThemeData(colorSchemeSeed: color),
@@ -62,10 +61,10 @@ class SettingsPage extends StatelessWidget {
             //   radius: 12.5, // Adjust radius as needed
             // ),
           ),
-          ListTile(title: Text("Font Size")),
-          FontSlider(
-            fontSize: 15,
-          )
+          ListTile(
+            title: Text("Font Size"),
+            subtitle: FontSlider(fontSize: SettingsDB().get("fontSize", 30.0)),
+          ),
         ],
       ),
     );

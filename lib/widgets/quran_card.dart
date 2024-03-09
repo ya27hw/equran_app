@@ -37,7 +37,7 @@ class QuranCard extends StatelessWidget {
                   height: 36,
                   width: 36,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.tertiaryContainer,
+                    color: Theme.of(context).colorScheme.secondaryContainer,
                     borderRadius: BorderRadius.circular(50),
                   ),
                   child: Center(
