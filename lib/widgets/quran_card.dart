@@ -21,30 +21,27 @@ class QuranCard extends StatelessWidget {
               builder: (context) => ReadPage(chapter: surah.id)));
         },
         child: ListTile(
-          leading: Padding(
-            padding: const EdgeInsets.only(right: 5),
-            child: Container(
-                height: 36,
-                width: 36,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondaryContainer,
-                  borderRadius: BorderRadius.circular(50),
-                ),
-                child: Center(
-                    child: Text("${surah.id}",
-                        style: Theme.of(context).textTheme.titleMedium))),
-          ),
+          leading: Container(
+              height: 30,
+              width: 30,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.secondaryContainer,
+                borderRadius: BorderRadius.circular(50),
+              ),
+              child: Center(
+                  child: Text("${surah.id}",
+                      style: Theme.of(context).textTheme.titleSmall))),
           title: Text(
             "${surah.transliteration}",
             style: Theme.of(context).textTheme.titleMedium,
           ),
           trailing: Text(
-            "سوﺭة ${surah.name}",
+            "${surah.name}",
             style: Theme.of(context).textTheme.titleMedium,
           ),
           subtitle: Text(
             "${surah.verses} Ayahs",
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context).textTheme.bodySmall,
           ),
           // Add leading/trailing icons, subtitle, etc. for further customization
         ),
