@@ -104,7 +104,7 @@ class _ReadPageState extends State<ReadPage> {
                     }
                   },
                   child: const Padding(
-                    padding: EdgeInsets.all(16.0),
+                    padding: EdgeInsets.all(12.0),
                     child: Icon(
                       Icons.arrow_back_rounded,
                       size: 30,
@@ -131,7 +131,7 @@ class _ReadPageState extends State<ReadPage> {
                     }
                   },
                   child: const Padding(
-                    padding: EdgeInsets.all(16.0),
+                    padding: EdgeInsets.all(12.0),
                     child: Icon(
                       Icons.arrow_forward_rounded,
                       size: 30,

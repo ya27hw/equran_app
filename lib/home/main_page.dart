@@ -139,7 +139,14 @@ class _MainPageState extends State<MainPage> {
                     );
                   } else {
                     List<Surah> data = snapshot.data!;
-                    return ListView.builder(
+                    return GridView.builder(
+                      physics: NeverScrollableScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount:
+                              MediaQuery.of(context).size.width > 700 ? 2 : 1,
+                          mainAxisExtent: 68,
+                          mainAxisSpacing: 10,
+                          crossAxisSpacing: 8),
                       itemCount: data.length,
                       shrinkWrap: true,
                       itemBuilder: (BuildContext context, int index) {
@@ -153,12 +160,8 @@ class _MainPageState extends State<MainPage> {
                                 .contains(_searchQuery.toLowerCase()) ||
                             surah.id.toString() == _searchQuery;
                         return isMatching
-                            ? Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 4),
-                                child: QuranCard(
-                                  surah: data[index],
-                                ),
+                            ? QuranCard(
+                                surah: data[index],
                               )
                             : Container();
                       },
