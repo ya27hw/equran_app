@@ -1,19 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../home/read.dart';
+import '../utils/surah.dart';
 
 class QuranCard extends StatelessWidget {
-  final int index;
-  final String transliteration;
-  final String name;
-  final int verses;
-  const QuranCard({
-    super.key,
-    required this.index,
-    required this.transliteration,
-    required this.name,
-    required this.verses,
-  });
+  final Surah surah;
+  const QuranCard({super.key, required this.surah});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +18,7 @@ class QuranCard extends StatelessWidget {
         onTap: () async {
           await Future.delayed(const Duration(milliseconds: 120));
           Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => ReadPage(chapter: index)));
+              builder: (context) => ReadPage(chapter: surah.id)));
         },
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 4),
@@ -41,19 +33,19 @@ class QuranCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(50),
                   ),
                   child: Center(
-                      child: Text("$index",
+                      child: Text("${surah.id}",
                           style: Theme.of(context).textTheme.titleMedium))),
             ),
             title: Text(
-              "Surah $transliteration",
+              "${surah.transliteration}",
               style: Theme.of(context).textTheme.titleMedium,
             ),
             trailing: Text(
-              "سوﺭة $name",
+              "سوﺭة ${surah.name}",
               style: Theme.of(context).textTheme.titleMedium,
             ),
             subtitle: Text(
-              "$verses Ayahs",
+              "${surah.verses} Ayahs",
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             // Add leading/trailing icons, subtitle, etc. for further customization

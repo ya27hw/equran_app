@@ -23,23 +23,23 @@ class ReadQuranCard extends StatelessWidget {
     double marginValue;
     if (screenSize.width > 1200) {
       marginValue = 90.0; // Large screen
-    } else if (screenSize.width > 800) {
+    } else if (screenSize.width > 700) {
       marginValue = 40.0; // Medium screen
     } else {
-      marginValue = 16.0; // Small screen
+      marginValue = 8.0; // Small screen
     }
     return Card(
       elevation: 4,
       margin: EdgeInsets.symmetric(horizontal: marginValue, vertical: 20),
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(12.0),
         child: Column(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Text(
-                  "Juz ${quran.getJuzNumber(currentChapter, currentVerse)}\n $currentVerse/$totalVerses",
+                  "Juz ${quran.getJuzNumber(currentChapter, currentVerse)} • $currentVerse/$totalVerses",
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
               ],

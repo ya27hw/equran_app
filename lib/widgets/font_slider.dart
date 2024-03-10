@@ -15,8 +15,7 @@ class _FontSliderState extends State<FontSlider> {
     return Slider(
         value: widget.fontSize,
         min: 30.0,
-        max: 70.0,
-        divisions: 20,
+        max: 60.0,
         label: (widget.fontSize / 2).round().toString(),
         onChanged: (double value) {
           setState(() {

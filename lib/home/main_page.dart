@@ -1,8 +1,10 @@
-import 'package:emushaf/widgets/last_read_cards.dart';
+import 'package:emushaf/utils/debouncer.dart';
 import 'package:emushaf/widgets/quran_card.dart';
 import 'package:emushaf/widgets/search.dart';
 import 'package:flutter/material.dart';
 import 'package:quran/quran.dart' as quran;
+
+import '../utils/surah.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -13,6 +15,8 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   String _searchQuery = '';
+  final debouncer = Debouncer(milliseconds: 200);
+
   // bool _isReversed = false;
 
   @override
@@ -30,7 +34,7 @@ class _MainPageState extends State<MainPage> {
                   borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(30),
                       bottomRight: Radius.circular(30))),
-              pinned: false,
+              pinned: true,
               floating: false,
               expandedHeight: 200,
               centerTitle: true,
@@ -42,7 +46,7 @@ class _MainPageState extends State<MainPage> {
                     //crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        "eMushaf",
+                        "eQuran",
                         style: Theme.of(context)
                             .textTheme
                             .headlineLarge
@@ -52,7 +56,7 @@ class _MainPageState extends State<MainPage> {
                                     .onPrimaryContainer,
                                 fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 50,
                       ),
                       const SizedBox(
@@ -73,41 +77,41 @@ class _MainPageState extends State<MainPage> {
               const SizedBox(
                 height: 25,
               ),
-              Container(
-                margin: const EdgeInsets.only(left: 20),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Continue Reading :",
-                    textAlign: TextAlign.left,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color:
-                            Theme.of(context).colorScheme.onSecondaryContainer),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              SizedBox(
-                height: 70,
-                child: ListView(
-                  clipBehavior: Clip.none,
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  children: const [
-                    LastReadCard(),
-                    LastReadCard(),
-                    LastReadCard(),
-                    LastReadCard(),
-                    LastReadCard(),
-                  ],
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
+              // Container(
+              //   margin: const EdgeInsets.only(left: 20),
+              //   child: Align(
+              //     alignment: Alignment.centerLeft,
+              //     child: Text(
+              //       "Continue Reading :",
+              //       textAlign: TextAlign.left,
+              //       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              //           fontWeight: FontWeight.bold,
+              //           color:
+              //               Theme.of(context).colorScheme.onSecondaryContainer),
+              //     ),
+              //   ),
+              // ),
+              // const SizedBox(
+              //   height: 10,
+              // ),
+              // SizedBox(
+              //   height: 70,
+              //   child: ListView(
+              //     clipBehavior: Clip.none,
+              //     shrinkWrap: true,
+              //     scrollDirection: Axis.horizontal,
+              //     children: const [
+              //       LastReadCard(),
+              //       LastReadCard(),
+              //       LastReadCard(),
+              //       LastReadCard(),
+              //       LastReadCard(),
+              //     ],
+              //   ),
+              // ),
+              // const SizedBox(
+              //   height: 20,
+              // ),
               Container(
                 margin: const EdgeInsets.only(left: 30),
                 child: Align(
@@ -122,34 +126,44 @@ class _MainPageState extends State<MainPage> {
                   ),
                 ),
               ),
-              ListView.builder(
-                shrinkWrap: true,
-                // Number of Surahs
-                itemCount: 114,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (context, i) {
-                  int index = i + 1;
-                  final transliteration = quran.getSurahName(index);
-                  final name = quran.getSurahNameArabic(index);
-                  final verses = quran.getVerseCount(index);
-                  final id = index;
-
-                  if (_searchQuery.isNotEmpty &&
-                      !transliteration.toLowerCase().contains(_searchQuery) &&
-                      !name.toLowerCase().contains(_searchQuery)) {
-                    return const SizedBox
-                        .shrink(); // Hide the item if it doesn't match the search query
+              FutureBuilder(
+                future: _fetchSurahs(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<Surah>> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Container(
+                      margin: const EdgeInsets.symmetric(vertical: 50),
+                      child: const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  } else {
+                    List<Surah> data = snapshot.data!;
+                    return ListView.builder(
+                      itemCount: data.length,
+                      shrinkWrap: true,
+                      itemBuilder: (BuildContext context, int index) {
+                        Surah surah = data[index];
+                        final isMatching = _searchQuery.isEmpty ||
+                            surah.transliteration
+                                .toLowerCase()
+                                .contains(_searchQuery.toLowerCase()) ||
+                            surah.name
+                                .toLowerCase()
+                                .contains(_searchQuery.toLowerCase()) ||
+                            surah.id.toString() == _searchQuery;
+                        return isMatching
+                            ? Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4),
+                                child: QuranCard(
+                                  surah: data[index],
+                                ),
+                              )
+                            : Container();
+                      },
+                    );
                   }
-
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: QuranCard(
-                      index: id,
-                      transliteration: transliteration,
-                      name: name,
-                      verses: verses,
-                    ),
-                  );
                 },
               )
             ]))
@@ -160,8 +174,24 @@ class _MainPageState extends State<MainPage> {
   }
 
   void _changeSearchQuery(String value) {
-    setState(() {
-      _searchQuery = value;
+    debouncer.call(() {
+      setState(() {
+        _searchQuery = value;
+      });
     });
+  }
+
+  Future<List<Surah>> _fetchSurahs() async {
+    final surahs = <Surah>[];
+    for (int i = 1; i <= 114; i++) {
+      final transliteration = quran.getSurahName(i);
+      final name = quran.getSurahNameArabic(i);
+      final verses = quran.getVerseCount(i);
+      surahs.add(Surah(
+          id: i, transliteration: transliteration, name: name, verses: verses));
+      await Future.delayed(
+          const Duration(milliseconds: 5)); // Adjust delay as needed
+    }
+    return surahs;
   }
 }

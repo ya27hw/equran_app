@@ -25,12 +25,13 @@ class _HomePageState extends State<HomePage> {
   final List<Destinations> _pageDestinations = <Destinations>[
     const Destinations(
         "Quran", Icon(Icons.book_outlined), Icon(Icons.book), MainPage()),
-     Destinations("Settings", Icon(Icons.settings_outlined),
+    Destinations("Settings", Icon(Icons.settings_outlined),
         Icon(Icons.settings), SettingsPage()),
-    Destinations(
-        "Test", const Icon(Icons.info_outline), const Icon(Icons.info), TestPage())
+    Destinations("Test", const Icon(Icons.info_outline), const Icon(Icons.info),
+        TestPage())
   ];
   final ScrollController _scrollController = ScrollController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void dispose() {
@@ -41,8 +42,12 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       drawer: NavigationDrawer(
-        onDestinationSelected: _onItemTapped,
+        onDestinationSelected: (index) {
+          _scaffoldKey.currentState!.closeDrawer();
+          _onItemTapped(index);
+        },
         selectedIndex: _selectedIndex,
         children: <Widget>[
           Padding(
@@ -84,12 +89,4 @@ class _HomePageState extends State<HomePage> {
       _selectedIndex = index;
     });
   }
-
-  // void _scrollUp() {
-  //   _scrollController.animateTo(
-  //     _scrollController.position.minScrollExtent,
-  //     duration: const Duration(milliseconds: 800),
-  //     curve: Curves.easeInOut,
-  //   );
-  // }
 }

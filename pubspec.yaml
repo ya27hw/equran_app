@@ -44,6 +44,7 @@ dependencies:
   hive_flutter:
   provider:
   adaptive_theme: ^3.6.0
+  searchable_listview: ^2.10.2
 
 dev_dependencies:
   flutter_test:
