@@ -3,8 +3,6 @@ import 'package:emushaf/widgets/quran_card_list.dart';
 import 'package:emushaf/widgets/search.dart';
 import 'package:flutter/material.dart';
 
-import '../utils/surah.dart';
-
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
 
@@ -16,12 +14,19 @@ class _MainPageState extends State<MainPage>
     with SingleTickerProviderStateMixin {
   String _searchQuery = '';
   final debouncer = Debouncer(milliseconds: 200);
+  List<Tab> _tabs = const [
+    Tab(text: 'Surah'),
+    Tab(text: 'Juz'),
+    Tab(
+      text: "Favourites",
+    )
+  ];
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: _tabs.length, vsync: this);
   }
 
   @override
@@ -35,7 +40,7 @@ class _MainPageState extends State<MainPage>
     return Material(
       child: SafeArea(
         child: NestedScrollView(
-          physics: const BouncingScrollPhysics(),
+          // physics: const BouncingScrollPhysics(),
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
               SliverAppBar(
@@ -88,12 +93,8 @@ class _MainPageState extends State<MainPage>
                 pinned: false,
                 delegate: _SliverAppBarDelegate(
                   TabBar(
-
                     controller: _tabController,
-                    tabs: const [
-                      Tab(text: 'Surah'),
-                      Tab(text: 'Juz'),
-                    ],
+                    tabs: _tabs,
                   ),
                 ),
               ),
@@ -101,9 +102,15 @@ class _MainPageState extends State<MainPage>
           },
           body: TabBarView(
             controller: _tabController,
-            children:  [
+            children: [
               QuranCardList(searchQuery: _searchQuery),
-              const Center(child: Text('Tab 2 Content')),
+              ListView.builder(
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: 30,
+                  itemBuilder: (BuildContext context, int index) => ListTile(
+                        title: Text(index.toString()),
+                      )),
+              Text("My Favourites!")
             ],
           ),
         ),

@@ -21,6 +21,7 @@ class QuranCard extends StatelessWidget {
               builder: (context) => ReadPage(chapter: surah.id)));
         },
         child: ListTile(
+
           leading: Container(
               height: 30,
               width: 30,
