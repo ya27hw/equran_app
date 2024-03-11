@@ -64,10 +64,10 @@ class ReadQuranCard extends StatelessWidget {
               textDirection: TextDirection.rtl,
               textAlign: TextAlign.justify,
               style: TextStyle(
-                  fontFamily: 'Hafs',
-                  height: 2.2,
-                  fontSize: fontSize,
-                  fontWeight: FontWeight.w500),
+                fontFamily: 'Hafs',
+                height: 2,
+                fontSize: fontSize,
+              ),
             ),
             Text(
               quran.getVerseTranslation(

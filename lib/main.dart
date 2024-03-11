@@ -1,15 +1,20 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:emushaf/backend/surah_model.dart';
 import 'package:emushaf/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 Future<void> main() async {
   // ----- HIVE -----
-  await Hive.initFlutter("assets");
+  await Hive.initFlutter();
+
+  Hive.registerAdapter(SurahAdapter());
+
   await Hive.openBox("bookmarks");
   await Hive.openBox(
     "settings",
   );
+  await Hive.openBox("surahs");
 
   runApp(MyApp());
 }
@@ -34,7 +39,7 @@ class MyApp extends StatelessWidget {
                 seedColor: mySeed, brightness: Brightness.dark)),
         initial: AdaptiveThemeMode.system,
         builder: (theme, darkTheme) => MaterialApp(
-          debugShowCheckedModeBanner: false,
+              debugShowCheckedModeBanner: false,
               theme: theme,
               darkTheme: darkTheme,
               home: const HomePage(),

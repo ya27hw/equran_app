@@ -24,7 +24,7 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   final List<Destinations> _pageDestinations = <Destinations>[
     const Destinations(
-        "Quran", Icon(Icons.book_outlined), Icon(Icons.book), MainPage()),
+        "eQuran", Icon(Icons.book_outlined), Icon(Icons.book), MainPage()),
     Destinations("Settings", Icon(Icons.settings_outlined),
         Icon(Icons.settings), SettingsPage()),
     Destinations("Test", const Icon(Icons.info_outline), const Icon(Icons.info),
@@ -72,14 +72,12 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      appBar: _selectedIndex != 0
-          ? AppBar(
-              title: Text(_pageDestinations[_selectedIndex].label),
-              iconTheme: IconThemeData(
-                  color: Theme.of(context).colorScheme.onPrimaryContainer),
-              centerTitle: true,
-            )
-          : null,
+      appBar: AppBar(
+        title: Text(_pageDestinations[_selectedIndex].label),
+        iconTheme: IconThemeData(
+            color: Theme.of(context).colorScheme.onPrimaryContainer),
+        centerTitle: true,
+      ),
       body: _pageDestinations[_selectedIndex].destination,
     );
   }

@@ -1,7 +1,7 @@
+import 'package:emushaf/backend/surah_model.dart';
 import 'package:flutter/material.dart';
 
 import '../home/read.dart';
-import '../utils/surah.dart';
 
 class QuranCard extends StatelessWidget {
   final Surah surah;
@@ -21,7 +21,6 @@ class QuranCard extends StatelessWidget {
               builder: (context) => ReadPage(chapter: surah.id)));
         },
         child: ListTile(
-
           leading: Container(
               height: 30,
               width: 30,
@@ -30,14 +29,14 @@ class QuranCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(50),
               ),
               child: Center(
-                  child: Text("${surah.id}",
+                  child: Text(surah.id.toString(),
                       style: Theme.of(context).textTheme.titleSmall))),
           title: Text(
-            "${surah.transliteration}",
+            surah.transliteration,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           trailing: Text(
-            "${surah.name}",
+            surah.name,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           subtitle: Text(
