@@ -76,7 +76,7 @@ class _HomePageState extends State<HomePage> {
       AppBar(
         title: Text(_pageDestinations[_selectedIndex].label),
         iconTheme: IconThemeData(
-            color: Theme.of(context).colorScheme.onPrimaryContainer),
+            color: Theme.of(context).colorScheme.onBackground),
         centerTitle: true,
       ) : null,
       body: _pageDestinations[_selectedIndex].destination,

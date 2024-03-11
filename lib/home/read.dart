@@ -8,7 +8,8 @@ import 'package:vibration/vibration.dart';
 
 class ReadPage extends StatefulWidget {
   final int chapter;
-  const ReadPage({super.key, required this.chapter});
+  final int? startVerse;
+  const ReadPage({super.key, required this.chapter, this.startVerse});
 
   @override
   State<ReadPage> createState() => _ReadPageState();

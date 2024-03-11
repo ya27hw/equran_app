@@ -4,12 +4,20 @@ import 'package:emushaf/widgets/quran_card.dart';
 import 'package:flutter/material.dart';
 import 'package:quran/quran.dart' as quran;
 
-class QuranCardList extends StatelessWidget {
+class QuranCardList extends StatefulWidget {
   final String searchQuery;
+
   const QuranCardList({super.key, required this.searchQuery});
 
   @override
+  _QuranCardListState createState() => _QuranCardListState();
+}
+
+class _QuranCardListState extends State<QuranCardList>
+    with AutomaticKeepAliveClientMixin {
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return FutureBuilder(
       future: _fetchSurahs(),
       builder: (BuildContext context, AsyncSnapshot<List<Surah>> snapshot) {
@@ -23,7 +31,7 @@ class QuranCardList extends StatelessWidget {
         } else {
           final data = snapshot.data!;
           return ListView.builder(
-            physics: BouncingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             itemCount: data.length,
             shrinkWrap: true,
             itemBuilder: (BuildContext context, int index) {
@@ -32,7 +40,7 @@ class QuranCardList extends StatelessWidget {
               return Padding(
                 padding: const EdgeInsets.all(4.0),
                 child: QuranCard(
-                  surah: data[index],
+                  surah: surah,
                 ),
               );
             },
@@ -57,10 +65,12 @@ class QuranCardList extends StatelessWidget {
       final transliteration = quran.getSurahName(i);
       final name = quran.getSurahNameArabic(i);
       final verses = quran.getVerseCount(i);
-      final isMatching = searchQuery.isEmpty ||
-          transliteration.toLowerCase().contains(searchQuery.toLowerCase()) ||
-          name.toLowerCase().contains(searchQuery.toLowerCase()) ||
-          i.toString() == searchQuery;
+      final isMatching = widget.searchQuery.isEmpty ||
+          transliteration
+              .toLowerCase()
+              .contains(widget.searchQuery.toLowerCase()) ||
+          name.toLowerCase().contains(widget.searchQuery.toLowerCase()) ||
+          i.toString() == widget.searchQuery;
       if (isMatching) {
         surahs.add(Surah(
             id: i,
@@ -72,4 +82,8 @@ class QuranCardList extends StatelessWidget {
     await SurahDB().set("surahsList", surahs);
     return surahs;
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }

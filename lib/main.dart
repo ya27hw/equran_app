@@ -39,6 +39,8 @@ class MyApp extends StatelessWidget {
                 seedColor: mySeed, brightness: Brightness.dark)),
         initial: AdaptiveThemeMode.system,
         builder: (theme, darkTheme) => MaterialApp(
+          scrollBehavior:
+          ScrollConfiguration.of(context).copyWith(scrollbars: false),
               debugShowCheckedModeBanner: false,
               theme: theme,
               darkTheme: darkTheme,

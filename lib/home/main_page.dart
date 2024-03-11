@@ -1,7 +1,10 @@
 import 'package:emushaf/utils/debouncer.dart';
+import 'package:emushaf/widgets/juz_card_list.dart';
 import 'package:emushaf/widgets/quran_card_list.dart';
 import 'package:emushaf/widgets/search.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -18,7 +21,7 @@ class _MainPageState extends State<MainPage>
     Tab(text: 'Surah'),
     Tab(text: 'Juz'),
     Tab(
-      icon: Icon(Icons.star),
+      text: "Favourites",
     )
   ];
   late TabController _tabController;
@@ -57,14 +60,15 @@ class _MainPageState extends State<MainPage>
   //         height: 10,
   //       ),
   //       Expanded(
-  //           child: TabBarView(
-  //         controller: _tabController,
-  //         children: [
-  //           QuranCardList(searchQuery: _searchQuery),
-  //           const Text("Juz"),
-  //           const Text("Favourites")
-  //         ],
-  //       ))
+  //         child: TabBarView(
+  //           controller: _tabController,
+  //           children: [
+  //             QuranCardList(searchQuery: _searchQuery),
+  //             JuzCardList(),
+  //             const Text("Favourites")
+  //           ],
+  //         ),
+  //       )
   //     ],
   //   ));
   // }
@@ -74,7 +78,6 @@ class _MainPageState extends State<MainPage>
     return Material(
       child: SafeArea(
         child: NestedScrollView(
-          physics: BouncingScrollPhysics(),
           headerSliverBuilder:
               (BuildContext context, bool innerBoxIsScrolled) => <Widget>[
             SliverAppBar(
@@ -134,8 +137,15 @@ class _MainPageState extends State<MainPage>
             controller: _tabController,
             children: [
               QuranCardList(searchQuery: _searchQuery),
-              Text("Juz"),
-              Text("Favourites")
+              JuzCardList(),
+              ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: 40,
+                itemBuilder: (context, index) {
+                  return ListTile(title: Text(index.toString()),);
+                },
+              )
+              ,
             ],
           ),
         ),

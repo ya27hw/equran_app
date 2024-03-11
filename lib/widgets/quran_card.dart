@@ -5,7 +5,8 @@ import '../home/read.dart';
 
 class QuranCard extends StatelessWidget {
   final Surah surah;
-  const QuranCard({super.key, required this.surah});
+  final int? endVerse;
+  const QuranCard({super.key, required this.surah, this.endVerse});
 
   @override
   Widget build(BuildContext context) {
@@ -16,9 +17,10 @@ class QuranCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(30),
         onTap: () async {
-          await Future.delayed(const Duration(milliseconds: 120));
           Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => ReadPage(chapter: surah.id)));
+              builder: (context) => ReadPage(
+                  chapter: surah.id,
+                  startVerse: endVerse != null ? surah.verses : 1)));
         },
         child: ListTile(
           leading: Container(
@@ -39,10 +41,15 @@ class QuranCard extends StatelessWidget {
             surah.name,
             style: Theme.of(context).textTheme.titleMedium,
           ),
-          subtitle: Text(
-            "${surah.verses} Ayahs",
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
+          subtitle: endVerse != null
+              ? Text(
+                  "Ayahs: ${surah.verses} - $endVerse",
+                  style: Theme.of(context).textTheme.bodyMedium,
+                )
+              : Text(
+                  "${surah.verses} Ayahs",
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
           // Add leading/trailing icons, subtitle, etc. for further customization
         ),
       ),
