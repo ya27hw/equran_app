@@ -72,12 +72,13 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      appBar: AppBar(
+      appBar: _selectedIndex == 1 ?
+      AppBar(
         title: Text(_pageDestinations[_selectedIndex].label),
         iconTheme: IconThemeData(
             color: Theme.of(context).colorScheme.onPrimaryContainer),
         centerTitle: true,
-      ),
+      ) : null,
       body: _pageDestinations[_selectedIndex].destination,
     );
   }

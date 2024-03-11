@@ -14,7 +14,7 @@ class _MainPageState extends State<MainPage>
     with SingleTickerProviderStateMixin {
   String _searchQuery = '';
   final debouncer = Debouncer(milliseconds: 700);
-  List<Tab> _tabs = const [
+  final List<Tab> _tabs = const [
     Tab(text: 'Surah'),
     Tab(text: 'Juz'),
     Tab(
@@ -35,118 +35,113 @@ class _MainPageState extends State<MainPage>
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-        child: Column(
-      children: <Widget>[
-        SizedBox(
-          height: 10,
-        ),
-        MySearchBar(
-          onChanged: _changeSearchQuery,
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        TabBar(
-          controller: _tabController,
-          tabs: _tabs,
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        Expanded(
-            child: TabBarView(
-          controller: _tabController,
-          children: [
-            QuranCardList(searchQuery: _searchQuery),
-            Text("Juz"),
-            Text("Favourites")
-          ],
-        ))
-      ],
-    ));
-  }
-
   // @override
   // Widget build(BuildContext context) {
   //   return Material(
-  //     child: SafeArea(
-  //       child: CustomScrollView(
-  //         physics: BouncingScrollPhysics(),
-  //         slivers: <Widget>[
-  //           SliverAppBar(
-  //             iconTheme: IconThemeData(
-  //                 color: Theme.of(context).colorScheme.onPrimaryContainer),
-  //             elevation: 2,
-  //             shape: const RoundedRectangleBorder(
-  //                 borderRadius: BorderRadius.only(
-  //                     bottomLeft: Radius.circular(30),
-  //                     bottomRight: Radius.circular(30))),
-  //             pinned: false,
-  //             floating: false,
-  //             expandedHeight: 150,
-  //             centerTitle: true,
-  //             backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-  //             flexibleSpace: FlexibleSpaceBar(
-  //               background: Container(
-  //                 // padding: const EdgeInsets.all(10.0),
-  //                 child: Column(
-  //                   //crossAxisAlignment: CrossAxisAlignment.center,
-  //                   children: <Widget>[
-  //                     Text(
-  //                       "eQuran",
-  //                       style: Theme.of(context)
-  //                           .textTheme
-  //                           .headlineLarge
-  //                           ?.copyWith(
-  //                               color: Theme.of(context)
-  //                                   .colorScheme
-  //                                   .onPrimaryContainer,
-  //                               fontWeight: FontWeight.bold),
-  //                     ),
-  //                     const SizedBox(
-  //                       height: 30,
-  //                     ),
-  //                     MySearchBar(
-  //                       onChanged: (value) {
-  //                         _changeSearchQuery(value);
-  //                       },
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ),
-  //             ),
-  //           ),
-  //           SliverPersistentHeader(
-  //             pinned: false,
-  //             delegate: _SliverAppBarDelegate(
-  //               TabBar(
-  //                 controller: _tabController,
-  //                 tabs: _tabs,
-  //               ),
-  //             ),
-  //           ),
-  //           SliverFillRemaining(
-  //             child: TabBarView(
-  //               controller: _tabController,
-  //               children: [
-  //                 SizedBox(
-  //                     height: 10,
-  //                     child: QuranCardList(searchQuery: _searchQuery)),
-  //                 Text("Juz"),
-  //                 Text("Favourites")
-  //               ],
-  //             ),
-  //           )
-  //         ],
-  //
-  //         // body: SizedBox(),
+  //       child: Column(
+  //     children: <Widget>[
+  //       const SizedBox(
+  //         height: 10,
   //       ),
-  //     ),
-  //   );
+  //       MySearchBar(
+  //         onChanged: _changeSearchQuery,
+  //       ),
+  //       const SizedBox(
+  //         height: 10,
+  //       ),
+  //       TabBar(
+  //         controller: _tabController,
+  //         tabs: _tabs,
+  //       ),
+  //       const SizedBox(
+  //         height: 10,
+  //       ),
+  //       Expanded(
+  //           child: TabBarView(
+  //         controller: _tabController,
+  //         children: [
+  //           QuranCardList(searchQuery: _searchQuery),
+  //           const Text("Juz"),
+  //           const Text("Favourites")
+  //         ],
+  //       ))
+  //     ],
+  //   ));
   // }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      child: SafeArea(
+        child: NestedScrollView(
+          physics: BouncingScrollPhysics(),
+          headerSliverBuilder:
+              (BuildContext context, bool innerBoxIsScrolled) => <Widget>[
+            SliverAppBar(
+              iconTheme: IconThemeData(
+                  color: Theme.of(context).colorScheme.onPrimaryContainer),
+              elevation: 2,
+              shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(30),
+                      bottomRight: Radius.circular(30))),
+              pinned: false,
+              floating: false,
+              expandedHeight: 150,
+              centerTitle: true,
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              flexibleSpace: FlexibleSpaceBar(
+                background: Container(
+                  // padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    //crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        "eQuran",
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineLarge
+                            ?.copyWith(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onPrimaryContainer,
+                                fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      MySearchBar(
+                        onChanged: (value) {
+                          _changeSearchQuery(value);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            SliverPersistentHeader(
+              pinned: false,
+              delegate: _SliverAppBarDelegate(
+                TabBar(
+                  controller: _tabController,
+                  tabs: _tabs,
+                ),
+              ),
+            ),
+          ],
+          body: TabBarView(
+            controller: _tabController,
+            children: [
+              QuranCardList(searchQuery: _searchQuery),
+              Text("Juz"),
+              Text("Favourites")
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   void _changeSearchQuery(String value) {
     debouncer.call(() {
