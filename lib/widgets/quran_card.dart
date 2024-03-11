@@ -10,6 +10,7 @@ class QuranCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Card(
       elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
