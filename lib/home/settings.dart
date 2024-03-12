@@ -54,14 +54,14 @@ class SettingsPage extends StatelessWidget {
                 },
               );
             },
-            title: Text("Theme"),
-            subtitle: Text("Pick your desired color scheme."),
+            title: const Text("Theme"),
+            subtitle: const Text("Pick your desired color scheme."),
             // trailing: CircleAvatar(
             //   backgroundColor: Theme.of(context).colorScheme.primary,
             //   radius: 12.5, // Adjust radius as needed
             // ),
           ),
-          ListTile(
+          const ListTile(
             title: Text("Font Size"),
             subtitle: FontSlider(),
           ),

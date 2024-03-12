@@ -19,6 +19,8 @@ class QuranJuzCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () async {
+        await Future.delayed(
+            const Duration(milliseconds: 270)); // Adjust as needed
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) =>
                 ReadPage(chapter: id, startVerse: startVerse, juzMode: true)));

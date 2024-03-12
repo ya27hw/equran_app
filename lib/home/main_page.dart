@@ -81,7 +81,7 @@ class _MainPageState extends State<MainPage>
               iconTheme: IconThemeData(
                   color: Theme.of(context).colorScheme.onPrimaryContainer),
               elevation: 2,
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(30),
                       bottomRight: Radius.circular(30))),
@@ -91,32 +91,29 @@ class _MainPageState extends State<MainPage>
               centerTitle: true,
               backgroundColor: Theme.of(context).colorScheme.primaryContainer,
               flexibleSpace: FlexibleSpaceBar(
-                background: Container(
-                  // padding: const EdgeInsets.all(10.0),
-                  child: Column(
-                    //crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        "eQuran",
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineLarge
-                            ?.copyWith(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onPrimaryContainer,
-                                fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      MySearchBar(
-                        onChanged: (value) {
-                          _changeSearchQuery(value);
-                        },
-                      ),
-                    ],
-                  ),
+                background: Column(
+                  //crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      "eQuran",
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineLarge
+                          ?.copyWith(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onPrimaryContainer,
+                              fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    MySearchBar(
+                      onChanged: (value) {
+                        _changeSearchQuery(value);
+                      },
+                    ),
+                  ],
                 ),
               ),
             ),

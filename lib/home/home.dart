@@ -25,10 +25,10 @@ class _HomePageState extends State<HomePage> {
   final List<Destinations> _pageDestinations = <Destinations>[
     const Destinations(
         "eQuran", Icon(Icons.book_outlined), Icon(Icons.book), MainPage()),
-    Destinations("Settings", Icon(Icons.settings_outlined),
-        Icon(Icons.settings), SettingsPage()),
-    Destinations("Test", const Icon(Icons.info_outline), const Icon(Icons.info),
-        TestPage())
+    Destinations("Settings", const Icon(Icons.settings_outlined),
+        const Icon(Icons.settings), SettingsPage()),
+    const Destinations(
+        "Test", Icon(Icons.info_outline), Icon(Icons.info), TestPage())
   ];
   final ScrollController _scrollController = ScrollController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -72,13 +72,14 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      appBar: _selectedIndex == 1 ?
-      AppBar(
-        title: Text(_pageDestinations[_selectedIndex].label),
-        iconTheme: IconThemeData(
-            color: Theme.of(context).colorScheme.onBackground),
-        centerTitle: true,
-      ) : null,
+      appBar: _selectedIndex == 1
+          ? AppBar(
+              title: Text(_pageDestinations[_selectedIndex].label),
+              iconTheme: IconThemeData(
+                  color: Theme.of(context).colorScheme.onBackground),
+              centerTitle: true,
+            )
+          : null,
       body: _pageDestinations[_selectedIndex].destination,
     );
   }

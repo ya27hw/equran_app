@@ -16,6 +16,7 @@ class QuranCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(30),
         onTap: () async {
+          await Future.delayed(const Duration(milliseconds: 270));
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => ReadPage(
                     chapter: surah.id,
