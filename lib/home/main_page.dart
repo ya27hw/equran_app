@@ -2,9 +2,7 @@ import 'package:emushaf/utils/debouncer.dart';
 import 'package:emushaf/widgets/juz_card_list.dart';
 import 'package:emushaf/widgets/quran_card_list.dart';
 import 'package:emushaf/widgets/search.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -18,10 +16,10 @@ class _MainPageState extends State<MainPage>
   String _searchQuery = '';
   final debouncer = Debouncer(milliseconds: 700);
   final List<Tab> _tabs = const [
-    Tab(text: 'Surah'),
-    Tab(text: 'Juz'),
+    Tab(text: 'SURAH'),
+    Tab(text: 'JUZ'),
     Tab(
-      text: "Favourites",
+      text: "FAV",
     )
   ];
   late TabController _tabController;
@@ -84,7 +82,7 @@ class _MainPageState extends State<MainPage>
               iconTheme: IconThemeData(
                   color: Theme.of(context).colorScheme.onPrimaryContainer),
               elevation: 2,
-              shape: const RoundedRectangleBorder(
+              shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(30),
                       bottomRight: Radius.circular(30))),
@@ -123,7 +121,9 @@ class _MainPageState extends State<MainPage>
                 ),
               ),
             ),
+
             SliverPersistentHeader(
+
               pinned: false,
               delegate: _SliverAppBarDelegate(
                 TabBar(
@@ -142,10 +142,11 @@ class _MainPageState extends State<MainPage>
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: 40,
                 itemBuilder: (context, index) {
-                  return ListTile(title: Text(index.toString()),);
+                  return ListTile(
+                    title: Text(index.toString()),
+                  );
                 },
-              )
-              ,
+              ),
             ],
           ),
         ),

@@ -27,9 +27,15 @@ class _ReadPageState extends State<ReadPage> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
+
     _bookmarks = Hive.box("bookmarks");
     _currentChapter = widget.chapter;
-    _currentVerse = _bookmarks.get(_currentChapter) ?? 1;
+    if(widget.startVerse == null) {
+      _currentVerse = _bookmarks.get(_currentChapter) ?? 1;
+    } else {
+      _currentVerse = widget.startVerse!;
+    }
+
     _getTotalVerses();
   }
 
@@ -95,7 +101,7 @@ class _ReadPageState extends State<ReadPage> {
                       animateFromLastPercent: true,
                       backgroundColor: Theme.of(context).colorScheme.onTertiary,
                       lineHeight: 20.0,
-                      percent: (_currentVerse - 1) / _totalVerses,
+                      percent: _currentVerse  / _totalVerses,
                       progressColor: Theme.of(context).colorScheme.tertiary),
                 ),
                 Center(
@@ -109,7 +115,9 @@ class _ReadPageState extends State<ReadPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 60,)
+                const SizedBox(
+                  height: 60,
+                )
               ],
             ),
           ),
@@ -172,8 +180,6 @@ class _ReadPageState extends State<ReadPage> {
           ),
         ],
       ),
-
-
     );
   }
 

@@ -37,11 +37,8 @@ class _QuranCardListState extends State<QuranCardList>
             itemBuilder: (BuildContext context, int index) {
               Surah surah = data[index];
 
-              return Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: QuranCard(
-                  surah: surah,
-                ),
+              return QuranCard(
+                surah: surah,
               );
             },
           );
@@ -51,39 +48,42 @@ class _QuranCardListState extends State<QuranCardList>
   }
 
   Future<List<Surah>> _fetchSurahs() async {
+    List<Surah> surahs = <Surah>[];
     if (SurahDB().contains("surahsList")) {
       var cachedData = SurahDB().get("surahsList");
       if (cachedData is List) {
-        return cachedData.cast<Surah>();
+        surahs = cachedData.cast<Surah>();
       } else {
         throw Exception("Cached data is not valid");
       }
-    }
+    } else {
+      for (int i = 1; i <= 114; i++) {
+        final transliteration = quran.getSurahName(i);
+        final name = quran.getSurahNameArabic(i);
+        final verses = quran.getVerseCount(i);
 
-    final surahs = <Surah>[];
-    for (int i = 1; i <= 114; i++) {
-      final transliteration = quran.getSurahName(i);
-      final name = quran.getSurahNameArabic(i);
-      final verses = quran.getVerseCount(i);
-      final isMatching = widget.searchQuery.isEmpty ||
-          transliteration
-              .toLowerCase()
-              .contains(widget.searchQuery.toLowerCase()) ||
-          name.toLowerCase().contains(widget.searchQuery.toLowerCase()) ||
-          i.toString() == widget.searchQuery;
-      if (isMatching) {
         surahs.add(Surah(
             id: i,
             transliteration: transliteration,
             verses: verses,
             name: name));
       }
+      await SurahDB().set("surahsList", surahs);
     }
-    await SurahDB().set("surahsList", surahs);
-    return surahs;
+    if (widget.searchQuery.isEmpty) {
+      return surahs;
+    } else {
+      print(widget.searchQuery);
+      return surahs
+          .where((surah) =>
+              surah.name.toLowerCase().contains(widget.searchQuery.toLowerCase()) ||
+              surah.transliteration.toLowerCase().contains(widget.searchQuery.toLowerCase()) ||
+              surah.id.toString() == widget.searchQuery
+      )
+          .toList();
+    }
   }
 
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }
