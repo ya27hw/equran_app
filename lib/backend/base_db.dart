@@ -12,7 +12,7 @@ class BaseDB {
     _box = await Hive.openBox(boxName);
   }
 
-  dynamic get(String key, {dynamic defaultValue}) {
+  dynamic get(dynamic key, {dynamic defaultValue}) {
     return _box.get(key, defaultValue: defaultValue);
   }
 
@@ -20,7 +20,11 @@ class BaseDB {
     return _box.containsKey(key);
   }
 
-  Future<void> set(String key, dynamic value) async {
+  Future<void> put(dynamic key, dynamic value) async {
     await _box.put(key, value);
+  }
+
+  Future<void> delete(dynamic key) async {
+    await _box.delete(key);
   }
 }

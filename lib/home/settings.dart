@@ -34,7 +34,7 @@ class SettingsPage extends StatelessWidget {
                         final color = Colors.primaries[index];
                         return InkWell(
                           onTap: () {
-                            SettingsDB().set("color", index);
+                            SettingsDB().put("color", index);
 
                             AdaptiveTheme.of(context).setTheme(
                                 light: ThemeData(colorSchemeSeed: color),
@@ -63,8 +63,7 @@ class SettingsPage extends StatelessWidget {
           ),
           ListTile(
             title: Text("Font Size"),
-            subtitle: FontSlider(
-                fontSize: SettingsDB().get("fontSize", defaultValue: 30.0)),
+            subtitle: FontSlider(),
           ),
         ],
       ),

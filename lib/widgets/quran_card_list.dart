@@ -68,7 +68,7 @@ class _QuranCardListState extends State<QuranCardList>
             verses: verses,
             name: name));
       }
-      await SurahDB().set("surahsList", surahs);
+      await SurahDB().put("surahsList", surahs);
     }
     if (widget.searchQuery.isEmpty) {
       return surahs;

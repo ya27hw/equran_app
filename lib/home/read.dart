@@ -1,8 +1,7 @@
+import 'package:emushaf/backend/bookmark_db.dart';
 import 'package:emushaf/backend/library.dart' show SettingsDB;
 import 'package:emushaf/widgets/library.dart' show ReadQuranCard;
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:quran/quran.dart' as quran;
 import 'package:vibration/vibration.dart';
@@ -23,7 +22,6 @@ class ReadPage extends StatefulWidget {
 
 class _ReadPageState extends State<ReadPage> {
   late int _currentVerse;
-  late Box _bookmarks;
   late int _currentChapter;
   late ScrollController _scrollController;
   late int _totalVerses;
@@ -33,10 +31,9 @@ class _ReadPageState extends State<ReadPage> {
     super.initState();
     _scrollController = ScrollController();
 
-    _bookmarks = Hive.box("bookmarks");
     _currentChapter = widget.chapter;
     if (widget.startVerse == null) {
-      _currentVerse = _bookmarks.get(_currentChapter) ?? 1;
+      _currentVerse = BookmarkDB().get(_currentChapter) ?? 1;
     } else {
       _currentVerse = widget.startVerse!;
     }
@@ -251,10 +248,10 @@ class _ReadPageState extends State<ReadPage> {
   }
 
   void _updateDB() {
-    _bookmarks.put(_currentChapter, _currentVerse);
+    BookmarkDB().put(_currentChapter, _currentVerse);
   }
 
   void _delete() {
-    _bookmarks.delete(_currentChapter);
+    BookmarkDB().delete(_currentChapter);
   }
 }

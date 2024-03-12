@@ -1,9 +1,8 @@
-import 'package:emushaf/backend/settings_db.dart';
+import 'package:emushaf/backend/library.dart' show SettingsDB;
 import 'package:flutter/material.dart';
 
 class FontSlider extends StatefulWidget {
-  double fontSize;
-  FontSlider({super.key, required this.fontSize});
+  const FontSlider({super.key});
 
   @override
   State<FontSlider> createState() => _FontSliderState();
@@ -12,15 +11,17 @@ class FontSlider extends StatefulWidget {
 class _FontSliderState extends State<FontSlider> {
   @override
   Widget build(BuildContext context) {
+    double fontSize = SettingsDB().get("fontSize", defaultValue: 30.0);
+
     return Slider(
-        value: widget.fontSize,
+        value: fontSize,
         min: 30.0,
         max: 60.0,
-        label: (widget.fontSize / 2).round().toString(),
+        label: (fontSize / 2).round().toString(),
         onChanged: (double value) {
           setState(() {
-            widget.fontSize = value;
-            SettingsDB().set("fontSize", value);
+            fontSize = value;
+            SettingsDB().put("fontSize", value);
           });
         });
   }
