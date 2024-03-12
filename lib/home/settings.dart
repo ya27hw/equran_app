@@ -1,6 +1,6 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
-import 'package:emushaf/utils/settings_db.dart';
-import 'package:emushaf/widgets/font_slider.dart';
+import 'package:emushaf/backend/library.dart' show SettingsDB;
+import 'package:emushaf/widgets/library.dart' show FontSlider;
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -63,7 +63,8 @@ class SettingsPage extends StatelessWidget {
           ),
           ListTile(
             title: Text("Font Size"),
-            subtitle: FontSlider(fontSize: SettingsDB().get("fontSize", 30.0)),
+            subtitle: FontSlider(
+                fontSize: SettingsDB().get("fontSize", defaultValue: 30.0)),
           ),
         ],
       ),

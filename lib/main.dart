@@ -1,8 +1,9 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
-import 'package:emushaf/backend/surah_model.dart';
 import 'package:emushaf/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+
+import 'backend/library.dart';
 
 Future<void> main() async {
   // ----- HIVE -----
@@ -10,13 +11,12 @@ Future<void> main() async {
 
   Hive.registerAdapter(SurahAdapter());
 
-  await Hive.openBox("bookmarks");
-  await Hive.openBox(
-    "settings",
-  );
-  await Hive.openBox("surahs");
+  await BookmarkDB().initBox();
+  await SettingsDB().initBox();
+  await SurahDB().initBox();
+  await FavouritesDB().initBox();
 
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -39,8 +39,8 @@ class MyApp extends StatelessWidget {
                 seedColor: mySeed, brightness: Brightness.dark)),
         initial: AdaptiveThemeMode.system,
         builder: (theme, darkTheme) => MaterialApp(
-          scrollBehavior:
-          ScrollConfiguration.of(context).copyWith(scrollbars: false),
+              scrollBehavior:
+                  ScrollConfiguration.of(context).copyWith(scrollbars: false),
               debugShowCheckedModeBanner: false,
               theme: theme,
               darkTheme: darkTheme,

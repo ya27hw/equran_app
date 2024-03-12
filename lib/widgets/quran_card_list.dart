@@ -1,5 +1,5 @@
+import 'package:emushaf/backend/surah_db.dart';
 import 'package:emushaf/backend/surah_model.dart';
-import 'package:emushaf/utils/surah_db.dart';
 import 'package:emushaf/widgets/quran_card.dart';
 import 'package:flutter/material.dart';
 import 'package:quran/quran.dart' as quran;
@@ -76,10 +76,13 @@ class _QuranCardListState extends State<QuranCardList>
       print(widget.searchQuery);
       return surahs
           .where((surah) =>
-              surah.name.toLowerCase().contains(widget.searchQuery.toLowerCase()) ||
-              surah.transliteration.toLowerCase().contains(widget.searchQuery.toLowerCase()) ||
-              surah.id.toString() == widget.searchQuery
-      )
+              surah.name
+                  .toLowerCase()
+                  .contains(widget.searchQuery.toLowerCase()) ||
+              surah.transliteration
+                  .toLowerCase()
+                  .contains(widget.searchQuery.toLowerCase()) ||
+              surah.id.toString() == widget.searchQuery)
           .toList();
     }
   }

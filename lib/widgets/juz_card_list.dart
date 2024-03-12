@@ -1,7 +1,7 @@
-
-import 'package:emushaf/widgets/quran_juz_card.dart';
 import 'package:flutter/material.dart';
 import 'package:quran/quran.dart' as quran;
+
+import 'juz_card.dart';
 
 class JuzCardList extends StatefulWidget {
   @override
@@ -34,7 +34,6 @@ class _JuzCardListState extends State<JuzCardList>
 
         return Card(
           margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Column(

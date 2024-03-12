@@ -20,10 +20,8 @@ class QuranJuzCard extends StatelessWidget {
     return InkWell(
       onTap: () async {
         Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => ReadPage(
-                  chapter: id,
-                  startVerse: startVerse,
-                )));
+            builder: (context) =>
+                ReadPage(chapter: id, startVerse: startVerse, juzMode: true)));
       },
       child: ListTile(
           leading: Container(
@@ -40,24 +38,22 @@ class QuranJuzCard extends StatelessWidget {
             transliteration,
             style: Theme.of(context).textTheme.titleMedium,
           ),
-          subtitle: Text(name,
+          subtitle: Text(
+            name,
             style: Theme.of(context).textTheme.titleSmall,
-
           ),
           trailing: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-               Text(
+              Text(
                 "Verses:",
                 textAlign: TextAlign.right,
                 style: Theme.of(context).textTheme.bodySmall,
-
               ),
               Text(
                 "$startVerse-$endVerse",
                 textAlign: TextAlign.right,
                 style: Theme.of(context).textTheme.bodySmall,
-
               )
             ],
           )

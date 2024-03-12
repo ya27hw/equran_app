@@ -1,5 +1,5 @@
-import 'package:emushaf/utils/settings_db.dart';
-import 'package:emushaf/widgets/read_quran_card.dart';
+import 'package:emushaf/backend/library.dart' show SettingsDB;
+import 'package:emushaf/widgets/library.dart' show ReadQuranCard;
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -9,8 +9,13 @@ import 'package:vibration/vibration.dart';
 
 class ReadPage extends StatefulWidget {
   final int chapter;
+  final bool juzMode;
   final int? startVerse;
-  const ReadPage({super.key, required this.chapter, this.startVerse});
+  const ReadPage(
+      {super.key,
+      required this.chapter,
+      this.startVerse,
+      this.juzMode = false});
 
   @override
   State<ReadPage> createState() => _ReadPageState();
@@ -30,7 +35,7 @@ class _ReadPageState extends State<ReadPage> {
 
     _bookmarks = Hive.box("bookmarks");
     _currentChapter = widget.chapter;
-    if(widget.startVerse == null) {
+    if (widget.startVerse == null) {
       _currentVerse = _bookmarks.get(_currentChapter) ?? 1;
     } else {
       _currentVerse = widget.startVerse!;
@@ -94,14 +99,15 @@ class _ReadPageState extends State<ReadPage> {
             child: Column(
               children: [
                 Container(
-                  margin: EdgeInsets.symmetric(horizontal: marginValue),
+                  margin: EdgeInsets.only(
+                      left: marginValue, right: marginValue, top: 20),
                   child: LinearPercentIndicator(
                       barRadius: const Radius.circular(30),
                       animation: true,
                       animateFromLastPercent: true,
                       backgroundColor: Theme.of(context).colorScheme.onTertiary,
                       lineHeight: 20.0,
-                      percent: _currentVerse  / _totalVerses,
+                      percent: _currentVerse / _totalVerses,
                       progressColor: Theme.of(context).colorScheme.tertiary),
                 ),
                 Center(
@@ -111,12 +117,24 @@ class _ReadPageState extends State<ReadPage> {
                       currentChapter: _currentChapter,
                       currentVerse: _currentVerse,
                       totalVerses: _totalVerses,
-                      fontSize: SettingsDB().get("fontSize", 30.0),
+                      juzNumber:
+                          quran.getJuzNumber(_currentChapter, _currentVerse),
+                      basmala: _currentChapter != 1 &&
+                              _currentVerse == 1 &&
+                              _currentChapter != 9
+                          ? quran.basmala
+                          : null,
+                      verse: quran.getVerse(_currentChapter, _currentVerse),
+                      translation: quran.getVerseTranslation(
+                          _currentChapter, _currentVerse,
+                          translation: quran.Translation.enSaheeh),
+                      fontSize:
+                          SettingsDB().get("fontSize", defaultValue: 30.0),
                     ),
                   ),
                 ),
                 const SizedBox(
-                  height: 60,
+                  height: 100,
                 )
               ],
             ),
@@ -124,7 +142,8 @@ class _ReadPageState extends State<ReadPage> {
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              height: 70,
+              height: 80,
+              padding: EdgeInsets.only(right: 12, left: 12),
               color: Theme.of(context).colorScheme.background,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment
@@ -140,7 +159,8 @@ class _ReadPageState extends State<ReadPage> {
                       }
                     },
                     child: const Padding(
-                      padding: EdgeInsets.all(12.0),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 12.0, horizontal: 18),
                       child: Icon(
                         Icons.arrow_back_rounded,
                         size: 30,
@@ -167,7 +187,8 @@ class _ReadPageState extends State<ReadPage> {
                       }
                     },
                     child: const Padding(
-                      padding: EdgeInsets.all(12.0),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 12.0, horizontal: 18),
                       child: Icon(
                         Icons.arrow_forward_rounded,
                         size: 30,

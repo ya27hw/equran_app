@@ -1,7 +1,6 @@
 import 'package:emushaf/utils/debouncer.dart';
-import 'package:emushaf/widgets/juz_card_list.dart';
-import 'package:emushaf/widgets/quran_card_list.dart';
-import 'package:emushaf/widgets/search.dart';
+import 'package:emushaf/widgets/library.dart'
+    show JuzCardList, QuranCardList, MySearchBar;
 import 'package:flutter/material.dart';
 
 class MainPage extends StatefulWidget {
@@ -121,9 +120,7 @@ class _MainPageState extends State<MainPage>
                 ),
               ),
             ),
-
             SliverPersistentHeader(
-
               pinned: false,
               delegate: _SliverAppBarDelegate(
                 TabBar(

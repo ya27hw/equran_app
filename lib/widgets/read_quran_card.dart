@@ -1,17 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:quran/quran.dart' as quran;
 
 class ReadQuranCard extends StatelessWidget {
   final int currentChapter;
   final int currentVerse;
   final int totalVerses;
+  final int juzNumber;
+
+  final String translation;
+  final String verse;
+  final String? basmala;
+
   final double fontSize;
+
   const ReadQuranCard({
     super.key,
     required this.currentChapter,
     required this.currentVerse,
     required this.totalVerses,
     required this.fontSize,
+    required this.juzNumber,
+    required this.translation,
+    this.basmala,
+    required this.verse,
   });
 
   @override
@@ -39,7 +49,7 @@ class ReadQuranCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Text(
-                  "Juz ${quran.getJuzNumber(currentChapter, currentVerse)} • $currentVerse/$totalVerses",
+                  "Juz $juzNumber • $currentVerse/$totalVerses",
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
               ],
@@ -47,8 +57,8 @@ class ReadQuranCard extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
-            currentChapter != 1 && currentVerse == 1 && currentChapter != 9
-                ? Text(quran.basmala,
+            basmala != null
+                ? Text(basmala!,
                     textDirection: TextDirection.rtl,
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -57,10 +67,7 @@ class ReadQuranCard extends StatelessWidget {
                         fontSize: fontSize))
                 : const SizedBox(),
             Text(
-              quran.getVerse(
-                currentChapter,
-                currentVerse,
-              ),
+              verse,
               textDirection: TextDirection.rtl,
               textAlign: TextAlign.justify,
               style: TextStyle(
@@ -70,11 +77,8 @@ class ReadQuranCard extends StatelessWidget {
               ),
             ),
             Text(
-              quran.getVerseTranslation(
-                currentChapter,
-                currentVerse,
-                translation: quran.Translation.enSaheeh,
-              ),
+              translation,
+              textAlign: TextAlign.justify,
               style: Theme.of(context)
                   .textTheme
                   .bodyMedium

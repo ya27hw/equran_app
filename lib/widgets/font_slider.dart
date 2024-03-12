@@ -1,4 +1,4 @@
-import 'package:emushaf/utils/settings_db.dart';
+import 'package:emushaf/backend/settings_db.dart';
 import 'package:flutter/material.dart';
 
 class FontSlider extends StatefulWidget {
