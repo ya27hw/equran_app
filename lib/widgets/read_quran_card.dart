@@ -49,7 +49,7 @@ class ReadQuranCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Text(
-                  "Juz $juzNumber • $currentVerse/$totalVerses",
+                  "Juz' $juzNumber • $currentVerse/$totalVerses",
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
               ],

@@ -1,7 +1,11 @@
 import 'package:emushaf/backend/bookmark_db.dart';
-import 'package:emushaf/backend/library.dart' show SettingsDB;
-import 'package:emushaf/widgets/library.dart' show ReadQuranCard;
+import 'package:emushaf/backend/favourites_db.dart';
+import 'package:emushaf/backend/library.dart'
+    show SettingsDB, getTransliteration;
+import 'package:emushaf/widgets/library.dart'
+    show ReadQuranCard, showNumberInputDialog;
 import 'package:flutter/material.dart';
+import 'package:numberpicker/numberpicker.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:quran/quran.dart' as quran;
 import 'package:vibration/vibration.dart';
@@ -25,18 +29,15 @@ class _ReadPageState extends State<ReadPage> {
   late int _currentChapter;
   late ScrollController _scrollController;
   late int _totalVerses;
+  late FocusNode _buttonFocusNode;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-
     _currentChapter = widget.chapter;
-    if (widget.startVerse == null) {
-      _currentVerse = BookmarkDB().get(_currentChapter) ?? 1;
-    } else {
-      _currentVerse = widget.startVerse!;
-    }
+    _currentVerse = 1;
+    _buttonFocusNode = FocusNode(debugLabel: 'Menu Button');
 
     _getTotalVerses();
   }
@@ -44,12 +45,14 @@ class _ReadPageState extends State<ReadPage> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _buttonFocusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
+    int _picker = _currentVerse;
 
     // Define margin values for different screen sizes
     double marginValue;
@@ -66,27 +69,98 @@ class _ReadPageState extends State<ReadPage> {
         title: Text(quran.getSurahName(_currentChapter)),
         centerTitle: true,
         actions: <Widget>[
-          IconButton(
-              icon: const Icon(Icons.restart_alt),
-              onPressed: () => showDialog(
-                  context: context,
-                  builder: (BuildContext context) => AlertDialog(
-                        title: const Text("Reset"),
-                        content: const Text("Would you like to start over?"),
-                        actions: <Widget>[
-                          TextButton(
-                              onPressed: () => Navigator.of(context).pop(),
-                              child: const Text("Cancel")),
-                          TextButton(
-                            child: const Text("OK"),
-                            onPressed: () {
-                              _reset();
-                              _delete();
-                              Navigator.of(context).pop();
-                            },
-                          )
-                        ],
-                      )))
+          // IconButton(onPressed: () {}, icon: Icon(Icons.more_vert)),
+          //
+          // IconButton(onPressed: () {}, icon: Icon(Icons.double_arrow)),
+          MenuAnchor(
+            childFocusNode: _buttonFocusNode,
+            menuChildren: <Widget>[
+              MenuItemButton(
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                      right: 120, bottom: 10, top: 10, left: 5),
+                  child: Text(
+                    "Reset",
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+                onPressed: () => showDialog(
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                          icon: Icon(Icons.warning_amber),
+                          title: Text(
+                            "Reset",
+                          ),
+                          content: const Text(
+                            "Would you like to start over?",
+                          ),
+                          actions: <Widget>[
+                            TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: const Text("CANCEL")),
+                            TextButton(
+                              child: const Text("OK"),
+                              onPressed: () {
+                                _reset();
+                                _delete();
+                                Navigator.of(context).pop();
+                              },
+                            )
+                          ],
+                        )),
+              ),
+              MenuItemButton(
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.only(bottom: 10, top: 10, left: 5),
+                    child: Text(
+                      "Jump to Verse",
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
+                  onPressed: () => showDialog(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: const Text("Select Verse"),
+                          actions: [
+                            TextButton(
+                                child: const Text("CONFIRM"),
+                                onPressed: () {
+                                  _setVerse(_picker);
+                                  Navigator.of(context).pop();
+                                }),
+                            TextButton(
+                                child: const Text("CANCEL"),
+                                onPressed: () => Navigator.of(context).pop())
+                          ],
+                          content: StatefulBuilder(
+                            builder: (context, SBsetState) => NumberPicker(
+                                minValue: 1,
+                                maxValue: _totalVerses,
+                                value: _picker,
+                                onChanged: (int value) {
+                                  setState(() => _picker = value);
+                                  SBsetState(() => _picker = value);
+                                }),
+                          ),
+                        ),
+                      )),
+            ],
+            child: const Text('Background Color'),
+            builder: (BuildContext context, MenuController controller,
+                Widget? child) {
+              return TextButton(
+                  focusNode: _buttonFocusNode,
+                  onPressed: () {
+                    if (controller.isOpen) {
+                      controller.close();
+                    } else {
+                      controller.open();
+                    }
+                  },
+                  child: const Icon(Icons.more_vert));
+            },
+          ),
         ],
       ),
       body: Stack(
@@ -130,6 +204,7 @@ class _ReadPageState extends State<ReadPage> {
                     ),
                   ),
                 ),
+                Text(getTransliteration(_currentChapter, _currentVerse)),
                 const SizedBox(
                   height: 100,
                 )
@@ -151,7 +226,7 @@ class _ReadPageState extends State<ReadPage> {
                       // Handle left button action
                       _vibrate();
                       if (_currentVerse != 1) {
-                        _decrement();
+                        _decrementVerse();
                         _updateDB();
                       }
                     },
@@ -169,7 +244,7 @@ class _ReadPageState extends State<ReadPage> {
                       _vibrate();
                       _scrollUp();
                       if (_currentVerse != _totalVerses) {
-                        _increment();
+                        _incrementVerse();
                         _updateDB();
                       } else {
                         // New Chapter
@@ -201,13 +276,19 @@ class _ReadPageState extends State<ReadPage> {
     );
   }
 
-  void _increment() {
+  void _incrementVerse() {
     setState(() {
       _currentVerse++;
     });
   }
 
-  void _decrement() {
+  void _setVerse(int value) {
+    setState(() {
+      _currentVerse = value;
+    });
+  }
+
+  void _decrementVerse() {
     setState(() {
       _currentVerse--;
     });

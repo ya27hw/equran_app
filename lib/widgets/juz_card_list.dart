@@ -19,11 +19,13 @@ class _JuzCardListState extends State<JuzCardList>
       itemCount: 30,
       itemBuilder: (BuildContext context, int index) {
         final juz = quran.getSurahAndVersesFromJuz(index + 1);
+        int totalVerses = 0;
 
         final juzCards = juz.entries.map((entry) {
+          totalVerses += (entry.value.last - entry.value.first + 1);
           final transliteration = quran.getSurahName(entry.key);
           final name = quran.getSurahNameArabic(entry.key);
-          return QuranJuzCard(
+          return QuranJuzTile(
             id: entry.key,
             transliteration: transliteration,
             name: name,
@@ -45,7 +47,7 @@ class _JuzCardListState extends State<JuzCardList>
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 12),
                   child: Text(
-                    "Juz ${index + 1}",
+                    "Juz' ${index + 1}",
                     style: TextStyle(
                         color:
                             Theme.of(context).colorScheme.onSecondaryContainer),

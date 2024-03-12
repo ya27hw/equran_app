@@ -1,6 +1,6 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:emushaf/backend/library.dart' show SettingsDB;
-import 'package:emushaf/widgets/library.dart' show FontSlider;
+import 'package:emushaf/widgets/library.dart' show FontSlider, ReadQuranCard;
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -61,10 +61,9 @@ class SettingsPage extends StatelessWidget {
             //   radius: 12.5, // Adjust radius as needed
             // ),
           ),
-          const ListTile(
-            title: Text("Font Size"),
-            subtitle: FontSlider(),
-          ),
+          FontSlider(),
+
+
         ],
       ),
     );

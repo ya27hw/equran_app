@@ -1,13 +1,13 @@
 import 'package:emushaf/home/read.dart';
 import 'package:flutter/material.dart';
 
-class QuranJuzCard extends StatelessWidget {
+class QuranJuzTile extends StatelessWidget {
   final String transliteration;
   final String name;
   final int id;
   final int startVerse;
   final int endVerse;
-  const QuranJuzCard(
+  const QuranJuzTile(
       {super.key,
       required this.transliteration,
       required this.startVerse,
