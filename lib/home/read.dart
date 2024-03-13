@@ -67,6 +67,8 @@ class _ReadPageState extends State<ReadPage> {
       onHorizontalSwipe: (SwipeDirection direction) {
         if (direction == SwipeDirection.left) {
           _increase();
+        } else if (direction == SwipeDirection.right) {
+          _decrease();
         }
       },
       child: Scaffold(
