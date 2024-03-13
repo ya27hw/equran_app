@@ -1,4 +1,6 @@
+import 'package:card_swiper/card_swiper.dart';
 import 'package:emushaf/utils/debouncer.dart';
+import 'package:emushaf/widgets/last_read_cards.dart';
 import 'package:emushaf/widgets/library.dart'
     show JuzCardList, QuranCardList, MySearchBar;
 import 'package:flutter/material.dart';
@@ -34,41 +36,6 @@ class _MainPageState extends State<MainPage>
     _tabController.dispose();
     super.dispose();
   }
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Material(
-  //       child: Column(
-  //     children: <Widget>[
-  //       const SizedBox(
-  //         height: 10,
-  //       ),
-  //       MySearchBar(
-  //         onChanged: _changeSearchQuery,
-  //       ),
-  //       const SizedBox(
-  //         height: 10,
-  //       ),
-  //       TabBar(
-  //         controller: _tabController,
-  //         tabs: _tabs,
-  //       ),
-  //       const SizedBox(
-  //         height: 10,
-  //       ),
-  //       Expanded(
-  //         child: TabBarView(
-  //           controller: _tabController,
-  //           children: [
-  //             QuranCardList(searchQuery: _searchQuery),
-  //             JuzCardList(),
-  //             const Text("Favourites")
-  //           ],
-  //         ),
-  //       )
-  //     ],
-  //   ));
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -115,6 +82,35 @@ class _MainPageState extends State<MainPage>
                     ),
                   ],
                 ),
+              ),
+            ),
+            const SliverToBoxAdapter(
+              child: SizedBox(
+                height: 20,
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Container(
+                height: 150,
+                margin: const EdgeInsets.symmetric(horizontal: 12),
+                child: Swiper(
+                  loop: false,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Card(
+                        color: Theme.of(context).colorScheme.primaryContainer,
+                        elevation: 0,
+                        child: const Text("Hey"));
+                  },
+                  itemCount: 9,
+                  control: SwiperControl(
+                      color: Theme.of(context).colorScheme.onSecondaryContainer,
+                      padding: const EdgeInsets.symmetric(horizontal: 10)),
+                ),
+              ),
+            ),
+            const SliverToBoxAdapter(
+              child: SizedBox(
+                height: 20,
               ),
             ),
             SliverPersistentHeader(

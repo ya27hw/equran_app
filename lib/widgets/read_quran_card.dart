@@ -1,4 +1,6 @@
+import 'package:emushaf/backend/favourites_db.dart';
 import 'package:flutter/material.dart';
+import 'package:like_button/like_button.dart';
 
 class ReadQuranCard extends StatelessWidget {
   final int currentChapter;
@@ -46,12 +48,25 @@ class ReadQuranCard extends StatelessWidget {
         child: Column(
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                IconButton(onPressed: (){
+                }, icon: Icon(Icons.play_circle_fill_outlined, size: 29,)),
                 Text(
                   "Juz' $juzNumber • $currentVerse/$totalVerses",
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
+                LikeButton(
+                  isLiked: FavouritesDB().contains("$currentChapter-$currentVerse"),
+                  onTap: (bool isLiked) async {
+                    if (!isLiked) {
+                      FavouritesDB().put("$currentChapter-$currentVerse", true);
+                    } else {
+                      FavouritesDB().delete("$currentChapter-$currentVerse");
+                    }
+                    return !isLiked;
+                  },
+                )
               ],
             ),
             const SizedBox(

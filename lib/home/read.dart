@@ -1,9 +1,7 @@
 import 'package:emushaf/backend/bookmark_db.dart';
-import 'package:emushaf/backend/favourites_db.dart';
 import 'package:emushaf/backend/library.dart'
     show SettingsDB, getTransliteration;
-import 'package:emushaf/widgets/library.dart'
-    show ReadQuranCard, showNumberInputDialog;
+import 'package:emushaf/widgets/library.dart' show ReadQuranCard;
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
@@ -36,7 +34,7 @@ class _ReadPageState extends State<ReadPage> {
     super.initState();
     _scrollController = ScrollController();
     _currentChapter = widget.chapter;
-    _currentVerse = 1;
+    _currentVerse = widget.startVerse is int ? widget.startVerse! : 1;
     _buttonFocusNode = FocusNode(debugLabel: 'Menu Button');
 
     _getTotalVerses();
@@ -69,9 +67,6 @@ class _ReadPageState extends State<ReadPage> {
         title: Text(quran.getSurahName(_currentChapter)),
         centerTitle: true,
         actions: <Widget>[
-          // IconButton(onPressed: () {}, icon: Icon(Icons.more_vert)),
-          //
-          // IconButton(onPressed: () {}, icon: Icon(Icons.double_arrow)),
           MenuAnchor(
             childFocusNode: _buttonFocusNode,
             menuChildren: <Widget>[
@@ -87,8 +82,8 @@ class _ReadPageState extends State<ReadPage> {
                 onPressed: () => showDialog(
                     context: context,
                     builder: (BuildContext context) => AlertDialog(
-                          icon: Icon(Icons.warning_amber),
-                          title: Text(
+                          icon: const Icon(Icons.warning_amber),
+                          title: const Text(
                             "Reset",
                           ),
                           content: const Text(
@@ -181,32 +176,27 @@ class _ReadPageState extends State<ReadPage> {
                       percent: _currentVerse / _totalVerses,
                       progressColor: Theme.of(context).colorScheme.tertiary),
                 ),
-                Center(
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    child: ReadQuranCard(
-                      currentChapter: _currentChapter,
-                      currentVerse: _currentVerse,
-                      totalVerses: _totalVerses,
-                      juzNumber:
-                          quran.getJuzNumber(_currentChapter, _currentVerse),
-                      basmala: _currentChapter != 1 &&
-                              _currentVerse == 1 &&
-                              _currentChapter != 9
-                          ? quran.basmala
-                          : null,
-                      verse: quran.getVerse(_currentChapter, _currentVerse),
-                      translation: quran.getVerseTranslation(
-                          _currentChapter, _currentVerse,
-                          translation: quran.Translation.enSaheeh),
-                      fontSize:
-                          SettingsDB().get("fontSize", defaultValue: 30.0),
-                    ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: ReadQuranCard(
+                    currentChapter: _currentChapter,
+                    currentVerse: _currentVerse,
+                    totalVerses: _totalVerses,
+                    juzNumber:
+                        quran.getJuzNumber(_currentChapter, _currentVerse),
+                    basmala: _currentChapter != 1 &&
+                            _currentVerse == 1 &&
+                            _currentChapter != 9
+                        ? quran.basmala
+                        : null,
+                    verse: quran.getVerse(_currentChapter, _currentVerse),
+                    translation:
+                        getTransliteration(_currentChapter, _currentVerse),
+                    fontSize: SettingsDB().get("fontSize", defaultValue: 30.0),
                   ),
                 ),
-                Text(getTransliteration(_currentChapter, _currentVerse)),
                 const SizedBox(
-                  height: 100,
+                  height: 120,
                 )
               ],
             ),
@@ -215,21 +205,14 @@ class _ReadPageState extends State<ReadPage> {
             alignment: Alignment.bottomCenter,
             child: Container(
               height: 80,
-              padding: EdgeInsets.only(right: 12, left: 12),
+              padding: const EdgeInsets.only(right: 12, left: 12),
               color: Theme.of(context).colorScheme.background,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment
                     .spaceBetween, // Distribute buttons horizontally
                 children: [
                   ElevatedButton(
-                    onPressed: () {
-                      // Handle left button action
-                      _vibrate();
-                      if (_currentVerse != 1) {
-                        _decrementVerse();
-                        _updateDB();
-                      }
-                    },
+                    onPressed: () => _decrease(),
                     child: const Padding(
                       padding:
                           EdgeInsets.symmetric(vertical: 12.0, horizontal: 18),
@@ -240,24 +223,7 @@ class _ReadPageState extends State<ReadPage> {
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: () {
-                      _vibrate();
-                      _scrollUp();
-                      if (_currentVerse != _totalVerses) {
-                        _incrementVerse();
-                        _updateDB();
-                      } else {
-                        // New Chapter
-                        _delete();
-                        _reset();
-                        if (_currentChapter != 114) {
-                          _incrementChapter();
-                        } else {
-                          _resetChapter();
-                        }
-                        _getTotalVerses();
-                      }
-                    },
+                    onPressed: () => _increase(),
                     child: const Padding(
                       padding:
                           EdgeInsets.symmetric(vertical: 12.0, horizontal: 18),
@@ -274,6 +240,34 @@ class _ReadPageState extends State<ReadPage> {
         ],
       ),
     );
+  }
+
+  void _increase() {
+    _vibrate();
+    _scrollUp();
+    if (_currentVerse != _totalVerses) {
+      _incrementVerse();
+      _updateDB();
+    } else {
+      // New Chapter
+      _delete();
+      _reset();
+      if (_currentChapter != 114) {
+        _incrementChapter();
+      } else {
+        _resetChapter();
+      }
+      _getTotalVerses();
+    }
+  }
+
+  void _decrease() {
+    _vibrate();
+    _scrollUp();
+    if (_currentVerse != 1) {
+      _decrementVerse();
+      _updateDB();
+    }
   }
 
   void _incrementVerse() {
