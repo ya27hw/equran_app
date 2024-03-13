@@ -1,6 +1,6 @@
 import 'package:card_swiper/card_swiper.dart';
 import 'package:emushaf/utils/debouncer.dart';
-import 'package:emushaf/widgets/last_read_cards.dart';
+import 'package:emushaf/widgets/favourites_list.dart';
 import 'package:emushaf/widgets/library.dart'
     show JuzCardList, QuranCardList, MySearchBar;
 import 'package:flutter/material.dart';
@@ -18,9 +18,9 @@ class _MainPageState extends State<MainPage>
   final debouncer = Debouncer(milliseconds: 700);
   final List<Tab> _tabs = const [
     Tab(text: 'SURAH'),
-    Tab(text: 'JUZ'),
+    Tab(text: 'JUZ\''),
     Tab(
-      text: "FAV",
+      icon: Icon(Icons.favorite_border_rounded),
     )
   ];
   late TabController _tabController;
@@ -128,15 +128,7 @@ class _MainPageState extends State<MainPage>
             children: [
               QuranCardList(searchQuery: _searchQuery),
               JuzCardList(),
-              ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: 40,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(index.toString()),
-                  );
-                },
-              ),
+              FavouritesList(),
             ],
           ),
         ),
@@ -160,6 +152,7 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   double get minExtent => _tabBar.preferredSize.height;
+
   @override
   double get maxExtent => _tabBar.preferredSize.height;
 

@@ -52,6 +52,9 @@ dependencies:
   numberpicker:
   like_button: ^2.0.5
   card_swiper:
+  pull_to_refresh_flutter3: ^2.0.2
+  custom_refresh_indicator: ^3.0.0
+  simple_gesture_detector: ^0.2.1
 
 dev_dependencies:
   flutter_test:

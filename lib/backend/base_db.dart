@@ -27,4 +27,14 @@ class BaseDB {
   Future<void> delete(dynamic key) async {
     await _box.delete(key);
   }
+
+  int get length => _box.length;
+
+  Iterable<dynamic> getKeys() {
+    return _box.keys;
+  }
+
+  Future<void> deleteAll() async {
+    await _box.deleteFromDisk();
+  }
 }

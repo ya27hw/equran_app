@@ -50,19 +50,27 @@ class ReadQuranCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                IconButton(onPressed: (){
-                }, icon: Icon(Icons.play_circle_fill_outlined, size: 29,)),
+                IconButton(
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.play_circle_fill_outlined,
+                      size: 29,
+                    )),
                 Text(
                   "Juz' $juzNumber • $currentVerse/$totalVerses",
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 LikeButton(
-                  isLiked: FavouritesDB().contains("$currentChapter-$currentVerse"),
+                  isLiked: FavouritesDB().contains(
+                      "$currentChapter-${currentVerse.toString().padLeft(3, "0")}"),
                   onTap: (bool isLiked) async {
                     if (!isLiked) {
-                      FavouritesDB().put("$currentChapter-$currentVerse", true);
+                      FavouritesDB().put(
+                          "$currentChapter-${currentVerse.toString().padLeft(3, "0")}",
+                          true);
                     } else {
-                      FavouritesDB().delete("$currentChapter-$currentVerse");
+                      FavouritesDB().delete(
+                          "$currentChapter-${currentVerse.toString().padLeft(3, "0")}");
                     }
                     return !isLiked;
                   },

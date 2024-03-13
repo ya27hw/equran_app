@@ -6,12 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:quran/quran.dart' as quran;
+import 'package:simple_gesture_detector/simple_gesture_detector.dart';
 import 'package:vibration/vibration.dart';
 
 class ReadPage extends StatefulWidget {
   final int chapter;
   final bool juzMode;
   final int? startVerse;
+
   const ReadPage(
       {super.key,
       required this.chapter,
@@ -61,183 +63,192 @@ class _ReadPageState extends State<ReadPage> {
     } else {
       marginValue = 8.0; // Small screen
     }
-    return Scaffold(
-      appBar: AppBar(
-        leading: const BackButton(),
-        title: Text(quran.getSurahName(_currentChapter)),
-        centerTitle: true,
-        actions: <Widget>[
-          MenuAnchor(
-            childFocusNode: _buttonFocusNode,
-            menuChildren: <Widget>[
-              MenuItemButton(
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                      right: 120, bottom: 10, top: 10, left: 5),
-                  child: Text(
-                    "Reset",
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ),
-                onPressed: () => showDialog(
-                    context: context,
-                    builder: (BuildContext context) => AlertDialog(
-                          icon: const Icon(Icons.warning_amber),
-                          title: const Text(
-                            "Reset",
-                          ),
-                          content: const Text(
-                            "Would you like to start over?",
-                          ),
-                          actions: <Widget>[
-                            TextButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                child: const Text("CANCEL")),
-                            TextButton(
-                              child: const Text("OK"),
-                              onPressed: () {
-                                _reset();
-                                _delete();
-                                Navigator.of(context).pop();
-                              },
-                            )
-                          ],
-                        )),
-              ),
-              MenuItemButton(
+    return SimpleGestureDetector(
+      onHorizontalSwipe: (SwipeDirection direction) {
+        if (direction == SwipeDirection.left) {
+          _increase();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: const BackButton(),
+          title: Text(quran.getSurahName(_currentChapter)),
+          centerTitle: true,
+          actions: <Widget>[
+            MenuAnchor(
+              childFocusNode: _buttonFocusNode,
+              menuChildren: <Widget>[
+                MenuItemButton(
                   child: Padding(
-                    padding:
-                        const EdgeInsets.only(bottom: 10, top: 10, left: 5),
+                    padding: const EdgeInsets.only(
+                        right: 120, bottom: 10, top: 10, left: 5),
                     child: Text(
-                      "Jump to Verse",
+                      "Reset",
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
                   onPressed: () => showDialog(
-                        context: context,
-                        builder: (BuildContext context) => AlertDialog(
-                          title: const Text("Select Verse"),
-                          actions: [
-                            TextButton(
-                                child: const Text("CONFIRM"),
+                      context: context,
+                      builder: (BuildContext context) => AlertDialog(
+                            icon: const Icon(Icons.warning_amber),
+                            title: const Text(
+                              "Reset",
+                            ),
+                            content: const Text(
+                              "Would you like to start over?",
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  child: const Text("CANCEL")),
+                              TextButton(
+                                child: const Text("OK"),
                                 onPressed: () {
-                                  _setVerse(_picker);
+                                  _reset();
+                                  _delete();
                                   Navigator.of(context).pop();
-                                }),
-                            TextButton(
-                                child: const Text("CANCEL"),
-                                onPressed: () => Navigator.of(context).pop())
-                          ],
-                          content: StatefulBuilder(
-                            builder: (context, SBsetState) => NumberPicker(
-                                minValue: 1,
-                                maxValue: _totalVerses,
-                                value: _picker,
-                                onChanged: (int value) {
-                                  setState(() => _picker = value);
-                                  SBsetState(() => _picker = value);
-                                }),
+                                },
+                              )
+                            ],
+                          )),
+                ),
+                MenuItemButton(
+                    child: Padding(
+                      padding:
+                          const EdgeInsets.only(bottom: 10, top: 10, left: 5),
+                      child: Text(
+                        "Jump to Verse",
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                    ),
+                    onPressed: () => showDialog(
+                          context: context,
+                          builder: (BuildContext context) => AlertDialog(
+                            title: const Text("Select Verse"),
+                            actions: [
+                              TextButton(
+                                  child: const Text("CONFIRM"),
+                                  onPressed: () {
+                                    _setVerse(_picker);
+                                    Navigator.of(context).pop();
+                                  }),
+                              TextButton(
+                                  child: const Text("CANCEL"),
+                                  onPressed: () => Navigator.of(context).pop())
+                            ],
+                            content: StatefulBuilder(
+                              builder: (context, SBsetState) => NumberPicker(
+                                  minValue: 1,
+                                  maxValue: _totalVerses,
+                                  value: _picker,
+                                  onChanged: (int value) {
+                                    setState(() => _picker = value);
+                                    SBsetState(() => _picker = value);
+                                  }),
+                            ),
                           ),
-                        ),
-                      )),
-            ],
-            child: const Text('Background Color'),
-            builder: (BuildContext context, MenuController controller,
-                Widget? child) {
-              return TextButton(
-                  focusNode: _buttonFocusNode,
-                  onPressed: () {
-                    if (controller.isOpen) {
-                      controller.close();
-                    } else {
-                      controller.open();
-                    }
-                  },
-                  child: const Icon(Icons.more_vert));
-            },
-          ),
-        ],
-      ),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            controller: _scrollController,
-            child: Column(
-              children: [
-                Container(
-                  margin: EdgeInsets.only(
-                      left: marginValue, right: marginValue, top: 20),
-                  child: LinearPercentIndicator(
-                      barRadius: const Radius.circular(30),
-                      animation: true,
-                      animateFromLastPercent: true,
-                      backgroundColor: Theme.of(context).colorScheme.onTertiary,
-                      lineHeight: 20.0,
-                      percent: _currentVerse / _totalVerses,
-                      progressColor: Theme.of(context).colorScheme.tertiary),
-                ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  child: ReadQuranCard(
-                    currentChapter: _currentChapter,
-                    currentVerse: _currentVerse,
-                    totalVerses: _totalVerses,
-                    juzNumber:
-                        quran.getJuzNumber(_currentChapter, _currentVerse),
-                    basmala: _currentChapter != 1 &&
-                            _currentVerse == 1 &&
-                            _currentChapter != 9
-                        ? quran.basmala
-                        : null,
-                    verse: quran.getVerse(_currentChapter, _currentVerse),
-                    translation:
-                        getTransliteration(_currentChapter, _currentVerse),
-                    fontSize: SettingsDB().get("fontSize", defaultValue: 30.0),
-                  ),
-                ),
-                const SizedBox(
-                  height: 120,
-                )
+                        )),
               ],
+              child: const Text('Background Color'),
+              builder: (BuildContext context, MenuController controller,
+                  Widget? child) {
+                return TextButton(
+                    focusNode: _buttonFocusNode,
+                    onPressed: () {
+                      if (controller.isOpen) {
+                        controller.close();
+                      } else {
+                        controller.open();
+                      }
+                    },
+                    child: const Icon(Icons.more_vert));
+              },
             ),
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              height: 80,
-              padding: const EdgeInsets.only(right: 12, left: 12),
-              color: Theme.of(context).colorScheme.background,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment
-                    .spaceBetween, // Distribute buttons horizontally
+          ],
+        ),
+        body: Stack(
+          children: [
+            SingleChildScrollView(
+              controller: _scrollController,
+              child: Column(
                 children: [
-                  ElevatedButton(
-                    onPressed: () => _decrease(),
-                    child: const Padding(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 12.0, horizontal: 18),
-                      child: Icon(
-                        Icons.arrow_back_rounded,
-                        size: 30,
-                      ),
+                  Container(
+                    margin: EdgeInsets.only(
+                        left: marginValue, right: marginValue, top: 20),
+                    child: LinearPercentIndicator(
+                        barRadius: const Radius.circular(30),
+                        animation: true,
+                        animateFromLastPercent: true,
+                        backgroundColor:
+                            Theme.of(context).colorScheme.onTertiary,
+                        lineHeight: 20.0,
+                        percent: _currentVerse / _totalVerses,
+                        progressColor: Theme.of(context).colorScheme.tertiary),
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    child: ReadQuranCard(
+                      currentChapter: _currentChapter,
+                      currentVerse: _currentVerse,
+                      totalVerses: _totalVerses,
+                      juzNumber:
+                          quran.getJuzNumber(_currentChapter, _currentVerse),
+                      basmala: _currentChapter != 1 &&
+                              _currentVerse == 1 &&
+                              _currentChapter != 9
+                          ? quran.basmala
+                          : null,
+                      verse: quran.getVerse(_currentChapter, _currentVerse),
+                      translation:
+                          getTransliteration(_currentChapter, _currentVerse),
+                      fontSize:
+                          SettingsDB().get("fontSize", defaultValue: 30.0),
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: () => _increase(),
-                    child: const Padding(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 12.0, horizontal: 18),
-                      child: Icon(
-                        Icons.arrow_forward_rounded,
-                        size: 30,
-                      ),
-                    ),
-                  ),
+                  const SizedBox(
+                    height: 120,
+                  )
                 ],
               ),
             ),
-          ),
-        ],
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                height: 80,
+                padding: const EdgeInsets.only(right: 12, left: 12),
+                color: Theme.of(context).colorScheme.background,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment
+                      .spaceBetween, // Distribute buttons horizontally
+                  children: [
+                    ElevatedButton(
+                      onPressed: () => _decrease(),
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 12.0, horizontal: 18),
+                        child: Icon(
+                          Icons.arrow_back_rounded,
+                          size: 30,
+                        ),
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => _increase(),
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 12.0, horizontal: 18),
+                        child: Icon(
+                          Icons.arrow_forward_rounded,
+                          size: 30,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

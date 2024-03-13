@@ -1,6 +1,5 @@
 import 'package:emushaf/home/main_page.dart';
 import 'package:emushaf/home/settings.dart';
-import 'package:emushaf/test.dart';
 import 'package:flutter/material.dart';
 
 class Destinations {
@@ -27,8 +26,6 @@ class _HomePageState extends State<HomePage> {
         "eQuran", Icon(Icons.book_outlined), Icon(Icons.book), MainPage()),
     Destinations("Settings", const Icon(Icons.settings_outlined),
         const Icon(Icons.settings), SettingsPage()),
-    const Destinations(
-        "Test", Icon(Icons.info_outline), Icon(Icons.info), TestPage())
   ];
   final ScrollController _scrollController = ScrollController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
