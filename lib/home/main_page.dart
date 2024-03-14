@@ -1,9 +1,11 @@
-import 'package:card_swiper/card_swiper.dart';
+import 'package:emushaf/backend/bookmark_db.dart';
 import 'package:emushaf/utils/debouncer.dart';
 import 'package:emushaf/widgets/favourites_list.dart';
 import 'package:emushaf/widgets/library.dart'
     show JuzCardList, QuranCardList, MySearchBar;
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:quran/quran.dart' show getSurahName;
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -25,12 +27,18 @@ class _MainPageState extends State<MainPage>
   ];
   late TabController _tabController;
   late ScrollController _scrollController;
+  late String lastRead;
+  late int currentChapter;
+  late int currentVerse;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: _tabs.length, vsync: this);
     _scrollController = ScrollController();
+    lastRead = BookmarkDB().get("lastRead");
+    currentChapter = int.parse(lastRead.split("-")[0]);
+    currentVerse = int.parse(lastRead.split("-")[1]);
   }
 
   @override
@@ -87,97 +95,66 @@ class _MainPageState extends State<MainPage>
                 ),
               ),
             ),
-            // const SliverToBoxAdapter(
-            //   child: SizedBox(
-            //     height: 20,
-            //   ),
-            // ),
             SliverToBoxAdapter(
-              child: Container(
-                height: 150,
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                child: Swiper(
-                  loop: false,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Card(
-                        color: Theme.of(context).colorScheme.primaryContainer,
-                        elevation: 0,
-                        child: ListTile(
-                          title: Text("Continue Reading"),
-                        ));
-                  },
-                  itemCount: 9,
-                  control: SwiperControl(
-                      color: Theme.of(context).colorScheme.onSecondaryContainer,
-                      padding: const EdgeInsets.symmetric(horizontal: 20)),
-                ),
+                child: Card(
+              margin: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+              elevation: 1,
+              color: Theme.of(context).colorScheme.secondaryContainer,
+              clipBehavior: Clip.antiAlias,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
               ),
-            ),
-             SliverToBoxAdapter(
-              child: Card(
-                clipBehavior: Clip.antiAlias,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0),
-                ),
-                child: Stack(
-                  children: <Widget>[
-                    Container(
-                      decoration: BoxDecoration(
-                        // image: DecorationImage(
-                        //   image: AssetImage('assets/quran_app.jpg'),
-                        //   fit: BoxFit.cover,
-                        //   colorFilter: ColorFilter.mode(Colors.black26, BlendMode.multiply),
-                        // ),
+              child: Row(
+                children: <Widget>[
+                  // Left Section with Text and Button
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(16.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Text(
                             'Last Read',
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              color: Colors.white70,
-                            ),
+                            style: Theme.of(context).textTheme.titleLarge,
                           ),
-                          SizedBox(height: 10.0),
+                          const SizedBox(height: 10.0),
                           Text(
-                            'الفاتحة',
-                            style: TextStyle(
-                              fontSize: 16.0,
-                              color: Colors.white,
-                            ),
+                            getSurahName(currentChapter),
+                            // Replace with actual Surah name
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyLarge
+                                ?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSecondaryContainer),
                           ),
-                          SizedBox(height: 10.0),
+                          const SizedBox(height: 5.0),
                           Text(
-                            'Ayah no. 1',
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              color: Colors.white70,
-                            ),
-                          ),
-                          SizedBox(height: 10.0),
-                          Row(
-                            children: <Widget>[
-                              Text(
-                                'Continue',
-                                style: TextStyle(
-                                  fontSize: 14.0,
-                                  color: Colors.white70,
-                                ),
-                              ),
-                            ],
+                            'Ayah No : $currentVerse',
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ],
                       ),
                     ),
-                  ],
-                ),
-              )
-
-            ),
+                  ),
+                  // Right Section with SVG
+                  Padding(
+                    padding: const EdgeInsets.only(right: 20, top: 5),
+                    child: Container(
+                      child: SvgPicture.asset('assets/images/quran.svg',
+                          colorFilter: ColorFilter.mode(
+                              Theme.of(context)
+                                  .colorScheme
+                                  .onSecondaryContainer,
+                              BlendMode.srcIn)),
+                    ),
+                  ),
+                ],
+              ),
+            )),
             SliverPersistentHeader(
               pinned: false,
               delegate: _SliverAppBarDelegate(
@@ -195,7 +172,7 @@ class _MainPageState extends State<MainPage>
             children: [
               QuranCardList(searchQuery: _searchQuery),
               JuzCardList(),
-              FavouritesList(),
+              const FavouritesList(),
             ],
           ),
         ),

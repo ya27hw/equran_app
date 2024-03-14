@@ -9,13 +9,14 @@ Future<void> main() async {
   // ----- HIVE -----
   await Hive.initFlutter();
 
+  // await Hive.deleteBoxFromDisk("surahs");
+
   Hive.registerAdapter(SurahAdapter());
 
   await BookmarkDB().initBox();
   await SettingsDB().initBox();
   await SurahDB().initBox();
   await FavouritesDB().initBox();
-
 
   runApp(const MyApp());
 }
@@ -40,7 +41,6 @@ class MyApp extends StatelessWidget {
                 seedColor: mySeed, brightness: Brightness.dark)),
         initial: AdaptiveThemeMode.system,
         builder: (theme, darkTheme) => MaterialApp(
-
               scrollBehavior:
                   ScrollConfiguration.of(context).copyWith(scrollbars: false),
               debugShowCheckedModeBanner: false,

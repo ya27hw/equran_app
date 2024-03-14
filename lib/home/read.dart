@@ -335,7 +335,7 @@ class _ReadPageState extends State<ReadPage> {
   }
 
   void _updateDB() {
-    BookmarkDB().put(_currentChapter, _currentVerse);
+    BookmarkDB().put("lastRead", "$_currentChapter-$_currentVerse");
   }
 
   void _delete() {
