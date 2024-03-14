@@ -15,7 +15,7 @@ class BookmarkDB extends BaseDB with ChangeNotifier {
     return _instance;
   }
 
-  dynamic get lastRead => _lastRead;
+  String get lastRead => _lastRead;
 
   void loadLastRead() {
     _lastRead = get("lastRead");

@@ -136,8 +136,8 @@ class _MainPageState extends State<MainPage>
                                     ),
                                     const SizedBox(height: 10.0),
                                     Text(
-                                      getSurahName(
-                                          int.parse(value.lastRead[0])),
+                                      getSurahName(int.parse(
+                                          value.lastRead.split("-")[0])),
                                       // Replace with actual Surah name
                                       style: Theme.of(context)
                                           .textTheme
@@ -149,7 +149,7 @@ class _MainPageState extends State<MainPage>
                                     ),
                                     const SizedBox(height: 5.0),
                                     Text(
-                                      'Ayah No : 2',
+                                      'Ayah No : ${int.parse(value.lastRead.split("-")[1])}',
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyMedium,
