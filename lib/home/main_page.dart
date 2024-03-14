@@ -113,10 +113,70 @@ class _MainPageState extends State<MainPage>
                 ),
               ),
             ),
-            const SliverToBoxAdapter(
-              child: SizedBox(
-                height: 5,
-              ),
+             SliverToBoxAdapter(
+              child: Card(
+                clipBehavior: Clip.antiAlias,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                child: Stack(
+                  children: <Widget>[
+                    Container(
+                      decoration: BoxDecoration(
+                        // image: DecorationImage(
+                        //   image: AssetImage('assets/quran_app.jpg'),
+                        //   fit: BoxFit.cover,
+                        //   colorFilter: ColorFilter.mode(Colors.black26, BlendMode.multiply),
+                        // ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            'Last Read',
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              color: Colors.white70,
+                            ),
+                          ),
+                          SizedBox(height: 10.0),
+                          Text(
+                            'الفاتحة',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.white,
+                            ),
+                          ),
+                          SizedBox(height: 10.0),
+                          Text(
+                            'Ayah no. 1',
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              color: Colors.white70,
+                            ),
+                          ),
+                          SizedBox(height: 10.0),
+                          Row(
+                            children: <Widget>[
+                              Text(
+                                'Continue',
+                                style: TextStyle(
+                                  fontSize: 14.0,
+                                  color: Colors.white70,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              )
+
             ),
             SliverPersistentHeader(
               pinned: false,

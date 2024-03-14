@@ -55,6 +55,7 @@ dependencies:
   pull_to_refresh_flutter3: ^2.0.2
   custom_refresh_indicator: ^3.0.0
   simple_gesture_detector: ^0.2.1
+  flutter_svg: ^2.0.10+1
 
 dev_dependencies:
   flutter_test:
@@ -82,6 +83,7 @@ flutter:
   assets:
     - assets/index.json
     - assets/quran_chapters/
+    - assets/images/quran.svg
 
   fonts:
     - family: Hafs
