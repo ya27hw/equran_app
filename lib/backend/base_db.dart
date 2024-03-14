@@ -4,7 +4,9 @@ class BaseDB {
   final String boxName;
 
   // Constructor
-  BaseDB(this.boxName);
+  BaseDB(this.boxName) {
+    _box = Hive.box(boxName);
+  }
 
   late final Box _box;
 

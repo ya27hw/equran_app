@@ -131,6 +131,7 @@ class _ReadPageState extends State<ReadPage> {
                                   child: const Text("CONFIRM"),
                                   onPressed: () {
                                     _setVerse(_picker);
+                                    _updateDB();
                                     Navigator.of(context).pop();
                                   }),
                               TextButton(
@@ -200,8 +201,8 @@ class _ReadPageState extends State<ReadPage> {
                           ? quran.basmala
                           : null,
                       verse: quran.getVerse(_currentChapter, _currentVerse),
-                      translation:
-                          getTransliteration(_currentChapter, _currentVerse),
+                      translation: quran.getVerseTranslation(
+                          _currentChapter, _currentVerse),
                       fontSize:
                           SettingsDB().get("fontSize", defaultValue: 30.0),
                     ),
@@ -335,10 +336,11 @@ class _ReadPageState extends State<ReadPage> {
   }
 
   void _updateDB() {
-    BookmarkDB().put("lastRead", "$_currentChapter-$_currentVerse");
+    // BookmarkDB().put("lastRead", "$_currentChapter-$_currentVerse");
+    BookmarkDB().updateLastRead("$_currentChapter-$_currentVerse");
   }
 
   void _delete() {
-    BookmarkDB().delete(_currentChapter);
+    BookmarkDB().delete("lastRead");
   }
 }
