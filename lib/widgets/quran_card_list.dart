@@ -61,19 +61,20 @@ class _QuranCardListState extends State<QuranCardList>
         final transliteration = quran.getSurahName(i);
         final name = quran.getSurahNameArabic(i);
         final verses = quran.getVerseCount(i);
+        final englishName = quran.getSurahNameEnglish(i);
 
         surahs.add(Surah(
             id: i,
             transliteration: transliteration,
             verses: verses,
-            name: name));
+            name: name,
+            englishName: englishName));
       }
       await SurahDB().put("surahsList", surahs);
     }
     if (widget.searchQuery.isEmpty) {
       return surahs;
     } else {
-      print(widget.searchQuery);
       return surahs
           .where((surah) =>
               surah.name

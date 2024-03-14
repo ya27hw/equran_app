@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 
 class QuranCard extends StatelessWidget {
   final Surah surah;
-  final int? endVerse;
-  const QuranCard({super.key, required this.surah, this.endVerse});
+  const QuranCard({super.key, required this.surah});
 
   @override
   Widget build(BuildContext context) {
@@ -33,24 +32,34 @@ class QuranCard extends StatelessWidget {
               child: Center(
                   child: Text(surah.id.toString(),
                       style: Theme.of(context).textTheme.titleSmall))),
-          title: Text(
-            surah.transliteration,
-            style: Theme.of(context).textTheme.titleMedium,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                surah.transliteration,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              Text(
+                surah.name,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ],
           ),
-          trailing: Text(
-            surah.name,
-            style: Theme.of(context).textTheme.titleMedium,
+
+          subtitle: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                surah.englishName,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              Text(
+                "${surah.verses} Verses",
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
           ),
-          subtitle: endVerse != null
-              ? Text(
-                  "Ayahs: ${surah.verses} - $endVerse",
-                  style: Theme.of(context).textTheme.bodyMedium,
-                )
-              : Text(
-                  "${surah.verses} Verses",
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-          // Add leading/trailing icons, subtitle, etc. for further customization
+          //
         ),
       ),
     );

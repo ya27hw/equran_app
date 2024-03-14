@@ -34,7 +34,7 @@ class BaseDB {
     return _box.keys;
   }
 
-  Future<void> deleteAll() async {
-    await _box.deleteFromDisk();
+  Future<void> clear() async {
+    await _box.clear();
   }
 }

@@ -24,16 +24,19 @@ class _MainPageState extends State<MainPage>
     )
   ];
   late TabController _tabController;
+  late ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: _tabs.length, vsync: this);
+    _scrollController = ScrollController();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -54,7 +57,7 @@ class _MainPageState extends State<MainPage>
                       bottomRight: Radius.circular(30))),
               pinned: false,
               floating: false,
-              expandedHeight: 150,
+              expandedHeight: 170,
               centerTitle: true,
               backgroundColor: Theme.of(context).colorScheme.primaryContainer,
               flexibleSpace: FlexibleSpaceBar(
@@ -84,39 +87,43 @@ class _MainPageState extends State<MainPage>
                 ),
               ),
             ),
-            const SliverToBoxAdapter(
-              child: SizedBox(
-                height: 20,
-              ),
-            ),
+            // const SliverToBoxAdapter(
+            //   child: SizedBox(
+            //     height: 20,
+            //   ),
+            // ),
             SliverToBoxAdapter(
               child: Container(
                 height: 150,
-                margin: const EdgeInsets.symmetric(horizontal: 12),
+                margin: const EdgeInsets.symmetric(horizontal: 4),
                 child: Swiper(
                   loop: false,
                   itemBuilder: (BuildContext context, int index) {
                     return Card(
                         color: Theme.of(context).colorScheme.primaryContainer,
                         elevation: 0,
-                        child: const Text("Hey"));
+                        child: ListTile(
+                          title: Text("Continue Reading"),
+                        ));
                   },
                   itemCount: 9,
                   control: SwiperControl(
                       color: Theme.of(context).colorScheme.onSecondaryContainer,
-                      padding: const EdgeInsets.symmetric(horizontal: 10)),
+                      padding: const EdgeInsets.symmetric(horizontal: 20)),
                 ),
               ),
             ),
             const SliverToBoxAdapter(
               child: SizedBox(
-                height: 20,
+                height: 5,
               ),
             ),
             SliverPersistentHeader(
               pinned: false,
               delegate: _SliverAppBarDelegate(
                 TabBar(
+                  splashBorderRadius: BorderRadius.circular(30),
+                  dividerHeight: 2,
                   controller: _tabController,
                   tabs: _tabs,
                 ),

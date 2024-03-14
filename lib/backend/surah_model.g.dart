@@ -20,14 +20,15 @@ class SurahAdapter extends TypeAdapter<Surah> {
       id: fields[0] as int,
       transliteration: fields[1] as String,
       name: fields[2] as String,
-      verses: fields[3] as int,
+      englishName: fields[3] as String,
+      verses: fields[4] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, Surah obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -35,6 +36,8 @@ class SurahAdapter extends TypeAdapter<Surah> {
       ..writeByte(2)
       ..write(obj.name)
       ..writeByte(3)
+      ..write(obj.englishName)
+      ..writeByte(4)
       ..write(obj.verses);
   }
 

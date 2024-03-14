@@ -1,6 +1,7 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:emushaf/backend/favourites_db.dart';
 import 'package:emushaf/backend/library.dart' show SettingsDB;
-import 'package:emushaf/widgets/library.dart' show FontSlider, ReadQuranCard;
+import 'package:emushaf/widgets/library.dart' show FontSlider;
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -11,6 +12,48 @@ class SettingsPage extends StatelessWidget {
     return Material(
       child: ListView(
         children: [
+          ListTile(
+            title: Text(
+              "General",
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: Theme.of(context).colorScheme.primary),
+            ),
+          ),
+          ListTile(
+            title: const Text("Clear Favourites"),
+            subtitle: const Text("Removes all verses you have liked. "),
+            onTap: () => showDialog<void>(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                      backgroundColor:
+                          Theme.of(context).colorScheme.errorContainer,
+                      title: const Text("Clear Favourites"),
+                      icon: const Icon(Icons.warning_amber_rounded),
+                      content: const Text(
+                        "WARNING: Are you sure you want to clear favourites?",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      actions: <Widget>[
+                        TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text(
+                              "NO",
+                              style: TextStyle(color: Colors.white),
+                            )),
+                        TextButton(
+                            onPressed: () async {
+                              await FavouritesDB().clear();
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text(
+                              "YES",
+                              style: TextStyle(color: Colors.white),
+                            ))
+                      ],
+                    )),
+          ),
           ListTile(
             title: Text(
               "Appearance",
@@ -27,6 +70,7 @@ class SettingsPage extends StatelessWidget {
                 builder: (BuildContext context) {
                   return AlertDialog(
                     title: const Text('Choose a Color'),
+                    icon: const Icon(Icons.format_paint_rounded),
                     content: Wrap(
                       runSpacing: 10,
                       spacing: 10.0, // Add spacing between circles
@@ -44,7 +88,7 @@ class SettingsPage extends StatelessWidget {
                           },
                           child: CircleAvatar(
                             backgroundColor: color,
-                            radius: 17.0,
+                            radius: 18.0,
                             // Adjust radius as needed
                           ),
                         );
@@ -61,9 +105,7 @@ class SettingsPage extends StatelessWidget {
             //   radius: 12.5, // Adjust radius as needed
             // ),
           ),
-          FontSlider(),
-
-
+          const FontSlider(),
         ],
       ),
     );

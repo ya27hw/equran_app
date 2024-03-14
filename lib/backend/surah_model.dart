@@ -11,11 +11,15 @@ class Surah {
   @HiveField(2)
   String name;
   @HiveField(3)
+  String englishName;
+  @HiveField(4)
   int verses;
+
 
   Surah(
       {required this.id,
       required this.transliteration,
       required this.name,
-      required this.verses});
+      required this.verses,
+      required this.englishName});
 }

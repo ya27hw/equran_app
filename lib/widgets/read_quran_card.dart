@@ -33,8 +33,11 @@ class ReadQuranCard extends StatelessWidget {
 
     // Define margin values for different screen sizes
     double marginValue;
+    if(screenSize.width > 1500) {
+      marginValue = 150;
+    }
     if (screenSize.width > 1200) {
-      marginValue = 90.0; // Large screen
+      marginValue = 120.0; // Large screen
     } else if (screenSize.width > 700) {
       marginValue = 40.0; // Medium screen
     } else {
@@ -52,7 +55,7 @@ class ReadQuranCard extends StatelessWidget {
               children: [
                 IconButton(
                     onPressed: () {},
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.play_circle_fill_outlined,
                       size: 29,
                     )),

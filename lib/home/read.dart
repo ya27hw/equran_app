@@ -38,7 +38,6 @@ class _ReadPageState extends State<ReadPage> {
     _currentChapter = widget.chapter;
     _currentVerse = widget.startVerse is int ? widget.startVerse! : 1;
     _buttonFocusNode = FocusNode(debugLabel: 'Menu Button');
-
     _getTotalVerses();
   }
 

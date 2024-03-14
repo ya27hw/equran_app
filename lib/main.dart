@@ -16,6 +16,7 @@ Future<void> main() async {
   await SurahDB().initBox();
   await FavouritesDB().initBox();
 
+
   runApp(const MyApp());
 }
 
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
                 seedColor: mySeed, brightness: Brightness.dark)),
         initial: AdaptiveThemeMode.system,
         builder: (theme, darkTheme) => MaterialApp(
+
               scrollBehavior:
                   ScrollConfiguration.of(context).copyWith(scrollbars: false),
               debugShowCheckedModeBanner: false,
