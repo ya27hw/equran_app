@@ -1,8 +1,7 @@
 import 'package:emushaf/backend/library.dart' show SettingsDB;
 import 'package:emushaf/widgets/library.dart' show ReadQuranCard;
-import 'package:quran/quran.dart' as quran;
-
 import 'package:flutter/material.dart';
+import 'package:quran/quran.dart' as quran;
 
 class FontSlider extends StatefulWidget {
   const FontSlider({super.key});
@@ -41,6 +40,7 @@ class _FontSliderState extends State<FontSlider> {
                 totalVerses: 7,
                 fontSize: fontSize,
                 juzNumber: 1,
+                url: "",
                 translation: quran.getVerseTranslation(1, 1),
                 verse: quran.getVerse(1, 1))
           ],

@@ -1,4 +1,5 @@
 import 'package:emushaf/backend/favourites_db.dart';
+import 'package:emushaf/widgets/library.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
 
@@ -10,6 +11,7 @@ class ReadQuranCard extends StatelessWidget {
 
   final String translation;
   final String verse;
+  final String url;
   final String? basmala;
 
   final double fontSize;
@@ -24,6 +26,7 @@ class ReadQuranCard extends StatelessWidget {
     required this.translation,
     this.basmala,
     required this.verse,
+    required this.url,
   });
 
   @override
@@ -33,7 +36,7 @@ class ReadQuranCard extends StatelessWidget {
 
     // Define margin values for different screen sizes
     double marginValue;
-    if(screenSize.width > 1500) {
+    if (screenSize.width > 1500) {
       marginValue = 150;
     }
     if (screenSize.width > 1200) {
@@ -53,12 +56,9 @@ class ReadQuranCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.play_circle_fill_outlined,
-                      size: 29,
-                    )),
+                PlayButton(
+                  url: url,
+                ),
                 Text(
                   "Juz' $juzNumber • $currentVerse/$totalVerses",
                   style: Theme.of(context).textTheme.bodyLarge,

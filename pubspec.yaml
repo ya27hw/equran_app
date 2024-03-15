@@ -57,6 +57,7 @@ dependencies:
   simple_gesture_detector: ^0.2.1
   flutter_svg: ^2.0.10+1
   get:
+  audioplayers: ^5.2.1
 
 dev_dependencies:
   flutter_test:

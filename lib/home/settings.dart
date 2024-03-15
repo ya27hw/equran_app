@@ -1,7 +1,8 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:emushaf/backend/favourites_db.dart';
 import 'package:emushaf/backend/library.dart' show SettingsDB;
-import 'package:emushaf/widgets/library.dart' show FontSlider, SettingsSwitch;
+import 'package:emushaf/widgets/library.dart'
+    show FontSlider, PlayBackSlider, SettingsSwitch;
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -25,6 +26,7 @@ class SettingsPage extends StatelessWidget {
             title: "Vibration",
             settingsKey: "vibration",
           ),
+          const PlayBackSlider(),
           ListTile(
             title: const Text("Clear Favourites"),
             subtitle: const Text("Removes all verses you have liked. "),
@@ -33,27 +35,40 @@ class SettingsPage extends StatelessWidget {
                 builder: (BuildContext context) => AlertDialog(
                       backgroundColor:
                           Theme.of(context).colorScheme.errorContainer,
-                      title: const Text("Clear Favourites"),
+                      title: Text(
+                        "Clear Favourites",
+                        style: TextStyle(
+                            color:
+                                Theme.of(context).colorScheme.onErrorContainer),
+                      ),
                       icon: const Icon(Icons.warning_amber_rounded),
-                      content: const Text(
+                      content: Text(
                         "WARNING: Are you sure you want to clear favourites?",
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(
+                            color:
+                                Theme.of(context).colorScheme.onErrorContainer),
                       ),
                       actions: <Widget>[
                         TextButton(
                             onPressed: () => Navigator.of(context).pop(),
-                            child: const Text(
+                            child: Text(
                               "NO",
-                              style: TextStyle(color: Colors.white),
+                              style: TextStyle(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onErrorContainer),
                             )),
                         TextButton(
                             onPressed: () async {
                               await FavouritesDB().clear();
                               Navigator.of(context).pop();
                             },
-                            child: const Text(
+                            child: Text(
                               "YES",
-                              style: TextStyle(color: Colors.white),
+                              style: TextStyle(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onErrorContainer),
                             ))
                       ],
                     )),

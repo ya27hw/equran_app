@@ -202,6 +202,8 @@ class _ReadPageState extends State<ReadPage> {
                       verse: quran.getVerse(_currentChapter, _currentVerse),
                       translation: quran.getVerseTranslation(
                           _currentChapter, _currentVerse),
+                      url: quran.getAudioURLByVerse(
+                          _currentChapter, _currentVerse),
                       fontSize:
                           SettingsDB().get("fontSize", defaultValue: 30.0),
                     ),
