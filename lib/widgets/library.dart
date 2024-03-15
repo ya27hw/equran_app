@@ -7,4 +7,5 @@ export 'quran_card.dart';
 export 'quran_card_list.dart';
 export 'read_quran_card.dart';
 export 'search.dart';
+export 'settings_switch.dart';
 export 'verse_input.dart';

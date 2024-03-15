@@ -18,13 +18,18 @@ class BookmarkDB extends BaseDB with ChangeNotifier {
   String get lastRead => _lastRead;
 
   void loadLastRead() {
-    _lastRead = get("lastRead");
+    _lastRead = get("lastRead", defaultValue: "0-0");
     notifyListeners();
   }
 
   Future<void> updateLastRead(String value) async {
     await put("lastRead", value);
     _lastRead = value;
+    notifyListeners();
+  }
+
+  Future<void> deleteLastRead() async {
+    _lastRead = "0-0";
     notifyListeners();
   }
 }

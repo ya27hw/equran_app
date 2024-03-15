@@ -6,6 +6,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:quran/quran.dart' show getSurahName;
 
+import 'read.dart';
+
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
 
@@ -45,6 +47,9 @@ class _MainPageState extends State<MainPage>
   Widget build(BuildContext context) {
     return Consumer<BookmarkDB>(
       builder: (BuildContext context, BookmarkDB value, Widget? child) {
+        final List<String> seperated = value.lastRead.split("-");
+        final int currentChapter = int.parse(seperated[0]);
+        final int currentVerse = int.parse(seperated[1]);
         return SafeArea(
           child: NestedScrollView(
             controller: _scrollController,
@@ -117,61 +122,70 @@ class _MainPageState extends State<MainPage>
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20.0),
                         ),
-                        child: Row(
-                          children: <Widget>[
-                            // Left Section with Text and Button
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 24,
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(
-                                      'Last Read',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge,
-                                    ),
-                                    const SizedBox(height: 10.0),
-                                    Text(
-                                      getSurahName(int.parse(
-                                          value.lastRead.split("-")[0])),
-                                      // Replace with actual Surah name
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyLarge
-                                          ?.copyWith(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onSecondaryContainer),
-                                    ),
-                                    const SizedBox(height: 5.0),
-                                    Text(
-                                      'Ayah No : ${int.parse(value.lastRead.split("-")[1])}',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium,
-                                    ),
-                                  ],
+                        child: InkWell(
+                          onTap: () =>
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => ReadPage(
+                                        chapter: currentChapter,
+                                        startVerse: currentVerse,
+                                      ))),
+                          child: Row(
+                            children: <Widget>[
+                              // Left Section with Text and Button
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text(
+                                        'Last Read',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleLarge,
+                                      ),
+                                      const SizedBox(height: 10.0),
+                                      Text(
+                                        getSurahName(currentChapter),
+                                        // Replace with actual Surah name
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge
+                                            ?.copyWith(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onSecondaryContainer),
+                                      ),
+                                      const SizedBox(height: 5.0),
+                                      Text(
+                                        'Ayah No : $currentVerse',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                            // Right Section with SVG
-                            Padding(
-                              padding: const EdgeInsets.only(right: 20, top: 5),
-                              child: Container(
-                                child: SvgPicture.asset(
-                                    'assets/images/quran.svg',
-                                    colorFilter: ColorFilter.mode(
-                                        Theme.of(context)
-                                            .colorScheme
-                                            .onSecondaryContainer,
-                                        BlendMode.srcIn)),
+                              // Right Section with SVG
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(right: 20, top: 5),
+                                child: Container(
+                                  child: SvgPicture.asset(
+                                      'assets/images/quran.svg',
+                                      colorFilter: ColorFilter.mode(
+                                          Theme.of(context)
+                                              .colorScheme
+                                              .onSecondaryContainer,
+                                          BlendMode.srcIn)),
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),

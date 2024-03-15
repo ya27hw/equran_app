@@ -1,7 +1,7 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:emushaf/backend/favourites_db.dart';
 import 'package:emushaf/backend/library.dart' show SettingsDB;
-import 'package:emushaf/widgets/library.dart' show FontSlider;
+import 'package:emushaf/widgets/library.dart' show FontSlider, SettingsSwitch;
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -20,6 +20,10 @@ class SettingsPage extends StatelessWidget {
                   .bodyMedium
                   ?.copyWith(color: Theme.of(context).colorScheme.primary),
             ),
+          ),
+          const SettingsSwitch(
+            title: "Vibration",
+            settingsKey: "vibration",
           ),
           ListTile(
             title: const Text("Clear Favourites"),

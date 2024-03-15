@@ -1,6 +1,5 @@
 import 'package:emushaf/backend/bookmark_db.dart';
-import 'package:emushaf/backend/library.dart'
-    show SettingsDB, getTransliteration;
+import 'package:emushaf/backend/library.dart' show SettingsDB;
 import 'package:emushaf/widgets/library.dart' show ReadQuranCard;
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
@@ -326,8 +325,10 @@ class _ReadPageState extends State<ReadPage> {
   }
 
   void _vibrate() async {
-    if (await Vibration.hasVibrator() != null) {
-      Vibration.vibrate(duration: 10);
+    if (SettingsDB().get("vibration", defaultValue: true) == true) {
+      if (await Vibration.hasVibrator() != null) {
+        Vibration.vibrate(duration: 10);
+      }
     }
   }
 
@@ -341,6 +342,6 @@ class _ReadPageState extends State<ReadPage> {
   }
 
   void _delete() {
-    BookmarkDB().delete("lastRead");
+    BookmarkDB().deleteLastRead();
   }
 }
