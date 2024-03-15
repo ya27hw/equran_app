@@ -10,7 +10,7 @@ Future<void> main() async {
   // ----- HIVE -----
   await Hive.initFlutter();
 
-  // await Hive.deleteBoxFromDisk("bookmarks");
+  // await Hive.deleteBoxFromDisk("surahs");
 
   Hive.registerAdapter(SurahAdapter());
 
