@@ -29,6 +29,19 @@ jobs:
       - name: Get Dependencies
         run: flutter pub get
 
+      - name: Decode Keystore
+        run: echo $KEYSTORE_BASE64 | base64 --decode > keystore.jks
+
+      - name: Configure Signing
+        run: echo "storeFile=keystore.jks
+          storePassword=$KEYSTORE_PASSWORD
+          keyAlias=$KEY_ALIAS
+          keyPassword=$KEY_PASSWORD
+          " > key.properties
+
+      - name: Build Android Release APK
+        run: flutter build apk --release
+
       - name: Build Android APK
         if: matrix.os == 'ubuntu-latest' # Build Android on Linux
         run: flutter build apk
