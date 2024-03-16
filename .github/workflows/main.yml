@@ -30,7 +30,7 @@ jobs:
         run: flutter pub get
 
       - name: Decode Keystore
-        run: echo $KEYSTORE_BASE64 | base64 --decode > keystore.jks
+        run: echo $KEYSTORE_BASE64 | base64 --decode > android/app/keystore.jks
 
       - name: Configure Signing
         run: echo "storeFile=keystore.jks
@@ -55,3 +55,13 @@ jobs:
         run: flutter build linux
 
       # Add steps to upload artifacts (optional) using: actions/upload-artifact@v3
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: |
+            build/app/outputs/flutter-apk/app-release.apk # Android APK
+            build/windows/runner/Release/*.exe         # Windows executable
+            build/linux/x64/release/bundle/*             # Linux files
+
