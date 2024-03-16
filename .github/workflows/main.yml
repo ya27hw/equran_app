@@ -18,6 +18,7 @@ jobs:
         # Include other operating systems if needed
 
     steps:
+      - uses: actions/checkout@v3  # Check out the code
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.19.2'  # Adjust Flutter version as needed
@@ -47,8 +48,10 @@ jobs:
         run: flutter build windows
 
       - name: Build Linux App
-        if: matrix.os == 'ubuntu-latest' # Build Linux on Linux
+        if: matrix.os == 'ubuntu-latest' # Build Linux on macOS
         run: flutter build linux
+
+      # Add steps to upload artifacts (optional) using: actions/upload-artifact@v3
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
