@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
-        android:label="emushaf"
+        android:label="eQuran"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity
