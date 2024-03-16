@@ -1,0 +1,44 @@
+name: Build and Deploy Flutter App
+
+# Trigger the workflow whenever code is pushed or a pull request is made
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Build for Android, Windows, and Linux
+    runs-on: ${{ matrix.os }}  # Run on different OS environments
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        # Include other operating systems if needed
+
+    steps:
+      - uses: actions/checkout@v3  # Check out the code
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.2'  # Adjust Flutter version as needed
+
+      - name: Configure Flutter
+        run: flutter config --enable-windows-desktop --enable-linux-desktop --enable-macos-desktop
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Build Android APK
+        if: matrix.os == 'ubuntu-latest' # Build Android on Linux
+        run: flutter build apk
+
+      - name: Build Windows App
+        if: matrix.os == 'windows-latest' # Build Windows on Windows
+        run: flutter build windows
+
+      - name: Build Linux App
+        if: matrix.os == 'macos-latest' # Build Linux on macOS
+        run: flutter build linux
+
+      # Add steps to upload artifacts (optional) using: actions/upload-artifact@v3
