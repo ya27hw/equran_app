@@ -69,7 +69,7 @@ jobs:
       #          flutter build linux
 
       - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v1.1.4
+        uses: actions/upload-artifact@v3
         with:
           name: release-apk
           path: |
@@ -79,7 +79,7 @@ jobs:
 
       - name: Create Release
         id: create_release
-        uses: actions/create-release@3
+        uses: actions/create-release@1.1.4
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
