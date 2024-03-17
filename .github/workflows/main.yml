@@ -54,10 +54,6 @@ jobs:
           echo storePassword=$KEYSTORE_PASSWORD >> $PROPERTIES_PATH
           echo keyAlias=$KEY_ALIAS >> $PROPERTIES_PATH
 
-
-      - name: Cat it
-        run: cat android/key.properties
-
       - name: Build Android Release APK
         if: matrix.os == 'ubuntu-22.04'
         run: flutter build apk --release
