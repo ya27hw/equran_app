@@ -42,11 +42,14 @@ jobs:
         run: echo $KEYSTORE_BASE64 | base64 --decode > android/app/keystore.jks
 
       - name: Configure Signing
-        run: echo "storeFile=keystore.jks
+        run: echo "storeFile=android/app/keystore.jks
           storePassword=$KEYSTORE_PASSWORD
           keyAlias=$KEY_ALIAS
           keyPassword=$KEY_PASSWORD
-          " > key.properties
+          " > android/key.properties
+
+      - name: Cat it
+        run: cat android/key.properties
 
       - name: Build Android Release APK
         if: matrix.os == 'ubuntu-22.04'
