@@ -49,4 +49,13 @@ jobs:
         uses: actions/upload-artifact@v4.3.1
         with:
           name: equran-release-apk
-          path: build/app/outputs/flutter-apk/app-*.apk
+          path: build/app/outputs/flutter-apk/*.apk
+
+      - name: GH Release
+        uses: softprops/action-gh-release@v2.0.2
+        with:
+          files: build/app/outputs/flutter-apk/app-*.apk
+          tag_name: v1.0.${{ github.run_number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+
