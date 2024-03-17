@@ -14,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest, ubuntu-22.04]
         # Include other operating systems if needed
 
     steps:
@@ -22,13 +22,15 @@ jobs:
       - uses: subosito/flutter-action@v2.13.0
         with:
           channel: 'stable'
+          cache: true
       - run: flutter --version
 
       - name: Set up JDK 11
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin' # Or another distribution like 'zulu'
-          java-version: '11'
+          distribution: 'zulu' # Or another distribution like 'zulu'
+          java-version: '12.x'
+          cache: gradle
 
       - name: Configure Flutter
         run: flutter config --enable-windows-desktop --enable-linux-desktop --enable-macos-desktop
@@ -47,7 +49,7 @@ jobs:
           " > key.properties
 
       - name: Build Android Release APK
-        if: matrix.os == 'macos-latest'
+        if: matrix.os == 'ubuntu-22.04'
         run: flutter build apk --release
 
       - name: Build Windows App
