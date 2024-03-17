@@ -14,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, ubuntu-22.04]
+        os: [ ubuntu-22.04 ]
         # Include other operating systems if needed
 
     steps:
@@ -55,34 +55,33 @@ jobs:
           echo keyAlias=$KEY_ALIAS >> $PROPERTIES_PATH
 
       - name: Build Android Release APK
-        if: matrix.os == 'ubuntu-22.04'
         run: flutter build apk --release
 
-      - name: Build Windows App
-        if: matrix.os == 'windows-latest' # Build Windows on Windows
-        run: flutter build windows
-
-      - name: Build Linux App
-        if: matrix.os == 'ubuntu-latest' # Build Linux on macOS
-        run: | 
-          sudo apt-get update -y
-          sudo apt-get install -y ninja-build libgtk-3-dev libgstreamer1.0-dev libgstreamer-plugins-bad1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-good1.0-dev libunwind-dev
-          flutter build linux
+      #      - name: Build Windows App
+      #        if: matrix.os == 'windows-latest' # Build Windows on Windows
+      #        run: flutter build windows
+      #
+      #      - name: Build Linux App
+      #        if: matrix.os == 'ubuntu-latest' # Build Linux on macOS
+      #        run: |
+      #          sudo apt-get update -y
+      #          sudo apt-get install -y ninja-build libgtk-3-dev libgstreamer1.0-dev libgstreamer-plugins-bad1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-good1.0-dev libunwind-dev
+      #          flutter build linux
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: build-artifacts
+          name: release-apk
           path: |
             build/app/outputs/flutter-apk/app-release.apk # Android APK
-            build/windows/runner/Release/*.exe         # Windows executable
-            build/linux/x64/release/bundle/*             # Linux files
+      #            build/windows/runner/Release/*.exe         # Windows executable
+      #            build/linux/x64/release/bundle/*             # Linux files
 
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1.1.4
+        uses: actions/create-release@3
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
@@ -90,15 +89,15 @@ jobs:
           prerelease: false
 
       - name: Upload Release Assets
-        uses: actions/upload-release-asset@v1.0.2
+        uses: actions/upload-release-asset@v1
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/app/outputs/flutter-apk/app-release.apk # Android
+          asset_path: build/app/outputs/flutter-apk/app-release.apk # Android
           asset_name: app-release.apk
           asset_content_type: application/vnd.android.package-archive
 
-            
+
 
 
