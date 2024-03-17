@@ -45,14 +45,15 @@ jobs:
 
       - name: Configure Signing
         env:
+          PROPERTIES_PATH: "./android/key.properties"
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: echo "storeFile=android/app/keystore.jks
-          storePassword=$KEYSTORE_PASSWORD
-          keyAlias=$KEY_ALIAS
-          keyPassword=$KEY_PASSWORD
-          " > android/key.properties
+        run: |
+          echo keyPassword=$KEY_PASSWORD > $PROPERTIES_PATH
+          echo storePassword=$KEYSTORE_PASSWORD >> $PROPERTIES_PATH
+          echo keyAlias=$KEY_ALIAS >> $PROPERTIES_PATH
+
 
       - name: Cat it
         run: cat android/key.properties
