@@ -69,7 +69,7 @@ jobs:
       #          flutter build linux
 
       - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v1.1.4
         with:
           name: release-apk
           path: |
