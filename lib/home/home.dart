@@ -1,5 +1,5 @@
+import 'package:emushaf/home/main_page.dart';
 import 'package:emushaf/home/settings.dart';
-import 'package:equran/home/main_page.dart';
 import 'package:flutter/material.dart';
 
 class Destinations {
