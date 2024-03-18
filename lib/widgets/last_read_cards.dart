@@ -1,22 +1,32 @@
+import 'package:emushaf/backend/library.dart';
 import 'package:emushaf/home/read.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:hive/hive.dart';
 import 'package:quran/quran.dart';
 
 class LastReadCard extends StatelessWidget {
-  final Box box;
+  const LastReadCard({super.key});
 
-  const LastReadCard({super.key, required this.box});
+  List displayReadingHistory() {
+    return BookmarkDB().getKeys().toList()
+      ..sort((a, b) {
+        var firstEntry = BookmarkDB().get(a) as ReadingEntry;
+        var secondEntry = BookmarkDB().get(b) as ReadingEntry;
+        return secondEntry.timestamp.compareTo(firstEntry.timestamp);
+      });
+  }
 
   @override
   Widget build(BuildContext context) {
+    List keys = displayReadingHistory();
     return ExpandableCarousel.builder(
-      itemCount: box.length,
+      itemCount: keys.length,
       itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) {
-        int keySurah = box.keyAt(itemIndex);
-        int valueAyah = box.get(keySurah);
+        int keySurah = keys[itemIndex];
+        ReadingEntry entry = BookmarkDB().get(keySurah);
+        int verse = entry.verse;
+        DateTime timeRead = entry.timestamp;
         return Card(
           margin: const EdgeInsets.symmetric(horizontal: 3, vertical: 8),
           elevation: 2,
@@ -29,7 +39,7 @@ class LastReadCard extends StatelessWidget {
             onTap: () => Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => ReadPage(
                       chapter: keySurah,
-                      startVerse: box.get(keySurah),
+                      startVerse: verse,
                     ))),
             child: Row(
               children: <Widget>[
@@ -60,7 +70,7 @@ class LastReadCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 4.0),
                         Text(
-                          'Ayah No : $valueAyah',
+                          'Ayah No : $verse',
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ],
@@ -70,12 +80,10 @@ class LastReadCard extends StatelessWidget {
                 // Right Section with SVG
                 Padding(
                   padding: const EdgeInsets.only(right: 20, top: 5),
-                  child: Container(
-                    child: SvgPicture.asset('assets/images/quran.svg',
-                        colorFilter: ColorFilter.mode(
-                            Theme.of(context).colorScheme.onSecondaryContainer,
-                            BlendMode.srcIn)),
-                  ),
+                  child: SvgPicture.asset('assets/images/quran.svg',
+                      colorFilter: ColorFilter.mode(
+                          Theme.of(context).colorScheme.onSecondaryContainer,
+                          BlendMode.srcIn)),
                 ),
               ],
             ),

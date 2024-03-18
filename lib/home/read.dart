@@ -339,7 +339,7 @@ class _ReadPageState extends State<ReadPage> {
   }
 
   void _updateDB() {
-    BookmarkDB().put(_currentChapter, _currentVerse);
+    BookmarkDB().addReadingEntry(_currentChapter, _currentVerse);
     // BookmarkDB().put(_currentChapter, DateTime.now().millisecondsSinceEpoch);
   }
 

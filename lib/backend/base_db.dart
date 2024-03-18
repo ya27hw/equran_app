@@ -31,6 +31,8 @@ class BaseDB {
 
   int get length => _box.length;
 
+  Box get box => _box;
+
   Iterable<dynamic> getKeys() {
     return _box.keys;
   }

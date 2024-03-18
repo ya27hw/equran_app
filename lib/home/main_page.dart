@@ -99,9 +99,10 @@ class _MainPageState extends State<MainPage>
               valueListenable: BookmarkDB().listener,
               builder: (BuildContext context, Box<dynamic> box, child) {
                 if (box.length == 0) {
-                  return SizedBox.shrink();
+                  return const SizedBox.shrink();
+                } else {
+                  return LastReadCard();
                 }
-                return LastReadCard(box: box);
               },
             ),
           ),

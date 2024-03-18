@@ -1,15 +1,23 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
-import 'package:emushaf/home/home.dart';
+import 'package:emushaf/home/library.dart' show HomePage;
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-import 'backend/library.dart';
+import 'backend/library.dart'
+    show
+        BookmarkDB,
+        FavouritesDB,
+        ReadingEntryAdapter,
+        SettingsDB,
+        SurahAdapter,
+        SurahDB;
 
 Future<void> main() async {
   // ----- HIVE -----
   await Hive.initFlutter();
 
   Hive.registerAdapter(SurahAdapter());
+  Hive.registerAdapter(ReadingEntryAdapter());
 
   // Hive.deleteBoxFromDisk("bookmarks");
 

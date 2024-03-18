@@ -24,8 +24,8 @@ class _HomePageState extends State<HomePage> {
   final List<Destinations> _pageDestinations = <Destinations>[
     const Destinations(
         "eQuran", Icon(Icons.book_outlined), Icon(Icons.book), MainPage()),
-    Destinations("Settings", const Icon(Icons.settings_outlined),
-        const Icon(Icons.settings), SettingsPage()),
+    const Destinations("Settings", Icon(Icons.settings_outlined),
+        Icon(Icons.settings), SettingsPage()),
   ];
   final ScrollController _scrollController = ScrollController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
