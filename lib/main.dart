@@ -24,7 +24,6 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  static Box settingsBox = Hive.box("settings");
   static MaterialColor mySeed = _getPrimaryColor();
 
   // This widget is the root of your application.
@@ -51,7 +50,7 @@ class MyApp extends StatelessWidget {
   }
 
   static MaterialColor _getPrimaryColor() {
-    final colorIndex = settingsBox.get("color");
+    final colorIndex = SettingsDB().get("color");
     return colorIndex != null ? Colors.primaries[colorIndex] : Colors.purple;
   }
 }
