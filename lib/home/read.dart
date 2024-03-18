@@ -205,7 +205,7 @@ class _ReadPageState extends State<ReadPage> {
                       url: quran.getAudioURLByVerse(
                           _currentChapter, _currentVerse),
                       fontSize:
-                          SettingsDB().get("fontSize", defaultValue: 30.0),
+                          SettingsDB().get("fontSize", defaultValue: 38.0),
                     ),
                   ),
                   const SizedBox(

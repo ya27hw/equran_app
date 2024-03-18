@@ -13,7 +13,7 @@ class FontSlider extends StatefulWidget {
 class _FontSliderState extends State<FontSlider> {
   @override
   Widget build(BuildContext context) {
-    double fontSize = SettingsDB().get("fontSize", defaultValue: 30.0);
+    double fontSize = SettingsDB().get("fontSize", defaultValue: 38.0);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 4),
