@@ -8,9 +8,4 @@ class BookmarkDB extends BaseDB {
   factory BookmarkDB() {
     return _instance;
   }
-
-  @override
-  dynamic get(dynamic key, {dynamic defaultValue}) {
-    return get(key, defaultValue: defaultValue);
-  }
 }
