@@ -1,13 +1,10 @@
-import 'package:flutter/material.dart';
+import 'package:collection/collection.dart' show minBy;
+import 'package:emushaf/backend/reading_model.dart';
 
 import 'base_db.dart';
 
-class BookmarkDB extends BaseDB with ChangeNotifier {
-  dynamic _lastRead;
-
-  BookmarkDB._privateConstructor() : super("bookmarks") {
-    loadLastRead();
-  }
+class BookmarkDB extends BaseDB {
+  BookmarkDB._privateConstructor() : super("bookmarks");
 
   static final BookmarkDB _instance = BookmarkDB._privateConstructor();
 
@@ -15,21 +12,20 @@ class BookmarkDB extends BaseDB with ChangeNotifier {
     return _instance;
   }
 
-  String get lastRead => _lastRead;
+  Future<void> addReadingEntry(int surah, int verse) async {
+    // siuuuuuuuu
+    if (length > 7) {
+      removeOldestEntry();
+    }
 
-  void loadLastRead() {
-    _lastRead = get("lastRead", defaultValue: "0-0");
-    notifyListeners();
+    await put(surah,
+        ReadingEntry(surah: surah, verse: verse, timestamp: DateTime.now()));
   }
 
-  Future<void> updateLastRead(String value) async {
-    await put("lastRead", value);
-    _lastRead = value;
-    notifyListeners();
-  }
-
-  Future<void> deleteLastRead() async {
-    _lastRead = "0-0";
-    notifyListeners();
+  void removeOldestEntry() {
+    var oldestEntry = minBy(box.toMap().entries, (p0) => p0.value.timestamp);
+    if (oldestEntry != null) {
+      delete(oldestEntry.key);
+    }
   }
 }

@@ -1,12 +1,11 @@
-import 'package:hive/hive.dart';
+import 'package:flutter/foundation.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class BaseDB {
   final String boxName;
 
   // Constructor
-  BaseDB(this.boxName) {
-    _box = Hive.box(boxName);
-  }
+  BaseDB(this.boxName);
 
   late final Box _box;
 
@@ -32,6 +31,8 @@ class BaseDB {
 
   int get length => _box.length;
 
+  Box get box => _box;
+
   Iterable<dynamic> getKeys() {
     return _box.keys;
   }
@@ -39,4 +40,6 @@ class BaseDB {
   Future<void> clear() async {
     await _box.clear();
   }
+
+  ValueListenable<Box<dynamic>> get listener => _box.listenable();
 }

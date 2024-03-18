@@ -4,6 +4,8 @@ import 'package:quran/quran.dart' as quran;
 import 'juz_card.dart';
 
 class JuzCardList extends StatefulWidget {
+  const JuzCardList({super.key});
+
   @override
   _JuzCardListState createState() => _JuzCardListState();
 }
@@ -19,10 +21,8 @@ class _JuzCardListState extends State<JuzCardList>
       itemCount: 30,
       itemBuilder: (BuildContext context, int index) {
         final juz = quran.getSurahAndVersesFromJuz(index + 1);
-        int totalVerses = 0;
 
         final juzCards = juz.entries.map((entry) {
-          totalVerses += (entry.value.last - entry.value.first + 1);
           final transliteration = quran.getSurahName(entry.key);
           final name = quran.getSurahNameArabic(entry.key);
           return QuranJuzTile(

@@ -1,44 +1,38 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'surah_model.dart';
+part of 'reading_model.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class SurahAdapter extends TypeAdapter<Surah> {
+class ReadingEntryAdapter extends TypeAdapter<ReadingEntry> {
   @override
-  final int typeId = 1;
+  final int typeId = 0;
 
   @override
-  Surah read(BinaryReader reader) {
+  ReadingEntry read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Surah(
-      id: fields[0] as int,
-      transliteration: fields[1] as String,
-      name: fields[2] as String,
-      verses: fields[4] as int,
-      englishName: fields[3] as String,
+    return ReadingEntry(
+      surah: fields[0] as int,
+      verse: fields[1] as int,
+      timestamp: fields[2] as DateTime,
     );
   }
 
   @override
-  void write(BinaryWriter writer, Surah obj) {
+  void write(BinaryWriter writer, ReadingEntry obj) {
     writer
-      ..writeByte(5)
-      ..writeByte(0)
-      ..write(obj.id)
-      ..writeByte(1)
-      ..write(obj.transliteration)
-      ..writeByte(2)
-      ..write(obj.name)
       ..writeByte(3)
-      ..write(obj.englishName)
-      ..writeByte(4)
-      ..write(obj.verses);
+      ..writeByte(0)
+      ..write(obj.surah)
+      ..writeByte(1)
+      ..write(obj.verse)
+      ..writeByte(2)
+      ..write(obj.timestamp);
   }
 
   @override
@@ -47,7 +41,7 @@ class SurahAdapter extends TypeAdapter<Surah> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SurahAdapter &&
+      other is ReadingEntryAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

@@ -1,41 +1,37 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
-import 'package:emushaf/home/home.dart';
+import 'package:emushaf/home/library.dart' show HomePage;
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:provider/provider.dart';
 
-import 'backend/library.dart';
+import 'backend/library.dart'
+    show
+        BookmarkDB,
+        FavouritesDB,
+        ReadingEntryAdapter,
+        SettingsDB,
+        SurahAdapter,
+        SurahDB;
 
 Future<void> main() async {
   // ----- HIVE -----
   await Hive.initFlutter();
 
-  // await Hive.deleteBoxFromDisk("surahs");
-
   Hive.registerAdapter(SurahAdapter());
+  Hive.registerAdapter(ReadingEntryAdapter());
 
-  await Hive.openBox("bookmarks");
-  await Hive.openBox("surahs");
-  await Hive.openBox("favourites");
-  await Hive.openBox("settings");
+  // Hive.deleteBoxFromDisk("bookmarks");
 
-  // await BookmarkDB().initBox();
-  // await SettingsDB().initBox();
-  // await SurahDB().initBox();
-  // await FavouritesDB().initBox();
+  await BookmarkDB().initBox();
+  await SettingsDB().initBox();
+  await SurahDB().initBox();
+  await FavouritesDB().initBox();
 
-  BookmarkDB().loadLastRead();
-
-  runApp(ChangeNotifierProvider<BookmarkDB>(
-    child: MyApp(),
-    create: (_) => BookmarkDB(),
-  ));
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  static Box settingsBox = Hive.box("settings");
   static MaterialColor mySeed = _getPrimaryColor();
 
   // This widget is the root of your application.
@@ -62,7 +58,7 @@ class MyApp extends StatelessWidget {
   }
 
   static MaterialColor _getPrimaryColor() {
-    final colorIndex = settingsBox.get("color");
-    return colorIndex != null ? Colors.primaries[colorIndex] : Colors.purple;
+    final colorIndex = SettingsDB().get("color");
+    return colorIndex != null ? Colors.primaries[colorIndex] : Colors.cyan;
   }
 }

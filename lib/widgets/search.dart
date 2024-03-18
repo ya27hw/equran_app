@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class MySearchBar extends StatelessWidget {
   final ValueChanged<String>? onChanged;
   final TextEditingController _controller = TextEditingController();
+
   MySearchBar({super.key, this.onChanged});
 
   @override
@@ -10,11 +11,10 @@ class MySearchBar extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 27),
       child: SearchBar(
-
           padding: const MaterialStatePropertyAll<EdgeInsets>(
               EdgeInsets.symmetric(horizontal: 16)),
           leading: const Icon(Icons.search),
-          hintText: "Search...",
+          hintText: "Search name or number...",
           trailing: _controller.text.isNotEmpty
               ? [
                   IconButton(
