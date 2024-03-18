@@ -2,7 +2,6 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:emushaf/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:provider/provider.dart';
 
 import 'backend/library.dart';
 
@@ -10,26 +9,16 @@ Future<void> main() async {
   // ----- HIVE -----
   await Hive.initFlutter();
 
-  // await Hive.deleteBoxFromDisk("surahs");
-
   Hive.registerAdapter(SurahAdapter());
 
-  await Hive.openBox("bookmarks");
-  await Hive.openBox("surahs");
-  await Hive.openBox("favourites");
-  await Hive.openBox("settings");
+  // Hive.deleteBoxFromDisk("bookmarks");
 
-  // await BookmarkDB().initBox();
-  // await SettingsDB().initBox();
-  // await SurahDB().initBox();
-  // await FavouritesDB().initBox();
+  await BookmarkDB().initBox();
+  await SettingsDB().initBox();
+  await SurahDB().initBox();
+  await FavouritesDB().initBox();
 
-  BookmarkDB().loadLastRead();
-
-  runApp(ChangeNotifierProvider<BookmarkDB>(
-    child: MyApp(),
-    create: (_) => BookmarkDB(),
-  ));
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {

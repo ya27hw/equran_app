@@ -138,13 +138,13 @@ class _ReadPageState extends State<ReadPage> {
                                   onPressed: () => Navigator.of(context).pop())
                             ],
                             content: StatefulBuilder(
-                              builder: (context, SBsetState) => NumberPicker(
+                              builder: (context, sBsetState) => NumberPicker(
                                   minValue: 1,
                                   maxValue: _totalVerses,
                                   value: _picker,
                                   onChanged: (int value) {
                                     setState(() => _picker = value);
-                                    SBsetState(() => _picker = value);
+                                    sBsetState(() => _picker = value);
                                   }),
                             ),
                           ),
@@ -339,11 +339,11 @@ class _ReadPageState extends State<ReadPage> {
   }
 
   void _updateDB() {
-    // BookmarkDB().put("lastRead", "$_currentChapter-$_currentVerse");
-    BookmarkDB().updateLastRead("$_currentChapter-$_currentVerse");
+    BookmarkDB().put(_currentChapter, _currentVerse);
+    // BookmarkDB().put(_currentChapter, DateTime.now().millisecondsSinceEpoch);
   }
 
   void _delete() {
-    BookmarkDB().deleteLastRead();
+    BookmarkDB().delete(_currentChapter);
   }
 }

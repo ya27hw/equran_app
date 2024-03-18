@@ -80,15 +80,12 @@ class ReadQuranCard extends StatelessWidget {
                 )
               ],
             ),
-            const SizedBox(
-              height: 10,
-            ),
             basmala != null
                 ? Text(basmala!,
                     textDirection: TextDirection.rtl,
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        height: 2.3,
+                        height: 2,
                         fontFamily: 'Hafs',
                         fontSize: fontSize))
                 : const SizedBox(),
@@ -98,7 +95,7 @@ class ReadQuranCard extends StatelessWidget {
               textAlign: TextAlign.justify,
               style: TextStyle(
                 fontFamily: 'Hafs',
-                height: 2,
+                height: 1.65,
                 fontSize: fontSize,
               ),
             ),
