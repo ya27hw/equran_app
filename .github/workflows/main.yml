@@ -1,0 +1,61 @@
+name: Build and Deploy Flutter App (Android)
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4.1.1  # Check out the code
+      - uses: subosito/flutter-action@v2.13.0
+        with:
+          channel: 'stable'
+          cache: true
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu' # Or another distribution like 'zulu'
+          java-version: '12.x'
+          cache: gradle
+      - run: flutter --version
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Decode Keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: echo $KEYSTORE_BASE64 | base64 --decode > android/app/keystore.jks
+
+      - name: Configure Signing
+        env:
+          PROPERTIES_PATH: "./android/key.properties"
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          echo keyPassword=$KEY_PASSWORD > $PROPERTIES_PATH
+          echo storePassword=$KEYSTORE_PASSWORD >> $PROPERTIES_PATH
+          echo keyAlias=$KEY_ALIAS >> $PROPERTIES_PATH
+
+      - name: Build Android Release APK
+        run: flutter build apk --split-per-abi
+
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v4.3.1
+        with:
+          name: equran-release-apk
+          path: build/app/outputs/flutter-apk/*.apk
+
+      - name: GH Release
+        uses: softprops/action-gh-release@v2.0.2
+        with:
+          files: build/app/outputs/flutter-apk/app-*.apk
+          tag_name: v1.0.${{ github.run_number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+
