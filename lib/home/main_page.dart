@@ -66,7 +66,13 @@ class _MainPageState extends State<MainPage>
                           duration: const Duration(milliseconds: 500),
                           curve: Curves.easeInOut);
                     },
-                    child: const Text("eQuran"))
+                    child: Text(
+                      "eQuran",
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ))
                 : null,
             backgroundColor: Theme.of(context).colorScheme.primaryContainer,
             flexibleSpace: FlexibleSpaceBar(

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:emushaf/backend/library.dart';
 import 'package:emushaf/home/read.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +21,17 @@ class LastReadCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double viewportFraction = 1;
+    const double threshold = 450.0;
+
+    if (width > threshold) {
+      double scaledWidth = (width - threshold) / 900;
+      viewportFraction = 1.0 * exp(-scaledWidth);
+    } else {
+      viewportFraction = 1;
+    }
+
     List keys = displayReadingHistory();
     return ExpandableCarousel.builder(
       itemCount: keys.length,
@@ -90,7 +103,10 @@ class LastReadCard extends StatelessWidget {
           ),
         );
       },
-      options: CarouselOptions(showIndicator: true, viewportFraction: 1),
+      options: CarouselOptions(
+          showIndicator: true,
+          viewportFraction: viewportFraction,
+          initialPage: 0),
     );
   }
 }

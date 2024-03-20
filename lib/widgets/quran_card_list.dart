@@ -1,3 +1,4 @@
+import 'package:dynamic_height_grid_view/dynamic_height_grid_view.dart';
 import 'package:emushaf/backend/surah_db.dart';
 import 'package:emushaf/backend/surah_model.dart';
 import 'package:emushaf/widgets/quran_card.dart';
@@ -18,6 +19,15 @@ class _QuranCardListState extends State<QuranCardList>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    dynamic width = MediaQuery.of(context).size.width;
+    int crossAxisCount = 1;
+    if (width > 650) {
+      crossAxisCount = 2;
+    }
+    if (width > 1300) {
+      crossAxisCount = 3;
+    }
+
     return FutureBuilder(
       future: _fetchSurahs(),
       builder: (BuildContext context, AsyncSnapshot<List<Surah>> snapshot) {
@@ -30,11 +40,14 @@ class _QuranCardListState extends State<QuranCardList>
           );
         } else {
           final data = snapshot.data!;
-          return ListView.builder(
+          return DynamicHeightGridView(
             physics: const BouncingScrollPhysics(),
             itemCount: data.length,
             shrinkWrap: true,
-            itemBuilder: (BuildContext context, int index) {
+            crossAxisCount: crossAxisCount,
+            crossAxisSpacing: 0,
+            mainAxisSpacing: 0,
+            builder: (BuildContext context, int index) {
               Surah surah = data[index];
 
               return QuranCard(
