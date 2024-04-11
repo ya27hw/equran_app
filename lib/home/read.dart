@@ -61,113 +61,113 @@ class _ReadPageState extends State<ReadPage> {
     } else {
       marginValue = 8.0; // Small screen
     }
-    return SimpleGestureDetector(
-      onHorizontalSwipe: (SwipeDirection direction) {
-        if (direction == SwipeDirection.left) {
-          _increase();
-        } else if (direction == SwipeDirection.right) {
-          _decrease();
-        }
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          leading: const BackButton(),
-          title: Text(quran.getSurahName(_currentChapter)),
-          centerTitle: true,
-          actions: <Widget>[
-            MenuAnchor(
-              childFocusNode: _buttonFocusNode,
-              menuChildren: <Widget>[
-                MenuItemButton(
+    return Scaffold(
+      appBar: AppBar(
+        leading: const BackButton(),
+        title: Text(quran.getSurahName(_currentChapter)),
+        centerTitle: true,
+        actions: <Widget>[
+          MenuAnchor(
+            childFocusNode: _buttonFocusNode,
+            menuChildren: <Widget>[
+              MenuItemButton(
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                      right: 120, bottom: 10, top: 10, left: 5),
+                  child: Text(
+                    "Reset",
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+                onPressed: () => showDialog(
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                          icon: const Icon(Icons.warning_amber),
+                          title: const Text(
+                            "Reset",
+                          ),
+                          content: const Text(
+                            "Would you like to start over?",
+                          ),
+                          actions: <Widget>[
+                            TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: const Text("CANCEL")),
+                            TextButton(
+                              child: const Text("OK"),
+                              onPressed: () {
+                                _reset();
+                                _delete();
+                                Navigator.of(context).pop();
+                              },
+                            )
+                          ],
+                        )),
+              ),
+              MenuItemButton(
                   child: Padding(
-                    padding: const EdgeInsets.only(
-                        right: 120, bottom: 10, top: 10, left: 5),
+                    padding:
+                        const EdgeInsets.only(bottom: 10, top: 10, left: 5),
                     child: Text(
-                      "Reset",
+                      "Jump to Verse",
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
                   onPressed: () => showDialog(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                            icon: const Icon(Icons.warning_amber),
-                            title: const Text(
-                              "Reset",
-                            ),
-                            content: const Text(
-                              "Would you like to start over?",
-                            ),
-                            actions: <Widget>[
-                              TextButton(
-                                  onPressed: () => Navigator.of(context).pop(),
-                                  child: const Text("CANCEL")),
-                              TextButton(
-                                child: const Text("OK"),
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: const Text("Select Verse"),
+                          actions: [
+                            TextButton(
+                                child: const Text("CONFIRM"),
                                 onPressed: () {
-                                  _reset();
-                                  _delete();
+                                  _setVerse(_picker);
+                                  _updateDB();
                                   Navigator.of(context).pop();
-                                },
-                              )
-                            ],
-                          )),
-                ),
-                MenuItemButton(
-                    child: Padding(
-                      padding:
-                          const EdgeInsets.only(bottom: 10, top: 10, left: 5),
-                      child: Text(
-                        "Jump to Verse",
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                    ),
-                    onPressed: () => showDialog(
-                          context: context,
-                          builder: (BuildContext context) => AlertDialog(
-                            title: const Text("Select Verse"),
-                            actions: [
-                              TextButton(
-                                  child: const Text("CONFIRM"),
-                                  onPressed: () {
-                                    _setVerse(_picker);
-                                    _updateDB();
-                                    Navigator.of(context).pop();
-                                  }),
-                              TextButton(
-                                  child: const Text("CANCEL"),
-                                  onPressed: () => Navigator.of(context).pop())
-                            ],
-                            content: StatefulBuilder(
-                              builder: (context, sBsetState) => NumberPicker(
-                                  minValue: 1,
-                                  maxValue: _totalVerses,
-                                  value: _picker,
-                                  onChanged: (int value) {
-                                    setState(() => _picker = value);
-                                    sBsetState(() => _picker = value);
-                                  }),
-                            ),
+                                }),
+                            TextButton(
+                                child: const Text("CANCEL"),
+                                onPressed: () => Navigator.of(context).pop())
+                          ],
+                          content: StatefulBuilder(
+                            builder: (context, sBsetState) => NumberPicker(
+                                minValue: 1,
+                                maxValue: _totalVerses,
+                                value: _picker,
+                                onChanged: (int value) {
+                                  setState(() => _picker = value);
+                                  sBsetState(() => _picker = value);
+                                }),
                           ),
-                        )),
-              ],
-              child: const Text('Background Color'),
-              builder: (BuildContext context, MenuController controller,
-                  Widget? child) {
-                return TextButton(
-                    focusNode: _buttonFocusNode,
-                    onPressed: () {
-                      if (controller.isOpen) {
-                        controller.close();
-                      } else {
-                        controller.open();
-                      }
-                    },
-                    child: const Icon(Icons.more_vert));
-              },
-            ),
-          ],
-        ),
-        body: Stack(
+                        ),
+                      )),
+            ],
+            child: const Text('Background Color'),
+            builder: (BuildContext context, MenuController controller,
+                Widget? child) {
+              return TextButton(
+                  focusNode: _buttonFocusNode,
+                  onPressed: () {
+                    if (controller.isOpen) {
+                      controller.close();
+                    } else {
+                      controller.open();
+                    }
+                  },
+                  child: const Icon(Icons.more_vert));
+            },
+          ),
+        ],
+      ),
+      body: SimpleGestureDetector(
+        onHorizontalSwipe: (SwipeDirection direction) {
+          if (direction == SwipeDirection.left) {
+            _increase();
+          } else if (direction == SwipeDirection.right) {
+            _decrease();
+          }
+        },
+        child: Stack(
           children: [
             SingleChildScrollView(
               controller: _scrollController,
