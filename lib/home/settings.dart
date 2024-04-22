@@ -28,7 +28,6 @@ class SettingsPage extends StatelessWidget {
           ),
           const SettingsSwitch(
             title: "Card View",
-            subtitle: "Toggle to turn on card view.",
             settingsKey: "viewMode",
           ),
           const PlayBackSlider(),

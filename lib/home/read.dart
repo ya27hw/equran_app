@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:quran/quran.dart' as quran;
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:simple_gesture_detector/simple_gesture_detector.dart';
 import 'package:vibration/vibration.dart';
 
@@ -352,7 +353,8 @@ class _ReadPageState extends State<ReadPage> {
   }
 
   Widget listView() {
-    return ListView.builder(
+    return ScrollablePositionedList.builder(
+        initialScrollIndex: _currentVerse - 1,
         itemCount: _totalVerses,
         itemBuilder: (context, index) {
           return Column(
