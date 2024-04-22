@@ -7,3 +7,7 @@ Themes: Choose from a selection of themes to personalize your reading experience
 Audio: Listen to the Holy Quran. 
 Favorites: Save your favorite Surahs.
 Last Read: View your last read Surahs.
+
+Permissions required:
+Internet: For streaming verses only.
+Vibration: Haptic feedback for navigating between verses.
