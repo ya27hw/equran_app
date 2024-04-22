@@ -159,100 +159,9 @@ class _ReadPageState extends State<ReadPage> {
           ),
         ],
       ),
-      body: SimpleGestureDetector(
-        onHorizontalSwipe: (SwipeDirection direction) {
-          if (direction == SwipeDirection.left) {
-            _increase();
-          } else if (direction == SwipeDirection.right) {
-            _decrease();
-          }
-        },
-        child: Stack(
-          children: [
-            SingleChildScrollView(
-              controller: _scrollController,
-              child: Column(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(
-                        left: marginValue, right: marginValue, top: 20),
-                    child: LinearPercentIndicator(
-                        barRadius: const Radius.circular(30),
-                        animation: true,
-                        animateFromLastPercent: true,
-                        backgroundColor:
-                            Theme.of(context).colorScheme.onTertiary,
-                        lineHeight: 20.0,
-                        percent: _currentVerse / _totalVerses,
-                        progressColor: Theme.of(context).colorScheme.tertiary),
-                  ),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    child: ReadQuranCard(
-                      currentChapter: _currentChapter,
-                      currentVerse: _currentVerse,
-                      totalVerses: _totalVerses,
-                      juzNumber:
-                          quran.getJuzNumber(_currentChapter, _currentVerse),
-                      basmala: _currentChapter != 1 &&
-                              _currentVerse == 1 &&
-                              _currentChapter != 9
-                          ? quran.basmala
-                          : null,
-                      verse: quran.getVerse(_currentChapter, _currentVerse),
-                      translation: quran.getVerseTranslation(
-                          _currentChapter, _currentVerse),
-                      url: quran.getAudioURLByVerse(
-                          _currentChapter, _currentVerse),
-                      fontSize:
-                          SettingsDB().get("fontSize", defaultValue: 38.0),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 120,
-                  )
-                ],
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                height: 80,
-                padding: const EdgeInsets.only(right: 12, left: 12),
-                color: Theme.of(context).colorScheme.background,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment
-                      .spaceBetween, // Distribute buttons horizontally
-                  children: [
-                    ElevatedButton(
-                      onPressed: () => _decrease(),
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 12.0, horizontal: 18),
-                        child: Icon(
-                          Icons.arrow_back_rounded,
-                          size: 30,
-                        ),
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () => _increase(),
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 12.0, horizontal: 18),
-                        child: Icon(
-                          Icons.arrow_forward_rounded,
-                          size: 30,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+      body: SettingsDB().get("viewMode", defaultValue: true)
+          ? cardView(marginValue: marginValue)
+          : listView(),
     );
   }
 
@@ -345,5 +254,122 @@ class _ReadPageState extends State<ReadPage> {
 
   void _delete() {
     BookmarkDB().delete(_currentChapter);
+  }
+
+  Widget cardView({required double marginValue}) {
+    return SimpleGestureDetector(
+      onHorizontalSwipe: (SwipeDirection direction) {
+        if (direction == SwipeDirection.left) {
+          _increase();
+        } else if (direction == SwipeDirection.right) {
+          _decrease();
+        }
+      },
+      child: Stack(
+        children: [
+          SingleChildScrollView(
+            controller: _scrollController,
+            child: Column(
+              children: [
+                Container(
+                  margin: EdgeInsets.only(
+                      left: marginValue, right: marginValue, top: 20),
+                  child: LinearPercentIndicator(
+                      barRadius: const Radius.circular(30),
+                      animation: true,
+                      animateFromLastPercent: true,
+                      backgroundColor: Theme.of(context).colorScheme.onTertiary,
+                      lineHeight: 20.0,
+                      percent: _currentVerse / _totalVerses,
+                      progressColor: Theme.of(context).colorScheme.tertiary),
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: ReadQuranCard(
+                    currentChapter: _currentChapter,
+                    currentVerse: _currentVerse,
+                    totalVerses: _totalVerses,
+                    juzNumber:
+                        quran.getJuzNumber(_currentChapter, _currentVerse),
+                    basmala: _currentChapter != 1 &&
+                            _currentVerse == 1 &&
+                            _currentChapter != 9
+                        ? quran.basmala
+                        : null,
+                    verse: quran.getVerse(_currentChapter, _currentVerse),
+                    translation: quran.getVerseTranslation(
+                        _currentChapter, _currentVerse),
+                    url: quran.getAudioURLByVerse(
+                        _currentChapter, _currentVerse),
+                    fontSize: SettingsDB().get("fontSize", defaultValue: 38.0),
+                  ),
+                ),
+                const SizedBox(
+                  height: 120,
+                )
+              ],
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              height: 80,
+              padding: const EdgeInsets.only(right: 12, left: 12),
+              color: Theme.of(context).colorScheme.background,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment
+                    .spaceBetween, // Distribute buttons horizontally
+                children: [
+                  ElevatedButton(
+                    onPressed: () => _decrease(),
+                    child: const Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 12.0, horizontal: 18),
+                      child: Icon(
+                        Icons.arrow_back_rounded,
+                        size: 30,
+                      ),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => _increase(),
+                    child: const Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 12.0, horizontal: 18),
+                      child: Icon(
+                        Icons.arrow_forward_rounded,
+                        size: 30,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget listView() {
+    return ListView.builder(
+        itemCount: _totalVerses,
+        itemBuilder: (context, index) {
+          return Column(
+            children: [
+              ListTile(
+                title: Text(
+                  quran.getVerse(_currentChapter, index + 1,
+                      verseEndSymbol: true),
+                  textDirection: TextDirection.rtl,
+                  style: TextStyle(
+                      fontFamily: "Hafs",
+                      fontSize: SettingsDB().get("fontSize", defaultValue: 35)),
+                ),
+              ),
+              const Divider()
+            ],
+          );
+        });
   }
 }

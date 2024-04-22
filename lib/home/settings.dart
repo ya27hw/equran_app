@@ -26,6 +26,11 @@ class SettingsPage extends StatelessWidget {
             title: "Vibration",
             settingsKey: "vibration",
           ),
+          const SettingsSwitch(
+            title: "Card View",
+            subtitle: "Toggle to turn on card view.",
+            settingsKey: "viewMode",
+          ),
           const PlayBackSlider(),
           ListTile(
             title: const Text("Clear Favourites"),
