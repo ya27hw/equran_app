@@ -30,10 +30,16 @@ class _ReadPageState extends State<ReadPage> {
   late ScrollController _scrollController;
   late int _totalVerses;
   late FocusNode _buttonFocusNode;
+  late ItemPositionsListener _ipl;
 
   @override
   void initState() {
     super.initState();
+    _ipl = ItemPositionsListener.create();
+    _ipl.itemPositions.addListener(() {
+      onScroll();
+    });
+
     _scrollController = ScrollController();
     _currentChapter = widget.chapter;
     _currentVerse = widget.startVerse is int ? widget.startVerse! : 1;
@@ -46,6 +52,16 @@ class _ReadPageState extends State<ReadPage> {
     _scrollController.dispose();
     _buttonFocusNode.dispose();
     super.dispose();
+  }
+
+  void onScroll() {
+    final positions = _ipl.itemPositions.value;
+    int currentIndex = positions.first.index + 1;
+    if (_currentVerse != currentIndex) {
+      print("Updating...");
+      _setVerse(currentIndex);
+      _updateDB();
+    }
   }
 
   @override
@@ -250,7 +266,6 @@ class _ReadPageState extends State<ReadPage> {
 
   void _updateDB() {
     BookmarkDB().addReadingEntry(_currentChapter, _currentVerse);
-    // BookmarkDB().put(_currentChapter, DateTime.now().millisecondsSinceEpoch);
   }
 
   void _delete() {
@@ -355,19 +370,27 @@ class _ReadPageState extends State<ReadPage> {
   Widget listView() {
     return ScrollablePositionedList.builder(
         initialScrollIndex: _currentVerse - 1,
+        itemPositionsListener: _ipl,
         itemCount: _totalVerses,
         itemBuilder: (context, index) {
+          int currentVerse = index + 1;
           return Column(
             children: [
-              ListTile(
-                title: Text(
-                  quran.getVerse(_currentChapter, index + 1,
-                      verseEndSymbol: true),
-                  textDirection: TextDirection.rtl,
-                  style: TextStyle(
-                      fontFamily: "Hafs",
-                      fontSize: SettingsDB().get("fontSize", defaultValue: 35)),
-                ),
+              ReadQuranCard(
+                currentChapter: _currentChapter,
+                currentVerse: currentVerse,
+                totalVerses: _totalVerses,
+                juzNumber: quran.getJuzNumber(_currentChapter, currentVerse),
+                basmala: _currentChapter != 1 &&
+                        currentVerse == 1 &&
+                        _currentChapter != 9
+                    ? quran.basmala
+                    : null,
+                verse: quran.getVerse(_currentChapter, currentVerse),
+                translation:
+                    quran.getVerseTranslation(_currentChapter, currentVerse),
+                url: quran.getAudioURLByVerse(_currentChapter, currentVerse),
+                fontSize: SettingsDB().get("fontSize", defaultValue: 38.0),
               ),
               const Divider()
             ],
