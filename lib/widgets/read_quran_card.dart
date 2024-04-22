@@ -48,7 +48,7 @@ class ReadQuranCard extends StatelessWidget {
     }
     return Card(
       elevation: 4,
-      margin: EdgeInsets.symmetric(horizontal: marginValue, vertical: 20),
+      margin: EdgeInsets.symmetric(horizontal: marginValue, vertical: 10),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
