@@ -31,11 +31,13 @@ class _ReadPageState extends State<ReadPage> {
   late int _totalVerses;
   late FocusNode _buttonFocusNode;
   late ItemPositionsListener _ipl;
+  late ItemScrollController _isc;
 
   @override
   void initState() {
     super.initState();
     _ipl = ItemPositionsListener.create();
+    _isc = ItemScrollController();
     _ipl.itemPositions.addListener(() {
       onScroll();
     });
@@ -58,7 +60,6 @@ class _ReadPageState extends State<ReadPage> {
     final positions = _ipl.itemPositions.value;
     int currentIndex = positions.first.index + 1;
     if (_currentVerse != currentIndex) {
-      print("Updating...");
       _setVerse(currentIndex);
       _updateDB();
     }
@@ -115,6 +116,10 @@ class _ReadPageState extends State<ReadPage> {
                               onPressed: () {
                                 _reset();
                                 _delete();
+                                if (!SettingsDB()
+                                    .get("viewMode", defaultValue: true)) {
+                                  _isc.jumpTo(index: 0);
+                                }
                                 Navigator.of(context).pop();
                               },
                             )
@@ -139,6 +144,10 @@ class _ReadPageState extends State<ReadPage> {
                                 child: const Text("CONFIRM"),
                                 onPressed: () {
                                   _setVerse(_picker);
+                                  if (!SettingsDB()
+                                      .get("viewMode", defaultValue: true)) {
+                                    _isc.jumpTo(index: _picker - 1);
+                                  }
                                   _updateDB();
                                   Navigator.of(context).pop();
                                 }),
@@ -369,6 +378,7 @@ class _ReadPageState extends State<ReadPage> {
 
   Widget listView() {
     return ScrollablePositionedList.builder(
+        itemScrollController: _isc,
         initialScrollIndex: _currentVerse - 1,
         itemPositionsListener: _ipl,
         itemCount: _totalVerses,
