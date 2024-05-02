@@ -32,6 +32,7 @@ class _ReadPageState extends State<ReadPage> {
   late FocusNode _buttonFocusNode;
   late ItemPositionsListener _ipl;
   late ItemScrollController _isc;
+  late bool _viewMode;
 
   @override
   void initState() {
@@ -41,6 +42,8 @@ class _ReadPageState extends State<ReadPage> {
     _ipl.itemPositions.addListener(() {
       onScroll();
     });
+
+    _viewMode = SettingsDB().get("viewMode", defaultValue: true);
 
     _scrollController = ScrollController();
     _currentChapter = widget.chapter;
@@ -185,16 +188,15 @@ class _ReadPageState extends State<ReadPage> {
           ),
         ],
       ),
-      body: SettingsDB().get("viewMode", defaultValue: true)
-          ? cardView(marginValue: marginValue)
-          : listView(),
+      body: _viewMode ? cardView(marginValue: marginValue) : listView(),
     );
   }
 
   void _increase() {
     _vibrate();
     _scrollUp();
-    if (_currentVerse != _totalVerses) {
+    // If the viewMode is to ListView, you just directly ignore this if and go to else
+    if (_currentVerse != _totalVerses && _viewMode) {
       _incrementVerse();
       _updateDB();
     } else {
@@ -270,7 +272,9 @@ class _ReadPageState extends State<ReadPage> {
   }
 
   void _scrollUp() {
-    _scrollController.jumpTo(_scrollController.position.minScrollExtent);
+    _viewMode
+        ? _scrollController.jumpTo(_scrollController.position.minScrollExtent)
+        : _isc.jumpTo(index: 0);
   }
 
   void _updateDB() {
@@ -402,7 +406,36 @@ class _ReadPageState extends State<ReadPage> {
                 url: quran.getAudioURLByVerse(_currentChapter, currentVerse),
                 fontSize: SettingsDB().get("fontSize", defaultValue: 38.0),
               ),
-              const Divider()
+              currentVerse != _totalVerses
+                  ? const Divider()
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment
+                          .spaceBetween, // Distribute buttons horizontally
+                      children: [
+                        ElevatedButton(
+                          onPressed: () => _decrease(),
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 12.0, horizontal: 18),
+                            child: Icon(
+                              Icons.arrow_back_rounded,
+                              size: 30,
+                            ),
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () => _increase(),
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 12.0, horizontal: 18),
+                            child: Icon(
+                              Icons.arrow_forward_rounded,
+                              size: 30,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
             ],
           );
         });
