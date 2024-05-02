@@ -29,10 +29,43 @@ class ReadQuranCard extends StatelessWidget {
     required this.url,
   });
 
+  void _showInputPrompt(
+      BuildContext context, TextEditingController _textController) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Enter a note:'),
+            content: TextField(
+              controller: _textController,
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text('Cancel'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: Text('Submit'),
+                onPressed: () {
+                  // Process the submitted text (from _textController.text)
+                  FavouritesDB().put(
+                      "$currentChapter-${currentVerse.toString().padLeft(3, "0")}",
+                      _textController.text);
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     // Get the size of the screen
     Size screenSize = MediaQuery.of(context).size;
+    TextEditingController _textController = TextEditingController();
 
     // Define margin values for different screen sizes
     double marginValue;
@@ -68,9 +101,7 @@ class ReadQuranCard extends StatelessWidget {
                       "$currentChapter-${currentVerse.toString().padLeft(3, "0")}"),
                   onTap: (bool isLiked) async {
                     if (!isLiked) {
-                      FavouritesDB().put(
-                          "$currentChapter-${currentVerse.toString().padLeft(3, "0")}",
-                          true);
+                      _showInputPrompt(context, _textController);
                     } else {
                       FavouritesDB().delete(
                           "$currentChapter-${currentVerse.toString().padLeft(3, "0")}");
