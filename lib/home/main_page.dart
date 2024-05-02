@@ -1,4 +1,4 @@
-import 'package:emushaf/backend/bookmark_db.dart';
+import 'package:emushaf/backend/library.dart';
 import 'package:emushaf/utils/debouncer.dart';
 import 'package:emushaf/widgets/library.dart';
 import 'package:flutter/material.dart';
@@ -101,16 +101,18 @@ class _MainPageState extends State<MainPage>
             ),
           ),
           SliverToBoxAdapter(
-            child: ValueListenableBuilder(
-              valueListenable: BookmarkDB().listener,
-              builder: (BuildContext context, Box<dynamic> box, child) {
-                if (box.length == 0) {
-                  return const SizedBox.shrink();
-                } else {
-                  return LastReadCard();
-                }
-              },
-            ),
+            child: SettingsDB().get("showLastRead", defaultValue: true) == true
+                ? ValueListenableBuilder(
+                    valueListenable: BookmarkDB().listener,
+                    builder: (BuildContext context, Box<dynamic> box, child) {
+                      if (box.length == 0) {
+                        return const SizedBox.shrink();
+                      } else {
+                        return const LastReadCard();
+                      }
+                    },
+                  )
+                : null,
           ),
           SliverPersistentHeader(
             pinned: false,
@@ -128,7 +130,7 @@ class _MainPageState extends State<MainPage>
           controller: _tabController,
           children: [
             QuranCardList(searchQuery: _searchQuery),
-            JuzCardList(),
+            const JuzCardList(),
             const FavouritesList(),
           ],
         ),

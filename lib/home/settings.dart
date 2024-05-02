@@ -31,6 +31,11 @@ class SettingsPage extends StatelessWidget {
             title: "Card View",
             settingsKey: "viewMode",
           ),
+          const SettingsSwitch(
+            title: "Show reading history",
+            settingsKey: "showLastRead",
+            subtitle: "Shows you up to 7 last read Surahs.",
+          ),
           const PlayBackSlider(),
           ListTile(
             title: const Text("Clear reading history"),
