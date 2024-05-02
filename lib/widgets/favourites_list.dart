@@ -19,6 +19,10 @@ class _FavouritesListState extends State<FavouritesList> {
       itemCount: allKeys.length,
       itemBuilder: (BuildContext context, int index) {
         final String key = allKeys[index];
+        dynamic value = FavouritesDB().get(key);
+        if (value is bool) {
+          value = "";
+        }
 
         final List<String> surahAndVerse = key.split("-");
         final surah = int.parse(surahAndVerse.first);
@@ -42,7 +46,7 @@ class _FavouritesListState extends State<FavouritesList> {
               padding: const EdgeInsets.all(4.0),
               child: ListTile(
                   title: Text(quran.getSurahName(surah)),
-                  subtitle: Text("Verse $verse"),
+                  subtitle: Text("Verse $verse - $value"),
                   trailing: Text(
                     quran.getSurahNameArabic(surah),
                     style: Theme.of(context).textTheme.bodyLarge,
