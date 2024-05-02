@@ -1,4 +1,5 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:emushaf/backend/bookmark_db.dart';
 import 'package:emushaf/backend/favourites_db.dart';
 import 'package:emushaf/backend/library.dart' show SettingsDB;
 import 'package:emushaf/widgets/library.dart'
@@ -31,6 +32,52 @@ class SettingsPage extends StatelessWidget {
             settingsKey: "viewMode",
           ),
           const PlayBackSlider(),
+          ListTile(
+            title: const Text("Clear reading history"),
+            subtitle: const Text("Removes all your reading history."),
+            onTap: () => showDialog<void>(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                      backgroundColor:
+                          Theme.of(context).colorScheme.errorContainer,
+                      title: Text(
+                        "Clear reading history",
+                        style: TextStyle(
+                            color:
+                                Theme.of(context).colorScheme.onErrorContainer),
+                      ),
+                      icon: const Icon(Icons.warning_amber_rounded),
+                      content: Text(
+                        "WARNING: Are you sure you want to clear your reading history?",
+                        style: TextStyle(
+                            color:
+                                Theme.of(context).colorScheme.onErrorContainer),
+                      ),
+                      actions: <Widget>[
+                        TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: Text(
+                              "NO",
+                              style: TextStyle(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onErrorContainer),
+                            )),
+                        TextButton(
+                            onPressed: () async {
+                              await BookmarkDB().clear();
+                              Navigator.of(context).pop();
+                            },
+                            child: Text(
+                              "YES",
+                              style: TextStyle(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onErrorContainer),
+                            ))
+                      ],
+                    )),
+          ),
           ListTile(
             title: const Text("Clear Favourites"),
             subtitle: const Text("Removes all verses you have liked. "),
