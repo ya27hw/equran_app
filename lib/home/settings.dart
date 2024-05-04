@@ -51,22 +51,20 @@ class SettingsPage extends StatelessWidget {
                     // Use StatefulBuilder to maintain radio state
                     builder: (context, setState) {
                       return AlertDialog(
-                        title: Text("Select an Item"),
+                        title: const Text("Select Language"),
                         content: SingleChildScrollView(
                           child: Column(
                             // Column for radio buttons
                             children: items.asMap().entries.map((entry) {
                               int index = entry.key;
-                              return ListTile(
+                              return RadioListTile(
                                 title: Text(entry.value.name),
-                                leading: Radio<int>(
-                                  value: index,
-                                  groupValue: _selected,
-                                  onChanged: (int? value) {
-                                    SettingsDB().put("translation", value);
-                                    Navigator.pop(context);
-                                  },
-                                ),
+                                value: index,
+                                groupValue: _selected,
+                                onChanged: (int? value) {
+                                  SettingsDB().put("translation", value);
+                                  Navigator.pop(context);
+                                },
                               );
                             }).toList(),
                           ),
