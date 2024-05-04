@@ -35,19 +35,14 @@ class ReadQuranCard extends StatelessWidget {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('Enter a note:'),
+            title: const Text('Enter a note:'),
             content: TextField(
               controller: _textController,
+              decoration: const InputDecoration(hintText: "Optional..."),
             ),
             actions: <Widget>[
               TextButton(
-                child: Text('Cancel'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              TextButton(
-                child: Text('Submit'),
+                child: const Text('OK'),
                 onPressed: () {
                   // Process the submitted text (from _textController.text)
                   FavouritesDB().put(

@@ -327,7 +327,9 @@ class _ReadPageState extends State<ReadPage> {
                         : null,
                     verse: quran.getVerse(_currentChapter, _currentVerse),
                     translation: quran.getVerseTranslation(
-                        _currentChapter, _currentVerse),
+                        _currentChapter, _currentVerse,
+                        translation: quran.Translation.values[
+                            SettingsDB().get("translation", defaultValue: 0)]),
                     url: quran.getAudioURLByVerse(
                         _currentChapter, _currentVerse),
                     fontSize: SettingsDB().get("fontSize", defaultValue: 38.0),
@@ -401,8 +403,10 @@ class _ReadPageState extends State<ReadPage> {
                     ? quran.basmala
                     : null,
                 verse: quran.getVerse(_currentChapter, currentVerse),
-                translation:
-                    quran.getVerseTranslation(_currentChapter, currentVerse),
+                translation: quran.getVerseTranslation(
+                    _currentChapter, currentVerse,
+                    translation: quran.Translation.values[
+                        SettingsDB().get("translation", defaultValue: 0)]),
                 url: quran.getAudioURLByVerse(_currentChapter, currentVerse),
                 fontSize: SettingsDB().get("fontSize", defaultValue: 38.0),
               ),
