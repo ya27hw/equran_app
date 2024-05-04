@@ -58,6 +58,8 @@ class SettingsPage extends StatelessWidget {
                             children: items.asMap().entries.map((entry) {
                               int index = entry.key;
                               return RadioListTile(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20)),
                                 title: Text(entry.value.name),
                                 value: index,
                                 groupValue: _selected,
