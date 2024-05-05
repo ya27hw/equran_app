@@ -26,7 +26,7 @@ jobs:
      - run: echo "${{ steps.tag.outputs.tag }}"
 
      - name: Compare Versions and Create Tag (Modified)
-       if: ${{ 'v' + steps.get_flutter_version.outputs.version_number > steps.tag.outputs.tag }}  # Modified Condition
+       if: ${{ "v${{steps.get_flutter_version.outputs.version_number}}" > steps.tag.outputs.tag }}  # Modified Condition
        run: |
          VERSION=${{ steps.get_flutter_version.outputs.version_number }} 
          git tag -a $VERSION -m "Automatic tag for version $VERSION"
