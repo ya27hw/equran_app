@@ -1,61 +1,39 @@
-name: Build and Deploy Flutter App (Android)
+on: push
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+name: Create or Update Tag
 
 jobs:
-  build-and-release:
+  build:
+    name: Check Version and Create Tag
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4.1.1  # Check out the code
-      - uses: subosito/flutter-action@v2.13.0
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Get Flutter version
+        id: get-flutter-version
+        uses: zgosalvez/github-actions-get-flutter-version-env@v2
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v1
         with:
-          channel: 'stable'
-          cache: true
-      - uses: actions/setup-java@v3
+          flutter-version: ${{ steps.get-flutter-version.outputs.version }}
+
+      - name: Extract Version from pubspec.yaml
+        id: extract_version
+        uses: mikefarah/yq@master  # Use 'yq' to parse YAML
         with:
-          distribution: 'zulu' # Or another distribution like 'zulu'
-          java-version: '12.x'
-          cache: gradle
-      - run: flutter --version
+          cmd: yq -r '.version' pubspec.yaml
 
-      - name: Get Dependencies
-        run: flutter pub get
-
-      - name: Decode Keystore
-        env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-        run: echo $KEYSTORE_BASE64 | base64 --decode > android/app/keystore.jks
-
-      - name: Configure Signing
-        env:
-          PROPERTIES_PATH: "./android/key.properties"
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+      - name: Get Latest Tag
+        id: get_latest_tag
         run: |
-          echo keyPassword=$KEY_PASSWORD > $PROPERTIES_PATH
-          echo storePassword=$KEYSTORE_PASSWORD >> $PROPERTIES_PATH
-          echo keyAlias=$KEY_ALIAS >> $PROPERTIES_PATH
+          git fetch --depth=1 --tags 
+          git describe --tags --abbrev=0 || echo "v0.0.0" 
 
-      - name: Build Android Release APK
-        run: flutter build apk --split-per-abi
-
-      - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v4.3.1
-        with:
-          name: equran-release-apk
-          path: build/app/outputs/flutter-apk/*.apk
-
-      - name: GH Release
-        uses: softprops/action-gh-release@v2.0.2
-        with:
-          files: build/app/outputs/flutter-apk/app-*.apk
-          tag_name: v1.0.${{ github.run_number }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
-
+      - name: Compare Versions and Create Tag
+        if: ${{ steps.extract_version.outputs.result > steps.get_latest_tag.outputs.result }}
+        run: |
+          VERSION=$(yq -r '.version' pubspec.yaml)  # Read from pubspec.yaml
+          git tag -a $VERSION -m "Automatic tag for version $VERSION"
+          git push origin $VERSION
