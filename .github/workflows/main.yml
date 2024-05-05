@@ -1,39 +1,31 @@
-on: push
-
-name: Create or Update Tag
+name: "Produce New Tag"  
+on: 
+ push:
+   branches:
+     - main
 
 jobs:
-  build:
-    name: Check Version and Create Tag
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+ build:
+   runs-on: ubuntu-latest
+   steps:
+     - uses: actions/checkout@v2
 
-      - name: Get Flutter version
-        id: get-flutter-version
-        uses: zgosalvez/github-actions-get-flutter-version-env@v2
+     - name: Get Flutter version (Optional) 
+       id: get_flutter_version       
+       uses: its404/get-flutter-version@v1.0.0
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v1
-        with:
-          flutter-version: ${{ steps.get-flutter-version.outputs.version }}
+     - name: Output Flutter version (Optional)
+       run: echo 'version_number:' ${{ steps.get_flutter_version.outputs.version_number }} ' build_number:' ${{ steps.get_flutter_version.outputs.build_number }}
 
-      - name: Extract Version from pubspec.yaml
-        id: extract_version
-        uses: mikefarah/yq@master  # Use 'yq' to parse YAML
-        with:
-          cmd: yq -r '.version' pubspec.yaml
+     - name: Get Latest Tag
+       id: get_latest_tag
+       run: |
+         git fetch --depth=1 --tags 
+         git describe --tags --abbrev=0 || echo "v0.0.0"  
 
-      - name: Get Latest Tag
-        id: get_latest_tag
-        run: |
-          git fetch --depth=1 --tags 
-          git describe --tags --abbrev=0 || echo "v0.0.0" 
-
-      - name: Compare Versions and Create Tag
-        if: ${{ steps.extract_version.outputs.result > steps.get_latest_tag.outputs.result }}
-        run: |
-          VERSION=$(yq -r '.version' pubspec.yaml)  # Read from pubspec.yaml
-          git tag -a $VERSION -m "Automatic tag for version $VERSION"
-          git push origin $VERSION
+     - name: Compare Versions and Create Tag (Modified)
+       if: ${{ steps.get_flutter_version.outputs.version_number > steps.get_latest_tag.outputs.result }}  # Modified Condition
+       run: |
+         VERSION=${{ steps.get_flutter_version.outputs.version_number }} 
+         git tag -a $VERSION -m "Automatic tag for version $VERSION"
+         git push origin $VERSION
