@@ -19,16 +19,14 @@ jobs:
 
      - name: Get latest tag pushed
        id: tag
-       uses: 32teeth/action-github-tag@v1.0.7
+       uses: oprypin/find-latest-tag@v1.1.2
        with:
-        # Return only the tag number (e.g., v1.0.0 -> 1.0.0)
-        numbers_only: true
-          
-     - name: Use the latest tag pushed
-       run: echo ${{steps.tag.outputs.tag}} 
+        repository: ya27hw/equran_app
+        releases-only: true
+     - run: echo "${{ steps.tag.outputs.tag }}"
 
      - name: Compare Versions and Create Tag (Modified)
-       if: ${{ steps.get_flutter_version.outputs.version_number > steps.tag.outputs.tag }}  # Modified Condition
+       if: ${{ 'v' + steps.get_flutter_version.outputs.version_number > steps.tag.outputs.tag }}  # Modified Condition
        run: |
          VERSION=${{ steps.get_flutter_version.outputs.version_number }} 
          git tag -a $VERSION -m "Automatic tag for version $VERSION"
