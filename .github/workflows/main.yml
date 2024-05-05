@@ -17,14 +17,18 @@ jobs:
      - name: Output Flutter version (Optional)
        run: echo 'version_number:' ${{ steps.get_flutter_version.outputs.version_number }} ' build_number:' ${{ steps.get_flutter_version.outputs.build_number }}
 
-     - name: Get Latest Tag
-       id: get_latest_tag
-       run: |
-         git fetch --depth=1 --tags 
-         git describe --tags --abbrev=0 || echo "v0.0.0"  
+     - name: Get latest tag pushed
+       id: tag
+       uses: 32teeth/action-github-tag@v1
+       with:
+        # Return only the tag number (e.g., v1.0.0 -> 1.0.0)
+        numbers_only: true
+          
+     - name: Use the latest tag pushed
+       run: echo ${{steps.tag.outputs.tag}} 
 
      - name: Compare Versions and Create Tag (Modified)
-       if: ${{ steps.get_flutter_version.outputs.version_number > steps.get_latest_tag.outputs.result }}  # Modified Condition
+       if: ${{ steps.get_flutter_version.outputs.version_number > steps.tag.outputs.tag }}  # Modified Condition
        run: |
          VERSION=${{ steps.get_flutter_version.outputs.version_number }} 
          git tag -a $VERSION -m "Automatic tag for version $VERSION"
