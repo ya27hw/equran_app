@@ -16,6 +16,9 @@ jobs:
 
       - run: flutter build web --release --web-renderer canvaskit
 
+      - name: Create CNAME file
+        run: echo 'quran.elbaesy.com' > build/web/CNAME
+
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4.0.0
         with:
