@@ -131,7 +131,16 @@ class _MainPageState extends State<MainPage>
           children: [
             QuranCardList(searchQuery: _searchQuery),
             const JuzCardList(),
-            const FavouritesList(),
+            ValueListenableBuilder(
+              valueListenable: FavouritesDB().listener,
+              builder: (BuildContext context, Box<dynamic> box, child) {
+                if (box.length == 0) {
+                  return const SizedBox.shrink();
+                } else {
+                  return FavouritesList();
+                }
+              },
+            )
           ],
         ),
       ),

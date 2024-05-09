@@ -11,10 +11,10 @@ class FavouritesList extends StatefulWidget {
 }
 
 class _FavouritesListState extends State<FavouritesList> {
-  List<dynamic> allKeys = FavouritesDB().getKeys().toList();
-
   @override
   Widget build(BuildContext context) {
+    List<dynamic> allKeys = FavouritesDB().getKeys().toList();
+
     return ListView.builder(
       itemCount: allKeys.length,
       itemBuilder: (BuildContext context, int index) {
@@ -46,7 +46,7 @@ class _FavouritesListState extends State<FavouritesList> {
               padding: const EdgeInsets.all(4.0),
               child: ListTile(
                   title: Text(quran.getSurahName(surah)),
-                  subtitle: Text("Verse $verse - $value"),
+                  subtitle: Text("Verse $verse $value"),
                   trailing: Text(
                     quran.getSurahNameArabic(surah),
                     style: Theme.of(context).textTheme.bodyLarge,
