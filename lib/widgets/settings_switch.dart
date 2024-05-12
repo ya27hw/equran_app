@@ -1,4 +1,4 @@
-import 'package:emushaf/backend/library.dart' show SettingsDB;
+import 'package:eQuran/backend/library.dart' show SettingsDB;
 import 'package:flutter/material.dart';
 
 class SettingsSwitch extends StatefulWidget {

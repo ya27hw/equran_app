@@ -1,6 +1,6 @@
-import 'package:emushaf/backend/bookmark_db.dart';
-import 'package:emushaf/backend/library.dart' show SettingsDB;
-import 'package:emushaf/widgets/library.dart' show ReadQuranCard;
+import 'package:eQuran/backend/bookmark_db.dart';
+import 'package:eQuran/backend/library.dart' show SettingsDB;
+import 'package:eQuran/widgets/library.dart' show ReadQuranCard;
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';

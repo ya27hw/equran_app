@@ -1,4 +1,4 @@
-import 'package:emushaf/backend/library.dart';
+import 'package:eQuran/backend/library.dart';
 import 'package:flutter/material.dart';
 
 class PlayBackSlider extends StatefulWidget {

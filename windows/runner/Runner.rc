@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "emushaf" "\0"
+            VALUE "FileDescription", "eQuran" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "emushaf" "\0"
+            VALUE "InternalName", "eQuran" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2024 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "emushaf.exe" "\0"
-            VALUE "ProductName", "emushaf" "\0"
+            VALUE "OriginalFilename", "eQuran.exe" "\0"
+            VALUE "ProductName", "eQuran" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

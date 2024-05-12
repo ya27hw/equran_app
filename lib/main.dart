@@ -1,5 +1,5 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
-import 'package:emushaf/home/library.dart' show HomePage;
+import 'package:eQuran/home/library.dart' show HomePage;
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 

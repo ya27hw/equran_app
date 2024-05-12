@@ -1,5 +1,5 @@
-import 'package:emushaf/backend/favourites_db.dart';
-import 'package:emushaf/widgets/library.dart';
+import 'package:eQuran/backend/favourites_db.dart';
+import 'package:eQuran/widgets/library.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
 
@@ -37,6 +37,7 @@ class ReadQuranCard extends StatelessWidget {
           return AlertDialog(
             title: const Text('Enter a note:'),
             content: TextField(
+              maxLines: null,
               controller: _textController,
               decoration: const InputDecoration(hintText: "Optional..."),
             ),

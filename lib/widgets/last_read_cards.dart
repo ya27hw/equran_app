@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:emushaf/backend/library.dart';
-import 'package:emushaf/home/read.dart';
+import 'package:eQuran/backend/library.dart';
+import 'package:eQuran/home/read.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_svg/svg.dart';

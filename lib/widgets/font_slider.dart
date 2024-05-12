@@ -1,5 +1,5 @@
-import 'package:emushaf/backend/library.dart' show SettingsDB;
-import 'package:emushaf/widgets/library.dart' show ReadQuranCard;
+import 'package:eQuran/backend/library.dart' show SettingsDB;
+import 'package:eQuran/widgets/library.dart' show ReadQuranCard;
 import 'package:flutter/material.dart';
 import 'package:quran/quran.dart' as quran;
 
