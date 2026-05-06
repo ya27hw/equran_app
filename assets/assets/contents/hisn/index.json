@@ -1,0 +1,940 @@
+[
+  {
+    "id": "001",
+    "title": "المقدمة",
+    "duaCount": 5,
+    "footnoteCount": 2,
+    "asset": "assets/contents/hisn/categories/001.json"
+  },
+  {
+    "id": "002",
+    "title": "فضل الذكر",
+    "duaCount": 13,
+    "footnoteCount": 13,
+    "asset": "assets/contents/hisn/categories/002.json"
+  },
+  {
+    "id": "003",
+    "title": "أذكار الاستيقاظ من النوم",
+    "duaCount": 4,
+    "footnoteCount": 7,
+    "asset": "assets/contents/hisn/categories/003.json"
+  },
+  {
+    "id": "004",
+    "title": "دعاء لبس الثوب",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/004.json"
+  },
+  {
+    "id": "005",
+    "title": "دعاء لبس الثوب الجديد",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/005.json"
+  },
+  {
+    "id": "006",
+    "title": "الدعاء لمن لبس ثوباً جديداً",
+    "duaCount": 2,
+    "footnoteCount": 2,
+    "asset": "assets/contents/hisn/categories/006.json"
+  },
+  {
+    "id": "007",
+    "title": "ما يقول إذا وضع الثوب",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/007.json"
+  },
+  {
+    "id": "008",
+    "title": "دعاء دخول الخلاء",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/008.json"
+  },
+  {
+    "id": "009",
+    "title": "دعاء الخروج من الخلاء",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/009.json"
+  },
+  {
+    "id": "010",
+    "title": "الذكر قبل الوضوء",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/010.json"
+  },
+  {
+    "id": "011",
+    "title": "الذكر بعد الفراغ من الوضوء",
+    "duaCount": 3,
+    "footnoteCount": 3,
+    "asset": "assets/contents/hisn/categories/011.json"
+  },
+  {
+    "id": "012",
+    "title": "الذكر عند الخروج من المنزل",
+    "duaCount": 2,
+    "footnoteCount": 2,
+    "asset": "assets/contents/hisn/categories/012.json"
+  },
+  {
+    "id": "013",
+    "title": "الذكر عند الدخول المنزل",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/013.json"
+  },
+  {
+    "id": "014",
+    "title": "دعاء الذهاب إلى المسجد",
+    "duaCount": 4,
+    "footnoteCount": 4,
+    "asset": "assets/contents/hisn/categories/014.json"
+  },
+  {
+    "id": "015",
+    "title": "دعاء دخول المسجد",
+    "duaCount": 2,
+    "footnoteCount": 4,
+    "asset": "assets/contents/hisn/categories/015.json"
+  },
+  {
+    "id": "016",
+    "title": "دعاء الخروج من المسجد",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/016.json"
+  },
+  {
+    "id": "017",
+    "title": "أذكار الأذان",
+    "duaCount": 5,
+    "footnoteCount": 6,
+    "asset": "assets/contents/hisn/categories/017.json"
+  },
+  {
+    "id": "018",
+    "title": "دعاء الاستفتاح",
+    "duaCount": 6,
+    "footnoteCount": 6,
+    "asset": "assets/contents/hisn/categories/018.json"
+  },
+  {
+    "id": "019",
+    "title": "دعاء الركوع",
+    "duaCount": 5,
+    "footnoteCount": 5,
+    "asset": "assets/contents/hisn/categories/019.json"
+  },
+  {
+    "id": "020",
+    "title": "دعاء الرفع من الركوع",
+    "duaCount": 3,
+    "footnoteCount": 3,
+    "asset": "assets/contents/hisn/categories/020.json"
+  },
+  {
+    "id": "021",
+    "title": "دعاء السجود",
+    "duaCount": 7,
+    "footnoteCount": 7,
+    "asset": "assets/contents/hisn/categories/021.json"
+  },
+  {
+    "id": "022",
+    "title": "دعاء الجلسة بين السجدتين",
+    "duaCount": 2,
+    "footnoteCount": 2,
+    "asset": "assets/contents/hisn/categories/022.json"
+  },
+  {
+    "id": "023",
+    "title": "دعاء سجود التلاوة",
+    "duaCount": 2,
+    "footnoteCount": 2,
+    "asset": "assets/contents/hisn/categories/023.json"
+  },
+  {
+    "id": "024",
+    "title": "التشهد",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/024.json"
+  },
+  {
+    "id": "025",
+    "title": "الصلاة على النبي صلى الله عليه وسلم بعد التشهد",
+    "duaCount": 2,
+    "footnoteCount": 2,
+    "asset": "assets/contents/hisn/categories/025.json"
+  },
+  {
+    "id": "026",
+    "title": "الدعاء بعد التشهد الأخير وقبل السلام",
+    "duaCount": 11,
+    "footnoteCount": 11,
+    "asset": "assets/contents/hisn/categories/026.json"
+  },
+  {
+    "id": "027",
+    "title": "الأذكار بعد السلام من الصلاة",
+    "duaCount": 8,
+    "footnoteCount": 8,
+    "asset": "assets/contents/hisn/categories/027.json"
+  },
+  {
+    "id": "028",
+    "title": "دعاء صلاة الاستخارة",
+    "duaCount": 2,
+    "footnoteCount": 2,
+    "asset": "assets/contents/hisn/categories/028.json"
+  },
+  {
+    "id": "029",
+    "title": "أذكار الصباح والمساء",
+    "duaCount": 25,
+    "footnoteCount": 35,
+    "asset": "assets/contents/hisn/categories/029.json"
+  },
+  {
+    "id": "030",
+    "title": "أذكار النوم",
+    "duaCount": 13,
+    "footnoteCount": 16,
+    "asset": "assets/contents/hisn/categories/030.json"
+  },
+  {
+    "id": "031",
+    "title": "الدعاء إذا تقلب ليلاً",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/031.json"
+  },
+  {
+    "id": "032",
+    "title": "دعاء القلق والفزع في النوم ومن بلي بالوحشة",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/032.json"
+  },
+  {
+    "id": "033",
+    "title": "ما يفعل من رأى الرؤيا أو الحلم",
+    "duaCount": 5,
+    "footnoteCount": 5,
+    "asset": "assets/contents/hisn/categories/033.json"
+  },
+  {
+    "id": "034",
+    "title": "دعاء قنوت الوتر",
+    "duaCount": 3,
+    "footnoteCount": 3,
+    "asset": "assets/contents/hisn/categories/034.json"
+  },
+  {
+    "id": "035",
+    "title": "الذكر عقب السلام من الوتر",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/035.json"
+  },
+  {
+    "id": "036",
+    "title": "دعاء الهم والحزن",
+    "duaCount": 2,
+    "footnoteCount": 2,
+    "asset": "assets/contents/hisn/categories/036.json"
+  },
+  {
+    "id": "037",
+    "title": "دعاء الكرب",
+    "duaCount": 4,
+    "footnoteCount": 4,
+    "asset": "assets/contents/hisn/categories/037.json"
+  },
+  {
+    "id": "038",
+    "title": "دعاء لقاء العدو وذي السلطان",
+    "duaCount": 3,
+    "footnoteCount": 3,
+    "asset": "assets/contents/hisn/categories/038.json"
+  },
+  {
+    "id": "039",
+    "title": "دعاء من خاف ظلم السلطان",
+    "duaCount": 2,
+    "footnoteCount": 2,
+    "asset": "assets/contents/hisn/categories/039.json"
+  },
+  {
+    "id": "040",
+    "title": "الدعاء على العدو",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/040.json"
+  },
+  {
+    "id": "041",
+    "title": "ما يقول من خاف قوماً",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/041.json"
+  },
+  {
+    "id": "042",
+    "title": "دعاء من أصابه شك في الإيمان",
+    "duaCount": 4,
+    "footnoteCount": 4,
+    "asset": "assets/contents/hisn/categories/042.json"
+  },
+  {
+    "id": "043",
+    "title": "الدعاء قضاء الدين",
+    "duaCount": 2,
+    "footnoteCount": 2,
+    "asset": "assets/contents/hisn/categories/043.json"
+  },
+  {
+    "id": "044",
+    "title": "دعاء الوسوسة في الصلاة والقراءة",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/044.json"
+  },
+  {
+    "id": "045",
+    "title": "دعاء من استصعب عليه أمر",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/045.json"
+  },
+  {
+    "id": "046",
+    "title": "ما يقول ويفعل من أذنب ذنباً",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/046.json"
+  },
+  {
+    "id": "047",
+    "title": "دعاء طرد الشيطان ووساوسه",
+    "duaCount": 3,
+    "footnoteCount": 3,
+    "asset": "assets/contents/hisn/categories/047.json"
+  },
+  {
+    "id": "048",
+    "title": "الدعاء حينما يقع مالا يرضاه أو غلب على أمره",
+    "duaCount": 2,
+    "footnoteCount": 2,
+    "asset": "assets/contents/hisn/categories/048.json"
+  },
+  {
+    "id": "049",
+    "title": "تهنئة المولود له وجوابه",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/049.json"
+  },
+  {
+    "id": "050",
+    "title": "ما يعوذ به الأولاد",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/050.json"
+  },
+  {
+    "id": "051",
+    "title": "الدعاء للمريض في عيادته",
+    "duaCount": 2,
+    "footnoteCount": 2,
+    "asset": "assets/contents/hisn/categories/051.json"
+  },
+  {
+    "id": "052",
+    "title": "فضل عيادة المريض",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/052.json"
+  },
+  {
+    "id": "053",
+    "title": "دعاء المريض الذي يئس من حياته",
+    "duaCount": 3,
+    "footnoteCount": 3,
+    "asset": "assets/contents/hisn/categories/053.json"
+  },
+  {
+    "id": "054",
+    "title": "تلقين المحتضر",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/054.json"
+  },
+  {
+    "id": "055",
+    "title": "دعاء من أصيب بمصيبة",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/055.json"
+  },
+  {
+    "id": "056",
+    "title": "الدعاء عند إغماض الميت",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/056.json"
+  },
+  {
+    "id": "057",
+    "title": "الدعاء للميت في الصلاة عليه",
+    "duaCount": 4,
+    "footnoteCount": 4,
+    "asset": "assets/contents/hisn/categories/057.json"
+  },
+  {
+    "id": "058",
+    "title": "الدعاء للفرط في الصلاة عليه",
+    "duaCount": 3,
+    "footnoteCount": 3,
+    "asset": "assets/contents/hisn/categories/058.json"
+  },
+  {
+    "id": "059",
+    "title": "دعاء التعزية",
+    "duaCount": 2,
+    "footnoteCount": 2,
+    "asset": "assets/contents/hisn/categories/059.json"
+  },
+  {
+    "id": "060",
+    "title": "الدعاء عند إدخال الميت القبر",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/060.json"
+  },
+  {
+    "id": "061",
+    "title": "الدعاء بعد دفن الميت",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/061.json"
+  },
+  {
+    "id": "062",
+    "title": "دعاء زيارة القبور",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/062.json"
+  },
+  {
+    "id": "063",
+    "title": "دعاء الريح",
+    "duaCount": 2,
+    "footnoteCount": 2,
+    "asset": "assets/contents/hisn/categories/063.json"
+  },
+  {
+    "id": "064",
+    "title": "دعاء الرعد",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/064.json"
+  },
+  {
+    "id": "065",
+    "title": "من أدعية الاستسقاء",
+    "duaCount": 3,
+    "footnoteCount": 3,
+    "asset": "assets/contents/hisn/categories/065.json"
+  },
+  {
+    "id": "066",
+    "title": "الدعاء إذا نزل المطر",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/066.json"
+  },
+  {
+    "id": "067",
+    "title": "الذكر بعد نزول المطر",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/067.json"
+  },
+  {
+    "id": "068",
+    "title": "من أدعية الاستصحاء",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/068.json"
+  },
+  {
+    "id": "069",
+    "title": "دعاء رؤية الهلال",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/069.json"
+  },
+  {
+    "id": "070",
+    "title": "الدعاء عند إفطار الصائم",
+    "duaCount": 2,
+    "footnoteCount": 2,
+    "asset": "assets/contents/hisn/categories/070.json"
+  },
+  {
+    "id": "071",
+    "title": "الدعاء قبل الطعام",
+    "duaCount": 2,
+    "footnoteCount": 2,
+    "asset": "assets/contents/hisn/categories/071.json"
+  },
+  {
+    "id": "072",
+    "title": "الدعاء عند الفراغ من الطعام",
+    "duaCount": 2,
+    "footnoteCount": 2,
+    "asset": "assets/contents/hisn/categories/072.json"
+  },
+  {
+    "id": "073",
+    "title": "دعاء الضيف لصاحب الطعام",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/073.json"
+  },
+  {
+    "id": "074",
+    "title": "الدعاء لمن سقاه أو إذا أراد ذلك",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/074.json"
+  },
+  {
+    "id": "075",
+    "title": "الدعاء إذا أفطر عند أهل بيت",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/075.json"
+  },
+  {
+    "id": "076",
+    "title": "دعاء الصائم إذا حضر الطعام ولم يفطر",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/076.json"
+  },
+  {
+    "id": "077",
+    "title": "ما يقول الصائم إذا سابه أحد",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/077.json"
+  },
+  {
+    "id": "078",
+    "title": "الدعاء عند رؤية باكورة الثمر",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/078.json"
+  },
+  {
+    "id": "079",
+    "title": "دعاء العطاس",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/079.json"
+  },
+  {
+    "id": "080",
+    "title": "ما يقالُ للكافر إذا عطس فحمد الله",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/080.json"
+  },
+  {
+    "id": "081",
+    "title": "الدعاء للمتزوج",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/081.json"
+  },
+  {
+    "id": "082",
+    "title": "دعاء المتزوج لنفسه ودعاء شراء الدابة",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/082.json"
+  },
+  {
+    "id": "083",
+    "title": "الدعاء قبل إتيان الزوجة",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/083.json"
+  },
+  {
+    "id": "084",
+    "title": "دعاء الغضب",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/084.json"
+  },
+  {
+    "id": "085",
+    "title": "دعاء من رأى مبتلى",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/085.json"
+  },
+  {
+    "id": "086",
+    "title": "ما يقال في المجلس",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/086.json"
+  },
+  {
+    "id": "087",
+    "title": "كفارة المجلس ومايختم به المجالس",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/087.json"
+  },
+  {
+    "id": "088",
+    "title": "الدعاء لمن قال غفر الله لك",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/088.json"
+  },
+  {
+    "id": "089",
+    "title": "الدعاء لمن صنع إليك معروفاً",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/089.json"
+  },
+  {
+    "id": "090",
+    "title": "ما يعصم به من الدجال",
+    "duaCount": 1,
+    "footnoteCount": 2,
+    "asset": "assets/contents/hisn/categories/090.json"
+  },
+  {
+    "id": "091",
+    "title": "الدعاء لمن قال إني أحبك في الله",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/091.json"
+  },
+  {
+    "id": "092",
+    "title": "الدعاء لمن عرض عليك ماله",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/092.json"
+  },
+  {
+    "id": "093",
+    "title": "الدعاء لمن أقرض عند القضاء",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/093.json"
+  },
+  {
+    "id": "094",
+    "title": "دعاء الخوف من الشرك",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/094.json"
+  },
+  {
+    "id": "095",
+    "title": "الدعاء لمن قال بارك الله فيك",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/095.json"
+  },
+  {
+    "id": "096",
+    "title": "دعاء كراهية الطيرة",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/096.json"
+  },
+  {
+    "id": "097",
+    "title": "دعاء ركوب الدابة",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/097.json"
+  },
+  {
+    "id": "098",
+    "title": "دعاء السفر",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/098.json"
+  },
+  {
+    "id": "099",
+    "title": "دعاء دخول القرية أو البلدة",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/099.json"
+  },
+  {
+    "id": "100",
+    "title": "دعاء دخول السوق",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/100.json"
+  },
+  {
+    "id": "101",
+    "title": "الدعاء إذا تعس المركوب",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/101.json"
+  },
+  {
+    "id": "102",
+    "title": "دعاء المسافر للمقيم",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/102.json"
+  },
+  {
+    "id": "103",
+    "title": "دعاء المقيم للمسافر",
+    "duaCount": 2,
+    "footnoteCount": 2,
+    "asset": "assets/contents/hisn/categories/103.json"
+  },
+  {
+    "id": "104",
+    "title": "التكبير والتسبيح في سير السفر",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/104.json"
+  },
+  {
+    "id": "105",
+    "title": "دعاء المسافر إذا أسحر",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/105.json"
+  },
+  {
+    "id": "106",
+    "title": "الدعاء إذا نزل منزلا في سفر أو غيره",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/106.json"
+  },
+  {
+    "id": "107",
+    "title": "ذكر الرجوع من السفر",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/107.json"
+  },
+  {
+    "id": "108",
+    "title": "ما يقول ويفعل من أتاه أمر يسره أو يكرهه",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/108.json"
+  },
+  {
+    "id": "109",
+    "title": "فضل الصلاة على النبي صلى الله عليه وسلم",
+    "duaCount": 5,
+    "footnoteCount": 5,
+    "asset": "assets/contents/hisn/categories/109.json"
+  },
+  {
+    "id": "110",
+    "title": "إفشاء السلام",
+    "duaCount": 3,
+    "footnoteCount": 3,
+    "asset": "assets/contents/hisn/categories/110.json"
+  },
+  {
+    "id": "111",
+    "title": "كيف يرد السلام على الكافر إذا سلم",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/111.json"
+  },
+  {
+    "id": "112",
+    "title": "دعاء صياح الديك ونهيق الحمار",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/112.json"
+  },
+  {
+    "id": "113",
+    "title": "دعاء نباح الكلاب بالليل",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/113.json"
+  },
+  {
+    "id": "114",
+    "title": "الدعاء لمن سببته",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/114.json"
+  },
+  {
+    "id": "115",
+    "title": "ما يقول المسلم إذا مدح المسلم",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/115.json"
+  },
+  {
+    "id": "116",
+    "title": "ما يقول المسلم إذا زكي",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/116.json"
+  },
+  {
+    "id": "117",
+    "title": "كيف يلبي المحرم في الحج أو العمرة",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/117.json"
+  },
+  {
+    "id": "118",
+    "title": "التكبيرة إذا أتي الركن الأسود",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/118.json"
+  },
+  {
+    "id": "119",
+    "title": "الدعاء بين الركن اليماني والحجر الأسود",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/119.json"
+  },
+  {
+    "id": "120",
+    "title": "دعاء الوقوف على الصفا والمروة",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/120.json"
+  },
+  {
+    "id": "121",
+    "title": "الدعاء يوم عرفة",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/121.json"
+  },
+  {
+    "id": "122",
+    "title": "الذكر عند المشعر الحرام",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/122.json"
+  },
+  {
+    "id": "123",
+    "title": "التكبيرة عند رمي الجمار مع كل حصاة",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/123.json"
+  },
+  {
+    "id": "124",
+    "title": "ما يقول عند التعجب والأمر السار",
+    "duaCount": 2,
+    "footnoteCount": 2,
+    "asset": "assets/contents/hisn/categories/124.json"
+  },
+  {
+    "id": "125",
+    "title": "ما يفعل من أتاه أمر يسره",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/125.json"
+  },
+  {
+    "id": "126",
+    "title": "ما يقول من أحس وجعاً في جسده",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/126.json"
+  },
+  {
+    "id": "127",
+    "title": "دعاء من خشي أن يصيب شيئاً بعينه",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/127.json"
+  },
+  {
+    "id": "128",
+    "title": "ما يقال عند الفزع",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/128.json"
+  },
+  {
+    "id": "129",
+    "title": "ما يقول عند الذبح أو النحر",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/129.json"
+  },
+  {
+    "id": "130",
+    "title": "ما يقول لرد كيد مردة الشياطين",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/130.json"
+  },
+  {
+    "id": "131",
+    "title": "الاستغفار والتوبة",
+    "duaCount": 6,
+    "footnoteCount": 6,
+    "asset": "assets/contents/hisn/categories/131.json"
+  },
+  {
+    "id": "132",
+    "title": "فضل التسبيح والتحميد ، والتهليل ، والتكبير",
+    "duaCount": 12,
+    "footnoteCount": 12,
+    "asset": "assets/contents/hisn/categories/132.json"
+  },
+  {
+    "id": "133",
+    "title": "كيف كان النبي صلى الله عليه وسلم يسبح ؟",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/133.json"
+  },
+  {
+    "id": "134",
+    "title": "من أنواع الخير والآداب الجامعة",
+    "duaCount": 1,
+    "footnoteCount": 1,
+    "asset": "assets/contents/hisn/categories/134.json"
+  }
+]
