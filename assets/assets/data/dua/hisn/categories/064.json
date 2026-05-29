@@ -1,1 +1,22 @@
-{"id":"064","title":"دعاء الرعد","text":["سبحان الذي يُسبح الرعد بحمده والملائكة من خيفته "],"footnote":["كان عبد الله بن الزبير رضي الله عنهما إذا سمع الرعد ترك الحديث وقال :.... الموطأ 2/992 وقال الألباني صحيح الإسناد موقوفاً"]}
+{
+  "id": "064",
+  "title": "دعاء الرعد",
+  "text": [
+    {
+      "text": "سبحان الذي يُسبح الرعد بحمده والملائكة من خيفته ",
+      "transliteration": "Sbh'n 'ldhy yusbh 'lr'd bhmdh w'lml''ikah mn khyfth",
+      "translation": "Glory be to Him Whom the thunder glorifies with His praise, and [so do] the angels out of fear of Him.",
+      "translations": {
+        "en": "Glory be to Him Whom the thunder glorifies with His praise, and [so do] the angels out of fear of Him.",
+        "bn": "পবিত্র তিনি যাঁর প্রশংসায় বজ্র তাসবীহ পাঠ করে এবং ফেরেশতারাও তাঁর ভয়ে তাসবীহ পাঠ করে।",
+        "id": "Mahasuci Dzat yang petir bertasbih memuji-Nya dan para malaikat pun bertasbih karena takut kepada-Nya.",
+        "tr": "Gök gürültüsünün hamd ile tesbih ettiği ve meleklerin korkusundan tesbih ettiği Zat'ı tenzih ederim.",
+        "ur": "پاک ہے وہ ذات جس کی حمد کے ساتھ بجلی تسبیح کرتی ہے اور فرشتے بھی اس کے خوف سے تسبیح کرتے ہیں۔"
+      },
+      "reference": "كان عبد الله بن الزبير رضي الله عنهما إذا سمع الرعد ترك الحديث وقال :.... الموطأ 2/992 وقال الألباني صحيح الإسناد موقوفاً"
+    }
+  ],
+  "footnote": [
+    "كان عبد الله بن الزبير رضي الله عنهما إذا سمع الرعد ترك الحديث وقال :.... الموطأ 2/992 وقال الألباني صحيح الإسناد موقوفاً"
+  ]
+}

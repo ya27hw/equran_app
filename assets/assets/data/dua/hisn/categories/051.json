@@ -1,1 +1,36 @@
-{"id":"051","title":"الدعاء للمريض في عيادته","text":["لا بأس طهور إن شاء الله  ","أسأل الله العظيم رب العرش العظيم أن يشفيك ( سبع مرات ) "],"footnote":["البخاري مع الفتح 10/ 118","ما من عبد مسلم يعود مريضاً لم يحضر أجله فيقول: سبع مرات.....الحديث إلا عوفي . أخرجه الترمذي وأبو داود وانظر صحيح الترمذي2/ 210 وصحيح الجامع 5/180"]}
+{
+  "id": "051",
+  "title": "الدعاء للمريض في عيادته",
+  "text": [
+    {
+      "text": "لا بأس طهور إن شاء الله  ",
+      "transliteration": "Lā ba'sa, ṭahūrun in shā'allāh.",
+      "translation": "No harm, it will be a purification, if Allah wills.",
+      "translations": {
+        "en": "No harm, it will be a purification, if Allah wills.",
+        "bn": "কোনো ভীতি নেই, আল্লাহর ইচ্ছায় এটি আপনার গুনাহের কাফফারা ও পবিত্রতাস্বরূপ হবে।",
+        "id": "Tidak mengapa, semoga sakitmu ini membersihkan dosamu, dengan izin Allah.",
+        "tr": "Geçmiş olsun, inşallah günahları temizleyicidir.",
+        "ur": "کوئی حرج نہیں، اللہ نے چاہا تو یہ بیماری گناہوں سے پاک کرنے والی ہے۔"
+      },
+      "reference": "البخاري مع الفتح 10/ 118"
+    },
+    {
+      "text": "أسأل الله العظيم رب العرش العظيم أن يشفيك ( سبع مرات ) ",
+      "transliteration": "As'alullāhal-ʿAẓīma Rabbal-ʿarshil-ʿaẓīmi ay-yashfiyak (seven times).",
+      "translation": "I ask Allah the Almighty, Lord of the Magnificent Throne, to heal you. (Recited seven times).",
+      "translations": {
+        "en": "I ask Allah the Almighty, Lord of the Magnificent Throne, to heal you. (Recited seven times).",
+        "bn": "আমি মহা আরশের রব মহান আল্লাহর নিকট প্রার্থনা করছি যেন তিনি আপনাকে আরোগ্য দান করেন। (সাতবার)।",
+        "id": "Aku memohon kepada Allah Yang Maha Agung, Tuhan pemilik Arsy yang agung, agar menyembuhkanmu. (Dibaca tujuh kali).",
+        "tr": "Büyük Arş'ın Rabbi olan Yüce Allah'tan sana şifa vermesini dilerim. (Yedi defa).",
+        "ur": "میں عظمت والے اللہ، عرشِ عظیم کے رب سے سوال کرتا ہوں کہ وہ تمہیں شفا عطا فرمائے۔ (سات مرتبہ)۔"
+      },
+      "reference": "ما من عبد مسلم يعود مريضاً لم يحضر أجله فيقول: سبع مرات.....الحديث إلا عوفي . أخرجه الترمذي وأبو داود وانظر صحيح الترمذي2/ 210 وصحيح الجامع 5/180"
+    }
+  ],
+  "footnote": [
+    "البخاري مع الفتح 10/ 118",
+    "ما من عبد مسلم يعود مريضاً لم يحضر أجله فيقول: سبع مرات.....الحديث إلا عوفي . أخرجه الترمذي وأبو داود وانظر صحيح الترمذي2/ 210 وصحيح الجامع 5/180"
+  ]
+}

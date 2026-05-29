@@ -1,1 +1,22 @@
-{"id":"074","title":"الدعاء لمن سقاه أو إذا أراد ذلك","text":["اللهُمَّ أَطْعِمْ مَنْ أطْعَمَني وأَسْقِ مَنْ سْقَاني "],"footnote":["مسلم3/ 26"]}
+{
+  "id": "074",
+  "title": "الدعاء لمن سقاه أو إذا أراد ذلك",
+  "text": [
+    {
+      "text": "اللهُمَّ أَطْعِمْ مَنْ أطْعَمَني وأَسْقِ مَنْ سْقَاني ",
+      "transliteration": "Allāhumma aṭʿim man aṭʿamanī, wasqi man saqānī.",
+      "translation": "O Allah, feed the one who fed me, and give drink to the one who gave me drink.",
+      "translations": {
+        "en": "O Allah, feed the one who fed me, and give drink to the one who gave me drink.",
+        "bn": "হে আল্লাহ! যে আমাকে আহার করিয়েছে আপনি তাকে আহার করান, আর যে আমাকে পান করিয়েছে আপনি তাকে পান করান।",
+        "id": "Ya Allah, berilah makanan kepada orang yang memberi makanan kepadaku, dan berilah minuman kepada orang yang memberi minuman kepadaku.",
+        "tr": "Allah'ım! Beni doyuranı doyur, bana içirene içir.",
+        "ur": "اے اللہ! اسے کھانا کھلا جس نے مجھے کھلایا، اور اسے پلا جس نے مجھے پلایا۔"
+      },
+      "reference": "مسلم3/ 26"
+    }
+  ],
+  "footnote": [
+    "مسلم3/ 26"
+  ]
+}

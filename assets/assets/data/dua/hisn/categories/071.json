@@ -1,1 +1,36 @@
-{"id":"071","title":"الدعاء قبل الطعام","text":["إذا أكل أحدكم الطعام فليقل: بِسم الله، فإن نسي في أوله فليقل: بِسمِ الله في أوله وآخره ","من أطعمه الله الطعام فليقل: اللهم بارك لنا فيه وأطعمنا خيراً منه. ومن سقاه الله لبناً فليقل: اللهم بارك لنا فيه وزدنا منه "],"footnote":["أخرجه أبو داود 3/347 والترمذي 4/288 وانظر صحيح الترمذي2/ 167","الترمذي 5/506 وانظر صحيح الترمذي3/ 158"]}
+{
+  "id": "071",
+  "title": "الدعاء قبل الطعام",
+  "text": [
+    {
+      "text": "إذا أكل أحدكم الطعام فليقل: بِسم الله، فإن نسي في أوله فليقل: بِسمِ الله في أوله وآخره ",
+      "transliteration": "Idhā akala aḥadukumut-ṭaʿāma fal-yaqul: 'Bismillāh'. Fa-in nasiya fī awwalihi fal-yaqul: 'Bismillāhi fī awwalihi wa-ākhirih'.",
+      "translation": "When one of you eats food, let him say: 'In the name of Allah' (Bismillāh). And if he forgets at the beginning, let him say: 'In the name of Allah at the beginning and the end' (Bismillāhi fī awwalihi wa-ākhirih).",
+      "translations": {
+        "en": "When one of you eats food, let him say: 'In the name of Allah' (Bismillāh). And if he forgets at the beginning, let him say: 'In the name of Allah at the beginning and the end' (Bismillāhi fī awwalihi wa-ākhirih).",
+        "bn": "তোমাদের কেউ যখন খাবার খাওয়া শুরু করে, সে যেন বলে: ‘বিসমিল্লাহ’ (আল্লাহর নামে)। আর যদি শুরু করতে ভুলে যায়, তবে যেন বলে: ‘বিসমিল্লাহি ফী আওয়ালিহী ওয়া আখিরিহী’ (শুরু ও শেষে আল্লাহর নামে)।",
+        "id": "Apabila salah seorang di antara kalian makan, hendaklah dia mengucapkan: 'Bismillāh' (Dengan nama Allah). Jika dia lupa di awalnya, hendaklah dia mengucapkan: 'Bismillāhi fī awwalihi wa-ākhirih' (Dengan nama Allah di awal dan di akhirnya).",
+        "tr": "Biriniz yemek yiyeceği zaman: 'Bismillâh' Desin. Eğer başında söylemeyi unutursa: 'Bismillâhi fî evvelihî ve âhirihî' Desin.",
+        "ur": "جب تم میں سے کوئی کھانا کھانے لگے تو کہے: 'بسم اللہ' (اللہ کے نام سے)، پس اگر وہ شروع میں بھول جائے تو کہے: 'بسم اللہ فی اولہ وآخرہ' (شروع اور آخر میں اللہ کے نام سے)۔"
+      },
+      "reference": "أخرجه أبو داود 3/347 والترمذي 4/288 وانظر صحيح الترمذي2/ 167"
+    },
+    {
+      "text": "من أطعمه الله الطعام فليقل: اللهم بارك لنا فيه وأطعمنا خيراً منه. ومن سقاه الله لبناً فليقل: اللهم بارك لنا فيه وزدنا منه ",
+      "transliteration": "Man aṭʿamahullāhut-ṭaʿāma fal-yaqul: 'Allāhumma bārik lanā fīhi wa-aṭʿimnā khayram-minh'. Wa-man saqāhullāhu labanan fal-yaqul: 'Allāhumma bārik lanā fīhi wa-zidnā minh'.",
+      "translation": "Whomever Allah feeds food, let him say: 'O Allah, bless it for us and feed us with what is better than it.' And whomever Allah gives milk to drink, let him say: 'O Allah, bless it for us and increase it for us.'",
+      "translations": {
+        "en": "Whomever Allah feeds food, let him say: 'O Allah, bless it for us and feed us with what is better than it.' And whomever Allah gives milk to drink, let him say: 'O Allah, bless it for us and increase it for us.'",
+        "bn": "যাকে আল্লাহ আহার করান, সে যেন বলে: ‘হে আল্লাহ! আমাদের জন্য এতে বরকত দিন এবং এর চেয়ে উত্তম আহার দান করুন।’ আর যাকে আল্লাহ দুধ পান করান, সে যেন বলে: ‘হে আল্লাহ! আমাদের জন্য এতে বরকত দিন এবং এটি আমাদের জন্য বৃদ্ধি করে দিন।’",
+        "id": "Barangsiapa yang diberi makanan oleh Allah, hendaklah dia mengucapkan: 'Ya Allah, berkahilah kami di dalamnya dan berilah kami makanan yang lebih baik darinya.' Dan barangsiapa yang diberi minuman susu oleh Allah, hendaklah dia mengucapkan: 'Ya Allah, berkahilah kami di dalamnya dan tambahkanlah untuk kami darinya.'",
+        "tr": "Allah'ın kendisine yemek yedirdiği kimse: 'Allah'ım! Bunu bize bereketli kıl ve bize bundan daha hayırlısını yedir' desin. Allah'ın kendisine süt içirdiği kimse de: 'Allah'ım! Bunu bize bereketli kıl ve bize bundan daha çok ver' desin.",
+        "ur": "جسے اللہ کھانا کھلائے تو وہ کہے: 'اے اللہ! ہمارے لیے اس میں برکت فرما اور ہمیں اس سے بہتر کھلا'، اور جسے اللہ دودھ پلائے تو وہ کہے: 'اے اللہ! ہمارے لیے اس میں برکت فرما اور ہمیں اس سے زیادہ عطا فرما'۔"
+      },
+      "reference": "الترمذي 5/506 وانظر صحيح الترمذي3/ 158"
+    }
+  ],
+  "footnote": [
+    "أخرجه أبو داود 3/347 والترمذي 4/288 وانظر صحيح الترمذي2/ 167",
+    "الترمذي 5/506 وانظر صحيح الترمذي3/ 158"
+  ]
+}

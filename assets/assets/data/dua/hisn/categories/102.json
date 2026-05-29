@@ -1,1 +1,22 @@
-{"id":"102","title":"دعاء المسافر للمقيم","text":["أستودعُكَ الله الذي لا تضيع ودائعه "],"footnote":["أحمد 2/403 وابن ماجه 2/943 وانظر صحيح ابن ماجة2/ 133"]}
+{
+  "id": "102",
+  "title": "دعاء المسافر للمقيم",
+  "text": [
+    {
+      "text": "أستودعُكَ الله الذي لا تضيع ودائعه ",
+      "transliteration": "'stwd'uka 'llh 'ldhy l' tdy' wd''h",
+      "translation": "I entrust you to Allah, Whose deposits are never lost.",
+      "translations": {
+        "en": "I entrust you to Allah, Whose deposits are never lost.",
+        "bn": "আমি তোমাকে আল্লাহর কাছে সোপর্দ করছি, যাঁর আমানত কখনো নষ্ট হয় না।",
+        "id": "Aku menitipkanmu kepada Allah, yang titipan-Nya tidak pernah hilang.",
+        "tr": "Seni, emanetleri asla zayi olmayan Allah'a emanet ediyorum.",
+        "ur": "میں تمہیں اللہ کے سپرد کرتا ہوں جس کی امانتیں کبھی ضائع نہیں ہوتیں۔"
+      },
+      "reference": "أحمد 2/403 وابن ماجه 2/943 وانظر صحيح ابن ماجة2/ 133"
+    }
+  ],
+  "footnote": [
+    "أحمد 2/403 وابن ماجه 2/943 وانظر صحيح ابن ماجة2/ 133"
+  ]
+}

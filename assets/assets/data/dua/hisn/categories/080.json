@@ -1,1 +1,22 @@
-{"id":"080","title":"ما يقالُ للكافر إذا عطس فحمد الله","text":["يهديكم الله ويصلح بالكم "],"footnote":["الترمذي 5/82 وأحمد 4/400 وأبو داود 4/308، وانظر صحيح الترمذي 2/354"]}
+{
+  "id": "080",
+  "title": "ما يقالُ للكافر إذا عطس فحمد الله",
+  "text": [
+    {
+      "text": "يهديكم الله ويصلح بالكم ",
+      "transliteration": "Yahdīkumullāhu wa-yuṣliḥu bālakum",
+      "translation": "May Allah guide you and rectify your condition.",
+      "translations": {
+        "en": "May Allah guide you and rectify your condition.",
+        "bn": "আল্লাহ তোমাদেরকে হেদায়েত দান করুন এবং তোমাদের অবস্থা সংশোধন করে দিন।",
+        "id": "Semoga Allah memberimu petunjuk dan memperbaiki keadaanmu.",
+        "tr": "Allah size hidayet versin ve halinizi ıslah etsin.",
+        "ur": "اللہ تمہیں ہدایت دے اور تمہارے حال کی اصلاح فرمائے۔"
+      },
+      "reference": "الترمذي 5/82 وأحمد 4/400 وأبو داود 4/308، وانظر صحيح الترمذي 2/354"
+    }
+  ],
+  "footnote": [
+    "الترمذي 5/82 وأحمد 4/400 وأبو داود 4/308، وانظر صحيح الترمذي 2/354"
+  ]
+}

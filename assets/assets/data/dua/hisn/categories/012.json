@@ -1,1 +1,36 @@
-{"id":"012","title":"الذكر عند الخروج من المنزل","text":["بسم الله ، توكَّلْتُ على الله ، ولا حَوْلَ ولا قُوةَ إلا بالله ","اللهُمَ إني أعُوذُ بِكَ أن أَضِلَّ أوْ أُضَلَّ أَوْ أزِلَّ، أو أُزَلَّ، أوْ أظلِم أوْ أُظْلَم، أوْ أَجْهَلَ أوْ يُجْهَلَ عَلَيَّ "],"footnote":[" أبو داود 4/ 325 والترمذي 5/ 490 وانظر صحيح الترمذي 3/ 151","أهل السنن وانظر صحيح الترمذي 3/ 152 وصحيح ابن ماجه 2/ 336"]}
+{
+  "id": "012",
+  "title": "الذكر عند الخروج من المنزل",
+  "text": [
+    {
+      "text": "بسم الله ، توكَّلْتُ على الله ، ولا حَوْلَ ولا قُوةَ إلا بالله ",
+      "transliteration": "Bismillāh, tawakkaltu ʿalallāh, wa lā ḥawla wa lā quwwata illā billāh.",
+      "translation": "In the name of Allah, I place my trust in Allah, and there is no might nor power except with Allah.",
+      "translations": {
+        "en": "In the name of Allah, I place my trust in Allah, and there is no might nor power except with Allah.",
+        "bn": "আল্লাহর নামে, আল্লাহর ওপর ভরসা করলাম, আর আল্লাহর সাহায্য ছাড়া কোনো ক্ষমতা ও কোনো শক্তি নেই।",
+        "id": "Dengan nama Allah, aku bertawakal kepada Allah, tiada daya dan upaya kecuali dengan pertolongan Allah.",
+        "tr": "Allah'ın adıyla, Allah'a tevekkül ettim. Güç ve kuvvet ancak Allah'ın yardımıyladır.",
+        "ur": "اللہ کے نام سے (میں نکلتا ہوں)، میں نے اللہ پر بھروسہ کیا، اور گناہوں سے بچنے کی طاقت اور نیکی کرنے کی قوت اللہ ہی کی توفیق سے ہے۔"
+      },
+      "reference": " أبو داود 4/ 325 والترمذي 5/ 490 وانظر صحيح الترمذي 3/ 151"
+    },
+    {
+      "text": "اللهُمَ إني أعُوذُ بِكَ أن أَضِلَّ أوْ أُضَلَّ أَوْ أزِلَّ، أو أُزَلَّ، أوْ أظلِم أوْ أُظْلَم، أوْ أَجْهَلَ أوْ يُجْهَلَ عَلَيَّ ",
+      "transliteration": "Allāhumma innī aʿūdhu bika an aḍilla aw uḍalla, aw azilla aw uzalla, aw aẓlima aw uẓlama, aw ajhala aw yujhala ʿalayy.",
+      "translation": "O Allah, I seek refuge in You lest I should stray or be led astray, or slip or be tripped, or oppress or be oppressed, or behave foolishly or be treated foolishly.",
+      "translations": {
+        "en": "O Allah, I seek refuge in You lest I should stray or be led astray, or slip or be tripped, or oppress or be oppressed, or behave foolishly or be treated foolishly.",
+        "bn": "হে আল্লাহ! আমি আপনার নিকট আশ্রয় প্রার্থনা করছি যেন আমি পথভ্রষ্ট না হই অথবা পথভ্রষ্ট না হই, অথবা আমি যেন পদস্খলিত না হই অথবা পদস্খলিত না হই, অথবা আমি যেন কারো ওপর জুলুম না করি এবং আমার ওপরও যেন জুলুম করা না হয়, অথবা আমি যেন অজ্ঞ আচরণ না করি এবং আমার সাথেও যেন অজ্ঞ আচরণ করা না হয়।",
+        "id": "Ya Allah, sesungguhnya aku berlindung kepada-Mu jangan sampai aku sesat atau disesatkan, tergelincir atau digelincirkan, berbuat zalim atau dizalimi, bodoh atau dibodohi.",
+        "tr": "Allah'ım! Sapmaktan veya saptırılmaktan, hataya düşmekten veya düşürülmekten, zulmetmekten veya zulme uğramaktan, cahillik etmekten veya bana cahillik edilmesinden sana sığınırım.",
+        "ur": "اے اللہ! میں تیری پناہ پکڑتا ہوں اس سے کہ میں بہک جاؤں یا بہکا دیا جاؤں، یا لغزش کھاؤں یا لغزش دلایا جاؤں، یا ظلم کروں یا مجھ پر ظلم کیا جائے، یا میں نادانی کروں یا میرے ساتھ نادانی کی جائے۔"
+      },
+      "reference": "أهل السنن وانظر صحيح الترمذي 3/ 152 وصحيح ابن ماجه 2/ 336"
+    }
+  ],
+  "footnote": [
+    " أبو داود 4/ 325 والترمذي 5/ 490 وانظر صحيح الترمذي 3/ 151",
+    "أهل السنن وانظر صحيح الترمذي 3/ 152 وصحيح ابن ماجه 2/ 336"
+  ]
+}

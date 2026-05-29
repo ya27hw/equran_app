@@ -1,1 +1,22 @@
-{"id":"008","title":"دعاء دخول الخلاء","text":["{بسم الله}، اللهُمَّ إنّي أعُوذُ بِكَ مِنَ الخُبْثِ والخبائِثِ "],"footnote":["أخرجه البخاري 1/ 45 ومسلم 1/283 وزيادة بسم الله في أوله متفق عليه، أخرجها سعيد بن منصور أنظر فتح الباري 1/244"]}
+{
+  "id": "008",
+  "title": "دعاء دخول الخلاء",
+  "text": [
+    {
+      "text": "{بسم الله}، اللهُمَّ إنّي أعُوذُ بِكَ مِنَ الخُبْثِ والخبائِثِ ",
+      "transliteration": "[Bismillāh], Allāhumma innī aʿūdhu bika minal-khubthi wal-khabāʾith.",
+      "translation": "(In the name of Allah). O Allah, I seek refuge in You from the male and female devils.",
+      "translations": {
+        "en": "(In the name of Allah). O Allah, I seek refuge in You from the male and female devils.",
+        "bn": "(আল্লাহর নামে)। হে আল্লাহ! আমি আপনার কাছে পুরুষ ও নারী শয়তানের অনিষ্ট থেকে আশ্রয় চাচ্ছি।",
+        "id": "(Dengan nama Allah). Ya Allah, sesungguhnya aku berlindung kepada-Mu dari setan laki-laki dan setan perempuan.",
+        "tr": "(Bismillah) Allah'ım! Dişi ve erkek tüm pis şeylerden (veya şeytanlardan) Sana sığınırım.",
+        "ur": "{اللہ کے نام سے}، اے اللہ! میں خبیث جنوں اور جنیوں کے شر سے تیری پناہ چاہتا ہوں۔"
+      },
+      "reference": "أخرجه البخاري 1/ 45 ومسلم 1/283 وزيادة بسم الله في أوله متفق عليه، أخرجها سعيد بن منصور أنظر فتح الباري 1/244"
+    }
+  ],
+  "footnote": [
+    "أخرجه البخاري 1/ 45 ومسلم 1/283 وزيادة بسم الله في أوله متفق عليه، أخرجها سعيد بن منصور أنظر فتح الباري 1/244"
+  ]
+}

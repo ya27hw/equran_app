@@ -1,1 +1,22 @@
-{"id":"129","title":"ما يقول عند الذبح أو النحر","text":["بسم الله والله أكبر [ اللهم منك ولك ] اللهم تقبل مني "],"footnote":["مسلم 3/1557 والبيهقي 9/287 وما بين المعكوفين للبيهقي 9/287 وغيره والجملة الأخيرة سقتها بالمعنى من رواية مسلم"]}
+{
+  "id": "129",
+  "title": "ما يقول عند الذبح أو النحر",
+  "text": [
+    {
+      "text": "بسم الله والله أكبر [ اللهم منك ولك ] اللهم تقبل مني ",
+      "transliteration": "Bismillāhi wallāhu Akbar, [Allāhumma minka wa-laka], Allāhumma taqabbal minnī.",
+      "translation": "In the name of Allah, and Allah is the Most Great. [O Allah, from You and to You.] O Allah, accept it from me.",
+      "translations": {
+        "en": "In the name of Allah, and Allah is the Most Great. [O Allah, from You and to You.] O Allah, accept it from me.",
+        "bn": "আল্লাহর নামে, আর আল্লাহ সবচেয়ে মহান। [হে আল্লাহ! এটি আপনার পক্ষ থেকে এবং আপনারই সন্তুষ্টির জন্য।] হে আল্লাহ! আপনি আমার পক্ষ থেকে এটি কবুল করুন।",
+        "id": "Dengan nama Allah, Allah Maha Besar. [Ya Allah, ini dari-Mu dan untuk-Mu.] Ya Allah, terimalah dariku.",
+        "tr": "Allah'ın adıyla, Allah en büyüktür. [Allah'ım! Bu Sendendir ve Senin rızan içindir.] Allah'ım! Benden kabul et.",
+        "ur": "اللہ کے نام سے، اور اللہ سب سے بڑا ہے۔ [اے اللہ! یہ تیری ہی طرف سے ہے اور تیرے ہی لیے ہے۔] اے اللہ! میری طرف سے اسے قبول فرما۔"
+      },
+      "reference": "مسلم 3/1557 والبيهقي 9/287 وما بين المعكوفين للبيهقي 9/287 وغيره والجملة الأخيرة سقتها بالمعنى من رواية مسلم"
+    }
+  ],
+  "footnote": [
+    "مسلم 3/1557 والبيهقي 9/287 وما بين المعكوفين للبيهقي 9/287 وغيره والجملة الأخيرة سقتها بالمعنى من رواية مسلم"
+  ]
+}

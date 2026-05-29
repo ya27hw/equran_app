@@ -1,1 +1,36 @@
-{"id":"059","title":"دعاء التعزية","text":["إن لله ما أخذ وله ما أعطى . وكل شيء عنده بأجل مُسمى ...فلتصبر ولتحتسب ","وإن قال :  أعظم الله أجرك ،وأحسن عزاءك وغفر لميتك  فحسن "],"footnote":["البخاري 2/80 ومسلم 2/636","الأذكار للنووي ص126"]}
+{
+  "id": "059",
+  "title": "دعاء التعزية",
+  "text": [
+    {
+      "text": "إن لله ما أخذ وله ما أعطى . وكل شيء عنده بأجل مُسمى ...فلتصبر ولتحتسب ",
+      "transliteration": "Inna lillāhi mā akhaḍha wa-lahu mā aʿṭā, wa-kullu shay'in ʿindahu bi-ajalim-musammā... faltasbir wal-taḥtasib.",
+      "translation": "Surely, to Allah belongs what He took, and to Him belongs what He gave, and everything with Him has an appointed time... so be patient and seek reward from Allah.",
+      "translations": {
+        "en": "Surely, to Allah belongs what He took, and to Him belongs what He gave, and everything with Him has an appointed time... so be patient and seek reward from Allah.",
+        "bn": "নিশ্চয়ই আল্লাহ যা গ্রহণ করেছেন তা তাঁরই, আর তিনি যা দান করেছেন তাও তাঁরই। এবং তাঁর নিকট প্রতিটি জিনিসের একটি নির্দিষ্ট সময় রয়েছে। অতএব আপনি ধৈর্য ধারণ করুন এবং নেকীর আশা রাখুন।",
+        "id": "Sesungguhnya milik Allah-lah apa yang Dia ambil dan milik-Nya-lah apa yang Dia berikan, dan segala sesuatu di sisi-Nya memiliki ajal (waktu) yang telah ditentukan... maka hendaklah bersabar dan berharap pahala dari Allah.",
+        "tr": "Şüphesiz alan da Allah'tır, veren de O'dur. O'nun katında her şeyin belirli bir süresi (eceli) vardır... Öyleyse sabret ve ecrini Allah'tan bekle.",
+        "ur": "بے شک اللہ ہی کا ہے جو اس نے لے لیا اور اسی کا ہے جو اس نے دیا، اور اس کے پاس ہر چیز کا ایک وقت مقرر ہے... پس صبر کرو اور اجر کی امید رکھو۔"
+      },
+      "reference": "البخاري 2/80 ومسلم 2/636"
+    },
+    {
+      "text": "وإن قال :  أعظم الله أجرك ،وأحسن عزاءك وغفر لميتك  فحسن ",
+      "transliteration": "Wa-in qāla: Aʿẓamallāhu ajraka, wa-aḥsana ʿazā'aka, wa-ghafara li-mayyitika [fa-ḥasan].",
+      "translation": "And if he says: 'May Allah magnify your reward, and give you the best comfort, and forgive your deceased', then it is good.",
+      "translations": {
+        "en": "And if he says: 'May Allah magnify your reward, and give you the best comfort, and forgive your deceased', then it is good.",
+        "bn": "আর যদি বলা হয়: ‘আল্লাহ আপনার সওয়াব বৃদ্ধি করুন, আপনার শোকসন্তপ্ত মনকে সান্ত্বনা দিন এবং আপনার মৃতকে ক্ষমা করুন’, তবে তা উত্তম।",
+        "id": "Dan jika dia mengucapkan: 'Semoga Allah memperbesar pahalamu, memperbagus penghiburanmu (ketabahanmu), dan mengampuni orang yang meninggal di antaramu', maka itu adalah baik.",
+        "tr": "Eğer şöyle derse de güzeldir: 'Allah ecrini/mükâfatını artırsın, taziyeni güzelleştirsin ve ölüne mağfiret etsin'.",
+        "ur": "اور اگر وہ کہے: 'اللہ تمہارے اجر کو زیادہ کرے، تمہاری تعزیت کو بہترین بنائے، اور تمہارے فوت شدگان کی مغفرت فرمائے' تو یہ بھی اچھا ہے۔"
+      },
+      "reference": "الأذكار للنووي ص126"
+    }
+  ],
+  "footnote": [
+    "البخاري 2/80 ومسلم 2/636",
+    "الأذكار للنووي ص126"
+  ]
+}

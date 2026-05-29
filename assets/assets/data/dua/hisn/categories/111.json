@@ -1,1 +1,22 @@
-{"id":"111","title":"كيف يرد السلام على الكافر إذا سلم","text":["إذا سلم عليكم أهل الكتاب فقولوا :  وعليكم "],"footnote":["البخاري مع الفتح11/42 ،ومسلم 4/1705"]}
+{
+  "id": "111",
+  "title": "كيف يرد السلام على الكافر إذا سلم",
+  "text": [
+    {
+      "text": "إذا سلم عليكم أهل الكتاب فقولوا :  وعليكم ",
+      "transliteration": "Idhā sallama ʿalaykum ahlul-kitābi fa-qūlū: Wa-ʿalaykum",
+      "translation": "If the People of the Book greet you with peace, say: 'And upon you'.",
+      "translations": {
+        "en": "If the People of the Book greet you with peace, say: 'And upon you'.",
+        "bn": "আহলে কিতাব যদি তোমাদেরকে সালাম দেয়, তবে তোমরা বল: ‘ওয়া আলাইকুম’।",
+        "id": "Jika Ahli Kitab mengucapkan salam kepadamu, maka katakanlah: 'Wa'alaikum'.",
+        "tr": "Kitap ehli size selam verirse, 'Ve aleykum' deyin.",
+        "ur": "جب اہل کتاب تمہیں سلام کہیں تو کہو: 'وعلیکم'۔"
+      },
+      "reference": "البخاري مع الفتح11/42 ،ومسلم 4/1705"
+    }
+  ],
+  "footnote": [
+    "البخاري مع الفتح11/42 ،ومسلم 4/1705"
+  ]
+}

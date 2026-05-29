@@ -1,1 +1,50 @@
-{"id":"058","title":"الدعاء للفرط في الصلاة عليه","text":["اللهم أعذه من عذاب القبر ","أن قال : اللهم اجعله فرطاً وذخراً لوالديه ،وشفيعاً مجاباً .اللهم ثقل به موازينها وأعظم به أجورهما ، وألحقهُ بصالح المؤمنين ، واجعلهُ في كفالة إبراهيم ، وقه برحمتك عذاب الجحيم ، وأبدله داراً خيراً من داره ، وأهلاً خيراً من أهله ، اللهم اغفر لاسلافنا ، وأفراطنا ، ومن سبقنا بالإيمان  فحسن ","اللهم اجعله لنا فرطاً ،وسلفاً وأجراً "],"footnote":["قال سعيد بن المسيب صليت وراء أبي هريرة على صبي لم يعمل خطيئة قط فسمعته يقول ... الحديث .أخرجه مالك في الموطأ 1/288 وابن أبي شيبه في المصنف 3/ 217 والبيهقي 4/9، وصحح إسناده شعيب الأرناؤوط في تحقيقه لشرح السنة للبغوي 5/357","انظر : المغني لابن قدامة 3/416 والدروس المهمة لعامة الأمة للشيخ عبد العزيز بن عبد الله بن باز حفظه الله ص15","كان الحسن يقرأ على الطفل بفاتحة الكتاب ويقول ..  الحديث أخرجه البغوي في شرح السنة 5/357وعبد الرزاق برقم 6588، وعلقه البخاري في كتاب الجنائز ، 65باب قراءة فاتحة الكتاب على الجنازة 2/113"]}
+{
+  "id": "058",
+  "title": "الدعاء للفرط في الصلاة عليه",
+  "text": [
+    {
+      "text": "اللهم أعذه من عذاب القبر ",
+      "transliteration": "Allāhumma aʿidhhu min ʿadhābil-qabr.",
+      "translation": "O Allah, protect him from the torment of the grave.",
+      "translations": {
+        "en": "O Allah, protect him from the torment of the grave.",
+        "bn": "হে আল্লাহ! তাকে কবরের আযাব থেকে রক্ষা করুন।",
+        "id": "Ya Allah, lindungilah dia dari siksa kubur.",
+        "tr": "Allah'ım! Onu kabir azabından koru.",
+        "ur": "اے اللہ! اسے قبر کے عذاب سے پناہ دے۔"
+      },
+      "reference": "قال سعيد بن المسيب صليت وراء أبي هريرة على صبي لم يعمل خطيئة قط فسمعته يقول ... الحديث .أخرجه مالك في الموطأ 1/288 وابن أبي شيبه في المصنف 3/ 217 والبيهقي 4/9، وصحح إسناده شعيب الأرناؤوط في تحقيقه لشرح السنة للبغوي 5/357"
+    },
+    {
+      "text": "أن قال : اللهم اجعله فرطاً وذخراً لوالديه ،وشفيعاً مجاباً .اللهم ثقل به موازينها وأعظم به أجورهما ، وألحقهُ بصالح المؤمنين ، واجعلهُ في كفالة إبراهيم ، وقه برحمتك عذاب الجحيم ، وأبدله داراً خيراً من داره ، وأهلاً خيراً من أهله ، اللهم اغفر لاسلافنا ، وأفراطنا ، ومن سبقنا بالإيمان  فحسن ",
+      "transliteration": "An qāla: Allāhumma-jʿalhu faraṭan wa-dhukhran li-wālidayhi, wa-shafīʿan mujābā. Allāhumma thaqqil bihi mawāzīnahumā wa-aʿẓim bihi ujūrahumā, wa-alḥiqhu bi-ṣāliḥil-mu'minīn, wajʿalhu fī kafālati Ibrāhīm, waqihi bi-raḥmatika ʿadhābal-jaḥīm, wa-abdilhu dāran khayram-min dārihi, wa-ahlan khayram-min ahlihi. Allāhumma-ghfir li-aslāfinā, wa-afrāṭinā, wa-man sabaqanā bil-īmān [fa-ḥasan].",
+      "translation": "O Allah, make him a forerunner and a treasure for his parents, and an intercessor whose intercession is accepted. O Allah, make his weight heavy in their scales of good deeds, and magnify their reward through him. Join him with the righteous believers, and place him under the care of Ibrahim, and protect him by Your mercy from the torment of Hellfire. Exchange his home for a better home, and his family for a better family. O Allah, forgive our predecessors, our children who have passed away before us, and those who preceded us in faith.",
+      "translations": {
+        "en": "O Allah, make him a forerunner and a treasure for his parents, and an intercessor whose intercession is accepted. O Allah, make his weight heavy in their scales of good deeds, and magnify their reward through him. Join him with the righteous believers, and place him under the care of Ibrahim, and protect him by Your mercy from the torment of Hellfire. Exchange his home for a better home, and his family for a better family. O Allah, forgive our predecessors, our children who have passed away before us, and those who preceded us in faith.",
+        "bn": "হে আল্লাহ! একে তার পিতা-মাতার জন্য অগ্রগামী পাথেয়, সঞ্চিত সম্পদ ও কবুলযোগ্য সুপারিশকারী করুন। হে আল্লাহ! এর মাধ্যমে তাদের সৎকাজের পাল্লা ভারী করে দিন এবং এর মাধ্যমে তাদের সওয়াব বৃদ্ধি করে দিন। তাকে নেককার মুমিনদের অন্তর্ভুক্ত করুন এবং তাকে ইবরাহীমের তত্ত্বাবধানে রাখুন। আপনার রহমত দ্বারা তাকে জাহান্নামের আযাব থেকে রক্ষা করুন এবং তাকে তার ঘরের চেয়ে উত্তম ঘর এবং তার পরিবারের চেয়ে উত্তম পরিবার দান করুন। হে আল্লাহ! আমাদের পূর্বসূরিদের, আমাদের অপ্রাপ্তবয়স্ক মৃত সন্তানদের এবং যারা ঈমানের সাথে আমাদের পূর্বে চলে গেছেন তাদের ক্ষমা করুন।",
+        "id": "Ya Allah, jadikanlah dia sebagai simpanan pendahulu dan pahala yang disimpan untuk kedua orang tuanya, serta pemberi syafaat yang dikabulkan. Ya Allah, beratkanlah timbangan amal kedua orang tuanya dengannya, besarkanlah pahala mereka dengannya, hubungkanlah dia dengan orang-orang mukmin yang saleh, jadikanlah dia berada dalam asuhan Ibrahim, peliharalah dia dengan rahmat-Mu dari siksa neraka Jahim, dan gantikanlah rumahnya dengan rumah yang lebih baik, keluarganya dengan keluarga yang lebih baik. Ya Allah, ampunilah pendahulu-pendahulu kami, anak-anak kami yang wafat sebelum kami, dan orang-orang yang telah mendahului kami dalam keimanan.",
+        "tr": "Allah'ım! Onu anne-babası için önceden gönderilmiş bir mükâfat, bir azık ve şefaati kabul edilen bir şefaatçi kıl. Allah'ım! Onunla anne-babasının (iyilik) terazilerini ağırlaştır, ecirlerini büyüt. Onu salih müminlere kat ve İbrahim'in himayesine ver. Rahmetinle onu cehennem azabından koru. Ona evinden daha hayırlı bir ev, ailesinden daha hayırlı bir aile ver. Allah'ım! Geçmişlerimizi, çocuklarımızı ve bizden önce iman ile göçmüş olanları bağışla.",
+        "ur": "اے اللہ! اسے اس کے والدین کے لیے آگے بھیجا ہوا توشہ، ذخیرہ اور مقبول سفارش کرنے والا بنا۔ اے اللہ! اس کے ذریعے ان کے ترازو بھاری کر دے اور اس کے ذریعے ان کے اجر کو بڑا کر، اور اسے صالح مومنوں کے ساتھ ملا، اور اسے ابراہیم علیہ السلام کی کفالت میں رکھ، اور اپنی رحمت سے اسے جہنم کے عذاب سے بچا، اور اسے اس کے گھر سے بہتر گھر اور اس کے گھر والوں سے بہتر گھر والے عطا فرما۔ اے اللہ! ہمارے اگلوں کو، ہمارے نابالغ فوت شدگان کو اور ہم سے پہلے ایمان لانے والوں کو بخش دے۔"
+      },
+      "reference": "انظر : المغني لابن قدامة 3/416 والدروس المهمة لعامة الأمة للشيخ عبد العزيز بن عبد الله بن باز حفظه الله ص15"
+    },
+    {
+      "text": "اللهم اجعله لنا فرطاً ،وسلفاً وأجراً ",
+      "transliteration": "Allāhumma-jʿalhu lanā faraṭan wa-salafan wa-ajrā.",
+      "translation": "O Allah, make him for us a forerunner, a predecessor, and a reward.",
+      "translations": {
+        "en": "O Allah, make him for us a forerunner, a predecessor, and a reward.",
+        "bn": "হে আল্লাহ! একে আমাদের জন্য অগ্রগামী পাথেয়, পূর্বগামী পুণ্য ও সওয়াবের মাধ্যম করুন।",
+        "id": "Ya Allah, jadikanlah dia sebagai simpanan pendahulu, pendahulu, dan pahala bagi kami.",
+        "tr": "Allah'ım! Onu bizim için önceden gönderilmiş bir mükâfat, bir geçmiş ve bir ecir kıl.",
+        "ur": "اے اللہ! اسے ہمارے لیے آگے بھیجا ہوا توشہ، پیش رو اور اجر بنا۔"
+      },
+      "reference": "كان الحسن يقرأ على الطفل بفاتحة الكتاب ويقول ..  الحديث أخرجه البغوي في شرح السنة 5/357وعبد الرزاق برقم 6588، وعلقه البخاري في كتاب الجنائز ، 65باب قراءة فاتحة الكتاب على الجنازة 2/113"
+    }
+  ],
+  "footnote": [
+    "قال سعيد بن المسيب صليت وراء أبي هريرة على صبي لم يعمل خطيئة قط فسمعته يقول ... الحديث .أخرجه مالك في الموطأ 1/288 وابن أبي شيبه في المصنف 3/ 217 والبيهقي 4/9، وصحح إسناده شعيب الأرناؤوط في تحقيقه لشرح السنة للبغوي 5/357",
+    "انظر : المغني لابن قدامة 3/416 والدروس المهمة لعامة الأمة للشيخ عبد العزيز بن عبد الله بن باز حفظه الله ص15",
+    "كان الحسن يقرأ على الطفل بفاتحة الكتاب ويقول ..  الحديث أخرجه البغوي في شرح السنة 5/357وعبد الرزاق برقم 6588، وعلقه البخاري في كتاب الجنائز ، 65باب قراءة فاتحة الكتاب على الجنازة 2/113"
+  ]
+}

@@ -1,1 +1,22 @@
-{"id":"066","title":"الدعاء إذا نزل المطر","text":["اللهم صيباً نافعاً "],"footnote":["البخاري مع الفتح 2/518"]}
+{
+  "id": "066",
+  "title": "الدعاء إذا نزل المطر",
+  "text": [
+    {
+      "text": "اللهم صيباً نافعاً ",
+      "transliteration": "Allāhumma ṣayyiban nāfiʿā.",
+      "translation": "O Allah, may it be a beneficial rain.",
+      "translations": {
+        "en": "O Allah, may it be a beneficial rain.",
+        "bn": "হে আল্লাহ! একে আমাদের জন্য কল্যাণকর ও উপকারী বৃষ্টি দান করুন।",
+        "id": "Ya Allah, jadikanlah hujan ini bermanfaat.",
+        "tr": "Allah'ım! Bunu bol ve faydalı bir yağmur kıl.",
+        "ur": "اے اللہ! اسے فائدہ مند اور نفع بخش بارش بنا۔"
+      },
+      "reference": "البخاري مع الفتح 2/518"
+    }
+  ],
+  "footnote": [
+    "البخاري مع الفتح 2/518"
+  ]
+}
