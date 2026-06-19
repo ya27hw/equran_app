@@ -4424,4 +4424,20 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get recActionGeneralWorship =>
       'Engage in dhikr, prayer, and good deeds';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String get useLiveLocation => 'Live Location';
+
+  @override
+  String get usePinLocation => 'Use Pin Location';
+
+  @override
+  String get confirmLiveLocationTitle => 'Use Live Location';
+
+  @override
+  String get confirmLiveLocationMessage =>
+      'Would you like to lock prayer times to your device\'s live location? The app will automatically update times as you travel.';
 }

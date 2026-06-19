@@ -4437,4 +4437,20 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get recActionGeneralWorship => 'ذکر، دعا اور نیک اعمال میں مشغول رہیں';
+
+  @override
+  String get confirm => 'تصدیق کریں';
+
+  @override
+  String get useLiveLocation => 'لائیو لوکیشن';
+
+  @override
+  String get usePinLocation => 'پن لوکیشن استعمال کریں';
+
+  @override
+  String get confirmLiveLocationTitle => 'لائیو لوکیشن استعمال کریں';
+
+  @override
+  String get confirmLiveLocationMessage =>
+      'کیا آپ نماز کے اوقات کو اپنے آلے کی لائیو لوکیشن پر لاک کرنا چاہتے ہیں؟ سفر کے دوران ایپ خود بخود اوقات کو اپ ڈیٹ کر دے گی۔';
 }

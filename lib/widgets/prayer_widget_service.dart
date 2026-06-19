@@ -130,6 +130,19 @@ class PrayerWidgetService {
     final langCode = getLanguageCode();
     final t = widgetTranslations[langCode] ?? widgetTranslations['en']!;
 
+    final String themeMode =
+        SettingsDB().get("themeMode")?.toString() ?? 'auto';
+    final String themeScheme =
+        SettingsDB().get("themeScheme")?.toString() ?? 'default';
+    final bool isDark =
+        themeMode == 'dark' ||
+        (themeMode == 'auto' &&
+            WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+                Brightness.dark);
+
+    final lightColors = resolveColorsForScheme(themeScheme, false);
+    final darkColors = resolveColorsForScheme(themeScheme, true);
+
     await Future.wait([
       HomeWidget.saveWidgetData<String>('label_header', t['header']!),
       HomeWidget.saveWidgetData<String>('label_fajr', t['fajr']!),
@@ -142,6 +155,93 @@ class PrayerWidgetService {
       HomeWidget.saveWidgetData<String>('label_placeholder', t['placeholder']!),
       HomeWidget.saveWidgetData<String>('widget_locale', langCode),
       HomeWidget.saveWidgetData<bool>('widget_use_24h', use24hr),
+      HomeWidget.saveWidgetData<String>('theme_mode', themeMode),
+      HomeWidget.saveWidgetData<String>('theme_scheme', themeScheme),
+      HomeWidget.saveWidgetData<bool>('is_dark_mode', isDark),
+
+      // Light colors
+      HomeWidget.saveWidgetData<String>(
+        'w_bg_light',
+        colorToHex(lightColors.background),
+      ),
+      HomeWidget.saveWidgetData<String>(
+        'w_surface_light',
+        colorToHex(lightColors.surface),
+      ),
+      HomeWidget.saveWidgetData<String>(
+        'w_primary_light',
+        colorToHex(lightColors.primary),
+      ),
+      HomeWidget.saveWidgetData<String>(
+        'w_primary_strong_light',
+        colorToHex(lightColors.primaryStrong),
+      ),
+      HomeWidget.saveWidgetData<String>(
+        'w_text_light',
+        colorToHex(lightColors.textPrimary),
+      ),
+      HomeWidget.saveWidgetData<String>(
+        'w_text_sec_light',
+        colorToHex(lightColors.textSecondary),
+      ),
+      HomeWidget.saveWidgetData<String>(
+        'w_text_muted_light',
+        colorToHex(lightColors.textMuted),
+      ),
+      HomeWidget.saveWidgetData<String>(
+        'w_gold_light',
+        colorToHex(lightColors.accentGold),
+      ),
+      HomeWidget.saveWidgetData<String>(
+        'w_border_light',
+        colorToHex(lightColors.border),
+      ),
+      HomeWidget.saveWidgetData<String>(
+        'w_on_primary_light',
+        colorToHex(lightColors.onPrimary),
+      ),
+
+      // Dark colors
+      HomeWidget.saveWidgetData<String>(
+        'w_bg_dark',
+        colorToHex(darkColors.background),
+      ),
+      HomeWidget.saveWidgetData<String>(
+        'w_surface_dark',
+        colorToHex(darkColors.surface),
+      ),
+      HomeWidget.saveWidgetData<String>(
+        'w_primary_dark',
+        colorToHex(darkColors.primary),
+      ),
+      HomeWidget.saveWidgetData<String>(
+        'w_primary_strong_dark',
+        colorToHex(darkColors.primaryStrong),
+      ),
+      HomeWidget.saveWidgetData<String>(
+        'w_text_dark',
+        colorToHex(darkColors.textPrimary),
+      ),
+      HomeWidget.saveWidgetData<String>(
+        'w_text_sec_dark',
+        colorToHex(darkColors.textSecondary),
+      ),
+      HomeWidget.saveWidgetData<String>(
+        'w_text_muted_dark',
+        colorToHex(darkColors.textMuted),
+      ),
+      HomeWidget.saveWidgetData<String>(
+        'w_gold_dark',
+        colorToHex(darkColors.accentGold),
+      ),
+      HomeWidget.saveWidgetData<String>(
+        'w_border_dark',
+        colorToHex(darkColors.border),
+      ),
+      HomeWidget.saveWidgetData<String>(
+        'w_on_primary_dark',
+        colorToHex(darkColors.onPrimary),
+      ),
     ]);
 
     final now = DateTime.now();
@@ -201,6 +301,29 @@ class PrayerWidgetService {
       colorBorder: colorToHex(resolvedColors.border),
       colorOnPrimary: colorToHex(resolvedColors.onPrimary),
     );
+  }
+
+  static EquranColors resolveColorsForScheme(String scheme, bool isDarkMode) {
+    if (scheme == 'black') {
+      return EquranColors.blackDark;
+    }
+    if (isDarkMode) {
+      return switch (scheme) {
+        'fancyBlue' => EquranColors.fancyBlueDark,
+        'fancyPurple' => EquranColors.fancyPurpleDark,
+        'sepia' => EquranColors.sepiaDark,
+        'red' => EquranColors.redDark,
+        _ => EquranColors.dark,
+      };
+    } else {
+      return switch (scheme) {
+        'fancyBlue' => EquranColors.fancyBlueLight,
+        'fancyPurple' => EquranColors.fancyPurpleLight,
+        'sepia' => EquranColors.sepiaLight,
+        'red' => EquranColors.redLight,
+        _ => EquranColors.light,
+      };
+    }
   }
 
   static EquranColors _resolveColors(BuildContext? context) {

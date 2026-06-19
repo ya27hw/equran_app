@@ -1673,5 +1673,10 @@
   "recActionFastAshura": "صيام عاشوراء (يوم قبله أو بعده)",
   "recActionVoluntaryFast": "صيام التطوع لمن استطاع",
   "recActionFastAyyamAlBid": "صيام الأيام البيض",
-  "recActionGeneralWorship": "الاشتغال بالذكر والصلاة والأعمال الصالحة"
+  "recActionGeneralWorship": "الاشتغال بالذكر والصلاة والأعمال الصالحة",
+  "confirm": "تأكيد",
+  "useLiveLocation": "الموقع المباشر",
+  "usePinLocation": "استخدام موقع الدبوس",
+  "confirmLiveLocationTitle": "استخدام الموقع المباشر",
+  "confirmLiveLocationMessage": "هل تريد قفل أوقات الصلاة على موقع جهازك المباشر؟ سيقوم التطبيق بتحديث الأوقات تلقائيًا أثناء سفرك."
 }

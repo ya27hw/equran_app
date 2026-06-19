@@ -307,6 +307,8 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
         return 'د.إ';
       case 'MYR':
         return 'RM';
+      case 'INR':
+        return '₹';
       default:
         return '$_baseCurrency ';
     }
@@ -1490,8 +1492,9 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
     'GBP',
     'SAR',
     'AED',
-    'MYR',
     'IDR',
+    'INR',
+    'MYR',
     'PKR',
     'BDT',
     'TRY',

@@ -152,6 +152,23 @@ void _callbackDispatcher() {
           'isha': prayerTimes.isha,
         };
 
+        final themeMode =
+            await HomeWidget.getWidgetData<String>('theme_mode') ?? 'auto';
+        final themeScheme =
+            await HomeWidget.getWidgetData<String>('theme_scheme') ?? 'default';
+        final bool isDarkMode =
+            themeMode == 'dark' ||
+            (themeMode == 'auto' &&
+                PlatformDispatcher.instance.platformBrightness ==
+                    Brightness.dark);
+
+        final colors = PrayerWidgetService.resolveColorsForScheme(
+          themeScheme,
+          isDarkMode,
+        );
+
+        await HomeWidget.saveWidgetData<bool>('is_dark_mode', isDarkMode);
+
         await PrayerWidgetService.updateWidget(
           fajr: fmt(prayerTimes.fajr, use24h),
           sunrise: fmt(prayerTimes.sunrise, use24h),
@@ -167,6 +184,26 @@ void _callbackDispatcher() {
           ),
           locationName: locationName,
           lastUpdated: fmt(DateTime.now(), use24h),
+          colorBackground: PrayerWidgetService.colorToHex(colors.background),
+          colorSurface: PrayerWidgetService.colorToHex(colors.surface),
+          colorPrimary: PrayerWidgetService.colorToHex(colors.primary),
+          colorPrimaryStrong: PrayerWidgetService.colorToHex(
+            colors.primaryStrong,
+          ),
+          colorPrimaryGradientStart: PrayerWidgetService.colorToHex(
+            colors.primaryGradientStart,
+          ),
+          colorPrimaryGradientEnd: PrayerWidgetService.colorToHex(
+            colors.primaryGradientEnd,
+          ),
+          colorTextPrimary: PrayerWidgetService.colorToHex(colors.textPrimary),
+          colorTextSecondary: PrayerWidgetService.colorToHex(
+            colors.textSecondary,
+          ),
+          colorTextMuted: PrayerWidgetService.colorToHex(colors.textMuted),
+          colorAccentGold: PrayerWidgetService.colorToHex(colors.accentGold),
+          colorBorder: PrayerWidgetService.colorToHex(colors.border),
+          colorOnPrimary: PrayerWidgetService.colorToHex(colors.onPrimary),
         );
 
         // Chain the midnight task if this was the midnight run

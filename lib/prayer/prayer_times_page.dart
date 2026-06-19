@@ -67,6 +67,11 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
     if (widget.enableLiveCountdown) {
       _scheduleNextRefresh();
     }
+    if (_store.getLocation() == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _chooseOnMap(null);
+      });
+    }
   }
 
   @override
@@ -295,7 +300,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                       SizedBox(
                         width: double.infinity,
                         child: FilledButton.icon(
-                          onPressed: _isLocating ? null : _useCurrentLocation,
+                          onPressed: () => _chooseOnMap(null),
                           style: FilledButton.styleFrom(
                             backgroundColor: colors.primary,
                             foregroundColor: colors.onPrimary,
@@ -306,50 +311,9 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                             ),
                             textStyle: buttonTextStyle,
                           ),
-                          icon: _isLocating
-                              ? SizedBox.square(
-                                  dimension: 18,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: colors.onPrimary,
-                                  ),
-                                )
-                              : const Icon(Icons.my_location_rounded),
-                          label: Text(localizations.useCurrentLocation),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      SizedBox(
-                        width: double.infinity,
-                        child: OutlinedButton.icon(
-                          onPressed: () => _chooseOnMap(null),
-                          style: OutlinedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            foregroundColor: colors.primary,
-                            side: BorderSide(color: colors.primary),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                AppRadii.pill,
-                              ),
-                            ),
-                            textStyle: buttonTextStyle,
-                          ),
                           icon: const Icon(Icons.map_outlined),
-                          label: Text(localizations.chooseOnMap),
+                          label: Text(localizations.setUpLocation),
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      TextButton(
-                        onPressed: () => _chooseManually(null),
-                        style: TextButton.styleFrom(
-                          foregroundColor: colors.textMuted,
-                          backgroundColor: Colors.transparent,
-                          textStyle: theme.textTheme.bodySmall?.copyWith(
-                            color: colors.textMuted,
-                            letterSpacing: 0,
-                          ),
-                        ),
-                        child: Text(localizations.enterCoordinatesManually),
                       ),
                       const SizedBox(height: 28),
                       Text(
@@ -569,32 +533,6 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
     );
   }
 
-  Future<void> _useCurrentLocation() async {
-    final EquranColors colors = context.equranColors;
-    setState(() {
-      _isLocating = true;
-    });
-    final PrayerLocationResult result = await _locationService
-        .currentDeviceLocation();
-    if (!mounted) return;
-    setState(() {
-      _isLocating = false;
-    });
-
-    final PrayerLocation? location = result.location;
-    if (location != null) {
-      await _store.saveLocation(location);
-      await _rescheduleReminders(location);
-      unawaited(PrayerWidgetService.refreshWidget(colors: colors));
-      if (!mounted) return;
-      final AppLocalizations localizations = AppLocalizations.of(context)!;
-      _showMessage(localizations.locationSaved);
-      return;
-    }
-
-    _showLocationError(result);
-  }
-
   Future<void> _refreshCurrentDeviceLocationOnEntry() async {
     final PrayerLocation? savedLocation = _store.getLocation();
     if (savedLocation?.mode != PrayerLocationMode.currentDevice) return;
@@ -617,20 +555,6 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
 
     await _store.saveLocation(location);
     await _rescheduleReminders(location);
-  }
-
-  Future<void> _chooseManually(PrayerLocation? initialLocation) async {
-    final PrayerLocation? location = await Navigator.of(context).push(
-      MaterialPageRoute<PrayerLocation>(
-        builder: (BuildContext context) =>
-            ManualPrayerLocationPage(initialLocation: initialLocation),
-      ),
-    );
-    if (location == null) return;
-    await _saveResolvedLocation(location);
-    if (!mounted) return;
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    _showMessage(localizations.locationSaved);
   }
 
   Future<void> _chooseOnMap(PrayerLocation? initialLocation) async {
@@ -657,7 +581,6 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
           isLocating: _isLocating,
           onUpdateCurrentLocation: () {
             Navigator.of(sheetContext).pop();
-            _useCurrentLocation();
           },
           onChooseMap: () {
             Navigator.of(sheetContext).pop();

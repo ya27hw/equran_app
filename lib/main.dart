@@ -162,6 +162,14 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
     }
   }
 
+  @override
+  void didChangePlatformBrightness() {
+    super.didChangePlatformBrightness();
+    if (!kIsWeb && Platform.isAndroid) {
+      unawaited(PrayerWidgetService.refreshWidget());
+    }
+  }
+
   Locale? _getSavedLocale() {
     final dynamic lang = SettingsDB().get("locale");
     if (lang == null || lang == "system") return null;

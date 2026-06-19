@@ -2207,5 +2207,10 @@
   "recActionFastAshura": "Berpuasa Asyura (sebelum/sesudah)",
   "recActionVoluntaryFast": "Jalankan puasa sunnah jika mampu",
   "recActionFastAyyamAlBid": "Berpuasa pada hari-hari Ayyamul Bidh",
-  "recActionGeneralWorship": "Perbanyak zikir, doa, dan amal saleh"
+  "recActionGeneralWorship": "Perbanyak zikir, doa, dan amal saleh",
+  "confirm": "Konfirmasi",
+  "useLiveLocation": "Lokasi Langsung",
+  "usePinLocation": "Gunakan Lokasi Pin",
+  "confirmLiveLocationTitle": "Gunakan Lokasi Langsung",
+  "confirmLiveLocationMessage": "Apakah Anda ingin mengunci waktu sholat ke lokasi langsung perangkat Anda? Aplikasi akan memperbarui waktu secara otomatis saat Anda bepergian."
 }

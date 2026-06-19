@@ -4435,4 +4435,20 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get recActionGeneralWorship => 'জিকির, নামাজ ও নেক আমলে লিপ্ত থাকুন';
+
+  @override
+  String get confirm => 'নিশ্চিত করুন';
+
+  @override
+  String get useLiveLocation => 'লাইভ লোকেশন';
+
+  @override
+  String get usePinLocation => 'পিন লোকেশন ব্যবহার করুন';
+
+  @override
+  String get confirmLiveLocationTitle => 'লাইভ লোকেশন ব্যবহার করুন';
+
+  @override
+  String get confirmLiveLocationMessage =>
+      'আপনি কি আপনার ডিভাইসের লাইভ লোকেশনে প্রার্থনার সময় লক করতে চান? আপনার ভ্রমণের সময় অ্যাপটি স্বয়ংক্রিয়ভাবে সময় আপডেট করবে।';
 }

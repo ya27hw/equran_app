@@ -2207,5 +2207,10 @@
   "recActionFastAshura": "یومِ عاشورہ کا روزہ رکھیں (ایک دن پہلے یا بعد میں)",
   "recActionVoluntaryFast": "ہمت ہونے پر نفلی روزہ رکھیں",
   "recActionFastAyyamAlBid": "ایامِ بیض کے روزے رکھیں",
-  "recActionGeneralWorship": "ذکر، دعا اور نیک اعمال میں مشغول رہیں"
+  "recActionGeneralWorship": "ذکر، دعا اور نیک اعمال میں مشغول رہیں",
+  "confirm": "تصدیق کریں",
+  "useLiveLocation": "لائیو لوکیشن",
+  "usePinLocation": "پن لوکیشن استعمال کریں",
+  "confirmLiveLocationTitle": "لائیو لوکیشن استعمال کریں",
+  "confirmLiveLocationMessage": "کیا آپ نماز کے اوقات کو اپنے آلے کی لائیو لوکیشن پر لاک کرنا چاہتے ہیں؟ سفر کے دوران ایپ خود بخود اوقات کو اپ ڈیٹ کر دے گی۔"
 }

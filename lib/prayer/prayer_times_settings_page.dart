@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:equran/l10n/app_localizations.dart';
-import 'package:equran/prayer/manual_prayer_location_page.dart';
 import 'package:equran/prayer/prayer_location_service.dart';
 import 'package:equran/prayer/prayer_map_location_page.dart';
 import 'package:equran/prayer/prayer_localizations.dart';
@@ -34,7 +33,6 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
   final PrayerTimesService _service = const PrayerTimesService();
   late PrayerTimeSettings _settings;
   PrayerLocation? _location;
-  bool _isLocating = false;
   bool _isUpdatingReminders = false;
   bool _isCheckingNotificationPermission = false;
   bool _isCheckingExactAlarmPermission = false;
@@ -103,28 +101,10 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
             icon: Icons.location_on_outlined,
             children: <Widget>[
               ListTile(
-                leading: const Icon(Icons.my_location_rounded),
-                title: Text(localizations.useCurrentLocation),
-                subtitle: Text(localizations.useCurrentLocationDescription),
-                trailing: _isLocating
-                    ? const SizedBox.square(
-                        dimension: 22,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : null,
-                onTap: _isLocating ? null : _useCurrentLocation,
-              ),
-              ListTile(
                 leading: const Icon(Icons.map_outlined),
                 title: Text(localizations.chooseOnMap),
                 subtitle: Text(localizations.moveMapUnderPin),
                 onTap: () => _chooseOnMap(_location),
-              ),
-              ListTile(
-                leading: const Icon(Icons.edit_location_alt_outlined),
-                title: Text(localizations.enterCoordinatesManually),
-                subtitle: Text(localizations.enterLatitudeLongitude),
-                onTap: () => _chooseManually(_location),
               ),
               if (_location != null)
                 ListTile(
@@ -1640,50 +1620,6 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
     ).whenComplete(controller.dispose);
   }
 
-  Future<void> _useCurrentLocation() async {
-    setState(() {
-      _isLocating = true;
-    });
-    final PrayerLocationResult result = await _locationService
-        .currentDeviceLocation();
-    if (!mounted) return;
-    setState(() {
-      _isLocating = false;
-    });
-
-    final PrayerLocation? location = result.location;
-    if (location == null) {
-      _showLocationError(result);
-      return;
-    }
-    final PrayerLocation resolvedLocation = await _saveResolvedLocation(
-      location,
-    );
-    if (!mounted) return;
-    setState(() {
-      _location = resolvedLocation;
-    });
-    _showMessage(localizations.locationSaved);
-  }
-
-  Future<void> _chooseManually(PrayerLocation? initialLocation) async {
-    final PrayerLocation? location = await Navigator.of(context).push(
-      MaterialPageRoute<PrayerLocation>(
-        builder: (BuildContext context) =>
-            ManualPrayerLocationPage(initialLocation: initialLocation),
-      ),
-    );
-    if (location == null) return;
-    final PrayerLocation resolvedLocation = await _saveResolvedLocation(
-      location,
-    );
-    if (!mounted) return;
-    setState(() {
-      _location = resolvedLocation;
-    });
-    _showMessage(localizations.locationSaved);
-  }
-
   Future<void> _chooseOnMap(PrayerLocation? initialLocation) async {
     final PrayerLocation? location = await showPrayerMapLocationPicker(
       context,
@@ -2090,29 +2026,6 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
     return TimeOfDay(hour: time.hour, minute: time.minute).format(context);
   }
 
-  void _showLocationError(PrayerLocationResult result) {
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final String message = result.message ?? localizations.unableGetLocation;
-    final PrayerLocationFailureReason? reason = result.failureReason;
-    final SnackBarAction? action = switch (reason) {
-      PrayerLocationFailureReason.servicesDisabled => SnackBarAction(
-        label: localizations.settings,
-        onPressed: () {
-          _locationService.openLocationSettings();
-        },
-      ),
-      PrayerLocationFailureReason.permissionDeniedForever => SnackBarAction(
-        label: localizations.appSettings,
-        onPressed: () {
-          _locationService.openAppSettings();
-        },
-      ),
-      _ => null,
-    };
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message), action: action));
-  }
 }
 
 class _OptionalNumberResult<T extends num> {

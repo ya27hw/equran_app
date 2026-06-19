@@ -4456,4 +4456,20 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get recActionGeneralWorship => 'Perbanyak zikir, doa, dan amal saleh';
+
+  @override
+  String get confirm => 'Konfirmasi';
+
+  @override
+  String get useLiveLocation => 'Lokasi Langsung';
+
+  @override
+  String get usePinLocation => 'Gunakan Lokasi Pin';
+
+  @override
+  String get confirmLiveLocationTitle => 'Gunakan Lokasi Langsung';
+
+  @override
+  String get confirmLiveLocationMessage =>
+      'Apakah Anda ingin mengunci waktu sholat ke lokasi langsung perangkat Anda? Aplikasi akan memperbarui waktu secara otomatis saat Anda bepergian.';
 }

@@ -2324,5 +2324,10 @@
   "recActionFastAshura": "Fast Ashura (before/after)",
   "recActionVoluntaryFast": "Observe voluntary fast if able",
   "recActionFastAyyamAlBid": "Fast one of the Ayyam al-Bid (White Days)",
-  "recActionGeneralWorship": "Engage in dhikr, prayer, and good deeds"
+  "recActionGeneralWorship": "Engage in dhikr, prayer, and good deeds",
+  "confirm": "Confirm",
+  "useLiveLocation": "Live Location",
+  "usePinLocation": "Use Pin Location",
+  "confirmLiveLocationTitle": "Use Live Location",
+  "confirmLiveLocationMessage": "Would you like to lock prayer times to your device's live location? The app will automatically update times as you travel."
 }

@@ -1,8 +1,10 @@
+import 'dart:async' show unawaited;
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:equran/backend/library.dart' show SettingsDB;
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/utils/app_radii.dart';
 import 'package:equran/utils/app_theme.dart';
+import 'package:equran/widgets/prayer_widget_service.dart';
 import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
 
@@ -86,6 +88,11 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
         light: AppTheme.buildLightTheme(Colors.cyan, schemeId: schemeId),
         dark: AppTheme.buildDarkTheme(Colors.cyan, schemeId: schemeId),
       );
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          unawaited(PrayerWidgetService.refreshWidget(context: context));
+        }
+      });
     }
   }
 
@@ -279,6 +286,11 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
           if (context.mounted) {
             AdaptiveTheme.of(context).setThemeMode(mode);
             setState(() {});
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (context.mounted) {
+                unawaited(PrayerWidgetService.refreshWidget(context: context));
+              }
+            });
           }
         },
         borderRadius: BorderRadius.circular(AppRadii.medium),

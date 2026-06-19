@@ -472,10 +472,32 @@ class _PrayerMapLocationPageState extends State<PrayerMapLocationPage> {
                       ],
                       if (widget.isPicker) ...<Widget>[
                         const SizedBox(height: 12),
-                        FilledButton.icon(
+                        OutlinedButton.icon(
                           onPressed: _useSelectedLocation,
-                          icon: const Icon(Icons.check_rounded),
-                          label: Text(localizations.useThisLocation),
+                          icon: const Icon(Icons.pin_drop_outlined),
+                          label: Text(localizations.usePinLocation),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size.fromHeight(42),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        FilledButton.icon(
+                          onPressed: _isLoadingLocation
+                              ? null
+                              : _useLiveLocation,
+                          icon: _isLoadingLocation
+                              ? const SizedBox.square(
+                                  dimension: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Icon(Icons.my_location_rounded),
+                          label: Text(localizations.useLiveLocation),
+                          style: FilledButton.styleFrom(
+                            minimumSize: const Size.fromHeight(42),
+                          ),
                         ),
                         const SizedBox(height: 6),
                         TextButton.icon(
@@ -504,6 +526,82 @@ class _PrayerMapLocationPageState extends State<PrayerMapLocationPage> {
         localizations: localizations,
       ),
     );
+  }
+
+  Future<void> _useLiveLocation() async {
+    LatLng? coords = _userLocation;
+    if (coords == null) {
+      if (_isLoadingLocation) return;
+      setState(() {
+        _isLoadingLocation = true;
+      });
+      try {
+        final PrayerLocationResult result = await const PrayerLocationService()
+            .currentDeviceLocation();
+        if (!mounted) return;
+        setState(() {
+          _isLoadingLocation = false;
+        });
+        if (result.isSuccess && result.location != null) {
+          final LatLng detectedCoords = LatLng(
+            result.location!.latitude,
+            result.location!.longitude,
+          );
+          coords = detectedCoords;
+          setState(() {
+            _userLocation = detectedCoords;
+            _selectedCenter = detectedCoords;
+          });
+          _mapController.move(detectedCoords, 13.0);
+        } else {
+          if (mounted && result.message != null) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(result.message!)));
+          }
+          return;
+        }
+      } catch (e) {
+        debugPrint('Error getting live location: $e');
+        return;
+      }
+    }
+
+    if (mounted) {
+      final PrayerLocation liveLocation = PrayerLocation(
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+        label: AppLocalizations.of(context)!.currentLocation,
+        mode: PrayerLocationMode.currentDevice,
+      );
+
+      final bool? confirm = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) {
+          final AppLocalizations localizations = AppLocalizations.of(context)!;
+          return AlertDialog(
+            title: Text(localizations.confirmLiveLocationTitle),
+            content: Text(
+              '${localizations.confirmLiveLocationMessage}\n\n'
+              '${liveLocation.latitude.toStringAsFixed(5)}, ${liveLocation.longitude.toStringAsFixed(5)}',
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text(localizations.cancel),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text(localizations.confirm),
+              ),
+            ],
+          );
+        },
+      );
+      if (confirm == true && mounted) {
+        Navigator.of(context).pop(liveLocation);
+      }
+    }
   }
 
   Future<void> _enterCoordinatesManually() async {

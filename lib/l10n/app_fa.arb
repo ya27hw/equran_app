@@ -2324,5 +2324,10 @@
   "recActionFastAshura": "روزه عاشورا را بگیرید (قبل/بعد از آن)",
   "recActionVoluntaryFast": "در صورت توانایی روزه مستحبی بگیرید",
   "recActionFastAyyamAlBid": "ایام البیض را روزه بگیرید",
-  "recActionGeneralWorship": "به ذکر، دعا و کارهای نیک مشغول شوید"
+  "recActionGeneralWorship": "به ذکر، دعا و کارهای نیک مشغول شوید",
+  "confirm": "تایید",
+  "useLiveLocation": "موقعیت مکانی زنده",
+  "usePinLocation": "استفاده از موقعیت پین",
+  "confirmLiveLocationTitle": "استفاده از موقعیت زنده",
+  "confirmLiveLocationMessage": "آیا می‌خواهید اوقات شرعی را بر اساس موقعیت مکانی زنده دستگاه خود قفل کنید؟ برنامه با سفر شما زمان‌ها را به طور خودکار بروزرسانی می‌کند."
 }

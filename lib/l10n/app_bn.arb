@@ -2207,5 +2207,10 @@
   "recActionFastAshura": "আশুরার রোজা রাখুন (আগে/পরে)",
   "recActionVoluntaryFast": "সামর্থ্য থাকলে নফল রোজা রাখুন",
   "recActionFastAyyamAlBid": "আইয়ামে বিজের রোজা রাখুন",
-  "recActionGeneralWorship": "জিকির, নামাজ ও নেক আমলে লিপ্ত থাকুন"
+  "recActionGeneralWorship": "জিকির, নামাজ ও নেক আমলে লিপ্ত থাকুন",
+  "confirm": "নিশ্চিত করুন",
+  "useLiveLocation": "লাইভ লোকেশন",
+  "usePinLocation": "পিন লোকেশন ব্যবহার করুন",
+  "confirmLiveLocationTitle": "লাইভ লোকেশন ব্যবহার করুন",
+  "confirmLiveLocationMessage": "আপনি কি আপনার ডিভাইসের লাইভ লোকেশনে প্রার্থনার সময় লক করতে চান? আপনার ভ্রমণের সময় অ্যাপটি স্বয়ংক্রিয়ভাবে সময় আপডেট করবে।"
 }

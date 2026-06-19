@@ -4445,4 +4445,20 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get recActionGeneralWorship =>
       'Zikir, dua ve salih amellerle meşgul olun';
+
+  @override
+  String get confirm => 'Onayla';
+
+  @override
+  String get useLiveLocation => 'Canlı Konum';
+
+  @override
+  String get usePinLocation => 'İğne Konumunu Kullan';
+
+  @override
+  String get confirmLiveLocationTitle => 'Canlı Konumu Kullan';
+
+  @override
+  String get confirmLiveLocationMessage =>
+      'Namaz vakitlerini cihazınızın canlı konumuna kilitlemek ister misiniz? Uygulama seyahat ettikçe vakitleri otomatik olarak güncelleyecektir.';
 }

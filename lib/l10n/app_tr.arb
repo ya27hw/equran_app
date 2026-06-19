@@ -2207,5 +2207,10 @@
   "recActionFastAshura": "Aşure orucu tutun (öncesi/sonrası)",
   "recActionVoluntaryFast": "Gücünüz yetiyorsa nafile oruç tutun",
   "recActionFastAyyamAlBid": "Eyyam-ı Biyz (aydınlık günler) orucu tutun",
-  "recActionGeneralWorship": "Zikir, dua ve salih amellerle meşgul olun"
+  "recActionGeneralWorship": "Zikir, dua ve salih amellerle meşgul olun",
+  "confirm": "Onayla",
+  "useLiveLocation": "Canlı Konum",
+  "usePinLocation": "İğne Konumunu Kullan",
+  "confirmLiveLocationTitle": "Canlı Konumu Kullan",
+  "confirmLiveLocationMessage": "Namaz vakitlerini cihazınızın canlı konumuna kilitlemek ister misiniz? Uygulama seyahat ettikçe vakitleri otomatik olarak güncelleyecektir."
 }

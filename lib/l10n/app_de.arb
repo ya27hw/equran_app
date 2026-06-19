@@ -2244,5 +2244,10 @@
   "recActionFastAshura": "Fasten Sie an Ashura (davor/danach)",
   "recActionVoluntaryFast": "Fasten Sie freiwillig, wenn Sie dazu in der Lage sind",
   "recActionFastAyyamAlBid": "Fasten Sie an den Ayyam al-Bid (Weiße Tage)",
-  "recActionGeneralWorship": "Widmen Sie sich dem Dhikr, Gebet und guten Taten"
+  "recActionGeneralWorship": "Widmen Sie sich dem Dhikr, Gebet und guten Taten",
+  "confirm": "Bestätigen",
+  "useLiveLocation": "Live-Standort",
+  "usePinLocation": "Stecknadel-Standort verwenden",
+  "confirmLiveLocationTitle": "Live-Standort verwenden",
+  "confirmLiveLocationMessage": "Möchten Sie die Gebetszeiten an den Live-Standort Ihres Geräts binden? Die App aktualisiert die Zeiten automatisch, wenn Sie reisen."
 }

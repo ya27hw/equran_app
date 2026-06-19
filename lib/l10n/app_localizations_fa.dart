@@ -4433,4 +4433,20 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get recActionGeneralWorship => 'به ذکر، دعا و کارهای نیک مشغول شوید';
+
+  @override
+  String get confirm => 'تایید';
+
+  @override
+  String get useLiveLocation => 'موقعیت مکانی زنده';
+
+  @override
+  String get usePinLocation => 'استفاده از موقعیت پین';
+
+  @override
+  String get confirmLiveLocationTitle => 'استفاده از موقعیت زنده';
+
+  @override
+  String get confirmLiveLocationMessage =>
+      'آیا می‌خواهید اوقات شرعی را بر اساس موقعیت مکانی زنده دستگاه خود قفل کنید؟ برنامه با سفر شما زمان‌ها را به طور خودکار بروزرسانی می‌کند.';
 }

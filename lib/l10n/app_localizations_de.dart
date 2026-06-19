@@ -4513,4 +4513,20 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get recActionGeneralWorship =>
       'Widmen Sie sich dem Dhikr, Gebet und guten Taten';
+
+  @override
+  String get confirm => 'Bestätigen';
+
+  @override
+  String get useLiveLocation => 'Live-Standort';
+
+  @override
+  String get usePinLocation => 'Stecknadel-Standort verwenden';
+
+  @override
+  String get confirmLiveLocationTitle => 'Live-Standort verwenden';
+
+  @override
+  String get confirmLiveLocationMessage =>
+      'Möchten Sie die Gebetszeiten an den Live-Standort Ihres Geräts binden? Die App aktualisiert die Zeiten automatisch, wenn Sie reisen.';
 }

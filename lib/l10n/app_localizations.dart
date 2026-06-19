@@ -7790,6 +7790,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Engage in dhikr, prayer, and good deeds'**
   String get recActionGeneralWorship;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// No description provided for @useLiveLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Location'**
+  String get useLiveLocation;
+
+  /// No description provided for @usePinLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Use Pin Location'**
+  String get usePinLocation;
+
+  /// No description provided for @confirmLiveLocationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Use Live Location'**
+  String get confirmLiveLocationTitle;
+
+  /// No description provided for @confirmLiveLocationMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Would you like to lock prayer times to your device\'s live location? The app will automatically update times as you travel.'**
+  String get confirmLiveLocationMessage;
 }
 
 class _AppLocalizationsDelegate

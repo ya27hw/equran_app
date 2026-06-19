@@ -4358,4 +4358,20 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get recActionGeneralWorship =>
       'الاشتغال بالذكر والصلاة والأعمال الصالحة';
+
+  @override
+  String get confirm => 'تأكيد';
+
+  @override
+  String get useLiveLocation => 'الموقع المباشر';
+
+  @override
+  String get usePinLocation => 'استخدام موقع الدبوس';
+
+  @override
+  String get confirmLiveLocationTitle => 'استخدام الموقع المباشر';
+
+  @override
+  String get confirmLiveLocationMessage =>
+      'هل تريد قفل أوقات الصلاة على موقع جهازك المباشر؟ سيقوم التطبيق بتحديث الأوقات تلقائيًا أثناء سفرك.';
 }

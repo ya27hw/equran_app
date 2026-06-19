@@ -47,25 +47,61 @@ internal data class PrayerWidgetState(
 internal fun loadPrayerWidgetState(context: Context): PrayerWidgetState {
   val prefs = HomeWidgetPlugin.getData(context)
 
+  val themeMode = prefs.getString("theme_mode", "auto") ?: "auto"
+  val isSystemDark = (context.resources.configuration.uiMode and
+      android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+      android.content.res.Configuration.UI_MODE_NIGHT_YES
+
+  val isDarkMode = when (themeMode) {
+      "dark" -> true
+      "light" -> false
+      else -> isSystemDark
+  }
+
+  val bgKey = if (isDarkMode) "w_bg_dark" else "w_bg_light"
+  val surfaceKey = if (isDarkMode) "w_surface_dark" else "w_surface_light"
+  val primaryKey = if (isDarkMode) "w_primary_dark" else "w_primary_light"
+  val primaryStrongKey = if (isDarkMode) "w_primary_strong_dark" else "w_primary_strong_light"
+  val textKey = if (isDarkMode) "w_text_dark" else "w_text_light"
+  val textSecKey = if (isDarkMode) "w_text_sec_dark" else "w_text_sec_light"
+  val textMutedKey = if (isDarkMode) "w_text_muted_dark" else "w_text_muted_light"
+  val goldKey = if (isDarkMode) "w_gold_dark" else "w_gold_light"
+  val borderKey = if (isDarkMode) "w_border_dark" else "w_border_light"
+  val onPrimaryKey = if (isDarkMode) "w_on_primary_dark" else "w_on_primary_light"
+
+  val defaultBg = if (isDarkMode) "FF07110E" else "FFFAFAF7"
+  val defaultSurface = if (isDarkMode) "FF111A17" else "FFFFFFFF"
+  val defaultPrimary = if (isDarkMode) "FF1E7A61" else "FF176B55"
+  val defaultPrimaryStrong = if (isDarkMode) "FF125B49" else "FF145D4A"
+  val defaultText = if (isDarkMode) "FFF3F7F4" else "FF1E2420"
+  val defaultTextSec = if (isDarkMode) "FFB8C2BC" else "FF69716B"
+  val defaultTextMuted = if (isDarkMode) "FF83908A" else "FF8A918B"
+  val defaultGold = "FFD6A84F"
+  val defaultBorder = if (isDarkMode) "FF26332E" else "FFE5E7DF"
+  val defaultOnPrimary = "FFFFFFFF"
+
+  val bgColorStr = prefs.getString(bgKey, null) ?: prefs.getString("w_bg", null) ?: defaultBg
+  val surfaceColorStr = prefs.getString(surfaceKey, null) ?: prefs.getString("w_surface", null) ?: defaultSurface
+  val primaryColorStr = prefs.getString(primaryKey, null) ?: prefs.getString("w_primary", null) ?: defaultPrimary
+  val primaryStrongColorStr = prefs.getString(primaryStrongKey, null) ?: prefs.getString("w_primary_strong", null) ?: defaultPrimaryStrong
+  val textColorStr = prefs.getString(textKey, null) ?: prefs.getString("w_text", null) ?: defaultText
+  val textSecondaryColorStr = prefs.getString(textSecKey, null) ?: prefs.getString("w_text_sec", null) ?: defaultTextSec
+  val textMutedColorStr = prefs.getString(textMutedKey, null) ?: prefs.getString("w_text_muted", null) ?: defaultTextMuted
+  val goldColorStr = prefs.getString(goldKey, null) ?: prefs.getString("w_gold", null) ?: defaultGold
+  val borderColorStr = prefs.getString(borderKey, null) ?: prefs.getString("w_border", null) ?: defaultBorder
+  val onPrimaryColorStr = prefs.getString(onPrimaryKey, null) ?: prefs.getString("w_on_primary", null) ?: defaultOnPrimary
+
   val palette = PrayerWidgetPalette(
-    bgColor = hexToColor(prefs.getString("w_bg", "FF07110E") ?: "FF07110E"),
-    surfaceColor = hexToColor(prefs.getString("w_surface", "FF111A17") ?: "FF111A17"),
-    primaryColor = hexToColor(prefs.getString("w_primary", "FF1E7A61") ?: "FF1E7A61"),
-    primaryStrongColor = hexToColor(
-      prefs.getString("w_primary_strong", "FF125B49") ?: "FF125B49"
-    ),
-    textColor = hexToColor(prefs.getString("w_text", "FFF3F7F4") ?: "FFF3F7F4"),
-    textSecondaryColor = hexToColor(
-      prefs.getString("w_text_sec", "FFB8C2BC") ?: "FFB8C2BC"
-    ),
-    textMutedColor = hexToColor(
-      prefs.getString("w_text_muted", "FF83908A") ?: "FF83908A"
-    ),
-    goldColor = hexToColor(prefs.getString("w_gold", "FFD6A84F") ?: "FFD6A84F"),
-    borderColor = hexToColor(prefs.getString("w_border", "FF26332E") ?: "FF26332E"),
-    onPrimaryColor = hexToColor(
-      prefs.getString("w_on_primary", "FFFFFFFF") ?: "FFFFFFFF"
-    ),
+    bgColor = hexToColor(bgColorStr),
+    surfaceColor = hexToColor(surfaceColorStr),
+    primaryColor = hexToColor(primaryColorStr),
+    primaryStrongColor = hexToColor(primaryStrongColorStr),
+    textColor = hexToColor(textColorStr),
+    textSecondaryColor = hexToColor(textSecondaryColorStr),
+    textMutedColor = hexToColor(textMutedColorStr),
+    goldColor = hexToColor(goldColorStr),
+    borderColor = hexToColor(borderColorStr),
+    onPrimaryColor = hexToColor(onPrimaryColorStr),
   )
 
   val labels = PrayerWidgetLabels(
