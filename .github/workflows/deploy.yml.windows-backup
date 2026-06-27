@@ -174,8 +174,34 @@ jobs:
           name: linux-bundle
           path: build/linux/x64/release/linux-release.zip
 
+  build-windows:
+    needs: [version, quality]
+    if: needs.version.outputs.should_run == 'true'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - run: flutter config --enable-windows-desktop
+      - run: flutter pub get
+      - run: flutter build windows --release
+
+      - name: Package Windows Build
+        shell: pwsh
+        run: |
+          Compress-Archive -Path build/windows/x64/runner/Release/* -DestinationPath build/windows/windows-release.zip -Force
+
+      - name: Upload Windows Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-bundle
+          path: build/windows/windows-release.zip
+
   release:
-    needs: [version, quality, build-android, build-linux]
+    needs: [version, quality, build-android, build-linux, build-windows]
     if: needs.version.outputs.should_run == 'true'
     runs-on: ubuntu-latest
     steps:
@@ -199,3 +225,4 @@ jobs:
           files: |
             dist/android-apk-split/app-*-release.apk
             dist/linux-bundle/linux-release.zip
+            dist/windows-bundle/windows-release.zip
