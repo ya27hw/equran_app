@@ -117,7 +117,17 @@ class PrayerWidgetService {
       settings: settings,
     );
     final use24hr = settings.use24HourFormat;
-    final resolvedColors = colors ?? _resolveColors(context);
+
+    final String themeMode =
+        SettingsDB().get("themeMode")?.toString() ?? 'auto';
+    final String themeScheme =
+        SettingsDB().get("themeScheme")?.toString() ?? 'default';
+    final bool isDark =
+        themeMode == 'dark' ||
+        (themeMode == 'auto' &&
+            WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+                Brightness.dark);
+    final resolvedColors = resolveColorsForScheme(themeScheme, isDark);
 
     await saveCoordinates(
       latitude: location.latitude,
@@ -129,16 +139,6 @@ class PrayerWidgetService {
 
     final langCode = getLanguageCode();
     final t = widgetTranslations[langCode] ?? widgetTranslations['en']!;
-
-    final String themeMode =
-        SettingsDB().get("themeMode")?.toString() ?? 'auto';
-    final String themeScheme =
-        SettingsDB().get("themeScheme")?.toString() ?? 'default';
-    final bool isDark =
-        themeMode == 'dark' ||
-        (themeMode == 'auto' &&
-            WidgetsBinding.instance.platformDispatcher.platformBrightness ==
-                Brightness.dark);
 
     final lightColors = resolveColorsForScheme(themeScheme, false);
     final darkColors = resolveColorsForScheme(themeScheme, true);
@@ -326,21 +326,7 @@ class PrayerWidgetService {
     }
   }
 
-  static EquranColors _resolveColors(BuildContext? context) {
-    if (context != null) {
-      final ext = Theme.of(context).extension<EquranColors>();
-      if (ext != null) return ext;
-      final brightness = Theme.of(context).brightness;
-      return brightness == Brightness.dark
-          ? EquranColors.dark
-          : EquranColors.light;
-    }
-    final brightness =
-        WidgetsBinding.instance.platformDispatcher.platformBrightness;
-    return brightness == Brightness.dark
-        ? EquranColors.dark
-        : EquranColors.light;
-  }
+
 
   static String colorToHex(Color color) {
     return color.toARGB32().toRadixString(16).padLeft(8, '0').toUpperCase();

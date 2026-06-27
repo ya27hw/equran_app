@@ -2025,7 +2025,6 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
   String _formatClockTime(DateTime time) {
     return TimeOfDay(hour: time.hour, minute: time.minute).format(context);
   }
-
 }
 
 class _OptionalNumberResult<T extends num> {

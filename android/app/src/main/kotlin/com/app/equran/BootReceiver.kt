@@ -51,6 +51,7 @@ class BootReceiver: BroadcastReceiver() {
         PrayerTimesWidget().updateAll(context)
         NextPrayerWidget().updateAll(context)
       }
+      PrayerAlarmScheduler.scheduleNext(context)
     } else {
       // No data yet — compute native prayer
       // times using stored coordinates
@@ -152,5 +153,6 @@ class BootReceiver: BroadcastReceiver() {
       PrayerTimesWidget().updateAll(context)
       NextPrayerWidget().updateAll(context)
     }
+    PrayerAlarmScheduler.scheduleNext(context)
   }
 }
