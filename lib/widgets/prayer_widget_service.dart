@@ -326,8 +326,6 @@ class PrayerWidgetService {
     }
   }
 
-
-
   static String colorToHex(Color color) {
     return color.toARGB32().toRadixString(16).padLeft(8, '0').toUpperCase();
   }
