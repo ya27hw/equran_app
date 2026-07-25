@@ -27,7 +27,7 @@ This codebase does not follow a strict traditional horizontal layered layout (e.
 
 ### Shared Core & Shared Utilities
 - **[lib/backend/](file:///home/yousuf/Documents/Personal%20Projects/equran-app/lib/backend/)** -> Core databases, repository layers, and background services:
-  - Database helpers (Hive/SQLite-based) such as `bookmark_db.dart`, `hifz_db.dart`, `settings_db.dart`, `surah_db.dart`.
+  - Database helpers (Hive/SQLite-based) such as `bookmark_db.dart`, `favourites_db.dart`, `dua_favourites_db.dart`, `hifz_db.dart`, `settings_db.dart`, `surah_db.dart`.
   - Global app settings and backup services (`settings_db.dart`, `backup_service.dart`).
   - Font loading engines (`qpc_v4_font_service.dart`) and font patch utilities (`qcf_cpal_patcher.dart`).
   - Downloader services (`resource_download_service.dart`, `resource_install_store.dart`, `audio_downloads.dart`).
@@ -47,6 +47,7 @@ This codebase does not follow a strict traditional horizontal layered layout (e.
 - **[lib/zakat/](file:///home/yousuf/Documents/Personal%20Projects/equran-app/lib/zakat/)** -> Interactive Zakat calculation utility.
 - **[lib/home/](file:///home/yousuf/Documents/Personal%20Projects/equran-app/lib/home/)** & **[lib/home_dashboard/](file:///home/yousuf/Documents/Personal%20Projects/equran-app/lib/home_dashboard/)** -> Main navigation hubs, stats tracker screens, settings pages, and the primary Quran reading canvas (`read.dart`).
 - **[lib/l10n/](file:///home/yousuf/Documents/Personal%20Projects/equran-app/lib/l10n/)** -> Translation Arb targets (`app_en.arb`, `app_ar.arb`, etc.) and generated localization scripts.
+- **[lib/features/](file:///home/yousuf/Documents/Personal%20Projects/equran-app/lib/features/)** -> General minor features, currently co-locating the app's `splash` screen module.
 
 ---
 
@@ -78,6 +79,11 @@ The Quran text rendering supports different styles including IndoPak, Uthmanic H
     String text = localizations.myKey;
     ```
 
+### 4. Background Android Widget Subsystem
+*   **Home Screen Widget:** Powered by the `home_widget` and `workmanager` packages, allowing users to place an interactive widget on their Android home screen displaying prayer times.
+*   **Widget Updates & WorkManager:** Background updates are orchestrated by [PrayerWidgetWorker](file:///home/yousuf/Documents/Personal%20Projects/equran-app/lib/widgets/prayer_widget_worker.dart) (running hourly and midnight recalculation tasks) which utilizes [PrayerWidgetService](file:///home/yousuf/Documents/Personal%20Projects/equran-app/lib/widgets/prayer_widget_service.dart) to write widget data.
+*   **Native Receivers:** The widget UI updates are handled by native Kotlin widget receivers under `/android/app/src/main/kotlin/com/app/equran/` (e.g. `PrayerTimesWidgetReceiver.kt`, `NextPrayerWidgetReceiver.kt`, `PrayerWidgetShared.kt`, and `PrayerAlarmReceiver.kt`).
+
 ---
 
 ## 📜 Explicit Agent Coding Guardrails & Verification Rules
@@ -99,3 +105,7 @@ Incoming agents and developers must strictly follow these rules when editing the
         ```bash
         flutter analyze
         ```
+4.  **Lockfile Retention:**
+    *   Never delete, remove, or list `pubspec.lock` in `.gitignore`. It must always be tracked and committed to lock exact dependency versions.
+5.  **F-Droid Compliance (No Google GMS/Firebase):**
+    *   Do not integrate libraries or plugins that depend on Google Mobile Services (GMS), Firebase SDKs (such as analytics, crash reporting, or push notifications), or other proprietary non-free frameworks. The codebase must remain 100% compliant with F-Droid inclusion policies.
