@@ -61,5 +61,14 @@ void main() {
     expect(prediction.toMap()['modelVersion'], isNotEmpty);
     expect(prediction.toMap()['featureSchemaVersion'], isNotEmpty);
     expect(prediction.toMap().keys, isNot(contains('text')));
+    expect(MemoryTwinPrediction.fromMap(prediction.toMap())?.id, prediction.id);
+    expect(
+      MemoryTwinSignal.fromMap(<String, Object?>{
+        'surah': 1,
+        'ayah': 7,
+        'intervalDays': -4,
+      })?.intervalDays,
+      0,
+    );
   });
 }

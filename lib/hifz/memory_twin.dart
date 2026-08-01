@@ -119,12 +119,16 @@ class MemoryTwinPrediction {
     final double? score = raw['riskScore'] is num
         ? (raw['riskScore'] as num).toDouble()
         : null;
-    final MemoryRiskBand? band = raw['band'] is String
-        ? MemoryRiskBand.values.cast<MemoryRiskBand?>().firstWhere(
-            (MemoryRiskBand? value) => value?.name == raw['band'],
-            orElse: () => null,
-          )
-        : null;
+    MemoryRiskBand? band;
+    final Object? rawBand = raw['band'];
+    if (rawBand is String) {
+      for (final MemoryRiskBand candidate in MemoryRiskBand.values) {
+        if (candidate.name == rawBand) {
+          band = candidate;
+          break;
+        }
+      }
+    }
     final DateTime? predictedFor = raw['predictedFor'] is String
         ? DateTime.tryParse(raw['predictedFor'] as String)
         : null;
