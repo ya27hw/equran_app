@@ -142,6 +142,10 @@ jobs:
         run: flutter build apk --release --split-per-abi -PrequireReleaseSigning
         shell: bash
 
+      - name: Build Android App Bundle
+        run: flutter build appbundle --release -PrequireReleaseSigning
+        shell: bash
+
       # More thorough scan using apkanalyzer
       - name: Scan with apkanalyzer
         run: |
@@ -160,7 +164,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: android-apk-split
-          path: build/app/outputs/flutter-apk/app-*-release.apk
+          path: |
+            build/app/outputs/flutter-apk/app-*-release.apk
+            build/app/outputs/bundle/release/app-release.aab
 
   build-linux:
     needs: [version, quality]
