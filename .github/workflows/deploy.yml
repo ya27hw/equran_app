@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -108,7 +111,7 @@ jobs:
 
   build-android:
     needs: [version, quality]
-    if: needs.version.outputs.should_run == 'true'
+    if: github.event_name == 'push' && needs.version.outputs.should_run == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -170,7 +173,7 @@ jobs:
 
   build-linux:
     needs: [version, quality]
-    if: needs.version.outputs.should_run == 'true'
+    if: github.event_name == 'push' && needs.version.outputs.should_run == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -209,7 +212,7 @@ jobs:
 
   release:
     needs: [version, quality, build-android, build-linux]
-    if: needs.version.outputs.should_run == 'true'
+    if: github.event_name == 'push' && needs.version.outputs.should_run == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
