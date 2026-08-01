@@ -35,9 +35,12 @@ def hasReleaseSigning =
         keystoreProperties['keyPassword'] &&
         keystoreProperties['storePassword'] &&
         keystoreFile.exists()
+def releaseTaskRequested = gradle.startParameter.taskNames.any { taskName ->
+    taskName.toLowerCase().contains('release')
+}
 def requireReleaseSigning =
         project.hasProperty('requireReleaseSigning') ||
-        System.getenv('CI')?.toBoolean() == true
+        (System.getenv('CI')?.toBoolean() == true && releaseTaskRequested)
 
 if (requireReleaseSigning && !hasReleaseSigning) {
     throw new GradleException(
