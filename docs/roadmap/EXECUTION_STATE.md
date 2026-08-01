@@ -6,7 +6,7 @@
 - Objective: repair trust/performance defects, add safe startup/quality gates, and keep incomplete product features local and disabled.
 - Branch: `codex/equran-roadmap`, based on `origin/main` at `9274a497e722eda1a5e5ce37a44a9fb740b6f9`.
 - Baseline checkpoint: `161ece9` (pushed).
-- Current implementation checkpoint: pending commit after the current validation run.
+- Current implementation checkpoint: `1b46652` (`feat: harden roadmap foundations and staged startup`), pushed to `origin/codex/equran-roadmap`.
 - Remote push: Git push is available with the configured credential; `gh auth status` still reports an invalid keyring token.
 
 ## Completed work
@@ -31,7 +31,10 @@
 - `flutter doctor -v`: Android and Linux toolchains pass; Chrome is unavailable; Flutter/Dart are not on PATH; no Android device is attached.
 - Android debug APK: built successfully, 187,703,855 bytes (debug).
 - Android release split attempt: Gradle/R8 progressed and generated mapping outputs, but no current split APK was available at the end of the baseline run; the existing 30,839,093-byte APK is dated before this run and must not be counted as a new pass.
-- Linux, Windows, integration, startup, frame, memory, search, and extraction measurements: not yet run.
+- Fresh Android release split passed: armeabi-v7a 29,969,404 bytes, arm64-v8a 31,704,724 bytes, x86_64 33,227,376 bytes.
+- Fresh Android profile split passed: armeabi-v7a 50,341,032 bytes, arm64-v8a 51,946,978 bytes, x86_64 53,421,523 bytes; debug APK also passed.
+- Fresh Linux release passed (`build/linux/x64/release/bundle/eQuran`, bundle 147 MB).
+- Chrome, Windows, Android hardware, integration/startup/frame/memory/search/extraction measurements, and `apkanalyzer` evidence remain unavailable on this host.
 
 ## Audit observations
 

@@ -1,19 +1,20 @@
 # Final validation report
 
-This report is intentionally a gate-controlled placeholder until all dependent phases pass. No item below is a claim of completion.
+This report remains gate-controlled: the current branch contains the core stabilization checkpoint and guarded product foundations, while profiling, hardware journeys, and unfinished feature UI/transport remain open.
 
 ## Required evidence
 
-- Branch and checkpoint commit sequence with remote verification.
-- `dart format --output=none --set-exit-if-changed .`.
-- `flutter pub get` and dependency/license/F-Droid review.
-- `flutter analyze --fatal-infos`.
-- Unit, widget, integration, migration, backup, localization, accessibility, security, search, archive, font-memory, and Memory Twin suites.
-- Android debug/profile/release-compatible and split ABI reports; Linux release; explicit Windows/Chrome limitations if unavailable.
-- Startup, frame, memory, storage, network, search, extraction, and APK before/after measurements.
-- Manual execution of `MANUAL_TEST_PLAN.md` with device/build records.
+| Gate | Current evidence | Status |
+| --- | --- | --- |
+| Branch/checkpoint/remote | `1b46652` pushed to `origin/codex/equran-roadmap`; baseline `161ece9` | Pass |
+| Format/analyze/tests | Full format, `flutter analyze --fatal-infos`, 27 deterministic tests | Pass |
+| Localization/dependency policy | ARB parity, `flutter gen-l10n` consistency, no GMS/Firebase tokens | Pass |
+| Android | Fresh debug, profile split, and release split ABI builds; release signing guard | Pass (local non-CI release) |
+| Linux | Fresh release bundle | Pass |
+| Core product safety | Backup validation/rollback foundations, independent metal rates, local flags | Pass for implemented scope |
+| Integration/device/profiling | Hardware journeys, startup/frame/memory/search/extraction benchmarks, Windows/Chrome | Unknown/open |
+| Manual plan/draft PR | Manual device plan and GitHub draft PR | Open |
 
 ## Known unavailable evidence at baseline
 
-GitHub CLI credentials are invalid, Android hardware is not attached, Chrome and Windows are unavailable on the host, no automated test directory exists, and a fresh release split artifact was not produced by the baseline attempt. These remain open until resolved or explicitly documented in the final PR.
-
+GitHub CLI credentials are invalid for draft-PR creation, Android hardware is not attached, Chrome and Windows are unavailable on the host, `apkanalyzer` is unavailable, and no manual device plan has been executed. These are recorded as open rather than inferred passes.
