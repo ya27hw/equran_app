@@ -6,7 +6,7 @@
 - Objective: repair trust/performance defects, add safe startup/quality gates, and keep incomplete product features local and disabled.
 - Branch: `codex/equran-roadmap`, based on `origin/main` at `9274a497e722eda1a5e5ce37a44a9fb740b6f9`.
 - Baseline checkpoint: `161ece9` (pushed).
-- Current implementation checkpoints: `1b46652` (core foundations), `8d9d94b` (CI/build gates), `fc6dedc` (Zakat/backup guidance), `ed3ceb3`/`547280b` (local assignments and guarded validators), all pushed to `origin/codex/equran-roadmap`.
+- Current implementation checkpoints: `1b46652` (core foundations), `8d9d94b` (CI/build gates), `fc6dedc` (Zakat/backup guidance), `ed3ceb3`/`547280b` (local assignments and guarded validators), `c1fdb1a` (validation counts), and `08dee51` (Memory Twin metadata round-trip hardening), all pushed to `origin/codex/equran-roadmap`.
 - Remote push: Git push is available with the configured credential; `gh auth status` still reports an invalid keyring token.
 - Draft PR: https://github.com/ya27hw/equran_app/pull/90.
 
@@ -24,7 +24,7 @@
 
 ## Baseline results
 
-- `dart format --output=none --set-exit-if-changed .`: exit 0, 185 files unchanged; package-URI warnings were emitted while scanning third-party analyzer options.
+- `dart format --output=none --set-exit-if-changed .`: exit 0, 207 files unchanged; package-URI warnings were emitted while scanning third-party analyzer options.
 - `flutter pub get`: exit 0; lockfile unchanged; 76 packages report newer versions outside current constraints.
 - `flutter analyze`: exit 0, no issues.
 - `flutter test`: current suite passes (28 deterministic tests); the original baseline had no `test/` directory.
@@ -50,4 +50,4 @@
 
 ## Next action
 
-Finish the current checkpoint commit and push, then run the fresh Android release/split and Linux gates. Record any unavailable device/profiling evidence as unknown rather than passing it by inference; keep product flags closed until their acceptance UI/content/transport work is complete.
+Keep the draft PR on the pushed branch and complete the remaining host/device gates when the required hardware, Chrome/Windows runners, `apkanalyzer`, and profiling instrumentation are available. Record unavailable evidence as unknown rather than passing it by inference; keep product flags closed until their acceptance UI/content/transport work is complete.
