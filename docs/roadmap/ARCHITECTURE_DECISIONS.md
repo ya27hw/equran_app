@@ -23,4 +23,3 @@ Each major roadmap feature has a persisted local flag and an explicit availabili
 ## ADR-006: dependency discipline
 
 Prefer existing packages and Dart/Flutter primitives. Any new dependency must document license, platform, binary, maintenance, F-Droid, and permission impact before addition.
-
