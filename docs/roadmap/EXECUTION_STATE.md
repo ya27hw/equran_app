@@ -6,7 +6,7 @@
 - Objective: repair trust/performance defects, add safe startup/quality gates, and keep incomplete product features local and disabled.
 - Branch: `codex/equran-roadmap`, based on `origin/main` at `9274a497e722eda1a5e5ce37a44a9fb740b6f9`.
 - Baseline checkpoint: `161ece9` (pushed).
-- Current implementation checkpoints: `1b46652` (core foundations), `8d9d94b` (CI/build gates), `fc6dedc` (Zakat/backup guidance), `ed3ceb3`/`547280b` (local assignments and guarded validators), `c1fdb1a` (validation counts), `08dee51` (Memory Twin metadata round-trip hardening), `8102e61` (PR quality trigger), and `f51ddf7` (release-only signing guard), all pushed to `origin/codex/equran-roadmap`.
+- Current implementation checkpoints: `1b46652` (core foundations), `8d9d94b` (CI/build gates), `fc6dedc` (Zakat/backup guidance), `ed3ceb3`/`547280b` (local assignments and guarded validators), `c1fdb1a` (validation counts), `08dee51` (Memory Twin metadata round-trip hardening), `8102e61` (PR quality trigger), `f51ddf7` (release-only signing guard), and `97a1baf` (evidence count correction), all pushed to `origin/codex/equran-roadmap`.
 - Remote push: Git push is available with the configured credential; `gh auth status` still reports an invalid keyring token.
 - Draft PR: https://github.com/ya27hw/equran_app/pull/90.
 
