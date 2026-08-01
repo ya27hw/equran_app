@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:equran/backend/base_db.dart';
+import 'package:quran/quran.dart' as quran;
 
 enum MemoryRiskBand { strong, stable, drifting, fragile, urgent }
 
@@ -55,7 +56,8 @@ class MemoryTwinSignal {
         parsedAyah == null ||
         parsedSurah < 1 ||
         parsedSurah > 114 ||
-        parsedAyah < 1) {
+        parsedAyah < 1 ||
+        parsedAyah > quran.getVerseCount(parsedSurah)) {
       return null;
     }
     return MemoryTwinSignal(

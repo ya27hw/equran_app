@@ -26,7 +26,9 @@ void main() {
   const QuranJourneyPackValidator validator = QuranJourneyPackValidator();
 
   test('accepts reviewed, sourced, canonically ordered references', () {
-    expect(() => validator.validate(validPack()), returnsNormally);
+    final QuranJourneyPack pack = validPack();
+    expect(() => validator.validate(pack), returnsNormally);
+    expect(QuranJourneyPack.fromMap(pack.toMap())?.id, pack.id);
   });
 
   test('keeps unreviewed or unprovenanced packs disabled', () {

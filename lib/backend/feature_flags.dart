@@ -90,14 +90,19 @@ class FeatureFlagStore extends ValueNotifier<FeatureFlags> {
   final SettingsDB _settings;
 
   Future<void> load() async {
-    final Map<Object?, Object?> values = <Object?, Object?>{
-      for (final RoadmapFeature feature in RoadmapFeature.values)
-        feature.storageKey: _settings.get(
-          feature.storageKey,
-          defaultValue: false,
-        ),
-    };
-    value = FeatureFlags.fromMap(values);
+    try {
+      final Map<Object?, Object?> values = <Object?, Object?>{
+        for (final RoadmapFeature feature in RoadmapFeature.values)
+          feature.storageKey: _settings.get(
+            feature.storageKey,
+            defaultValue: false,
+          ),
+      };
+      value = FeatureFlags.fromMap(values);
+    } catch (_) {
+      // A settings/storage failure must never open an incomplete feature.
+      value = const FeatureFlags();
+    }
   }
 
   Future<void> setEnabled(RoadmapFeature feature, bool enabled) async {

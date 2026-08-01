@@ -40,6 +40,66 @@ class QuranJourneyPack {
   final String license;
   final String reviewStatus;
   final Map<String, String> navigationText;
+
+  Map<String, Object?> toMap() => <String, Object?>{
+    'id': id,
+    'title': title,
+    'version': version,
+    'references': references
+        .map((JourneyReference reference) => reference.toMap())
+        .toList(growable: false),
+    'sourceIds': sourceIds,
+    'license': license,
+    'reviewStatus': reviewStatus,
+    'navigationText': navigationText,
+  };
+
+  static QuranJourneyPack? fromMap(Object? raw) {
+    if (raw is! Map || raw['references'] is! List) return null;
+    final List<JourneyReference> references = <JourneyReference>[];
+    for (final Object? item in raw['references'] as List) {
+      if (item is! Map ||
+          item['surah'] is! num ||
+          item['ayah'] is! num ||
+          item['order'] is! num) {
+        return null;
+      }
+      references.add(
+        JourneyReference(
+          surah: (item['surah'] as num).toInt(),
+          ayah: (item['ayah'] as num).toInt(),
+          order: (item['order'] as num).toInt(),
+        ),
+      );
+    }
+    final List<String> sourceIds =
+        (raw['sourceIds'] as List?)?.whereType<String>().toList(
+          growable: false,
+        ) ??
+        const <String>[];
+    final Map<String, String> navigationText = raw['navigationText'] is Map
+        ? (raw['navigationText'] as Map).map<String, String>(
+            (Object? key, Object? value) =>
+                MapEntry(key.toString(), value.toString()),
+          )
+        : const <String, String>{};
+    final QuranJourneyPack pack = QuranJourneyPack(
+      id: raw['id']?.toString() ?? '',
+      title: raw['title']?.toString() ?? '',
+      version: raw['version']?.toString() ?? '',
+      references: List<JourneyReference>.unmodifiable(references),
+      sourceIds: sourceIds,
+      license: raw['license']?.toString() ?? '',
+      reviewStatus: raw['reviewStatus']?.toString() ?? '',
+      navigationText: Map<String, String>.unmodifiable(navigationText),
+    );
+    try {
+      const QuranJourneyPackValidator().validate(pack);
+    } on JourneyPackValidationException {
+      return null;
+    }
+    return pack;
+  }
 }
 
 class JourneyPackValidationException implements Exception {
