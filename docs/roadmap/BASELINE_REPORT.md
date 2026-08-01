@@ -38,4 +38,3 @@ No trace was claimed before instrumentation. Static inspection identifies a bloc
 ## Known baseline defects and limitations
 
 See `DEFECT_REGISTER.md`. The most consequential verified findings are incomplete backup coverage/rollback, derived silver rates presented as live, no automated test suite or CI quality gates, blocking startup, full in-memory search construction, dual unbounded font registration, and UI-isolate archive decoding.
-

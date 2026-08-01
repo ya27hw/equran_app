@@ -14,4 +14,3 @@ Budgets are targets for the available low-end reference profile and are refined 
 | Storage scans | No synchronous large directory scan in interaction path | Download manifest/reconciliation timing |
 | APK | Report debug, profile, release and split ABI sizes; fail growth >10% without decision | `flutter build ... --analyze-size`, `du`, APK analyzer |
 | Network | Explicit timeout, cancellation, bounded retry; offline fallback on every resource path | Mock HTTP fixtures |
-
