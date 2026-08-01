@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:equran/backend/base_db.dart';
+import 'package:quran/quran.dart' as quran;
+
 class HalaqahSecurityException implements Exception {
   const HalaqahSecurityException(this.message);
 
@@ -156,4 +159,114 @@ class HalaqahMessage {
     }
     return false;
   }
+}
+
+class HalaqahAssignment {
+  const HalaqahAssignment({
+    required this.id,
+    required this.sessionId,
+    required this.surah,
+    required this.startAyah,
+    required this.endAyah,
+    required this.assignedAt,
+    this.studentId,
+    this.status = 'assigned',
+    this.selfRating,
+    this.correction,
+  });
+
+  final String id;
+  final String sessionId;
+  final int surah;
+  final int startAyah;
+  final int endAyah;
+  final DateTime assignedAt;
+  final String? studentId;
+  final String status;
+  final int? selfRating;
+  final String? correction;
+
+  Map<String, Object?> toMap() => <String, Object?>{
+    'id': id,
+    'sessionId': sessionId,
+    'surah': surah,
+    'startAyah': startAyah,
+    'endAyah': endAyah,
+    'assignedAt': assignedAt.toUtc().toIso8601String(),
+    'studentId': studentId,
+    'status': status,
+    'selfRating': selfRating,
+    'correction': correction,
+  };
+
+  static HalaqahAssignment? fromMap(Object? raw) {
+    if (raw is! Map) return null;
+    final int? surah = _intValue(raw['surah']);
+    final int? start = _intValue(raw['startAyah']);
+    final int? end = _intValue(raw['endAyah']);
+    final String? id = _boundedText(raw['id'], 128);
+    final String? sessionId = _boundedText(raw['sessionId'], 128);
+    final DateTime? assignedAt = _date(raw['assignedAt']);
+    if (id == null ||
+        sessionId == null ||
+        surah == null ||
+        start == null ||
+        end == null ||
+        assignedAt == null ||
+        surah < 1 ||
+        surah > 114 ||
+        start < 1 ||
+        end < start ||
+        end > quran.getVerseCount(surah)) {
+      return null;
+    }
+    return HalaqahAssignment(
+      id: id,
+      sessionId: sessionId,
+      surah: surah,
+      startAyah: start,
+      endAyah: end,
+      assignedAt: assignedAt,
+      studentId: _boundedText(raw['studentId'], 128),
+      status: _boundedText(raw['status'], 32) ?? 'assigned',
+      selfRating: _intValue(raw['selfRating'])?.clamp(0, 5).toInt(),
+      correction: _boundedText(raw['correction'], 4000),
+    );
+  }
+
+  static int? _intValue(Object? value) => value is num ? value.toInt() : null;
+
+  static String? _boundedText(Object? value, int maxLength) {
+    if (value is! String) return null;
+    final String text = value.trim();
+    return text.isEmpty || text.length > maxLength ? null : text;
+  }
+
+  static DateTime? _date(Object? value) {
+    if (value is DateTime) return value.toUtc();
+    return value is String ? DateTime.tryParse(value)?.toUtc() : null;
+  }
+}
+
+class HalaqahAssignmentsDB extends BaseDB {
+  HalaqahAssignmentsDB._() : super('halaqah_assignments');
+
+  static final HalaqahAssignmentsDB instance = HalaqahAssignmentsDB._();
+
+  Future<void> save(HalaqahAssignment assignment) async {
+    if (HalaqahAssignment.fromMap(assignment.toMap()) == null) {
+      throw const HalaqahSecurityException('Halaqah assignment is invalid.');
+    }
+    await put(assignment.id, assignment.toMap());
+  }
+
+  List<HalaqahAssignment> all() {
+    return box.values
+        .map(HalaqahAssignment.fromMap)
+        .whereType<HalaqahAssignment>()
+        .toList(growable: false);
+  }
+
+  Future<void> deleteAssignment(String id) => delete(id);
+  Future<void> reset() => clear();
 }

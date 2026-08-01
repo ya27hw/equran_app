@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io' show Platform;
 
 import 'package:equran/backend/library.dart';
+import 'package:equran/features/halaqah_mode.dart';
 import 'package:equran/features/journey_capsules.dart';
 import 'package:equran/hifz/hifz.dart';
 import 'package:equran/hifz/memory_twin.dart';
@@ -103,6 +104,7 @@ class StartupCoordinator extends ChangeNotifier {
     await MemoryTwinDB.instance.initBox();
     await MemoryMapStateDB.instance.initBox();
     await JourneyCapsulesDB.instance.initBox();
+    await HalaqahAssignmentsDB.instance.initBox();
     await HifzDB.init();
 
     final String lastCheck =

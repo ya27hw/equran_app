@@ -53,4 +53,23 @@ void main() {
       throwsA(isA<HalaqahSecurityException>()),
     );
   });
+
+  test('assignments validate canonical ayah ranges locally', () {
+    final HalaqahAssignment assignment = HalaqahAssignment(
+      id: 'assignment-1',
+      sessionId: 'session',
+      surah: 1,
+      startAyah: 1,
+      endAyah: 7,
+      assignedAt: now,
+    );
+    expect(HalaqahAssignment.fromMap(assignment.toMap()), isNotNull);
+    expect(
+      HalaqahAssignment.fromMap(<String, Object?>{
+        ...assignment.toMap(),
+        'endAyah': 8,
+      }),
+      isNull,
+    );
+  });
 }
