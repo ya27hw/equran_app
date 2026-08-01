@@ -6,7 +6,7 @@
 - Objective: repair trust/performance defects, add safe startup/quality gates, and keep incomplete product features local and disabled.
 - Branch: `codex/equran-roadmap`, based on `origin/main` at `9274a497e722eda1a5e5ce37a44a9fb740b6f9`.
 - Baseline checkpoint: `161ece9` (pushed).
-- Current implementation checkpoints: `1b46652` (core foundations), `8d9d94b` (CI/build gates), `fc6dedc` (Zakat/backup guidance), `ed3ceb3`/`547280b` (local assignments and guarded validators), `c1fdb1a` (validation counts), `08dee51` (Memory Twin metadata round-trip hardening), `8102e61` (PR quality trigger), `f51ddf7` (release-only signing guard), and `97a1baf` (evidence count correction), all pushed to `origin/codex/equran-roadmap`.
+- Current implementation checkpoints: `1b46652` (core foundations), `8d9d94b` (CI/build gates), `fc6dedc` (Zakat/backup guidance), `ed3ceb3`/`547280b` (local assignments and guarded validators), `c1fdb1a` (validation counts), `08dee51` (Memory Twin metadata round-trip hardening), `8102e61` (PR quality trigger), `f51ddf7` (release-only signing guard), `97a1baf` (evidence count correction), and `5bb1179` (latest ledger checkpoint), all pushed to `origin/codex/equran-roadmap`.
 - Remote push: Git push is available with the configured credential; `gh auth status` still reports an invalid keyring token.
 - Draft PR: https://github.com/ya27hw/equran_app/pull/90.
 
@@ -28,7 +28,7 @@
 - `flutter pub get`: exit 0; lockfile unchanged; 76 packages report newer versions outside current constraints.
 - `flutter analyze`: exit 0, no issues.
 - `flutter test`: current suite passes (27 deterministic tests); the original baseline had no `test/` directory.
-- Flutter SDK: 3.44.0 at `/opt/flutter`; Dart 3.12.0. The checked-in `.fvmrc` still says 3.22.1 while `pubspec.yaml` requires Flutter >=3.41.7.
+- Flutter SDK: 3.44.0 at `/opt/flutter`; Dart 3.12.0. The checked-in `.fvmrc` and `pubspec.yaml` requirement are aligned with Flutter >=3.41.7.
 - `flutter doctor -v`: Android and Linux toolchains pass; Chrome is unavailable; Flutter/Dart are not on PATH; no Android device is attached.
 - Android debug APK: built successfully, 187,703,855 bytes (debug).
 - Android release split attempt: Gradle/R8 progressed and generated mapping outputs, but no current split APK was available at the end of the baseline run; the existing 30,839,093-byte APK is dated before this run and must not be counted as a new pass.
