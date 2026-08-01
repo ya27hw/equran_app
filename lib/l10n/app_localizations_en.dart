@@ -3938,6 +3938,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Market offline. Using standard cached values.';
 
   @override
+  String get zakatDisclaimer =>
+      'Rates and Nisab assumptions are estimates; verify with a trusted scholar and applicable guidance.';
+
+  @override
   String get overridePrices => 'Override Prices';
 
   @override

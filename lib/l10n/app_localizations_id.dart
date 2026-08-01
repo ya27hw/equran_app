@@ -3968,6 +3968,10 @@ class AppLocalizationsId extends AppLocalizations {
       'Pasar luring. Menggunakan nilai standar tersimpan.';
 
   @override
+  String get zakatDisclaimer =>
+      'Kurs dan asumsi nisab adalah perkiraan; verifikasi dengan ulama tepercaya dan panduan yang berlaku.';
+
+  @override
   String get overridePrices => 'Ubah Harga';
 
   @override

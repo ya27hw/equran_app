@@ -6903,6 +6903,12 @@ abstract class AppLocalizations {
   /// **'Market offline. Using standard cached values.'**
   String get ratesSyncOffline;
 
+  /// No description provided for @zakatDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Rates and Nisab assumptions are estimates; verify with a trusted scholar and applicable guidance.'**
+  String get zakatDisclaimer;
+
   /// No description provided for @overridePrices.
   ///
   /// In en, this message translates to:

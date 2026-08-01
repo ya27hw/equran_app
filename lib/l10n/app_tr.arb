@@ -1940,6 +1940,7 @@
   "fetchingLiveRates": "Anlık piyasa fiyatları alınıyor...",
   "ratesSyncSuccess": "Güncel metal fiyatları başarıyla eşitlendi",
   "ratesSyncOffline": "Piyasa çevrimdışı. Standart önbelleğe alınmış değerler kullanılıyor.",
+  "zakatDisclaimer": "Fiyatlar ve nisap varsayımları tahminidir; güvenilir bir âlim ve geçerli rehberlikle doğrulayın.",
   "overridePrices": "Fiyatları Düzenle",
   "reset": "Sıfırla",
   "silverDefault": "Gümüş (Varsayılan)",

@@ -3949,6 +3949,10 @@ class AppLocalizationsFa extends AppLocalizations {
       'بازار آفلاین است. استفاده از مقادیر ذخیره شده استاندارد.';
 
   @override
+  String get zakatDisclaimer =>
+      'نرخ‌ها و فرضیات نصاب تقریبی هستند؛ آن‌ها را با عالم مورد اعتماد و راهنمایی‌های مربوط بررسی کنید.';
+
+  @override
   String get overridePrices => 'تغییر دستی قیمت‌ها';
 
   @override

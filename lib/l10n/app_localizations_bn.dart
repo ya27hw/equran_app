@@ -3951,6 +3951,10 @@ class AppLocalizationsBn extends AppLocalizations {
       'মার্কেট অফলাইন। স্ট্যান্ডার্ড ক্যাশ করা মান ব্যবহার করা হচ্ছে।';
 
   @override
+  String get zakatDisclaimer =>
+      'দর ও নিসাবের হিসাব আনুমানিক; বিশ্বস্ত আলেম ও প্রযোজ্য নির্দেশনার সঙ্গে যাচাই করুন।';
+
+  @override
   String get overridePrices => 'মূল্য পরিবর্তন';
 
   @override

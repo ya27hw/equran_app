@@ -3957,6 +3957,10 @@ class AppLocalizationsTr extends AppLocalizations {
       'Piyasa çevrimdışı. Standart önbelleğe alınmış değerler kullanılıyor.';
 
   @override
+  String get zakatDisclaimer =>
+      'Fiyatlar ve nisap varsayımları tahminidir; güvenilir bir âlim ve geçerli rehberlikle doğrulayın.';
+
+  @override
   String get overridePrices => 'Fiyatları Düzenle';
 
   @override
