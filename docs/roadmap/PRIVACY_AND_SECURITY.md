@@ -9,9 +9,8 @@ Roadmap data flows are local: Hifz signals -> versioned Memory Twin features/mod
 ## Controls and threat model
 
 - Export/delete/reset controls exist for Memory Twin, capsules, and Halaqah data.
-- Sensitive Halaqah session secrets use secure random IDs, ephemeral pairing secrets, message-size/type validation, authentication, expiry, and encrypted export.
+- Halaqah foundations use secure random IDs, an ephemeral pairing secret, bounded message-size/type/shape validation, and expiry. Transport authentication and encrypted export are intentionally not exposed until the local transport is implemented.
 - Local service discovery stops at expiry and is never silently enabled outside the active session.
 - Imported backups/packs enforce size/type/path limits, integrity validation, safe deserialization, and zip-slip/symlink rejection.
-- Logs and crash reports exclude secrets, private text, recordings, and personal identifiers.
-- Microphone processing is opt-in, local, separately explained, and deletable; core Hifz/Mem­ory Twin never requires it.
-
+- Roadmap logs use categorized step names and avoid private payloads; Flutter error reporting remains local diagnostics until a privacy-reviewed reporting policy exists.
+- Microphone processing is not part of the current core; future recording paths must be opt-in, local, separately explained, and deletable. Core Hifz/Memory Twin never requires it.

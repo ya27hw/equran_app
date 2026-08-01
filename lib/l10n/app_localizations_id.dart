@@ -4202,10 +4202,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get bookmarksAndNotes => 'Bookmark & catatan';
 
   @override
-  String get hideSettings => 'Hide settings';
+  String get hideSettings => 'Sembunyikan pengaturan';
 
   @override
-  String get showSettings => 'Show settings';
+  String get showSettings => 'Tampilkan pengaturan';
 
   @override
   String get zakatCategoryCash => 'Tunai & Piutang';

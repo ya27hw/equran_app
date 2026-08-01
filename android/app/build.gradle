@@ -35,6 +35,15 @@ def hasReleaseSigning =
         keystoreProperties['keyPassword'] &&
         keystoreProperties['storePassword'] &&
         keystoreFile.exists()
+def requireReleaseSigning =
+        project.hasProperty('requireReleaseSigning') ||
+        System.getenv('CI')?.toBoolean() == true
+
+if (requireReleaseSigning && !hasReleaseSigning) {
+    throw new GradleException(
+            'Release signing credentials are required for production builds.'
+    )
+}
 
 android {
     namespace "com.app.equran"
@@ -89,6 +98,8 @@ android {
            signingConfig signingConfigs.debug
         }
         release {
+           // Local validation may explicitly build a debug-signed release.
+           // Production/CI builds fail closed in the guard above.
            signingConfig hasReleaseSigning ? signingConfigs.release : signingConfigs.debug
         }
     }

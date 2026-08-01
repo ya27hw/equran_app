@@ -4189,10 +4189,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get bookmarksAndNotes => 'Yer işaretleri ve notlar';
 
   @override
-  String get hideSettings => 'Hide settings';
+  String get hideSettings => 'Ayarları gizle';
 
   @override
-  String get showSettings => 'Show settings';
+  String get showSettings => 'Ayarları göster';
 
   @override
   String get zakatCategoryCash => 'Nakit & Alacaklar';

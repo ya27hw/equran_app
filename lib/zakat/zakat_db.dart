@@ -119,5 +119,14 @@ class ZakatHistoryDB {
     }
   }
 
+  /// Exposes a defensive copy for the versioned backup service. The returned
+  /// values remain owned by Hive and are never mutated by callers.
+  Box<dynamic> exportBox() => _box;
+
+  Future<void> replaceBox(Map<dynamic, dynamic> values) async {
+    await _box.clear();
+    await _box.putAll(values);
+  }
+
   dynamic get listener => _box.listenable();
 }

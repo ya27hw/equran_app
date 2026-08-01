@@ -16,15 +16,20 @@ class HifzDB {
       await Hive.openBox<HifzEntry>(entriesBoxName);
       await Hive.openBox<HifzReviewLog>(logsBoxName);
       await Hive.openBox<HifzUnit>(unitsBoxName);
-    } catch (e) {
-      // Box data is corrupt or has unknown typeIds
-      // Delete and recreate all boxes cleanly
-      await Hive.deleteBoxFromDisk(entriesBoxName);
-      await Hive.deleteBoxFromDisk(logsBoxName);
-      await Hive.deleteBoxFromDisk(unitsBoxName);
-      await Hive.openBox<HifzEntry>(entriesBoxName);
-      await Hive.openBox<HifzReviewLog>(logsBoxName);
-      await Hive.openBox<HifzUnit>(unitsBoxName);
+    } catch (error, stackTrace) {
+      // Never delete a user's memorization data as a recovery shortcut. The
+      // caller can surface a categorized storage error and offer an export or
+      // repair flow while the original Hive files remain intact.
+      debugPrint('Hifz storage initialization failed: $error');
+      FlutterError.reportError(
+        FlutterErrorDetails(
+          exception: error,
+          stack: stackTrace,
+          library: 'equran hifz storage',
+          context: ErrorDescription('while opening Hifz boxes'),
+        ),
+      );
+      rethrow;
     }
   }
 

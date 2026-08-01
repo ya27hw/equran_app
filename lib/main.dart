@@ -2,128 +2,25 @@ import 'dart:async';
 import 'dart:io' show Platform;
 
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:equran/backend/qpc_v4_font_service.dart';
+import 'package:equran/backend/settings_db.dart';
+import 'package:equran/backend/startup_coordinator.dart';
 import 'package:equran/features/splash/splash_screen.dart' show SplashScreen;
-import 'package:equran/prayer/prayer_models.dart';
-import 'package:equran/prayer/prayer_notification_service.dart';
-import 'package:equran/prayer/prayer_settings_store.dart';
-import 'package:equran/prayer/prayer_timezone_service.dart';
 import 'package:equran/theme/equran_text_styles.dart';
 import 'package:equran/utils/app_theme.dart';
 import 'package:equran/utils/responsive_nav.dart';
 import 'package:equran/widgets/prayer_widget_service.dart';
-import 'package:equran/widgets/prayer_widget_worker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:just_audio_background/just_audio_background.dart';
-import 'package:just_audio_media_kit/just_audio_media_kit.dart';
-import 'package:quran/quran.dart' as quran;
-
-import 'backend/library.dart'
-    show
-        BookmarkDB,
-        initCompanionStorageBoxes,
-        registerCompanionStorageAdapters,
-        DuaFavouritesDB,
-        FavouritesDB,
-        QuranTranslationService,
-        ReadingEntryAdapter,
-        SchemaMigrationService,
-        SettingsDB,
-        SurahAdapter,
-        SurahDB;
-
-import 'hifz/hifz.dart';
-import 'package:equran/zakat/zakat_db.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  if (!kIsWeb && Platform.isLinux) {
-    JustAudioMediaKit.ensureInitialized();
-  }
-
-  if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
-    await JustAudioBackground.init(
-      androidNotificationChannelId: 'com.app.equran.audio',
-      androidNotificationChannelName: 'Quran Audio Playback',
-      androidNotificationOngoing: true,
-      androidNotificationIcon: 'mipmap/launcher_icon',
-    );
-  }
-
-  // ----- HIVE -----
-  // Use an app-specific subdirectory to avoid desktop lock collisions in shared paths.
-  await Hive.initFlutter('equran');
-
-  Hive.registerAdapter(ReadingEntryAdapter());
-  Hive.registerAdapter(SurahAdapter());
-  Hive.registerAdapter(HifzEntryAdapter());
-  Hive.registerAdapter(HifzReviewLogAdapter());
-  Hive.registerAdapter(HifzUnitAdapter());
-  registerCompanionStorageAdapters();
-
-  // Hive.deleteBoxFromDisk("bookmarks");
-
-  await ZakatHistoryDB.instance.initialize();
-  await BookmarkDB().initBox();
-  await SettingsDB().initBox();
-  await SurahDB().initBox();
-  await FavouritesDB().initBox();
-  await DuaFavouritesDB().initBox();
-  await initCompanionStorageBoxes();
-  await HifzDB.init();
-
-  try {
-    final prefsBox = SettingsDB();
-    final lastCheck =
-        prefsBox.get('hifzFrontierLastCheck', defaultValue: '') as String;
-    final today = DateTime.now().toIso8601String().substring(0, 10);
-
-    if (lastCheck != today) {
-      await HifzFrontierService.dailyFrontierCheck();
-      await prefsBox.put('hifzFrontierLastCheck', today);
-    }
-  } catch (e) {
-    // Silent fail on all frontier operations
-  }
-  await SchemaMigrationService.instance.runSafeMigrations();
-  await quran.initializeQuran();
-  await QuranTranslationService.instance.preloadSelectedTranslation();
-
-  await PrayerTimezoneService.configureDeviceTimezone();
-  final PrayerSettingsStore prayerSettingsStore = PrayerSettingsStore();
-  final PrayerTimeSettings prayerSettings = prayerSettingsStore.getSettings();
-  final PrayerNotificationScheduleResult reminderResult =
-      await PrayerNotificationService().reschedule(
-        settings: prayerSettings,
-        location: prayerSettingsStore.getLocation(),
-      );
-  if (reminderResult.status ==
-          PrayerNotificationScheduleStatus.permissionDenied &&
-      prayerSettings.reminderSettings.remindersEnabled) {
-    await prayerSettingsStore.saveSettings(
-      prayerSettings.copyWith(
-        reminderSettings: prayerSettings.reminderSettings.copyWith(
-          remindersEnabled: false,
-        ),
-      ),
-    );
-  }
-
-  if (!kIsWeb && Platform.isAndroid) {
-    await PrayerWidgetService.init();
-    await PrayerWidgetWorker.init();
-    await PrayerWidgetWorker.scheduleRefresh();
-    // Schedule delayed widget update to let prayer service calculate times first
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await Future.delayed(const Duration(seconds: 2));
-      await PrayerWidgetService.refreshWidget();
-    });
-  }
-
+  final StartupCoordinator startup = StartupCoordinator.instance;
+  await startup.initializeBlocking();
   runApp(const MyApp());
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    unawaited(startup.startDeferred());
+  });
 }
 
 class MyApp extends StatefulWidget {
@@ -165,6 +62,7 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void didChangePlatformBrightness() {
     super.didChangePlatformBrightness();
+    QpcV4FontService.instance.clearCache();
     if (!kIsWeb && Platform.isAndroid) {
       unawaited(PrayerWidgetService.refreshWidget());
     }
