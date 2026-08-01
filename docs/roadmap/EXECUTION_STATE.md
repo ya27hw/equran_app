@@ -8,6 +8,7 @@
 - Baseline checkpoint: `161ece9` (pushed).
 - Current implementation checkpoint: `1b46652` (`feat: harden roadmap foundations and staged startup`), pushed to `origin/codex/equran-roadmap`.
 - Remote push: Git push is available with the configured credential; `gh auth status` still reports an invalid keyring token.
+- Draft PR: https://github.com/ya27hw/equran_app/pull/90.
 
 ## Completed work
 
