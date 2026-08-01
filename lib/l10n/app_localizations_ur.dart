@@ -3952,6 +3952,10 @@ class AppLocalizationsUr extends AppLocalizations {
       'مارکیٹ آف لائن ہے۔ معیاری محفوظ شدہ ریٹس استعمال کیے جا رہے ہیں۔';
 
   @override
+  String get zakatDisclaimer =>
+      'ریٹس اور نصاب کے مفروضے اندازے ہیں؛ کسی معتبر عالم اور قابل اطلاق رہنمائی سے تصدیق کریں۔';
+
+  @override
   String get overridePrices => 'قیمتوں میں تبدیلی';
 
   @override

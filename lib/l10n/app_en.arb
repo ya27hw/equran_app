@@ -2055,6 +2055,7 @@
   "fetchingLiveRates": "Fetching live market rates...",
   "ratesSyncSuccess": "Live metal rates synchronized successfully",
   "ratesSyncOffline": "Market offline. Using standard cached values.",
+  "zakatDisclaimer": "Rates and Nisab assumptions are estimates; verify with a trusted scholar and applicable guidance.",
   "overridePrices": "Override Prices",
   "reset": "Reset",
   "silverDefault": "Silver",

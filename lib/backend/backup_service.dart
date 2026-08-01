@@ -5,6 +5,7 @@ import 'package:equran/backend/base_db.dart';
 import 'package:equran/backend/bookmark_db.dart';
 import 'package:equran/backend/companion_storage.dart';
 import 'package:equran/backend/companion_storage_models.dart';
+import 'package:equran/backend/dua_favourites_db.dart';
 import 'package:equran/backend/favourites_db.dart';
 import 'package:equran/hifz/models/hifz_entry.dart';
 import 'package:equran/hifz/models/hifz_review_log.dart';
@@ -231,6 +232,7 @@ class BackupService {
     addBox('resumeState', ResumeStateDB());
     addBox('recentSearches', RecentSearchesDB());
     addBox('dhikrSessions', DhikrSessionsDB());
+    addBox('duaFavourites', DuaFavouritesDB());
     addBox('duaInteractions', DuaInteractionsDB());
     addBox('salahLog', SalahLogDB());
     addBox('quranStats', QuranStatsDB());
@@ -460,6 +462,7 @@ class BackupService {
     add('resumeState', ResumeStateDB().box);
     add('recentSearches', RecentSearchesDB().box);
     add('dhikrSessions', DhikrSessionsDB().box);
+    add('duaFavourites', DuaFavouritesDB().box);
     add('duaInteractions', DuaInteractionsDB().box);
     add('salahLog', SalahLogDB().box);
     add('quranStats', QuranStatsDB().box);
@@ -496,6 +499,7 @@ class BackupService {
     await restoreBox(ResumeStateDB().box, stores['resumeState']!);
     await restoreBox(RecentSearchesDB().box, stores['recentSearches']!);
     await restoreBox(DhikrSessionsDB().box, stores['dhikrSessions']!);
+    await restoreBox(DuaFavouritesDB().box, stores['duaFavourites']!);
     await restoreBox(DuaInteractionsDB().box, stores['duaInteractions']!);
     await restoreBox(SalahLogDB().box, stores['salahLog']!);
     await restoreBox(QuranStatsDB().box, stores['quranStats']!);
@@ -533,6 +537,7 @@ class BackupService {
       'resumeState': ResumeStateDB(),
       'recentSearches': RecentSearchesDB(),
       'dhikrSessions': DhikrSessionsDB(),
+      'duaFavourites': DuaFavouritesDB(),
       'duaInteractions': DuaInteractionsDB(),
       'salahLog': SalahLogDB(),
       'quranStats': QuranStatsDB(),

@@ -4016,6 +4016,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Offline vermarkten. Verwendung von zwischengespeicherten Standardwerten.';
 
   @override
+  String get zakatDisclaimer =>
+      'Kurse und Nisab-Annahmen sind Schätzungen; prüfen Sie sie mit einer vertrauenswürdigen Gelehrtenperson und geltenden Richtlinien.';
+
+  @override
   String get overridePrices => 'Preise überschreiben';
 
   @override

@@ -1940,6 +1940,7 @@
   "fetchingLiveRates": "Mengambil harga pasar langsung...",
   "ratesSyncSuccess": "Harga logam langsung berhasil disinkronkan",
   "ratesSyncOffline": "Pasar luring. Menggunakan nilai standar tersimpan.",
+  "zakatDisclaimer": "Kurs dan asumsi nisab adalah perkiraan; verifikasi dengan ulama tepercaya dan panduan yang berlaku.",
   "overridePrices": "Ubah Harga",
   "reset": "Reset",
   "silverDefault": "Perak",

@@ -3873,6 +3873,10 @@ class AppLocalizationsAr extends AppLocalizations {
       'السوق غير متصل. يتم استخدام القيم الافتراضية.';
 
   @override
+  String get zakatDisclaimer =>
+      'الأسعار وافتراضات النصاب تقديرية؛ تحقّق من عالم موثوق ومن الإرشادات المعمول بها.';
+
+  @override
   String get overridePrices => 'تعديل الأسعار';
 
   @override

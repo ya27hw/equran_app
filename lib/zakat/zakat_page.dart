@@ -715,6 +715,13 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
                   color: colors.textMuted,
                 ),
               ),
+              const SizedBox(height: 6),
+              Text(
+                localizations.zakatDisclaimer,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colors.textMuted,
+                ),
+              ),
               const SizedBox(height: 10),
               Row(
                 children: <Widget>[
