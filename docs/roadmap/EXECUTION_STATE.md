@@ -6,7 +6,7 @@
 - Objective: repair trust/performance defects, add safe startup/quality gates, and keep incomplete product features local and disabled.
 - Branch: `codex/equran-roadmap`, based on `origin/main` at `9274a497e722eda1a5e5ce37a44a9fb740b6f9`.
 - Baseline checkpoint: `161ece9` (pushed).
-- Current implementation checkpoints: `1b46652` (core foundations), `8d9d94b` (CI/build gates), `fc6dedc` (Zakat/backup guidance), `ed3ceb3`/`547280b` (local assignments and guarded validators), `c1fdb1a` (validation counts), and `08dee51` (Memory Twin metadata round-trip hardening), all pushed to `origin/codex/equran-roadmap`.
+- Current implementation checkpoints: `1b46652` (core foundations), `8d9d94b` (CI/build gates), `fc6dedc` (Zakat/backup guidance), `ed3ceb3`/`547280b` (local assignments and guarded validators), `c1fdb1a` (validation counts), `08dee51` (Memory Twin metadata round-trip hardening), `8102e61` (PR quality trigger), and `f51ddf7` (release-only signing guard), all pushed to `origin/codex/equran-roadmap`.
 - Remote push: Git push is available with the configured credential; `gh auth status` still reports an invalid keyring token.
 - Draft PR: https://github.com/ya27hw/equran_app/pull/90.
 
@@ -36,6 +36,7 @@
 - Fresh Android profile split passed: armeabi-v7a 50,341,032 bytes, arm64-v8a 51,946,978 bytes, x86_64 53,421,523 bytes; debug APK also passed.
 - Fresh Android release app bundle passed: `app-release.aab`, 78,709,337 bytes.
 - Fresh Linux release passed (`build/linux/x64/release/bundle/eQuran`, bundle 147 MB).
+- Hosted PR quality run 207 passed: dependency/localization checks, formatting, fatal analysis, tests, and debug Android build. Release/package jobs were skipped on the PR event by design; the first run 206 caught and motivated the release-only signing guard fix.
 - Chrome, Windows, Android hardware, integration/startup/frame/memory/search/extraction measurements, and `apkanalyzer` evidence remain unavailable on this host.
 
 ## Audit observations
