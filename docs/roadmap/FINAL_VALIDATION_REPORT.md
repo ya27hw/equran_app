@@ -9,7 +9,7 @@ This report remains gate-controlled: the current branch contains the core stabil
 | Branch/checkpoint/remote | `1b46652` pushed to `origin/codex/equran-roadmap`; baseline `161ece9` | Pass |
 | Format/analyze/tests | Full format, `flutter analyze --fatal-infos`, 27 deterministic tests | Pass |
 | Localization/dependency policy | ARB parity, `flutter gen-l10n` consistency, no GMS/Firebase tokens | Pass |
-| Android | Fresh debug, profile split, and release split ABI builds; release signing guard | Pass (local non-CI release) |
+| Android | Fresh debug, profile split, release split ABI, and release app bundle builds; release signing guard | Pass (local non-CI release) |
 | Linux | Fresh release bundle | Pass |
 | Core product safety | Backup validation/rollback foundations, independent metal rates, local flags | Pass for implemented scope |
 | Integration/device/profiling | Hardware journeys, startup/frame/memory/search/extraction benchmarks, Windows/Chrome | Unknown/open |

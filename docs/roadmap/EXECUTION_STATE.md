@@ -33,6 +33,7 @@
 - Android release split attempt: Gradle/R8 progressed and generated mapping outputs, but no current split APK was available at the end of the baseline run; the existing 30,839,093-byte APK is dated before this run and must not be counted as a new pass.
 - Fresh Android release split passed: armeabi-v7a 29,969,404 bytes, arm64-v8a 31,704,724 bytes, x86_64 33,227,376 bytes.
 - Fresh Android profile split passed: armeabi-v7a 50,341,032 bytes, arm64-v8a 51,946,978 bytes, x86_64 53,421,523 bytes; debug APK also passed.
+- Fresh Android release app bundle passed: `app-release.aab`, 78,709,337 bytes.
 - Fresh Linux release passed (`build/linux/x64/release/bundle/eQuran`, bundle 147 MB).
 - Chrome, Windows, Android hardware, integration/startup/frame/memory/search/extraction measurements, and `apkanalyzer` evidence remain unavailable on this host.
 
