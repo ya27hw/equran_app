@@ -1599,6 +1599,8 @@
   "readingPlan": "خطة القراءة",
   "quickActions": "الإجراءات السريعة",
   "bookmarksAndNotes": "الإشارات المرجعية والملاحظات",
+  "hideSettings": "إخفاء الإعدادات",
+  "showSettings": "إظهار الإعدادات",
   "zakatCategoryCash": "النقد والذمم الدائنة",
   "zakatCategoryGold": "الذهب",
   "zakatCategorySilver": "الفضة",

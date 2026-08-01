@@ -2,11 +2,12 @@
 
 ## Current checkpoint
 
-- Phase: 0 — repository audit and baseline.
-- Objective: establish a reproducible evidence set before implementation.
+- Phase: 1–6 core implementation and Phase 7–12 guarded foundations.
+- Objective: repair trust/performance defects, add safe startup/quality gates, and keep incomplete product features local and disabled.
 - Branch: `codex/equran-roadmap`, based on `origin/main` at `9274a497e722eda1a5e5ce37a44a9fb740b6f9`.
-- Checkpoint commit: not yet created.
-- Remote push: blocked until GitHub credentials are re-authenticated; no push has been attempted.
+- Baseline checkpoint: `161ece9` (pushed).
+- Current implementation checkpoint: pending commit after the current validation run.
+- Remote push: Git push is available with the configured credential; `gh auth status` still reports an invalid keyring token.
 
 ## Completed work
 
@@ -14,14 +15,18 @@
 - Fetched `origin --prune`; local `main` matched `origin/main` and was clean.
 - Created the dedicated branch without absorbing unrelated work.
 - Ran baseline formatting, dependency resolution, analysis, test discovery, toolchain checks, and Android debug/release build attempts.
-- Created the roadmap record set in this directory.
+- Created the roadmap record set in this directory and committed it as `161ece9`.
+- Added versioned backup sections, pre-write section validation, rollback snapshots, and independent Zakat metal-rate handling.
+- Added staged startup, local feature flags, device capability policy, bounds-safe CPAL/ZIP handling, active-theme font loading, and incremental search.
+- Added disabled-by-default Memory Map, Memory Twin, Constellations, Halaqah, Reciter Lens, and Journey Capsule foundations with deterministic tests.
+- Added strict localization/dependency policy scripts and CI quality/build gates.
 
 ## Baseline results
 
 - `dart format --output=none --set-exit-if-changed .`: exit 0, 185 files unchanged; package-URI warnings were emitted while scanning third-party analyzer options.
 - `flutter pub get`: exit 0; lockfile unchanged; 76 packages report newer versions outside current constraints.
 - `flutter analyze`: exit 0, no issues.
-- `flutter test`: exit 1 because the repository has no `test/` directory.
+- `flutter test`: current suite passes (27 deterministic tests); the original baseline had no `test/` directory.
 - Flutter SDK: 3.44.0 at `/opt/flutter`; Dart 3.12.0. The checked-in `.fvmrc` still says 3.22.1 while `pubspec.yaml` requires Flutter >=3.41.7.
 - `flutter doctor -v`: Android and Linux toolchains pass; Chrome is unavailable; Flutter/Dart are not on PATH; no Android device is attached.
 - Android debug APK: built successfully, 187,703,855 bytes (debug).
@@ -40,5 +45,4 @@
 
 ## Next action
 
-Finish the evidence-backed defect inventory, create the Phase 0 checkpoint commit, and attempt the first remote push. Do not begin dependent implementation until the checkpoint is internally consistent.
-
+Finish the current checkpoint commit and push, then run the fresh Android release/split and Linux gates. Record any unavailable device/profiling evidence as unknown rather than passing it by inference; keep product flags closed until their acceptance UI/content/transport work is complete.

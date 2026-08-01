@@ -4185,10 +4185,10 @@ class AppLocalizationsUr extends AppLocalizations {
   String get bookmarksAndNotes => 'بک مارکس اور نوٹس';
 
   @override
-  String get hideSettings => 'Hide settings';
+  String get hideSettings => 'ترتیبات چھپائیں';
 
   @override
-  String get showSettings => 'Show settings';
+  String get showSettings => 'ترتیبات دکھائیں';
 
   @override
   String get zakatCategoryCash => 'نقد رقم اور واجب الوصول مابقیہ';

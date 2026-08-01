@@ -13,22 +13,21 @@ This is the ordered execution ledger for the stabilization and product roadmap i
 
 | Phase | Scope | Dependency | Status | Acceptance evidence |
 | --- | --- | --- | --- | --- |
-| 0 | Repository audit, baseline, records, budgets | None | In progress | `BASELINE_REPORT.md`, `DEFECT_REGISTER.md`, all records present, baseline checkpoint |
-| 1 | Correctness, backup, migration, Zakat, structured errors | 0 | Pending | Round-trip/corruption/migration/Zakat tests and safe restore |
-| 2 | CI quality gates and deterministic unit/widget/integration foundation | 1 | Pending | Format, analysis, localization, tests, asset/dependency/build jobs |
-| 3 | Staged startup coordinator | 2 | Pending | First-frame trace and lifecycle/idempotence tests |
-| 4 | Reader responsibility decomposition | 2 | Pending | Controller tests and rebuild/lifecycle evidence |
-| 5 | Fonts, archive extraction, search, translations, scans, dashboard performance | 3, 4 | Pending | Memory/CPU/latency benchmarks and bounded caches |
-| 6 | Device capability profiles, frame policy, Android size/profile work, audio interface | 5 | Pending | Lite/Balanced/Enhanced tests and platform reports |
-| 7 | Mushaf Memory Map | 1, 4, 5, 6 | Pending | Verified 604-page mapping and incremental rendering tests |
-| 8 | Local Memory Twin | 1, 2, 5, 7 | Pending | Calibration/explanation/privacy/reset tests |
-| 9 | Source-verified Quran Constellations packs and UI | 1, 2, 6 | Pending | Provenance validation and offline/linear accessibility tests |
-| 10 | Offline private Halaqah | 1, 2, 6 | Pending | Pairing/message validation/expiry/deletion tests |
-| 11 | Reciter Lens | 4, 5, 6 | Pending | Deterministic A/B synchronization and local recording tests |
-| 12 | Private Journey Capsules | 1, 2, 6 | Pending | Persistence, backup, reminder, deletion/privacy tests |
+| 0 | Repository audit, baseline, records, budgets | None | Completed | Baseline records committed in `161ece9`; branch and remote checkpoint established |
+| 1 | Correctness, backup, migration, Zakat, structured errors | 0 | Core implemented | Versioned validated backup, rollback snapshot, independent metal rates, non-destructive Hifz init, bounds-safe migration/error paths |
+| 2 | CI quality gates and deterministic unit/widget/integration foundation | 1 | Core implemented | Format, fatal analysis, tests/coverage, localization generation/drift, dependency policy, Android debug build gates |
+| 3 | Staged startup coordinator | 2 | Implemented | Blocking/deferred idempotent coordinator; startup trace/profile evidence remains to be measured |
+| 4 | Reader responsibility decomposition | 2 | Foundation implemented | Pure reader controllers and generation-token tests; full `read.dart` extraction remains follow-up |
+| 5 | Fonts, archive extraction, search, translations, scans, dashboard performance | 3, 4 | Core mitigations implemented | Active-theme bounded fonts, streamed ZIP input, incremental search; profiling/worker extraction evidence remains |
+| 6 | Device capability profiles, frame policy, Android size/profile work, audio interface | 5 | Foundation implemented | Lite/Balanced/Enhanced profile and policy tests; audio consolidation/profiles/size report remain |
+| 7 | Mushaf Memory Map | 1, 4, 5, 6 | Foundation implemented (flag closed) | Verified 604-page mapping, virtualized page UI, derived state persistence, boundary tests |
+| 8 | Local Memory Twin | 1, 2, 5, 7 | Foundation implemented (flag closed) | Interpretable local model, versioned predictions, explanations, reset/storage tests |
+| 9 | Source-verified Quran Constellations packs and UI | 1, 2, 6 | Schema/validator implemented (flag closed) | Provenance/range/order validator and disabled-unreviewed tests; reviewed packs/UI remain |
+| 10 | Offline private Halaqah | 1, 2, 6 | Security foundation implemented (flag closed) | Secure IDs, pairing metadata, bounded message validation, expiry tests; local transport/UI remain |
+| 11 | Reciter Lens | 4, 5, 6 | Synchronizer implemented (flag closed) | Deterministic ayah alignment tests; audio/recording UI remains |
+| 12 | Private Journey Capsules | 1, 2, 6 | Local model/storage implemented (flag closed) | Validated capsule persistence, due lookup, voice-path exclusion from JSON backup; reminder/UI remains |
 | Final | Cross-platform validation, release evidence, draft PR | All completed phases | Pending | `FINAL_VALIDATION_REPORT.md`, pushed branch, draft PR |
 
 ## Explicit non-substitutes and blockers
 
-No generic chatbot, generated religious interpretation, fake AI score, public leaderboard, or hard-coded content substitutes for the approved roadmap. Scholarly review or licensed source packs that are not present locally remain disabled behind their feature flags; missing approval is documented rather than fabricated. GitHub CLI authentication was invalid during the baseline (`gh auth status`), so pushes and draft-PR creation remain an external blocker while local work continues.
-
+No generic chatbot, generated religious interpretation, fake AI score, public leaderboard, or hard-coded content substitutes for the approved roadmap. Scholarly review or licensed source packs that are not present locally remain disabled behind their feature flags; missing approval is documented rather than fabricated. GitHub CLI authentication was invalid during the baseline (`gh auth status`), but the branch can be pushed with the configured Git credential; draft-PR creation still requires a usable GitHub connector/CLI session.

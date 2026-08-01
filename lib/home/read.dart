@@ -1754,8 +1754,14 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     }
 
     final List<int> pages = quran.getSurahPages(_currentChapter);
-    for (final int page in pages) {
-      if (page == currentPage) continue;
+    final int currentIndex = pages.indexOf(currentPage);
+    final Set<int> boundedPages = <int>{currentPage, 1};
+    if (currentIndex > 0) boundedPages.add(pages[currentIndex - 1]);
+    if (currentIndex >= 0 && currentIndex + 1 < pages.length) {
+      boundedPages.add(pages[currentIndex + 1]);
+    }
+    for (final int page in boundedPages) {
+      if (page == currentPage || page == 1) continue;
       unawaited(
         QpcV4FontService.instance.ensureFontLoadedForPage(page).then((success) {
           if (success && mounted) {

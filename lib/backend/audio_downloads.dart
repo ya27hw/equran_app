@@ -382,46 +382,67 @@ class AudioDownloadService {
         ),
       );
 
-      final Archive archive = ZipDecoder().decodeBytes(
-        await zipFile.readAsBytes(),
-      );
-      for (final ArchiveFile entry in archive.files) {
-        if (!entry.isFile || entry.isSymbolicLink) continue;
+      // Decode lazily from disk instead of duplicating the whole ZIP in a
+      // UI-isolate byte array. Each selected ayah is decompressed directly to
+      // its temporary output file.
+      final InputFileStream zipInput = InputFileStream(zipFile.path);
+      final Archive archive;
+      try {
+        archive = ZipDecoder().decodeStream(zipInput);
+      } catch (_) {
+        zipInput.closeSync();
+        rethrow;
+      }
+      if (archive.files.length > totalAyahs * 2 + 32) {
+        zipInput.closeSync();
+        throw const FormatException('Audio archive contains too many files.');
+      }
+      try {
+        for (final ArchiveFile entry in archive.files) {
+          if (!entry.isFile || entry.isSymbolicLink) continue;
+          if (entry.size > 25 * 1024 * 1024) {
+            throw const FormatException('Audio archive entry is too large.');
+          }
 
-        final RegExpMatch? match = RegExp(
-          r'(\d{3})(\d{3})\.mp3$',
-        ).firstMatch(entry.name);
-        if (match == null) continue;
+          final RegExpMatch? match = RegExp(
+            r'(\d{3})(\d{3})\.mp3$',
+          ).firstMatch(entry.name);
+          if (match == null) continue;
 
-        final int? entrySurah = int.tryParse(match.group(1)!);
-        final int? entryAyah = int.tryParse(match.group(2)!);
-        if (entrySurah == null || entryAyah == null) continue;
-        if (entrySurah != surah) continue;
-        if (entryAyah < 1 || entryAyah > totalAyahs) continue;
+          final int? entrySurah = int.tryParse(match.group(1)!);
+          final int? entryAyah = int.tryParse(match.group(2)!);
+          if (entrySurah == null || entryAyah == null) continue;
+          if (entrySurah != surah) continue;
+          if (entryAyah < 1 || entryAyah > totalAyahs) continue;
 
-        final File finalFile = await ayahFile(surah, entryAyah);
-        final File tempExtractFile = File(
-          '${extractDir.path}${Platform.pathSeparator}${entrySurah}_$entryAyah.mp3',
-        );
-        await tempExtractFile.parent.create(recursive: true);
+          final File finalFile = await ayahFile(surah, entryAyah);
+          final File tempExtractFile = File(
+            '${extractDir.path}${Platform.pathSeparator}${entrySurah}_$entryAyah.mp3',
+          );
+          await tempExtractFile.parent.create(recursive: true);
 
-        final OutputFileStream output = OutputFileStream(tempExtractFile.path);
-        try {
-          entry.writeContent(output);
-        } finally {
-          output.closeSync();
+          final OutputFileStream output = OutputFileStream(
+            tempExtractFile.path,
+          );
+          try {
+            entry.writeContent(output, freeMemory: true);
+          } finally {
+            output.closeSync();
+          }
+
+          if (await finalFile.exists()) {
+            await finalFile.delete();
+          }
+          try {
+            await tempExtractFile.rename(finalFile.path);
+          } on FileSystemException {
+            await tempExtractFile.copy(finalFile.path);
+            await tempExtractFile.delete();
+          }
+          files[entryAyah - 1] = finalFile;
         }
-
-        if (await finalFile.exists()) {
-          await finalFile.delete();
-        }
-        try {
-          await tempExtractFile.rename(finalFile.path);
-        } on FileSystemException {
-          await tempExtractFile.copy(finalFile.path);
-          await tempExtractFile.delete();
-        }
-        files[entryAyah - 1] = finalFile;
+      } finally {
+        zipInput.closeSync();
       }
     } finally {
       try {

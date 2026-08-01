@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:equran/backend/settings_db.dart';
@@ -7,10 +6,10 @@ import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/utils/app_radii.dart';
 import 'package:equran/widgets/common/equran_components.dart';
 import 'package:equran/zakat/zakat_db.dart';
+import 'package:equran/zakat/metal_price_service.dart';
 import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 
 /// Rich Zakat asset category definition for the modern calculator.
 enum ZakatCategory {
@@ -156,6 +155,8 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
   // Price States
   double _goldPrice = 75.80; // default/fallback gold price per gram in USD
   double _silverPrice = 0.95; // default/fallback silver price per gram in USD
+  String _ratesCurrency = 'USD';
+  late final MetalsLiveRateProvider _metalRateProvider;
   bool _isLoadingPrice = false;
   String _priceStatus = '';
 
@@ -194,8 +195,10 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
   @override
   void initState() {
     super.initState();
+    _metalRateProvider = MetalsLiveRateProvider();
     _baseCurrency =
         SettingsDB().get('zakat_currency', defaultValue: 'USD') as String;
+    _restoreCachedMetalRates();
     _tabController = TabController(length: 2, vsync: this);
     // Localize default status and fetch live prices on start after build/initState is done
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -218,7 +221,18 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
     _goldController.dispose();
     _silverController.dispose();
     _liabilitiesController.dispose();
+    _metalRateProvider.close();
     super.dispose();
+  }
+
+  void _restoreCachedMetalRates() {
+    final MetalRateSnapshot? cached = MetalRateSnapshot.fromMap(
+      SettingsDB().get('zakat_metal_rates'),
+    );
+    if (cached == null || cached.currency != _baseCurrency) return;
+    _goldPrice = cached.goldPricePerGram;
+    _silverPrice = cached.silverPricePerGram;
+    _ratesCurrency = cached.currency;
   }
 
   Future<void> _fetchLiveMetalPrices() async {
@@ -233,65 +247,60 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
       }
     });
 
-    final String vs = _baseCurrency.toLowerCase();
-
     try {
-      // Query PAX Gold price from CoinGecko in the selected currency
-      final http.Response response = await http
-          .get(
-            Uri.parse(
-              'https://api.coingecko.com/api/v3/simple/price?ids=pax-gold&vs_currencies=$vs',
-            ),
-          )
-          .timeout(const Duration(seconds: 5));
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data =
-            jsonDecode(response.body) as Map<String, dynamic>;
-        final double paxgPrice =
-            (data['pax-gold']?[vs] as num?)?.toDouble() ?? 0.0;
-
-        if (paxgPrice > 0.0) {
-          // 1 troy ounce = 31.1034768 grams
-          final double goldGramPrice = paxgPrice / 31.1034768;
-          // Silver price is roughly Gold / 80 in market ratio
-          final double silverGramPrice = goldGramPrice / 80.0;
-
-          setState(() {
-            _goldPrice = double.parse(goldGramPrice.toStringAsFixed(2));
-            _silverPrice = double.parse(silverGramPrice.toStringAsFixed(2));
-            _isLoadingPrice = false;
-            if (mounted) {
-              _priceStatus =
-                  AppLocalizations.of(context)?.ratesSyncSuccess ??
-                  'Live metal rates synchronized successfully';
-            } else {
-              _priceStatus = 'Live metal rates synchronized successfully';
-            }
-          });
-          return;
-        }
-      }
+      final MetalRateSnapshot snapshot = await _metalRateProvider.fetch(
+        currency: _baseCurrency,
+      );
+      await SettingsDB().put('zakat_metal_rates', snapshot.toMap());
+      if (!mounted) return;
+      setState(() {
+        _goldPrice = snapshot.goldPricePerGram;
+        _silverPrice = snapshot.silverPricePerGram;
+        _ratesCurrency = snapshot.currency;
+        _isLoadingPrice = false;
+        _priceStatus = _rateStatus(snapshot);
+      });
+      return;
     } catch (_) {
-      // Graceful fallback to default/cached rates
+      final MetalRateSnapshot? cached = MetalRateSnapshot.fromMap(
+        SettingsDB().get('zakat_metal_rates'),
+      );
+      if (cached != null && cached.currency == _baseCurrency && mounted) {
+        final MetalRateSnapshot stale = cached.copyWith(isStale: true);
+        setState(() {
+          _goldPrice = stale.goldPricePerGram;
+          _silverPrice = stale.silverPricePerGram;
+          _ratesCurrency = stale.currency;
+          _isLoadingPrice = false;
+          _priceStatus = _rateStatus(stale);
+        });
+        return;
+      }
     }
 
+    if (!mounted) return;
     setState(() {
       _isLoadingPrice = false;
-      if (mounted) {
-        _priceStatus =
-            AppLocalizations.of(context)?.ratesSyncOffline ??
-            'Market offline. Using standard cached values.';
-      } else {
-        _priceStatus = 'Market offline. Using standard cached values.';
-      }
+      _ratesCurrency = '';
+      _goldPrice = 0;
+      _silverPrice = 0;
+      _priceStatus =
+          '${AppLocalizations.of(context)?.ratesSyncOffline ?? 'Market offline. Enter independent rates manually.'} ($_baseCurrency)';
     });
+  }
+
+  String _rateStatus(MetalRateSnapshot snapshot) {
+    final String freshness = snapshot.isStale ? 'stale' : 'live';
+    return '${snapshot.source} • $freshness • ${snapshot.fetchedAt.toLocal().toIso8601String()}';
   }
 
   // ==================== RICH ZAKAT ENGINE ====================
 
-  double get _effectiveGoldPrice => _goldPriceOverride ?? _goldPrice;
-  double get _effectiveSilverPrice => _silverPriceOverride ?? _silverPrice;
+  double get _effectiveGoldPrice =>
+      _goldPriceOverride ?? (_ratesCurrency == _baseCurrency ? _goldPrice : 0);
+  double get _effectiveSilverPrice =>
+      _silverPriceOverride ??
+      (_ratesCurrency == _baseCurrency ? _silverPrice : 0);
 
   String get _currencySymbol {
     switch (_baseCurrency) {
@@ -408,7 +417,13 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
     // Nisab
     final double goldNisabValue = goldNisabGrams * _effectiveGoldPrice;
     final double silverNisabValue = silverNisabGrams * _effectiveSilverPrice;
-    final double nisabThreshold = _nisabType == 'gold'
+    final bool hasMetalRates =
+        goldNisabValue > 0 &&
+        silverNisabValue > 0 &&
+        _ratesCurrency == _baseCurrency;
+    final double nisabThreshold = !hasMetalRates
+        ? double.infinity
+        : _nisabType == 'gold'
         ? goldNisabValue
         : silverNisabValue;
 
@@ -1410,6 +1425,7 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
               setState(() {
                 _goldPriceOverride = double.tryParse(goldCtrl.text);
                 _silverPriceOverride = double.tryParse(silverCtrl.text);
+                _ratesCurrency = _baseCurrency;
               });
               Navigator.pop(ctx);
             },

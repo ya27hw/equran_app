@@ -4183,10 +4183,10 @@ class AppLocalizationsBn extends AppLocalizations {
   String get bookmarksAndNotes => 'বুকমার্ক এবং নোট';
 
   @override
-  String get hideSettings => 'Hide settings';
+  String get hideSettings => 'সেটিংস লুকান';
 
   @override
-  String get showSettings => 'Show settings';
+  String get showSettings => 'সেটিংস দেখান';
 
   @override
   String get zakatCategoryCash => 'নগদ অর্থ ও পাওনা';

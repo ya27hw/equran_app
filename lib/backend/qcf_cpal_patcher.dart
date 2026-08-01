@@ -45,7 +45,7 @@ class QcfCpalPatcher {
         currentOffset += 16;
       }
 
-      if (cpalOffset == -1 || cpalOffset + 16 > data.lengthInBytes) {
+      if (cpalOffset < 0 || !_fits(cpalOffset, 16, data.lengthInBytes)) {
         // CPAL table not found or offset out of bounds
         return fontBytes;
       }
@@ -54,10 +54,24 @@ class QcfCpalPatcher {
       // +0 bytes: version (uint16)
       // +2 bytes: numPaletteEntries (uint16)
       // +4 bytes: numPalettes (uint16)
+      final int numPaletteEntries = data.getUint16(cpalOffset + 2, Endian.big);
       final int numPalettes = data.getUint16(cpalOffset + 4, Endian.big);
+      final int numColorRecords = data.getUint16(cpalOffset + 6, Endian.big);
+      final int colorRecordsOffset = data.getUint32(cpalOffset + 8, Endian.big);
 
-      if (numPalettes < 2) {
+      if (numPaletteEntries == 0 || numPalettes < 2 || numColorRecords == 0) {
         // Must be >= 2 for the swap to work
+        return fontBytes;
+      }
+
+      if (!_fits(cpalOffset + 12, numPalettes * 2, data.lengthInBytes)) {
+        return fontBytes;
+      }
+      if (!_fits(
+        cpalOffset + colorRecordsOffset,
+        numColorRecords * 4,
+        data.lengthInBytes,
+      )) {
         return fontBytes;
       }
 
@@ -70,10 +84,6 @@ class QcfCpalPatcher {
       // The second palette's color starting index is at CPAL offset + 14
       final int palette1IndexOffset = cpalOffset + 14;
 
-      if (palette1IndexOffset + 2 > data.lengthInBytes) {
-        return fontBytes; // Out of bounds
-      }
-
       // 4. The Patch
       final int palette0ColorIndex = data.getUint16(
         palette0IndexOffset,
@@ -84,6 +94,11 @@ class QcfCpalPatcher {
         Endian.big,
       );
 
+      if (palette0ColorIndex >= numColorRecords ||
+          palette1ColorIndex >= numColorRecords) {
+        return fontBytes;
+      }
+
       // Swap the indices and write them back
       data.setUint16(palette0IndexOffset, palette1ColorIndex, Endian.big);
       data.setUint16(palette1IndexOffset, palette0ColorIndex, Endian.big);
@@ -93,5 +108,10 @@ class QcfCpalPatcher {
       // Catch any unhandled buffer errors silently and return original bytes
       return fontBytes;
     }
+  }
+
+  static bool _fits(int offset, int length, int totalLength) {
+    if (offset < 0 || length < 0 || offset > totalLength) return false;
+    return length <= totalLength - offset;
   }
 }

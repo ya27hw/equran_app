@@ -4105,10 +4105,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get bookmarksAndNotes => 'الإشارات المرجعية والملاحظات';
 
   @override
-  String get hideSettings => 'Hide settings';
+  String get hideSettings => 'إخفاء الإعدادات';
 
   @override
-  String get showSettings => 'Show settings';
+  String get showSettings => 'إظهار الإعدادات';
 
   @override
   String get zakatCategoryCash => 'النقد والذمم الدائنة';

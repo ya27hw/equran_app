@@ -22,6 +22,29 @@ jobs:
       - name: Install Flutter Dependencies
         run: flutter pub get
 
+      - name: Verify dependency policy
+        run: dart run tool/verify_dependency_policy.dart
+
+      - name: Verify localization keys
+        run: dart run tool/verify_localizations.dart
+
+      - name: Verify generated localizations
+        run: |
+          flutter gen-l10n
+          git diff --exit-code -- lib/l10n
+
+      - name: Check Dart formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Analyze with fatal infos
+        run: flutter analyze --fatal-infos
+
+      - name: Run tests with coverage
+        run: flutter test --coverage
+
+      - name: Build debug Android artifact
+        run: flutter build apk --debug
+
   version:
     runs-on: ubuntu-latest
     outputs:
@@ -103,6 +126,10 @@ jobs:
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
         run: |
+          test -n "$ANDROID_KEYSTORE_BASE64"
+          test -n "$ANDROID_STORE_PASSWORD"
+          test -n "$ANDROID_KEY_PASSWORD"
+          test -n "$ANDROID_KEY_ALIAS"
           echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/keystore.jks
           cat > android/key.properties <<EOF
           storePassword=$ANDROID_STORE_PASSWORD
@@ -112,7 +139,7 @@ jobs:
           EOF
 
       - name: Build Android Split APKs
-        run: flutter build apk --release --split-per-abi
+        run: flutter build apk --release --split-per-abi -PrequireReleaseSigning
         shell: bash
 
       # More thorough scan using apkanalyzer
