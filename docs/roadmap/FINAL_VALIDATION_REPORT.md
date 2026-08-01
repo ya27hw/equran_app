@@ -13,7 +13,7 @@ This report remains gate-controlled: the current branch contains the core stabil
 | Linux | Fresh release bundle | Pass |
 | Core product safety | Backup validation/rollback foundations, independent metal rates, local flags | Pass for implemented scope |
 | Integration/device/profiling | Hardware journeys, startup/frame/memory/search/extraction benchmarks, Windows/Chrome | Unknown/open |
-| Manual plan/draft PR | Manual device plan and GitHub draft PR | Open |
+| Manual plan/draft PR | Draft PR #90 is open; manual device plan remains unexecuted | Partial |
 
 ## Known unavailable evidence at baseline
 
