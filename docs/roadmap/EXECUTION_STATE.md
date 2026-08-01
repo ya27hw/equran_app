@@ -27,7 +27,7 @@
 - `dart format --output=none --set-exit-if-changed .`: exit 0, 207 files unchanged; package-URI warnings were emitted while scanning third-party analyzer options.
 - `flutter pub get`: exit 0; lockfile unchanged; 76 packages report newer versions outside current constraints.
 - `flutter analyze`: exit 0, no issues.
-- `flutter test`: current suite passes (28 deterministic tests); the original baseline had no `test/` directory.
+- `flutter test`: current suite passes (27 deterministic tests); the original baseline had no `test/` directory.
 - Flutter SDK: 3.44.0 at `/opt/flutter`; Dart 3.12.0. The checked-in `.fvmrc` still says 3.22.1 while `pubspec.yaml` requires Flutter >=3.41.7.
 - `flutter doctor -v`: Android and Linux toolchains pass; Chrome is unavailable; Flutter/Dart are not on PATH; no Android device is attached.
 - Android debug APK: built successfully, 187,703,855 bytes (debug).
