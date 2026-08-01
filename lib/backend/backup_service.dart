@@ -12,6 +12,7 @@ import 'package:equran/hifz/models/hifz_review_log.dart';
 import 'package:equran/hifz/models/hifz_unit.dart';
 import 'package:equran/backend/reading_model.dart';
 import 'package:equran/backend/settings_db.dart';
+import 'package:equran/features/halaqah_mode.dart';
 import 'package:equran/features/journey_capsules.dart';
 import 'package:equran/hifz/memory_twin.dart';
 import 'package:equran/hifz/memory_map.dart';
@@ -248,6 +249,9 @@ class BackupService {
       JourneyCapsulesDB.instance.box,
     );
     sections['memoryMapState'] = _boxRows(MemoryMapStateDB.instance.box);
+    sections['halaqahAssignments'] = _boxRows(
+      HalaqahAssignmentsDB.instance.box,
+    );
     return sections;
   }
 
@@ -474,6 +478,7 @@ class BackupService {
     add('memoryTwinPredictions', MemoryTwinDB.instance.box);
     add('journeyCapsules', JourneyCapsulesDB.instance.box);
     add('memoryMapState', MemoryMapStateDB.instance.box);
+    add('halaqahAssignments', HalaqahAssignmentsDB.instance.box);
     return stores;
   }
 
@@ -520,6 +525,10 @@ class BackupService {
       stores['journeyCapsules']!,
     );
     await restoreBox(MemoryMapStateDB.instance.box, stores['memoryMapState']!);
+    await restoreBox(
+      HalaqahAssignmentsDB.instance.box,
+      stores['halaqahAssignments']!,
+    );
   }
 
   static Future<void> _restoreSections(
@@ -570,6 +579,12 @@ class BackupService {
       } else if (name == 'memoryMapState') {
         counts[name] = await _restoreRows(
           MemoryMapStateDB.instance.box,
+          value,
+          name,
+        );
+      } else if (name == 'halaqahAssignments') {
+        counts[name] = await _restoreRows(
+          HalaqahAssignmentsDB.instance.box,
           value,
           name,
         );
