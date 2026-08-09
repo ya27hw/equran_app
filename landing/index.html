@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>eQuran - A Calm Quran Companion</title>
+<meta name="description" content="eQuran is a free, open-source Quran companion for Android, Linux, and Windows. Read, listen, memorize, and pray - quietly, beautifully, offline-first.">
+<link rel="icon" type="image/png" href="assets/img/icon-64.png">
+<link rel="preload" href="fonts/Marcellus-latin-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/Outfit-latin-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/Amiri-arabic-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- scroll progress -->
+<div class="progress" id="progress" aria-hidden="true"></div>
+<!-- film grain -->
+<div class="noise" aria-hidden="true"></div>
+
+<!-- ============ NAV ============ -->
+<header class="nav" id="nav">
+  <div class="nav-inner">
+    <a class="brand" href="#top" aria-label="eQuran home">
+      <img src="assets/img/icon-64.png" alt="" width="34" height="34" class="brand-icon">
+      <span class="brand-name">eQuran</span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#features">Features</a>
+      <a href="#audio">Audio</a>
+      <a href="#prayer">Prayer</a>
+      <a href="#themes">Themes</a>
+      <a href="#download">Download</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="btn btn-primary btn-sm" href="app/" target="_blank" rel="noopener">Open the Demo</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="navMenu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+  <div class="nav-menu" id="navMenu">
+    <a href="#features">Features</a>
+    <a href="#audio">Audio</a>
+    <a href="#prayer">Prayer</a>
+    <a href="#themes">Themes</a>
+    <a href="#download">Download</a>
+    <a class="btn btn-primary" href="app/" target="_blank" rel="noopener">Open the Demo</a>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="hero-bg" aria-hidden="true">
+    <div class="hero-pattern"></div>
+    <div class="hero-glow"></div>
+  </div>
+  <div class="hero-inner">
+    <div class="hero-copy reveal">
+      <p class="arabic" lang="ar" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+      <h1>Read<span class="gold-dot">.</span> Listen<span class="gold-dot">.</span><br>Reflect<span class="gold-dot">.</span></h1>
+      <p class="hero-sub">eQuran is a free, open-source Quran companion with reading, recitation, prayer times, and memorization tools in one calm app.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary magnetic" href="app/" target="_blank" rel="noopener">Open the Demo</a>
+        <a class="btn btn-ghost magnetic" href="https://f-droid.org/en/packages/com.app.equran/" target="_blank" rel="noopener">Get on F-Droid</a>
+      </div>
+    </div>
+    <div class="hero-device reveal delay-1" id="heroDevice" aria-hidden="true">
+      <div class="phone-glow"></div>
+      <div class="phone-wrap">
+        <div class="phone" id="phone">
+          <div class="phone-notch"></div>
+          <img src="assets/img/screen-home.png" alt="eQuran home screen showing prayer times and last read surah" width="480" height="1066" loading="eager">
+        </div>
+      </div>
+      <div class="chip chip-1">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Offline audio</span>
+      </div>
+      <div class="chip chip-2">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+        <span>30+ reciters</span>
+      </div>
+      <div class="chip chip-3">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <span>Sleep timer</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-num" data-count="114">0</span><span class="stat-label">Surahs</span></div>
+    <div class="stat"><span class="stat-num" data-count="6">0</span><span class="stat-label">Languages</span></div>
+    <div class="stat"><span class="stat-num" data-count="30" data-suffix="+">0</span><span class="stat-label">Reciters</span></div>
+    <div class="stat"><span class="stat-num" data-count="12">0</span><span class="stat-label">Themes</span></div>
+  </div>
+</section>
+
+<!-- ============ SURAH MARQUEE ============ -->
+<section class="marquee" aria-label="Surah names">
+  <div class="marquee-track" id="marqueeTrack">
+    <div class="marquee-group" lang="ar" dir="rtl">
+      <span>الفاتحة</span><span>البقرة</span><span>آل عمران</span><span>النساء</span><span>المائدة</span><span>الأنعام</span><span>الأعراف</span><span>الأنفال</span><span>التوبة</span><span>يونس</span><span>هود</span><span>يوسف</span><span>الرعد</span><span>إبراهيم</span><span>الحجر</span><span>النحل</span>
+    </div>
+    <div class="marquee-group">
+      <span>Al-Fatiha</span><span>Al-Baqarah</span><span>Aal-Imran</span><span>An-Nisa</span><span>Al-Ma'idah</span><span>Al-An'am</span><span>Al-A'raf</span><span>Al-Anfal</span><span>At-Tawbah</span><span>Yunus</span><span>Hud</span><span>Yusuf</span><span>Ar-Ra'd</span><span>Ibrahim</span><span>Al-Hijr</span><span>An-Nahl</span>
+    </div>
+    <div class="marquee-group" lang="ar" dir="rtl" aria-hidden="true">
+      <span>الفاتحة</span><span>البقرة</span><span>آل عمران</span><span>النساء</span><span>المائدة</span><span>الأنعام</span><span>الأعراف</span><span>الأنفال</span><span>التوبة</span><span>يونس</span><span>هود</span><span>يوسف</span><span>الرعد</span><span>إبراهيم</span><span>الحجر</span><span>النحل</span>
+    </div>
+    <div class="marquee-group" aria-hidden="true">
+      <span>Al-Fatiha</span><span>Al-Baqarah</span><span>Aal-Imran</span><span>An-Nisa</span><span>Al-Ma'idah</span><span>Al-An'am</span><span>Al-A'raf</span><span>Al-Anfal</span><span>At-Tawbah</span><span>Yunus</span><span>Hud</span><span>Yusuf</span><span>Ar-Ra'd</span><span>Ibrahim</span><span>Al-Hijr</span><span>An-Nahl</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURES BENTO ============ -->
+<section class="bento" id="features">
+  <div class="section-head reveal">
+    <h2>Everything, quietly in one place</h2>
+  </div>
+  <div class="bento-grid">
+    <article class="bento-cell cell-read spotlight reveal">
+      <img src="assets/img/screen-read.png" alt="Quran reading screen with translation" width="480" height="1066" loading="lazy">
+      <div class="cell-text">
+        <h3>Read by surah or juz</h3>
+        <p>Open any surah, resume your last-read ayah, and follow along with translation, transliteration, and tafsir where available.</p>
+      </div>
+    </article>
+    <article class="bento-cell cell-audio spotlight reveal delay-1">
+      <img src="assets/img/screen-audio.png" alt="Audio player screen with reciter controls" width="480" height="1066" loading="lazy">
+      <div class="cell-text">
+        <h3>Ayah-by-ayah audio</h3>
+        <p>Stream each ayah from a catalog of 30+ reciters, or download the Quran for offline listening.</p>
+      </div>
+    </article>
+    <article class="bento-cell cell-hifz spotlight reveal">
+      <img src="assets/img/screen-hifz.png" alt="Hifz memorization dashboard with progress tracking" width="480" height="1066" loading="lazy">
+      <div class="cell-text">
+        <h3>Hifz memorization</h3>
+        <p>A spaced-repetition memorization system with reading plans that keep your revision steady and visible.</p>
+      </div>
+    </article>
+    <article class="bento-cell cell-prayer spotlight reveal delay-1">
+      <img src="assets/img/screen-prayer.png" alt="Prayer times dashboard with today's prayer schedule" width="480" height="1066" loading="lazy">
+      <div class="cell-text">
+        <h3>Prayer times &amp; Qibla</h3>
+        <p>Accurate daily prayer times, reminders, prohibition windows, and Qibla direction wherever you are.</p>
+      </div>
+    </article>
+    <article class="bento-cell cell-favs spotlight reveal">
+      <div class="cell-accent" lang="ar" dir="rtl">المحفوظات</div>
+      <div class="cell-text">
+        <h3>Favourites &amp; notes</h3>
+        <p>Save any ayah with a personal note and return to it whenever you need. Your library, kept simple.</p>
+      </div>
+    </article>
+    <article class="bento-cell cell-tasbih spotlight reveal delay-1">
+      <div class="cell-accent" lang="ar" dir="rtl">تسبيح</div>
+      <div class="cell-text">
+        <h3>Tasbih &amp; tracking</h3>
+        <p>Post-prayer dhikr sequences, a salah tracking dashboard, and reading statistics that show your routine.</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ============ AUDIO SPLIT ============ -->
+<section class="split" id="audio">
+  <div class="split-copy reveal">
+    <h2>Recitation,<br>ayah by ayah</h2>
+    <p class="split-lead">Pick a reciter, tap an ayah, and let the voice carry the text. Built for the moments you just want to listen.</p>
+    <ul class="split-list">
+      <li><span class="list-mark" aria-hidden="true"></span>30+ reciters, from Alafasy to Abdul Samad</li>
+      <li><span class="list-mark" aria-hidden="true"></span>Stream or download full surahs for offline</li>
+      <li><span class="list-mark" aria-hidden="true"></span>Sleep timer and playback speed control</li>
+      <li><span class="list-mark" aria-hidden="true"></span>Plays inline while you read along</li>
+    </ul>
+  </div>
+  <div class="split-media reveal delay-1">
+    <div class="media-frame">
+      <img src="assets/img/screen-downloads.png" alt="Audio downloads screen showing offline surahs" width="480" height="1066" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRAYER BAND ============ -->
+<section class="prayer" id="prayer">
+  <div class="prayer-inner">
+    <div class="prayer-head reveal">
+      <h2>Prayer times that follow you</h2>
+      <p>Calculated for your location, respectful of the sun. Fajr to Isha, with the quiet hours honoured.</p>
+    </div>
+    <div class="prayer-cards">
+      <article class="prayer-card spotlight reveal">
+        <h3>Accurate times</h3>
+        <p>Location-aware prayer times with configurable calculation adjustments and prohibition windows.</p>
+      </article>
+      <article class="prayer-card spotlight reveal delay-1">
+        <h3>Gentle reminders</h3>
+        <p>Notifications that nudge, never nag. Keep your day anchored without breaking your focus.</p>
+      </article>
+      <article class="prayer-card spotlight reveal delay-2">
+        <h3>Qibla direction</h3>
+        <p>Know the direction of the Kaaba from anywhere, rendered clearly in the app.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THEMES ============ -->
+<section class="themes" id="themes">
+  <div class="section-head reveal">
+    <h2>Twelve ways to look at the same words</h2>
+  </div>
+  <div class="theme-grid">
+    <article class="theme-card spotlight reveal"><div class="swatch" style="--swatch:#1E7A61;--swatchbg:#07110E"><span class="swatch-dot"></span></div><h3>Emerald</h3><p>Default</p></article>
+    <article class="theme-card spotlight reveal delay-1"><div class="swatch" style="--swatch:#3B8DD6;--swatchbg:#06101C"><span class="swatch-dot"></span></div><h3>Sapphire</h3><p>Calm blue</p></article>
+    <article class="theme-card spotlight reveal delay-1"><div class="swatch" style="--swatch:#9368D0;--swatchbg:#100A19"><span class="swatch-dot"></span></div><h3>Purple</h3><p>Evening tones</p></article>
+    <article class="theme-card spotlight reveal"><div class="swatch" style="--swatch:#C08A4C;--swatchbg:#130E09"><span class="swatch-dot"></span></div><h3>Sepia</h3><p>Paper feel</p></article>
+    <article class="theme-card spotlight reveal delay-1"><div class="swatch" style="--swatch:#18A28D;--swatchbg:#000000"><span class="swatch-dot"></span></div><h3>Black</h3><p>AMOLED</p></article>
+    <article class="theme-card spotlight reveal delay-1"><div class="swatch" style="--swatch:#C8475D;--swatchbg:#12070A"><span class="swatch-dot"></span></div><h3>Ruby</h3><p>Warm red</p></article>
+  </div>
+  <p class="theme-note reveal">Six schemes, each with light and dark. The text stays the centre of the page.</p>
+</section>
+
+<!-- ============ LANGUAGES ============ -->
+<section class="langs">
+  <div class="langs-inner reveal">
+    <h2>Read in your language</h2>
+    <ul class="lang-chips">
+      <li lang="ar">العربية</li>
+      <li lang="bn">বাংলা</li>
+      <li>English</li>
+      <li lang="id">Indonesia</li>
+      <li lang="tr">Türkçe</li>
+      <li lang="ur">اردو</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ DOWNLOAD CTA ============ -->
+<section class="download" id="download">
+  <div class="download-panel reveal">
+    <h2>Free. Open source. Calm.</h2>
+    <p>No ads, no accounts, no noise. eQuran is built with Flutter, released under the MIT license, and available on F-Droid and GitHub.</p>
+    <div class="download-cta">
+      <a class="btn btn-primary" href="app/" target="_blank" rel="noopener">Open the Demo</a>
+      <a class="btn btn-ghost" href="https://f-droid.org/en/packages/com.app.equran/" target="_blank" rel="noopener">Get on F-Droid</a>
+      <a class="btn btn-ghost" href="https://github.com/ya27hw/equran_app/releases" target="_blank" rel="noopener">View on GitHub</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="assets/img/icon-64.png" alt="" width="28" height="28">
+      <span>eQuran</span>
+    </div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="https://github.com/ya27hw/equran_app" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://f-droid.org/en/packages/com.app.equran/" target="_blank" rel="noopener">F-Droid</a>
+      <a href="https://github.com/ya27hw/equran_app/releases" target="_blank" rel="noopener">Releases</a>
+    </nav>
+    <p class="footer-note">A calm Quran companion. Built with Flutter. MIT licensed.</p>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

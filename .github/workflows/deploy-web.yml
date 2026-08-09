@@ -20,7 +20,17 @@ jobs:
           channel: stable
 
       - run: flutter pub get
-      - run: flutter build web --release --dart-define=FLUTTER_WEB_RENDERER=canvaskit
+      - run: flutter build web --release --dart-define=FLUTTER_WEB_RENDERER=canvaskit --base-href=/app/
+
+      - name: Stage app under /app/
+        run: |
+          mkdir -p build/web/app
+          for item in build/web/*; do
+            [ "$(basename "$item")" = "app" ] || mv "$item" build/web/app/
+          done
+
+      - name: Copy landing page to root
+        run: cp -r landing/* build/web/
 
       - name: Create CNAME file
         run: echo 'quran.elbaesy.com' > build/web/CNAME
