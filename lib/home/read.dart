@@ -6858,7 +6858,7 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
         ).attachToRenderTree(buildOwner);
 
     try {
-      return _captureShareImagePng(
+      return await _captureShareImagePng(
         repaintBoundary,
         pipelineOwner: pipelineOwner,
         buildOwner: buildOwner,

@@ -92,13 +92,13 @@ void _callbackDispatcher() {
 
         // No coordinates saved yet — skip update
         if (latStr == null || lngStr == null) {
-          return Future.value(true);
+          return await Future.value(true);
         }
 
         final lat = double.tryParse(latStr);
         final lng = double.tryParse(lngStr);
         if (lat == null || lng == null) {
-          return Future.value(true);
+          return await Future.value(true);
         }
 
         // Reconstruct adhan_dart objects
