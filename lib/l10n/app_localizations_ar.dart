@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -699,6 +700,34 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get aboutAppBody =>
       'إي قرآن رفيق قرآني حديث صُمّم للقراءة المركزة والاستماع والتدبر اليومي.';
+
+  @override
+  String get supportProject => 'الدعم';
+
+  @override
+  String get supportProjectDescription =>
+      'إذا كان إي قرآن ينفعك، يمكنك دعم تطويره بالتبرع بالعملات الرقمية.';
+
+  @override
+  String get bitcoin => 'بتكوين (BTC)';
+
+  @override
+  String get ethereum => 'إيثريوم (ETH)';
+
+  @override
+  String get solana => 'سولانا (SOL)';
+
+  @override
+  String get usdcErc20 => 'USDC (ERC-20)';
+
+  @override
+  String get litecoin => 'لايتكوين (LTC)';
+
+  @override
+  String get copyAddress => 'نسخ العنوان';
+
+  @override
+  String get addressCopied => 'تم نسخ العنوان';
 
   @override
   String versionLabel(String version) {

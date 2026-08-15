@@ -1398,6 +1398,60 @@ abstract class AppLocalizations {
   /// **'eQuran is a modern Quran companion designed for focused reading, listening, and daily reflection.'**
   String get aboutAppBody;
 
+  /// No description provided for @supportProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Support'**
+  String get supportProject;
+
+  /// No description provided for @supportProjectDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'If eQuran helps you, you can support its development with a crypto donation.'**
+  String get supportProjectDescription;
+
+  /// No description provided for @bitcoin.
+  ///
+  /// In en, this message translates to:
+  /// **'Bitcoin (BTC)'**
+  String get bitcoin;
+
+  /// No description provided for @ethereum.
+  ///
+  /// In en, this message translates to:
+  /// **'Ethereum (ETH)'**
+  String get ethereum;
+
+  /// No description provided for @solana.
+  ///
+  /// In en, this message translates to:
+  /// **'Solana (SOL)'**
+  String get solana;
+
+  /// No description provided for @usdcErc20.
+  ///
+  /// In en, this message translates to:
+  /// **'USDC (ERC-20)'**
+  String get usdcErc20;
+
+  /// No description provided for @litecoin.
+  ///
+  /// In en, this message translates to:
+  /// **'Litecoin (LTC)'**
+  String get litecoin;
+
+  /// No description provided for @copyAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy address'**
+  String get copyAddress;
+
+  /// No description provided for @addressCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Address copied'**
+  String get addressCopied;
+
   /// No description provided for @versionLabel.
   ///
   /// In en, this message translates to:
