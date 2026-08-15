@@ -68,6 +68,10 @@ If this project helps you, consider supporting its development! You can donate u
 | **USDC (ERC-20)** | ![USDC](https://img.shields.io/badge/USDC-2775CA?style=for-the-badge&logo=usd-coin&logoColor=white) | `0x9d60158D5315Fa46241FC47Bf76eEE6cF7abcAa9` |
 | **Litecoin (LTC)** | ![Litecoin](https://img.shields.io/badge/Litecoin-0096FF?style=for-the-badge&logo=bitcoin&logoColor=white) | `LZW5Jh52Lnni6Zr3FQhimGGkyZPywSAaDX` |
 
+## ☕ Dev Tools
+
+[OpenCode Go](https://opencode.ai/go?ref=APMP0ZVD7S) — open-source AI coding agent for the terminal. New users: sign up through this link and we both get **$5 usage credit**!
+
 ## What It Does
 
 - Read the Quran by Surah or Juz.
