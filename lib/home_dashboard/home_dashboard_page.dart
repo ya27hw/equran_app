@@ -341,47 +341,26 @@ class _DashboardReactiveShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<Box<dynamic>>(
-      valueListenable: SettingsDB().listener,
-      builder: (context, settingsBox, settingsChild) {
-        return ValueListenableBuilder<Box<dynamic>>(
-          valueListenable: ResumeStateDB().listener,
-          builder: (context, resumeBox, resumeChild) {
-            return ValueListenableBuilder<Box<dynamic>>(
-              valueListenable: QuranBookmarksDB().listener,
-              builder: (context, bookmarksBox, bookmarksChild) {
-                return ValueListenableBuilder<Box<dynamic>>(
-                  valueListenable: FavouritesDB().listener,
-                  builder:
-                      (context, legacyFavouritesBox, legacyFavouritesChild) {
-                        return ValueListenableBuilder<Box<dynamic>>(
-                          valueListenable: ReadingPlansDB().listener,
-                          builder: (context, plansBox, plansChild) {
-                            return ValueListenableBuilder<Box<dynamic>>(
-                              valueListenable: QuranActivityDB().listener,
-                              builder: (context, activityBox, activityChild) {
-                                return ValueListenableBuilder<Box<dynamic>>(
-                                  valueListenable: QuranStatsDB().listener,
-                                  builder: (context, statsBox, statsChild) {
-                                    return _DashboardContent(
-                                      now: now,
-                                      exactAlarmPermission:
-                                          exactAlarmPermission,
-                                      prayerStore: prayerStore,
-                                      prayerService: prayerService,
-                                      actions: actions,
-                                    );
-                                  },
-                                );
-                              },
-                            );
-                          },
-                        );
-                      },
-                );
-              },
-            );
-          },
+    // One merged listener instead of 7 nested ValueListenableBuilders:
+    // identical rebuild semantics (any box change rebuilds the content)
+    // with a single subscription set and no nesting overhead.
+    return ListenableBuilder(
+      listenable: Listenable.merge(<Listenable>[
+        SettingsDB().listener,
+        ResumeStateDB().listener,
+        QuranBookmarksDB().listener,
+        FavouritesDB().listener,
+        ReadingPlansDB().listener,
+        QuranActivityDB().listener,
+        QuranStatsDB().listener,
+      ]),
+      builder: (context, child) {
+        return _DashboardContent(
+          now: now,
+          exactAlarmPermission: exactAlarmPermission,
+          prayerStore: prayerStore,
+          prayerService: prayerService,
+          actions: actions,
         );
       },
     );
@@ -521,12 +500,17 @@ class _DashboardSummary {
       resumeEntries,
       'listening',
     );
-    final List<ReadingPlanEntry> plans =
-        ReadingPlansDB().box.values
-            .whereType<ReadingPlanEntry>()
-            .where((ReadingPlanEntry plan) => plan.active)
-            .toList(growable: false)
-          ..sort((a, b) => b.startedAt.compareTo(a.startedAt));
+    // Newest active plan via a single pass: sorting the whole box on
+    // every rebuild is O(n log n) for one row.
+    ReadingPlanEntry? activePlan;
+    for (final ReadingPlanEntry plan in ReadingPlansDB().box.values
+        .whereType<ReadingPlanEntry>()) {
+      if (!plan.active) continue;
+      final ReadingPlanEntry? current = activePlan;
+      if (current == null || plan.startedAt.isAfter(current.startedAt)) {
+        activePlan = plan;
+      }
+    }
     final PrayerLocation? location = prayerStore.getLocation();
     final PrayerTimeSettings settings = prayerStore.getSettings();
     final DateTime todayDate = location == null
@@ -554,7 +538,7 @@ class _DashboardSummary {
         localizations: localizations,
       ),
       todayActivity: activityValue is QuranActivityDay ? activityValue : null,
-      activePlan: plans.isEmpty ? null : plans.first,
+      activePlan: activePlan,
       dailyAyah: _DailyAyah.forDate(todayDate),
       stats: statsValue is QuranStatsSnapshot ? statsValue : null,
       latestReadingActivityDate: latestReadingActivityDate,
@@ -569,21 +553,28 @@ class _DashboardSummary {
     List<ResumeStateEntry> entries,
     String kind,
   ) {
-    final List<ResumeStateEntry> filtered =
-        entries
-            .where((ResumeStateEntry entry) => entry.kind == kind)
-            .toList(growable: false)
-          ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
-    return filtered.isEmpty ? null : filtered.first;
+    ResumeStateEntry? latest;
+    for (final ResumeStateEntry entry in entries) {
+      if (entry.kind != kind) continue;
+      final ResumeStateEntry? current = latest;
+      if (current == null || entry.updatedAt.isAfter(current.updatedAt)) {
+        latest = entry;
+      }
+    }
+    return latest;
   }
 
   static ResumeStateEntry? _legacyReadingResume() {
-    final List<ReadingEntry> entries =
-        BookmarkDB().box.values.whereType<ReadingEntry>().toList(
-          growable: false,
-        )..sort((a, b) => b.timestamp.compareTo(a.timestamp));
-    if (entries.isEmpty) return null;
-    final ReadingEntry entry = entries.first;
+    ReadingEntry? latest;
+    for (final ReadingEntry entry
+        in BookmarkDB().box.values.whereType<ReadingEntry>()) {
+      final ReadingEntry? current = latest;
+      if (current == null || entry.timestamp.isAfter(current.timestamp)) {
+        latest = entry;
+      }
+    }
+    if (latest == null) return null;
+    final ReadingEntry entry = latest;
     return ResumeStateEntry(
       id: 'legacy-reading:${entry.surah}',
       kind: 'reading',
@@ -615,6 +606,14 @@ class _PrayerSummary {
 
   PrayerTimeEntry? get currentPrayer => currentPeriod?.currentPrayer;
 
+  // Single-entry memo for the expensive adhan day calculations. The three
+  // days depend only on (date, location, settings); the current/next period
+  // derivation from `now` stays live on every build. The key embeds the
+  // full settings JSON so no calculation-relevant field can go stale.
+  // Single entry by design: bounded memory, repeat builds hit it.
+  static String? _daysCacheKey;
+  static _CachedPrayerDays? _daysCache;
+
   static _PrayerSummary load({
     required DateTime now,
     required PrayerSettingsStore store,
@@ -639,21 +638,34 @@ class _PrayerSummary {
       location: location,
       settings: settings,
     );
-    final PrayerDay today = service.calculateDay(
-      date: todayDate,
-      location: location,
-      settings: settings,
-    );
-    final PrayerDay yesterday = service.calculateDay(
-      date: DateTime(todayDate.year, todayDate.month, todayDate.day - 1),
-      location: location,
-      settings: settings,
-    );
-    final PrayerDay tomorrow = service.calculateDay(
-      date: DateTime(todayDate.year, todayDate.month, todayDate.day + 1),
-      location: location,
-      settings: settings,
-    );
+    final String cacheKey =
+        '${_dateKey(todayDate)}|${location.coordinateLabel}|'
+        '${location.timezoneId}|${location.mode.id}|${settings.toJson()}';
+    _CachedPrayerDays? days = _daysCacheKey == cacheKey ? _daysCache : null;
+    if (days == null) {
+      days = _CachedPrayerDays(
+        today: service.calculateDay(
+          date: todayDate,
+          location: location,
+          settings: settings,
+        ),
+        yesterday: service.calculateDay(
+          date: DateTime(todayDate.year, todayDate.month, todayDate.day - 1),
+          location: location,
+          settings: settings,
+        ),
+        tomorrow: service.calculateDay(
+          date: DateTime(todayDate.year, todayDate.month, todayDate.day + 1),
+          location: location,
+          settings: settings,
+        ),
+      );
+      _daysCacheKey = cacheKey;
+      _daysCache = days;
+    }
+    final PrayerDay today = days.today;
+    final PrayerDay yesterday = days.yesterday;
+    final PrayerDay tomorrow = days.tomorrow;
     final PrayerCurrentPeriod currentPeriod = service.currentPrayerPeriod(
       today: today,
       yesterday: yesterday,
@@ -680,6 +692,18 @@ class _PrayerSummary {
   }
 }
 
+class _CachedPrayerDays {
+  const _CachedPrayerDays({
+    required this.today,
+    required this.yesterday,
+    required this.tomorrow,
+  });
+
+  final PrayerDay today;
+  final PrayerDay yesterday;
+  final PrayerDay tomorrow;
+}
+
 class _DailyAyah {
   const _DailyAyah({
     required this.surah,
@@ -704,10 +728,25 @@ class _DailyAyah {
         savedGlobalAyah >= 1 &&
         savedGlobalAyah <= quran.totalVerseCount) {
       globalAyah = savedGlobalAyah;
-    } else {
+    } else if (savedDate == todayKey) {
+      // Same day but a corrupt saved value: keep the original synchronous
+      // write so the persisted state converges exactly as before.
       globalAyah = math.Random().nextInt(quran.totalVerseCount) + 1;
       unawaited(settings.put('dailyAyahDate', todayKey));
       unawaited(settings.put('dailyAyahGlobalAyah', globalAyah));
+    } else {
+      // Day rollover: writing to the settings box during build would
+      // synchronously notify its listeners mid-build and cascade into a
+      // second full dashboard rebuild. Defer persistence one frame; the
+      // ayah returned (and displayed) this frame is unchanged.
+      globalAyah = math.Random().nextInt(quran.totalVerseCount) + 1;
+      final String pendingKey = todayKey;
+      final int pendingAyah = globalAyah;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (settings.get('dailyAyahDate') == pendingKey) return;
+        unawaited(settings.put('dailyAyahDate', pendingKey));
+        unawaited(settings.put('dailyAyahGlobalAyah', pendingAyah));
+      });
     }
     final _AyahRef ref = _ayahRefFromGlobalIndex(globalAyah);
     final int translationIndex = _translationIndex();

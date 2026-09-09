@@ -25,7 +25,11 @@ class QpcV4FontService {
     metadata: <String, Object?>{'requiredPages': 604},
   );
 
-  final Set<int> _loadedPages = <int>{};
+  // Tracks loaded families per page AND theme variant ('page:variant'):
+  // light and dark palettes are distinct FontLoader families, so caching
+  // only the page number would wrongly report a theme-switched page as
+  // loaded and skip registering its family.
+  final Set<String> _loadedPages = <String>{};
   final Map<String, Future<bool>> _loadingPages = <String, Future<bool>>{};
   Map<int, File>? _fontFileIndex;
   String? _fontFileIndexRoot;
@@ -49,7 +53,7 @@ class QpcV4FontService {
     final bool darkMode = _isDarkMode();
     final String variant = darkMode ? 'dark' : 'light';
     final String loadKey = '$pageNumber:$variant';
-    if (_loadedPages.contains(pageNumber)) {
+    if (_loadedPages.contains(loadKey)) {
       return await fontFileForPage(pageNumber) != null;
     }
 
@@ -75,15 +79,18 @@ class QpcV4FontService {
       final File? fontFile = await fontFileForPage(pageNumber);
       if (fontFile == null) return false;
       final Uint8List bytes = await fontFile.readAsBytes();
+      // readAsBytes already yields a fresh mutable buffer and the patcher
+      // works in place, so patch it directly instead of copying the whole
+      // file a second time.
       final Uint8List activeBytes = darkMode
-          ? QcfCpalPatcher.patchForDarkMode(Uint8List.fromList(bytes))
+          ? QcfCpalPatcher.patchForDarkMode(bytes)
           : bytes;
       final FontLoader loader = FontLoader(
         'QPCV4_Page_${pageNumber}_${darkMode ? 'dark' : 'light'}',
       );
       loader.addFont(Future<ByteData>.value(ByteData.sublistView(activeBytes)));
       await loader.load();
-      _loadedPages.add(pageNumber);
+      _loadedPages.add('$pageNumber:${darkMode ? 'dark' : 'light'}');
       return true;
     } catch (_) {
       return false;

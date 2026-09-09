@@ -326,21 +326,32 @@ class ResourceDownloadService {
   }
 
   Future<void> _extractZip(File zipFile, Directory destination) async {
+    // Decode from a file-backed stream instead of duplicating the whole ZIP
+    // in a UI-isolate byte array first. This drops one full-archive copy
+    // from peak RSS (the 69MB font pack otherwise transiently holds raw
+    // bytes plus the inflated archive on 2GB devices); entries are freed
+    // as they are written out via freeMemory below. Mirrors the ayah-audio
+    // ZIP path in AudioDownloadService.
+    final InputFileStream zipInput = InputFileStream(zipFile.path);
     final Archive archive;
     try {
-      archive = ZipDecoder().decodeBytes(await zipFile.readAsBytes());
+      archive = ZipDecoder().decodeStream(zipInput);
     } catch (_) {
+      zipInput.closeSync();
       throw const ResourceInstallException(
         'The downloaded ZIP could not be opened.',
       );
     }
-
     final List<ArchiveFile> files = archive.files
         .where((ArchiveFile entry) => entry.isFile && !entry.isSymbolicLink)
         .toList(growable: false);
+    zipInput.closeSync();
     if (files.isEmpty) {
       throw const ResourceInstallException('The ZIP did not contain files.');
     }
+    // Strictest caps (EQ-1) on top of streaming decode (EQ-2): 2000 entries,
+    // 50MB per entry, 300MB total — orders of magnitude above legit packs
+    // (604 TTFs, small JSON/TXT/MP3) while blocking size bombs on 2GB devices.
     if (files.length > 2000) {
       throw const ResourceInstallException(
         'The ZIP contains too many files.',
@@ -379,7 +390,7 @@ class ResourceDownloadService {
       await outputFile.parent.create(recursive: true);
       final OutputFileStream output = OutputFileStream(outputFile.path);
       try {
-        entry.writeContent(output);
+        entry.writeContent(output, freeMemory: true);
       } finally {
         output.closeSync();
       }

@@ -3,28 +3,34 @@ import 'package:quran/quran.dart' as quran;
 
 const String quranBasmalaText = 'بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ';
 
+// Hoisted so per-verse text lookups don't recompile them on every call
+// (the reader builds up to 286 segments per frame in QPC mode).
+final RegExp quranBasmalaPrefixPattern = RegExp(
+  r'^بِسْمِ\s+اللَّهِ\s+الرَّحْمَ[ٰـ]*نِ\s+الرَّحِيمِ\s*',
+);
+
+const Map<String, String> arabicDigitGlyphs = <String, String>{
+  '0': '٠',
+  '1': '١',
+  '2': '٢',
+  '3': '٣',
+  '4': '٤',
+  '5': '٥',
+  '6': '٦',
+  '7': '٧',
+  '8': '٨',
+  '9': '٩',
+};
+
 String favouriteAyahKey(int chapter, int verse) {
   return '$chapter-${verse.toString().padLeft(3, '0')}';
 }
 
 String arabicVerseNumber(int verse) {
-  const Map<String, String> arabicDigits = <String, String>{
-    '0': '٠',
-    '1': '١',
-    '2': '٢',
-    '3': '٣',
-    '4': '٤',
-    '5': '٥',
-    '6': '٦',
-    '7': '٧',
-    '8': '٨',
-    '9': '٩',
-  };
-
   return verse
       .toString()
       .split('')
-      .map((digit) => arabicDigits[digit] ?? digit)
+      .map((digit) => arabicDigitGlyphs[digit] ?? digit)
       .join();
 }
 
@@ -35,10 +41,7 @@ String quranVerseText(
 }) {
   String verseText = quran.getVerse(chapter, verse);
   if (verse == 1 && chapter != 1) {
-    final RegExp basmalaRegex = RegExp(
-      r'^بِسْمِ\s+اللَّهِ\s+الرَّحْمَ[ٰـ]*نِ\s+الرَّحِيمِ\s*',
-    );
-    verseText = verseText.replaceFirst(basmalaRegex, '');
+    verseText = verseText.replaceFirst(quranBasmalaPrefixPattern, '');
   }
 
   if (!includeVerseNumber) return verseText;

@@ -222,10 +222,20 @@ class EquranTextStyles {
     } else if (style == 'qpc-hafs') {
       return 'UthmanicHafs';
     } else if (style == 'qpc-v4') {
-      final String suffix = _isAppDarkMode() ? 'dark' : 'light';
-      return 'QPCV4_Page_${page}_$suffix';
+      return qpcV4FontFamilyForPage(page, darkMode: _isAppDarkMode());
     }
     return 'UthmanicHafs';
+  }
+
+  /// QPC V4 family name without touching settings: lets per-frame callers
+  /// (e.g. the reader's inline surah span loop) resolve the dark/light
+  /// suffix once from [Theme.brightness] instead of one Hive read per verse.
+  /// Matches [fontFamilyForPage] for the qpc-v4 style: the app theme's
+  /// brightness always reflects the saved theme mode (null defaults to
+  /// dark, 'auto' follows the platform).
+  static String qpcV4FontFamilyForPage(int page, {required bool darkMode}) {
+    final String suffix = darkMode ? 'dark' : 'light';
+    return 'QPCV4_Page_${page}_$suffix';
   }
 
   static const Map<String, int> _qpcV4PageOffsets = {
@@ -286,6 +296,13 @@ class EquranTextStyles {
     '100:8': 600,
     '100:9': 600,
   };
+
+  /// Page lookup for callers that already know the style is qpc-v4:
+  /// skips the per-call settings read in [getPageNumber].
+  static int qpcV4PageNumber(int chapter, int verse) {
+    return _qpcV4PageOffsets['$chapter:$verse'] ??
+        quran.getPageNumber(chapter, verse);
+  }
 
   static int getPageNumber(int chapter, int verse) {
     if (SettingsDB().quranScriptStyle == 'qpc-v4') {
