@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:equran/services/android_frame_rate_hints.dart';
 import 'package:flutter/foundation.dart' show debugPrint, kDebugMode;
 
-enum _AppliedFrameRateHint { clear, audioIdle30, interactive60 }
+enum _AppliedFrameRateHint { clear, audioIdle30 }
 
 class FrameRatePolicyManager {
   FrameRatePolicyManager._();
@@ -308,18 +308,6 @@ class FrameRatePolicyManager {
     unawaited(AndroidFrameRateHints.clear());
   }
 
-  void _applyInteractive60({required String reason}) {
-    if (_appliedHint == _AppliedFrameRateHint.interactive60) return;
-    _appliedHint = _AppliedFrameRateHint.interactive60;
-    _lastRepeatedClearReason = null;
-    _requestedPreferredRefreshRate = 60;
-    _debugLog(
-      'set preferredRefreshRate=60 reason=$reason '
-      'state=${_stateSummary()}',
-    );
-    unawaited(AndroidFrameRateHints.setInteractive());
-  }
-
   List<String> get _activeBlockers {
     return <String>[
       if (_pointerSources.isNotEmpty)
@@ -364,12 +352,6 @@ class FrameRatePolicyManager {
     } else {
       sources.remove(source);
     }
-  }
-
-  void preferInteractive60Temporarily({required String reason}) {
-    _cancelRestore();
-    _applyInteractive60(reason: reason);
-    _scheduleRestore('$reason settled');
   }
 
   void _debugLog(String message) {

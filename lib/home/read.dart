@@ -6875,6 +6875,10 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
 
   Future<Uint8List> _renderShareImagePng() async {
     final Size shareImageSize = _shareImageMode.size;
+    final String verseText = quranVerseText(_currentChapter, _currentVerse);
+    if (verseText.trim().isEmpty) {
+      throw StateError('Unable to render share image: empty ayah text.');
+    }
     final RenderRepaintBoundary repaintBoundary = RenderRepaintBoundary();
     final PipelineOwner pipelineOwner = PipelineOwner();
     final BuildOwner buildOwner = BuildOwner(focusManager: FocusManager());
@@ -6933,7 +6937,11 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
           if (byteData == null) {
             throw StateError('Unable to encode share image.');
           }
-          return byteData.buffer.asUint8List();
+          final Uint8List pngBytes = byteData.buffer.asUint8List();
+          if (pngBytes.isEmpty) {
+            throw StateError('Unable to encode share image: empty bytes.');
+          }
+          return pngBytes;
         } finally {
           image.dispose();
         }

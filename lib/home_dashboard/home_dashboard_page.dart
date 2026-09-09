@@ -1924,6 +1924,12 @@ class _DailyDuaPreviewState extends State<_DailyDuaPreview> {
     }
   }
 
+  void _retryDailyDua() {
+    setState(() {
+      _dailyDuaFuture = _dailyDuaRepository.getDailyDua(widget.date);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<DailyDuaPayload>(
@@ -1941,7 +1947,7 @@ class _DailyDuaPreviewState extends State<_DailyDuaPreview> {
           );
         }
         if (snapshot.hasError || !snapshot.hasData) {
-          return const SizedBox.shrink();
+          return _buildUnavailableState(context);
         }
 
         final DailyDuaPayload payload = snapshot.data!;
@@ -2036,6 +2042,73 @@ class _DailyDuaPreviewState extends State<_DailyDuaPreview> {
           ],
         );
       },
+    );
+  }
+
+  Widget _buildUnavailableState(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final EquranColors colors = context.equranColors;
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        EquranSectionHeader(
+          icon: Icons.wb_twilight_rounded,
+          title: localizations.dailyDua,
+          actionLabel: localizations.seeAll,
+          onAction: widget.onOpenDuas,
+        ),
+        const SizedBox(height: 10),
+        _HomePremiumCard(
+          baseColor: colors.surface,
+          accentColor: colors.textSecondary,
+          assetPath: _duaAsset,
+          assetOpacity: 0.045,
+          assetWidth: 150,
+          padding: const EdgeInsets.fromLTRB(18, 14, 10, 14),
+          child: Row(
+            children: <Widget>[
+              Icon(
+                Icons.cloud_off_rounded,
+                color: colors.textMuted,
+                size: 26,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      localizations.duasUnavailable,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        color: colors.textPrimary,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      localizations.hisnAlMuslimNotLoaded,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colors.textSecondary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 4),
+              TextButton(
+                onPressed: _retryDailyDua,
+                child: Text(localizations.retryAction),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
