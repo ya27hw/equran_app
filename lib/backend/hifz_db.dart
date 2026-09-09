@@ -82,36 +82,57 @@ class HifzPrefs {
   static const int defaultMaxNewPerDay = 10;
   static const int defaultMaxReviewPerDay = 50;
 
-  static int maxNewPerDay() =>
-      (SettingsDB().get('hifzMaxNewPerDay', defaultValue: defaultMaxNewPerDay)
-          as int?) ??
-      defaultMaxNewPerDay;
+  static int maxNewPerDay() {
+    final dynamic val = SettingsDB().get(
+      'hifzMaxNewPerDay',
+      defaultValue: defaultMaxNewPerDay,
+    );
+    if (val is int) return val;
+    if (val is num) return val.toInt();
+    return defaultMaxNewPerDay;
+  }
 
-  static int maxReviewPerDay() =>
-      (SettingsDB().get(
-            'hifzMaxReviewPerDay',
-            defaultValue: defaultMaxReviewPerDay,
-          )
-          as int?) ??
-      defaultMaxReviewPerDay;
+  static int maxReviewPerDay() {
+    final dynamic val = SettingsDB().get(
+      'hifzMaxReviewPerDay',
+      defaultValue: defaultMaxReviewPerDay,
+    );
+    if (val is int) return val;
+    if (val is num) return val.toInt();
+    return defaultMaxReviewPerDay;
+  }
 
-  static bool showTransliterationByDefault() =>
-      (SettingsDB().get('hifzShowTransliteration', defaultValue: false)
-          as bool?) ??
-      false;
+  static bool showTransliterationByDefault() {
+    final dynamic val = SettingsDB().get(
+      'hifzShowTransliteration',
+      defaultValue: false,
+    );
+    return val is bool ? val : false;
+  }
 
-  static bool showTranslationByDefault() =>
-      (SettingsDB().get('hifzShowTranslation', defaultValue: false) as bool?) ??
-      false;
+  static bool showTranslationByDefault() {
+    final dynamic val = SettingsDB().get(
+      'hifzShowTranslation',
+      defaultValue: false,
+    );
+    return val is bool ? val : false;
+  }
 
-  static bool autoPlayAudioOnLearn() =>
-      (SettingsDB().get('hifzAutoPlayAudio', defaultValue: false) as bool?) ??
-      false;
+  static bool autoPlayAudioOnLearn() {
+    final dynamic val = SettingsDB().get(
+      'hifzAutoPlayAudio',
+      defaultValue: false,
+    );
+    return val is bool ? val : false;
+  }
 
-  static String blankingLevel() =>
-      (SettingsDB().get('hifzBlankingLevel', defaultValue: 'auto')
-          as String?) ??
-      'auto';
+  static String blankingLevel() {
+    final dynamic val = SettingsDB().get(
+      'hifzBlankingLevel',
+      defaultValue: 'auto',
+    );
+    return val is String ? val : 'auto';
+  }
 
   static Future<void> setMaxNewPerDay(int value) =>
       SettingsDB().put('hifzMaxNewPerDay', value);
@@ -133,12 +154,18 @@ class HifzPrefs {
 
   static int newCountForDate(DateTime date) {
     final String key = 'hifzNewCount_${dateKey(date)}';
-    return (SettingsDB().get(key, defaultValue: 0) as int?) ?? 0;
+    final dynamic val = SettingsDB().get(key, defaultValue: 0);
+    if (val is int) return val;
+    if (val is num) return val.toInt();
+    return 0;
   }
 
   static int reviewCountForDate(DateTime date) {
     final String key = 'hifzReviewCount_${dateKey(date)}';
-    return (SettingsDB().get(key, defaultValue: 0) as int?) ?? 0;
+    final dynamic val = SettingsDB().get(key, defaultValue: 0);
+    if (val is int) return val;
+    if (val is num) return val.toInt();
+    return 0;
   }
 
   static Future<void> incrementNewCount({DateTime? now}) async {

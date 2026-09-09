@@ -30,7 +30,7 @@ class QcfCpalPatcher {
       int currentOffset = 12;
 
       for (int i = 0; i < numTables; i++) {
-        if (currentOffset + 16 > data.lengthInBytes) {
+        if (!_fits(currentOffset, 16, data.lengthInBytes)) {
           return fontBytes; // Out of bounds
         }
 
