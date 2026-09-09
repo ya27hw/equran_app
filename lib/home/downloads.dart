@@ -1104,520 +1104,188 @@ class _DownloadsPageState extends State<DownloadsPage> {
       {'value': 'ayahs', 'label': 'Ayahs'},
     ];
 
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: colors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (BuildContext sheetContext) {
-        return StatefulBuilder(
-          builder: (BuildContext _, StateSetter setModalState) {
-            final List<Map<String, dynamic>> sortOptions =
-                pendingGroupBy == 'reciter'
-                ? <Map<String, dynamic>>[
-                    {
-                      'value': 'reciterAsc',
-                      'label': 'Reciter (A → Z)',
-                      'icon': Icons.sort_by_alpha_rounded,
-                    },
-                    {
-                      'value': 'reciterDesc',
-                      'label': 'Reciter (Z → A)',
-                      'icon': Icons.sort_by_alpha_rounded,
-                    },
-                    {
-                      'value': 'sizeDesc',
-                      'label': 'Size (largest first)',
-                      'icon': Icons.storage_rounded,
-                    },
-                    {
-                      'value': 'sizeAsc',
-                      'label': 'Size (smallest first)',
-                      'icon': Icons.storage_rounded,
-                    },
-                  ]
-                : <Map<String, dynamic>>[
-                    {
-                      'value': 'surahAsc',
-                      'label': 'Surah (1 → 114)',
-                      'icon': Icons.format_list_numbered_rounded,
-                    },
-                    {
-                      'value': 'surahDesc',
-                      'label': 'Surah (114 → 1)',
-                      'icon': Icons.format_list_numbered_rounded,
-                    },
-                    {
-                      'value': 'sizeDesc',
-                      'label': 'Size (largest first)',
-                      'icon': Icons.storage_rounded,
-                    },
-                    {
-                      'value': 'sizeAsc',
-                      'label': 'Size (smallest first)',
-                      'icon': Icons.storage_rounded,
-                    },
-                  ];
-            return SafeArea(
-              top: false,
-              child: Padding(
-                padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    // === STICKY HEADER ===
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Center(
-                            child: Container(
-                              width: 36,
-                              height: 4,
-                              decoration: BoxDecoration(
-                                color: colors.border,
-                                borderRadius: BorderRadius.circular(2),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'Filter & Sort Downloads',
-                            style: theme.textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'More control over which recitations appear in your library',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: colors.textSecondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+    final TextEditingController filterSearchController =
+        TextEditingController(text: pendingSearch);
 
-                    // === SCROLLABLE MIDDLE ===
-                    Expanded(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+    try {
+      await showModalBottomSheet<void>(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: colors.surface,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        builder: (BuildContext sheetContext) {
+          return StatefulBuilder(
+            builder: (BuildContext _, StateSetter setModalState) {
+              final List<Map<String, dynamic>> sortOptions =
+                  pendingGroupBy == 'reciter'
+                  ? <Map<String, dynamic>>[
+                      {
+                        'value': 'reciterAsc',
+                        'label': 'Reciter (A → Z)',
+                        'icon': Icons.sort_by_alpha_rounded,
+                      },
+                      {
+                        'value': 'reciterDesc',
+                        'label': 'Reciter (Z → A)',
+                        'icon': Icons.sort_by_alpha_rounded,
+                      },
+                      {
+                        'value': 'sizeDesc',
+                        'label': 'Size (largest first)',
+                        'icon': Icons.storage_rounded,
+                      },
+                      {
+                        'value': 'sizeAsc',
+                        'label': 'Size (smallest first)',
+                        'icon': Icons.storage_rounded,
+                      },
+                    ]
+                  : <Map<String, dynamic>>[
+                      {
+                        'value': 'surahAsc',
+                        'label': 'Surah (1 → 114)',
+                        'icon': Icons.format_list_numbered_rounded,
+                      },
+                      {
+                        'value': 'surahDesc',
+                        'label': 'Surah (114 → 1)',
+                        'icon': Icons.format_list_numbered_rounded,
+                      },
+                      {
+                        'value': 'sizeDesc',
+                        'label': 'Size (largest first)',
+                        'icon': Icons.storage_rounded,
+                      },
+                      {
+                        'value': 'sizeAsc',
+                        'label': 'Size (smallest first)',
+                        'icon': Icons.storage_rounded,
+                      },
+                    ];
+              return SafeArea(
+                top: false,
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      // === STICKY HEADER ===
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            // Search
-                            Container(
-                              decoration: BoxDecoration(
-                                color: colors.surfaceAlt,
-                                borderRadius: BorderRadius.circular(
-                                  AppRadii.medium,
-                                ),
-                                border: Border.all(color: colors.border),
-                              ),
-                              child: TextField(
-                                controller: TextEditingController(
-                                  text: pendingSearch,
-                                ),
-                                onChanged: (value) {
-                                  setModalState(() {
-                                    pendingSearch = value.trim();
-                                  });
-                                },
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: colors.textPrimary,
-                                ),
-                                decoration: InputDecoration(
-                                  hintText: 'Search recitations or surahs...',
-                                  hintStyle: theme.textTheme.bodyMedium
-                                      ?.copyWith(color: colors.textMuted),
-                                  prefixIcon: Icon(
-                                    Icons.search_rounded,
-                                    color: colors.primary,
-                                    size: 20,
-                                  ),
-                                  suffixIcon: pendingSearch.isNotEmpty
-                                      ? IconButton(
-                                          icon: Icon(
-                                            Icons.clear_rounded,
-                                            color: colors.textMuted,
-                                            size: 18,
-                                          ),
-                                          onPressed: () => setModalState(
-                                            () => pendingSearch = '',
-                                          ),
-                                        )
-                                      : null,
-                                  border: InputBorder.none,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 14,
-                                    vertical: 12,
-                                  ),
+                            Center(
+                              child: Container(
+                                width: 36,
+                                height: 4,
+                                decoration: BoxDecoration(
+                                  color: colors.border,
+                                  borderRadius: BorderRadius.circular(2),
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 18),
-
-                            // GROUP BY (Option C+)
-                            Text(
-                              'Group by',
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: <Widget>[
-                                Expanded(
-                                  child: InkWell(
-                                    onTap: () => setModalState(() {
-                                      pendingGroupBy = 'reciter';
-                                      if (pendingSort == 'surahAsc' ||
-                                          pendingSort == 'surahDesc') {
-                                        pendingSort = 'reciterAsc';
-                                      }
-                                    }),
-                                    borderRadius: BorderRadius.circular(
-                                      AppRadii.medium,
-                                    ),
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 11,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: pendingGroupBy == 'reciter'
-                                            ? colors.primary.withAlpha(15)
-                                            : colors.surfaceAlt,
-                                        borderRadius: BorderRadius.circular(
-                                          AppRadii.medium,
-                                        ),
-                                        border: Border.all(
-                                          color: pendingGroupBy == 'reciter'
-                                              ? colors.primary
-                                              : colors.border,
-                                          width: pendingGroupBy == 'reciter'
-                                              ? 1.5
-                                              : 1,
-                                        ),
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          'Reciter',
-                                          style: TextStyle(
-                                            fontWeight:
-                                                pendingGroupBy == 'reciter'
-                                                ? FontWeight.w700
-                                                : FontWeight.w600,
-                                            color: pendingGroupBy == 'reciter'
-                                                ? colors.primary
-                                                : colors.textPrimary,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: InkWell(
-                                    onTap: () => setModalState(() {
-                                      pendingGroupBy = 'surah';
-                                      if (pendingSort == 'reciterAsc' ||
-                                          pendingSort == 'reciterDesc') {
-                                        pendingSort = 'surahAsc';
-                                      }
-                                    }),
-                                    borderRadius: BorderRadius.circular(
-                                      AppRadii.medium,
-                                    ),
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 11,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: pendingGroupBy == 'surah'
-                                            ? colors.primary.withAlpha(15)
-                                            : colors.surfaceAlt,
-                                        borderRadius: BorderRadius.circular(
-                                          AppRadii.medium,
-                                        ),
-                                        border: Border.all(
-                                          color: pendingGroupBy == 'surah'
-                                              ? colors.primary
-                                              : colors.border,
-                                          width: pendingGroupBy == 'surah'
-                                              ? 1.5
-                                              : 1,
-                                        ),
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          'Surah',
-                                          style: TextStyle(
-                                            fontWeight:
-                                                pendingGroupBy == 'surah'
-                                                ? FontWeight.w700
-                                                : FontWeight.w600,
-                                            color: pendingGroupBy == 'surah'
-                                                ? colors.primary
-                                                : colors.textPrimary,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-
                             const SizedBox(height: 16),
-
-                            // SORT
                             Text(
-                              'Sort by',
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w700,
+                              'Filter & Sort Downloads',
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.w800,
                               ),
                             ),
-                            const SizedBox(height: 8),
-                            ...sortOptions.map<Widget>((opt) {
-                              final String val = opt['value'] as String;
-                              final bool sel = pendingSort == val;
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 6),
-                                child: InkWell(
-                                  onTap: () =>
-                                      setModalState(() => pendingSort = val),
+                            const SizedBox(height: 4),
+                            Text(
+                              'More control over which recitations appear in your library',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colors.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // === SCROLLABLE MIDDLE ===
+                      Expanded(
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              // Search
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: colors.surfaceAlt,
                                   borderRadius: BorderRadius.circular(
                                     AppRadii.medium,
                                   ),
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 14,
-                                      vertical: 11,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: sel
-                                          ? colors.primary.withAlpha(15)
-                                          : colors.surfaceAlt,
-                                      borderRadius: BorderRadius.circular(
-                                        AppRadii.medium,
-                                      ),
-                                      border: Border.all(
-                                        color: sel
-                                            ? colors.primary
-                                            : colors.border,
-                                        width: sel ? 1.5 : 1,
-                                      ),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          opt['icon'] as IconData,
-                                          size: 18,
-                                          color: sel
-                                              ? colors.primary
-                                              : colors.textSecondary,
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Expanded(
-                                          child: Text(
-                                            opt['label'] as String,
-                                            style: TextStyle(
-                                              fontWeight: sel
-                                                  ? FontWeight.w700
-                                                  : FontWeight.w500,
-                                              color: sel
-                                                  ? colors.primary
-                                                  : colors.textPrimary,
-                                            ),
-                                          ),
-                                        ),
-                                        if (sel)
-                                          Icon(
-                                            Icons.check_rounded,
-                                            size: 18,
-                                            color: colors.primary,
-                                          ),
-                                      ],
-                                    ),
-                                  ),
+                                  border: Border.all(color: colors.border),
                                 ),
-                              );
-                            }),
-
-                            const SizedBox(height: 16),
-
-                            // RECITER (as Dropdown)
-                            Text(
-                              'Reciter',
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: colors.surfaceAlt,
-                                borderRadius: BorderRadius.circular(
-                                  AppRadii.medium,
-                                ),
-                                border: Border.all(color: colors.border),
-                              ),
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton<String>(
-                                  value: pendingReciter,
-                                  isExpanded: true,
-                                  dropdownColor: colors.surface,
-                                  icon: Icon(
-                                    Icons.arrow_drop_down_rounded,
-                                    color: colors.primary,
-                                  ),
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: colors.textPrimary,
-                                  ),
-                                  onChanged: (value) {
-                                    if (value != null) {
-                                      setModalState(() {
-                                        pendingReciter = value;
-                                      });
-                                    }
-                                  },
-                                  items: reciterNames.entries.map((e) {
-                                    return DropdownMenuItem<String>(
-                                      value: e.key,
-                                      child: Text(
-                                        e.value,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
-                              ),
-                            ),
-
-                            const SizedBox(height: 16),
-
-                            // SURAH (as Dropdown)
-                            Text(
-                              'Surah',
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: colors.surfaceAlt,
-                                borderRadius: BorderRadius.circular(
-                                  AppRadii.medium,
-                                ),
-                                border: Border.all(color: colors.border),
-                              ),
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton<int?>(
-                                  value: pendingSurah,
-                                  isExpanded: true,
-                                  dropdownColor: colors.surface,
-                                  icon: Icon(
-                                    Icons.arrow_drop_down_rounded,
-                                    color: colors.primary,
-                                  ),
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: colors.textPrimary,
-                                  ),
+                                child: TextField(
+                                  controller: filterSearchController,
                                   onChanged: (value) {
                                     setModalState(() {
-                                      pendingSurah = value;
+                                      pendingSearch = value.trim();
                                     });
                                   },
-                                  items: surahItems,
-                                ),
-                              ),
-                            ),
-
-                            const SizedBox(height: 16),
-
-                            // CATEGORY (as Dropdown)
-                            Text(
-                              'Category',
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: colors.surfaceAlt,
-                                borderRadius: BorderRadius.circular(
-                                  AppRadii.medium,
-                                ),
-                                border: Border.all(color: colors.border),
-                              ),
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton<String>(
-                                  value: pendingCategory,
-                                  isExpanded: true,
-                                  dropdownColor: colors.surface,
-                                  icon: Icon(
-                                    Icons.arrow_drop_down_rounded,
-                                    color: colors.primary,
-                                  ),
                                   style: theme.textTheme.bodyMedium?.copyWith(
                                     color: colors.textPrimary,
                                   ),
-                                  onChanged: (value) {
-                                    if (value != null) {
-                                      setModalState(() {
-                                        pendingCategory = value;
-                                      });
-                                    }
-                                  },
-                                  items: categoryItems,
+                                  decoration: InputDecoration(
+                                    hintText: 'Search recitations or surahs...',
+                                    hintStyle: theme.textTheme.bodyMedium
+                                        ?.copyWith(color: colors.textMuted),
+                                    prefixIcon: Icon(
+                                      Icons.search_rounded,
+                                      color: colors.primary,
+                                      size: 20,
+                                    ),
+                                    suffixIcon: pendingSearch.isNotEmpty
+                                        ? IconButton(
+                                            icon: Icon(
+                                              Icons.clear_rounded,
+                                              color: colors.textMuted,
+                                              size: 18,
+                                            ),
+                                            onPressed: () => setModalState(
+                                              () {
+                                                pendingSearch = '';
+                                                filterSearchController.clear();
+                                              },
+                                            ),
+                                          )
+                                        : null,
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 12,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
+                              const SizedBox(height: 18),
 
-                            const SizedBox(height: 16),
-
-                            // CONTENT TYPE
-                            Text(
-                              'Content type',
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w700,
+                              // GROUP BY (Option C+)
+                              Text(
+                                'Group by',
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: typeOptions.map((o) {
-                                final bool sel = pendingType == o['value'];
-                                final bool isLast = o == typeOptions.last;
-                                return Expanded(
-                                  child: Padding(
-                                    padding: EdgeInsets.only(
-                                      right: isLast ? 0 : 8,
-                                    ),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: <Widget>[
+                                  Expanded(
                                     child: InkWell(
-                                      onTap: () => setModalState(
-                                        () => pendingType = o['value']!,
-                                      ),
+                                      onTap: () => setModalState(() {
+                                        pendingGroupBy = 'reciter';
+                                        if (pendingSort == 'surahAsc' ||
+                                            pendingSort == 'surahDesc') {
+                                          pendingSort = 'reciterAsc';
+                                        }
+                                      }),
                                       borderRadius: BorderRadius.circular(
                                         AppRadii.medium,
                                       ),
@@ -1626,27 +1294,30 @@ class _DownloadsPageState extends State<DownloadsPage> {
                                           vertical: 11,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: sel
+                                          color: pendingGroupBy == 'reciter'
                                               ? colors.primary.withAlpha(15)
                                               : colors.surfaceAlt,
                                           borderRadius: BorderRadius.circular(
                                             AppRadii.medium,
                                           ),
                                           border: Border.all(
-                                            color: sel
+                                            color: pendingGroupBy == 'reciter'
                                                 ? colors.primary
                                                 : colors.border,
-                                            width: sel ? 1.5 : 1,
+                                            width: pendingGroupBy == 'reciter'
+                                                ? 1.5
+                                                : 1,
                                           ),
                                         ),
                                         child: Center(
                                           child: Text(
-                                            o['label']!,
+                                            'Reciter',
                                             style: TextStyle(
-                                              fontWeight: sel
+                                              fontWeight:
+                                                  pendingGroupBy == 'reciter'
                                                   ? FontWeight.w700
                                                   : FontWeight.w600,
-                                              color: sel
+                                              color: pendingGroupBy == 'reciter'
                                                   ? colors.primary
                                                   : colors.textPrimary,
                                             ),
@@ -1655,79 +1326,417 @@ class _DownloadsPageState extends State<DownloadsPage> {
                                       ),
                                     ),
                                   ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: InkWell(
+                                      onTap: () => setModalState(() {
+                                        pendingGroupBy = 'surah';
+                                        if (pendingSort == 'reciterAsc' ||
+                                            pendingSort == 'reciterDesc') {
+                                          pendingSort = 'surahAsc';
+                                        }
+                                      }),
+                                      borderRadius: BorderRadius.circular(
+                                        AppRadii.medium,
+                                      ),
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 11,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: pendingGroupBy == 'surah'
+                                              ? colors.primary.withAlpha(15)
+                                              : colors.surfaceAlt,
+                                          borderRadius: BorderRadius.circular(
+                                            AppRadii.medium,
+                                          ),
+                                          border: Border.all(
+                                            color: pendingGroupBy == 'surah'
+                                                ? colors.primary
+                                                : colors.border,
+                                            width: pendingGroupBy == 'surah'
+                                                ? 1.5
+                                                : 1,
+                                          ),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            'Surah',
+                                            style: TextStyle(
+                                              fontWeight:
+                                                  pendingGroupBy == 'surah'
+                                                  ? FontWeight.w700
+                                                  : FontWeight.w600,
+                                              color: pendingGroupBy == 'surah'
+                                                  ? colors.primary
+                                                  : colors.textPrimary,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              const SizedBox(height: 16),
+
+                              // SORT
+                              Text(
+                                'Sort by',
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              ...sortOptions.map<Widget>((opt) {
+                                final String val = opt['value'] as String;
+                                final bool sel = pendingSort == val;
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 6),
+                                  child: InkWell(
+                                    onTap: () =>
+                                        setModalState(() => pendingSort = val),
+                                    borderRadius: BorderRadius.circular(
+                                      AppRadii.medium,
+                                    ),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 14,
+                                        vertical: 11,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: sel
+                                            ? colors.primary.withAlpha(15)
+                                            : colors.surfaceAlt,
+                                        borderRadius: BorderRadius.circular(
+                                          AppRadii.medium,
+                                        ),
+                                        border: Border.all(
+                                          color: sel
+                                              ? colors.primary
+                                              : colors.border,
+                                          width: sel ? 1.5 : 1,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            opt['icon'] as IconData,
+                                            size: 18,
+                                            color: sel
+                                                ? colors.primary
+                                                : colors.textSecondary,
+                                          ),
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: Text(
+                                              opt['label'] as String,
+                                              style: TextStyle(
+                                                fontWeight: sel
+                                                    ? FontWeight.w700
+                                                    : FontWeight.w500,
+                                                color: sel
+                                                    ? colors.primary
+                                                    : colors.textPrimary,
+                                              ),
+                                            ),
+                                          ),
+                                          if (sel)
+                                            Icon(
+                                              Icons.check_rounded,
+                                              size: 18,
+                                              color: colors.primary,
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                                 );
-                              }).toList(),
+                              }),
+
+                              const SizedBox(height: 16),
+
+                              // RECITER (as Dropdown)
+                              Text(
+                                'Reciter',
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: colors.surfaceAlt,
+                                  borderRadius: BorderRadius.circular(
+                                    AppRadii.medium,
+                                  ),
+                                  border: Border.all(color: colors.border),
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton<String>(
+                                    value: pendingReciter,
+                                    isExpanded: true,
+                                    dropdownColor: colors.surface,
+                                    icon: Icon(
+                                      Icons.arrow_drop_down_rounded,
+                                      color: colors.primary,
+                                    ),
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      color: colors.textPrimary,
+                                    ),
+                                    onChanged: (value) {
+                                      if (value != null) {
+                                        setModalState(() {
+                                          pendingReciter = value;
+                                        });
+                                      }
+                                    },
+                                    items: reciterNames.entries.map((e) {
+                                      return DropdownMenuItem<String>(
+                                        value: e.key,
+                                        child: Text(
+                                          e.value,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                              ),
+
+                              const SizedBox(height: 16),
+
+                              // SURAH (as Dropdown)
+                              Text(
+                                'Surah',
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: colors.surfaceAlt,
+                                  borderRadius: BorderRadius.circular(
+                                    AppRadii.medium,
+                                  ),
+                                  border: Border.all(color: colors.border),
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton<int?>(
+                                    value: pendingSurah,
+                                    isExpanded: true,
+                                    dropdownColor: colors.surface,
+                                    icon: Icon(
+                                      Icons.arrow_drop_down_rounded,
+                                      color: colors.primary,
+                                    ),
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      color: colors.textPrimary,
+                                    ),
+                                    onChanged: (value) {
+                                      setModalState(() {
+                                        pendingSurah = value;
+                                      });
+                                    },
+                                    items: surahItems,
+                                  ),
+                                ),
+                              ),
+
+                              const SizedBox(height: 16),
+
+                              // CATEGORY (as Dropdown)
+                              Text(
+                                'Category',
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: colors.surfaceAlt,
+                                  borderRadius: BorderRadius.circular(
+                                    AppRadii.medium,
+                                  ),
+                                  border: Border.all(color: colors.border),
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton<String>(
+                                    value: pendingCategory,
+                                    isExpanded: true,
+                                    dropdownColor: colors.surface,
+                                    icon: Icon(
+                                      Icons.arrow_drop_down_rounded,
+                                      color: colors.primary,
+                                    ),
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      color: colors.textPrimary,
+                                    ),
+                                    onChanged: (value) {
+                                      if (value != null) {
+                                        setModalState(() {
+                                          pendingCategory = value;
+                                        });
+                                      }
+                                    },
+                                    items: categoryItems,
+                                  ),
+                                ),
+                              ),
+
+                              const SizedBox(height: 16),
+
+                              // CONTENT TYPE
+                              Text(
+                                'Content type',
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: typeOptions.map((o) {
+                                  final bool sel = pendingType == o['value'];
+                                  final bool isLast = o == typeOptions.last;
+                                  return Expanded(
+                                    child: Padding(
+                                      padding: EdgeInsets.only(
+                                        right: isLast ? 0 : 8,
+                                      ),
+                                      child: InkWell(
+                                        onTap: () => setModalState(
+                                          () => pendingType = o['value']!,
+                                        ),
+                                        borderRadius: BorderRadius.circular(
+                                          AppRadii.medium,
+                                        ),
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 11,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: sel
+                                                ? colors.primary.withAlpha(15)
+                                                : colors.surfaceAlt,
+                                            borderRadius: BorderRadius.circular(
+                                              AppRadii.medium,
+                                            ),
+                                            border: Border.all(
+                                              color: sel
+                                                  ? colors.primary
+                                                  : colors.border,
+                                              width: sel ? 1.5 : 1,
+                                            ),
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              o['label']!,
+                                              style: TextStyle(
+                                                fontWeight: sel
+                                                    ? FontWeight.w700
+                                                    : FontWeight.w600,
+                                                color: sel
+                                                    ? colors.primary
+                                                    : colors.textPrimary,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      // === PINNED FOOTER ===
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+                        child: Row(
+                          children: <Widget>[
+                            TextButton(
+                              onPressed: () => setModalState(() {
+                                pendingReciter = pendingCategory = pendingType =
+                                    'all';
+                                pendingSurah = null;
+                                pendingSort = 'reciterAsc';
+                                pendingSearch = '';
+                                filterSearchController.clear();
+                                pendingGroupBy = 'reciter';
+                              }),
+                              style: TextButton.styleFrom(
+                                foregroundColor: colors.textSecondary,
+                              ),
+                              child: const Text(
+                                'Reset',
+                                style: TextStyle(fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                            const Spacer(),
+                            TextButton(
+                              onPressed: () => Navigator.of(sheetContext).pop(),
+                              child: const Text(
+                                'Cancel',
+                                style: TextStyle(fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            FilledButton(
+                              onPressed: () {
+                                setState(() {
+                                  _selectedReciterFilter = pendingReciter;
+                                  _selectedCategoryFilter = pendingCategory;
+                                  _selectedSurahFilter = pendingSurah;
+                                  _selectedTypeFilter = pendingType;
+                                  _sortBy = pendingSort;
+                                  _searchQuery = pendingSearch;
+                                  _searchController.text = pendingSearch;
+                                  _groupBy = pendingGroupBy;
+                                });
+                                Navigator.of(sheetContext).pop();
+                              },
+                              style: FilledButton.styleFrom(
+                                backgroundColor: colors.primary,
+                                foregroundColor: colors.onPrimary,
+                              ),
+                              child: const Text(
+                                'Apply',
+                                style: TextStyle(fontWeight: FontWeight.w700),
+                              ),
                             ),
                           ],
                         ),
                       ),
-                    ),
-
-                    // === PINNED FOOTER ===
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-                      child: Row(
-                        children: <Widget>[
-                          TextButton(
-                            onPressed: () => setModalState(() {
-                              pendingReciter = pendingCategory = pendingType =
-                                  'all';
-                              pendingSurah = null;
-                              pendingSort = 'reciterAsc';
-                              pendingSearch = '';
-                              pendingGroupBy = 'reciter';
-                            }),
-                            style: TextButton.styleFrom(
-                              foregroundColor: colors.textSecondary,
-                            ),
-                            child: const Text(
-                              'Reset',
-                              style: TextStyle(fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                          const Spacer(),
-                          TextButton(
-                            onPressed: () => Navigator.of(sheetContext).pop(),
-                            child: const Text(
-                              'Cancel',
-                              style: TextStyle(fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          FilledButton(
-                            onPressed: () {
-                              setState(() {
-                                _selectedReciterFilter = pendingReciter;
-                                _selectedCategoryFilter = pendingCategory;
-                                _selectedSurahFilter = pendingSurah;
-                                _selectedTypeFilter = pendingType;
-                                _sortBy = pendingSort;
-                                _searchQuery = pendingSearch;
-                                _searchController.text = pendingSearch;
-                                _groupBy = pendingGroupBy;
-                              });
-                              Navigator.of(sheetContext).pop();
-                            },
-                            style: FilledButton.styleFrom(
-                              backgroundColor: colors.primary,
-                              foregroundColor: colors.onPrimary,
-                            ),
-                            child: const Text(
-                              'Apply',
-                              style: TextStyle(fontWeight: FontWeight.w700),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            );
-          },
-        );
-      },
-    );
+              );
+            },
+          );
+        },
+      );
+    } finally {
+      filterSearchController.dispose();
+    }
   }
 }
 
