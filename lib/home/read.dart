@@ -523,6 +523,14 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
   List<int>? _verseTextCumulativeLengths;
   int _verseTextTotalLength = 0;
   String? _inlineSurahTextCache;
+  // Chapter-scoped QPC verse segments: the inline surah span rebuilds on
+  // every playback tick, so cache the per-verse strings instead of redoing
+  // a Hive read + map lookup + interpolation per verse per build.
+  int? _qpcSegmentChapter;
+  List<String>? _qpcInlineSegmentCache;
+  // Coalesces font-load completions into a single post-frame rebuild
+  // instead of one full-page setState per loaded page.
+  bool _fontsRefreshScheduled = false;
   int? _selectedInlineVerse;
   bool _isProgrammaticPageScroll = false;
   bool _isScrubbingProgress = false;
@@ -1492,6 +1500,8 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     _verseTextCumulativeLengths = null;
     _verseTextTotalLength = 0;
     _inlineSurahTextCache = null;
+    _qpcSegmentChapter = null;
+    _qpcInlineSegmentCache = null;
   }
 
   Future<void> _loadChapterTransliterations() async {
@@ -1730,6 +1740,36 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     return quranVerseText(chapter, verse);
   }
 
+  /// Chapter-scoped QPC verse segments backing the inline surah span.
+  /// Invalidated with the other verse-text metrics on chapter change.
+  List<String> _qpcInlineSegments() {
+    final int chapter = _currentChapter;
+    final int total = _totalVerses;
+    List<String>? cached = _qpcInlineSegmentCache;
+    if (cached != null &&
+        _qpcSegmentChapter == chapter &&
+        cached.length == total) {
+      return cached;
+    }
+    cached = List<String>.generate(
+      total,
+      (int index) => _inlineVerseTextSegment(index + 1),
+      growable: false,
+    );
+    _qpcSegmentChapter = chapter;
+    _qpcInlineSegmentCache = cached;
+    return cached;
+  }
+
+  void _scheduleFontsRefresh() {
+    if (_fontsRefreshScheduled || !mounted) return;
+    _fontsRefreshScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fontsRefreshScheduled = false;
+      if (mounted) setState(() {});
+    });
+  }
+
   Future<void> _loadFontsForCurrentSurah() async {
     if (SettingsDB().quranScriptStyle != 'qpc-v4') return;
 
@@ -1739,15 +1779,15 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     );
     final bool currentLoaded = await QpcV4FontService.instance
         .ensureFontLoadedForPage(currentPage);
-    if (currentLoaded && mounted) {
-      setState(() {});
+    if (currentLoaded) {
+      _scheduleFontsRefresh();
     }
 
     if (currentPage != 1) {
       unawaited(
         QpcV4FontService.instance.ensureFontLoadedForPage(1).then((success) {
-          if (success && mounted) {
-            setState(() {});
+          if (success) {
+            _scheduleFontsRefresh();
           }
         }),
       );
@@ -1764,8 +1804,8 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
       if (page == currentPage || page == 1) continue;
       unawaited(
         QpcV4FontService.instance.ensureFontLoadedForPage(page).then((success) {
-          if (success && mounted) {
-            setState(() {});
+          if (success) {
+            _scheduleFontsRefresh();
           }
         }),
       );
@@ -7881,21 +7921,43 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
 
   TextSpan _buildInlineSurahTextSpan(double fontSize, ColorScheme colorScheme) {
     if (SettingsDB().quranScriptStyle == 'qpc-v4') {
-      final List<InlineSpan> children = <InlineSpan>[];
+      // Hoisted out of the per-verse loop: one theme-brightness read
+      // replaces N Hive settings reads, one style object per page replaces
+      // N TextStyle allocations, and verse strings come from the
+      // chapter-scoped cache.
+      final bool darkMode = Theme.of(context).brightness == Brightness.dark;
+      final List<String> segments = _qpcInlineSegments();
       final int? highlightedVerse = _selectedInlineVerse ?? _playingVerse;
+      final Map<int, TextStyle> styleForPage = <int, TextStyle>{};
+      TextStyle styleFor(int page, bool highlighted) {
+        final TextStyle base =
+            styleForPage[page] ??=
+                TextStyle(
+                  fontFamily: EquranTextStyles.qpcV4FontFamilyForPage(
+                    page,
+                    darkMode: darkMode,
+                  ),
+                  fontFamilyFallback: const <String>['UthmanicHafs'],
+                  height: 1.8,
+                  fontSize: fontSize,
+                  color: colorScheme.onSurface,
+                );
+        return highlighted ? base.copyWith(color: colorScheme.primary) : base;
+      }
+
+      final List<InlineSpan> children = <InlineSpan>[];
       for (int verse = 1; verse <= _totalVerses; verse++) {
-        final int page = EquranTextStyles.getPageNumber(_currentChapter, verse);
-        final TextStyle style = TextStyle(
-          fontFamily: EquranTextStyles.fontFamilyForPage(page),
-          fontFamilyFallback: const <String>['UthmanicHafs'],
-          height: 1.8,
-          fontSize: fontSize,
-          color: highlightedVerse == verse
-              ? colorScheme.primary
-              : colorScheme.onSurface,
+        final int page = EquranTextStyles.qpcV4PageNumber(
+          _currentChapter,
+          verse,
         );
         children.add(
-          TextSpan(text: _inlineVerseTextSegment(verse), style: style),
+          TextSpan(
+            text: verse - 1 < segments.length
+                ? segments[verse - 1]
+                : _inlineVerseTextSegment(verse),
+            style: styleFor(page, highlightedVerse == verse),
+          ),
         );
       }
       return TextSpan(children: children);

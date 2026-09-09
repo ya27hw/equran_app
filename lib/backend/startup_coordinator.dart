@@ -95,17 +95,21 @@ class StartupCoordinator extends ChangeNotifier {
   }
 
   Future<void> _initializeStorage() async {
-    await ZakatHistoryDB.instance.initialize();
-    await BookmarkDB().initBox();
-    await SurahDB().initBox();
-    await FavouritesDB().initBox();
-    await DuaFavouritesDB().initBox();
-    await initCompanionStorageBoxes();
-    await MemoryTwinDB.instance.initBox();
-    await MemoryMapStateDB.instance.initBox();
-    await JourneyCapsulesDB.instance.initBox();
-    await HalaqahAssignmentsDB.instance.initBox();
-    await HifzDB.init();
+    // These boxes are independent local opens; run them concurrently so the
+    // cold-start tail is one open, not the sum of eleven.
+    await Future.wait(<Future<void>>[
+      ZakatHistoryDB.instance.initialize(),
+      BookmarkDB().initBox(),
+      SurahDB().initBox(),
+      FavouritesDB().initBox(),
+      DuaFavouritesDB().initBox(),
+      initCompanionStorageBoxes(),
+      MemoryTwinDB.instance.initBox(),
+      MemoryMapStateDB.instance.initBox(),
+      JourneyCapsulesDB.instance.initBox(),
+      HalaqahAssignmentsDB.instance.initBox(),
+      HifzDB.init(),
+    ]);
 
     final String lastCheck =
         SettingsDB().get('hifzFrontierLastCheck', defaultValue: '') as String;
