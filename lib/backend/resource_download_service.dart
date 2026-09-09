@@ -341,9 +341,27 @@ class ResourceDownloadService {
     if (files.isEmpty) {
       throw const ResourceInstallException('The ZIP did not contain files.');
     }
+    if (files.length > 2000) {
+      throw const ResourceInstallException(
+        'The ZIP contains too many files.',
+      );
+    }
 
+    int totalDecompressedBytes = 0;
     final String? rootToStrip = _singleArchiveRoot(files);
     for (final ArchiveFile entry in files) {
+      if (entry.size > 50 * 1024 * 1024) {
+        throw const ResourceInstallException(
+          'The ZIP contains an entry that is too large.',
+        );
+      }
+      totalDecompressedBytes += entry.size;
+      if (totalDecompressedBytes > 300 * 1024 * 1024) {
+        throw const ResourceInstallException(
+          'The decompressed ZIP exceeds maximum allowed size.',
+        );
+      }
+
       final List<String> pathSegments = _safeArchiveSegments(
         entry.name,
         rootToStrip: rootToStrip,
