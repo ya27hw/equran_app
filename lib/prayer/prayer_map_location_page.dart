@@ -71,6 +71,10 @@ class _PrayerMapLocationPageState extends State<PrayerMapLocationPage> {
   LatLng? _userLocation;
   bool _isLoadingLocation = false;
 
+  /// Whether [_selectedCenter] is a real choice. The map starts at (0, 0)
+  /// when no location is known; that must never be saved as a prayer location.
+  bool _hasSelection = false;
+
   @override
   void initState() {
     super.initState();
@@ -82,6 +86,7 @@ class _PrayerMapLocationPageState extends State<PrayerMapLocationPage> {
         initialLocation.longitude,
       );
       _selectedCenter = _userLocation!;
+      _hasSelection = true;
     } else {
       _selectedCenter = const LatLng(0, 0);
     }
@@ -299,6 +304,7 @@ class _PrayerMapLocationPageState extends State<PrayerMapLocationPage> {
                 if (widget.isPicker) {
                   setState(() {
                     _selectedCenter = camera.center;
+                    if (hasGesture) _hasSelection = true;
                   });
                 }
               },
@@ -443,7 +449,12 @@ class _PrayerMapLocationPageState extends State<PrayerMapLocationPage> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        prayerMapCoordinatePreview(displayLat, displayLng),
+                        widget.isPicker && !_hasSelection
+                            ? '—'
+                            : prayerMapCoordinatePreview(
+                                displayLat,
+                                displayLng,
+                              ),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: colors.onSurfaceVariant,
                         ),
@@ -474,7 +485,9 @@ class _PrayerMapLocationPageState extends State<PrayerMapLocationPage> {
                       if (widget.isPicker) ...<Widget>[
                         const SizedBox(height: 12),
                         OutlinedButton.icon(
-                          onPressed: _useSelectedLocation,
+                          onPressed: _hasSelection
+                              ? _useSelectedLocation
+                              : null,
                           icon: const Icon(Icons.pin_drop_outlined),
                           label: Text(localizations.usePinLocation),
                           style: OutlinedButton.styleFrom(
@@ -552,6 +565,7 @@ class _PrayerMapLocationPageState extends State<PrayerMapLocationPage> {
           setState(() {
             _userLocation = detectedCoords;
             _selectedCenter = detectedCoords;
+            _hasSelection = true;
           });
           _mapController.move(detectedCoords, 13.0);
         } else {
@@ -610,11 +624,13 @@ class _PrayerMapLocationPageState extends State<PrayerMapLocationPage> {
     final PrayerLocation? location = await Navigator.of(context).push(
       MaterialPageRoute<PrayerLocation>(
         builder: (BuildContext context) => ManualPrayerLocationPage(
-          initialLocation: prayerLocationFromMapSelection(
-            latitude: _selectedCenter.latitude,
-            longitude: _selectedCenter.longitude,
-            localizations: localizations,
-          ),
+          initialLocation: _hasSelection
+              ? prayerLocationFromMapSelection(
+                  latitude: _selectedCenter.latitude,
+                  longitude: _selectedCenter.longitude,
+                  localizations: localizations,
+                )
+              : null,
         ),
       ),
     );
