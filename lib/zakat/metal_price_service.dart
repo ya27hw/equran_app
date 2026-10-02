@@ -188,19 +188,24 @@ class MetalsLiveRateProvider implements MetalRateProvider {
     );
   }
 
+  /// Flattens the response into one map. Accepts a single object or a list of
+  /// objects, merging every element so both `[{gold, silver}]` and
+  /// `[{gold}, {silver}]` shapes yield both metals (first value wins).
   static Map<String, Object?> _firstMap(Object? decoded) {
-    if (decoded is Map) {
-      return decoded.map<String, Object?>(
-        (Object? key, Object? value) => MapEntry(key.toString(), value),
-      );
+    final Map<String, Object?> merged = <String, Object?>{};
+    void add(Object? source) {
+      if (source is! Map) return;
+      source.forEach((Object? key, Object? value) {
+        merged.putIfAbsent(key.toString(), () => value);
+      });
     }
-    if (decoded is List && decoded.isNotEmpty && decoded.first is Map) {
-      final Map first = decoded.first as Map;
-      return first.map<String, Object?>(
-        (Object? key, Object? value) => MapEntry(key.toString(), value),
-      );
+
+    if (decoded is List) {
+      decoded.forEach(add);
+    } else {
+      add(decoded);
     }
-    return const <String, Object?>{};
+    return merged;
   }
 
   static double? _positiveNumber(Object? value) {
