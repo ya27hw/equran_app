@@ -4485,4 +4485,14 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get confirmLiveLocationMessage =>
       'کیا آپ نماز کے اوقات کو اپنے آلے کی لائیو لوکیشن پر لاک کرنا چاہتے ہیں؟ سفر کے دوران ایپ خود بخود اوقات کو اپ ڈیٹ کر دے گی۔';
+
+  @override
+  String ratesLiveStatus(String source, String time) {
+    return '$source • براہِ راست • $time';
+  }
+
+  @override
+  String ratesStaleStatus(String source, String time) {
+    return '$source • آخری معلوم نرخ • $time';
+  }
 }

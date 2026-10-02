@@ -4406,4 +4406,14 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get confirmLiveLocationMessage =>
       'هل تريد قفل أوقات الصلاة على موقع جهازك المباشر؟ سيقوم التطبيق بتحديث الأوقات تلقائيًا أثناء سفرك.';
+
+  @override
+  String ratesLiveStatus(String source, String time) {
+    return '$source • مباشر • $time';
+  }
+
+  @override
+  String ratesStaleStatus(String source, String time) {
+    return '$source • آخر سعر معروف • $time';
+  }
 }

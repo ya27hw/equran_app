@@ -2339,5 +2339,7 @@
   "litecoin": "لایت‌کوین (LTC)",
   "copyAddress": "کپی نشانی",
   "addressCopied": "نشانی کپی شد",
-  "usdcErc20": "USDC (ERC-20)"
+  "usdcErc20": "USDC (ERC-20)",
+  "ratesLiveStatus": "{source} • زنده • {time}",
+  "ratesStaleStatus": "{source} • آخرین نرخ شناخته‌شده • {time}"
 }

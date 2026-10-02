@@ -1690,5 +1690,7 @@
   "useLiveLocation": "الموقع المباشر",
   "usePinLocation": "استخدام موقع الدبوس",
   "confirmLiveLocationTitle": "استخدام الموقع المباشر",
-  "confirmLiveLocationMessage": "هل تريد قفل أوقات الصلاة على موقع جهازك المباشر؟ سيقوم التطبيق بتحديث الأوقات تلقائيًا أثناء سفرك."
+  "confirmLiveLocationMessage": "هل تريد قفل أوقات الصلاة على موقع جهازك المباشر؟ سيقوم التطبيق بتحديث الأوقات تلقائيًا أثناء سفرك.",
+  "ratesLiveStatus": "{source} • مباشر • {time}",
+  "ratesStaleStatus": "{source} • آخر سعر معروف • {time}"
 }

@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'dart:math' as math;
 
 import 'package:equran/backend/settings_db.dart';
@@ -290,8 +291,13 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
   }
 
   String _rateStatus(MetalRateSnapshot snapshot) {
-    final String freshness = snapshot.isStale ? 'stale' : 'live';
-    return '${snapshot.source} • $freshness • ${snapshot.fetchedAt.toLocal().toIso8601String()}';
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
+    final String time = DateFormat.yMMMd(
+      localizations.localeName,
+    ).add_jm().format(snapshot.fetchedAt.toLocal());
+    return snapshot.isStale
+        ? localizations.ratesStaleStatus(snapshot.source, time)
+        : localizations.ratesLiveStatus(snapshot.source, time);
   }
 
   // ==================== RICH ZAKAT ENGINE ====================

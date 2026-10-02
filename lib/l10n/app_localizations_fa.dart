@@ -4481,4 +4481,14 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get confirmLiveLocationMessage =>
       'آیا می‌خواهید اوقات شرعی را بر اساس موقعیت مکانی زنده دستگاه خود قفل کنید؟ برنامه با سفر شما زمان‌ها را به طور خودکار بروزرسانی می‌کند.';
+
+  @override
+  String ratesLiveStatus(String source, String time) {
+    return '$source • زنده • $time';
+  }
+
+  @override
+  String ratesStaleStatus(String source, String time) {
+    return '$source • آخرین نرخ شناخته‌شده • $time';
+  }
 }

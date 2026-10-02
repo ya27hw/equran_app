@@ -4504,4 +4504,14 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get confirmLiveLocationMessage =>
       'Apakah Anda ingin mengunci waktu sholat ke lokasi langsung perangkat Anda? Aplikasi akan memperbarui waktu secara otomatis saat Anda bepergian.';
+
+  @override
+  String ratesLiveStatus(String source, String time) {
+    return '$source • langsung • $time';
+  }
+
+  @override
+  String ratesStaleStatus(String source, String time) {
+    return '$source • harga terakhir diketahui • $time';
+  }
 }

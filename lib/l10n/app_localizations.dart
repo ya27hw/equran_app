@@ -7880,6 +7880,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Would you like to lock prayer times to your device\'s live location? The app will automatically update times as you travel.'**
   String get confirmLiveLocationMessage;
+
+  /// No description provided for @ratesLiveStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'{source} • live • {time}'**
+  String ratesLiveStatus(String source, String time);
+
+  /// No description provided for @ratesStaleStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'{source} • last known rate • {time}'**
+  String ratesStaleStatus(String source, String time);
 }
 
 class _AppLocalizationsDelegate

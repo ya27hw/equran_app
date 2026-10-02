@@ -4561,4 +4561,14 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get confirmLiveLocationMessage =>
       'Möchten Sie die Gebetszeiten an den Live-Standort Ihres Geräts binden? Die App aktualisiert die Zeiten automatisch, wenn Sie reisen.';
+
+  @override
+  String ratesLiveStatus(String source, String time) {
+    return '$source • live • $time';
+  }
+
+  @override
+  String ratesStaleStatus(String source, String time) {
+    return '$source • zuletzt bekannter Kurs • $time';
+  }
 }
