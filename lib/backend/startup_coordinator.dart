@@ -11,6 +11,7 @@ import 'package:equran/prayer/prayer_models.dart';
 import 'package:equran/prayer/prayer_notification_service.dart';
 import 'package:equran/prayer/prayer_settings_store.dart';
 import 'package:equran/prayer/prayer_timezone_service.dart';
+import 'package:equran/services/device_capability_service.dart';
 import 'package:equran/widgets/prayer_widget_service.dart';
 import 'package:equran/widgets/prayer_widget_worker.dart';
 import 'package:equran/zakat/zakat_db.dart';
@@ -80,6 +81,9 @@ class StartupCoordinator extends ChangeNotifier {
 
     // Settings is the only box required by MyApp for locale/theme selection.
     await SettingsDB().initBox();
+    // One cheap platform call; lets the first frames already adapt to
+    // low-RAM and reduced-motion devices.
+    await DeviceCapabilityService.instance.detect();
     _blockingReady = true;
     notifyListeners();
   }

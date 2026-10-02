@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui' show ImageFilter, lerpDouble;
 
 import 'package:equran/l10n/app_localizations.dart';
+import 'package:equran/services/device_capability_service.dart';
 import 'package:equran/utils/app_radii.dart';
 import 'package:equran/utils/app_slider_theme.dart';
 import 'package:equran/utils/number_formatting.dart';
@@ -754,18 +755,25 @@ class ReadVersePlayerBar extends StatelessWidget {
     required Widget child,
     double borderRadius = AppRadii.large,
   }) {
+    final Widget surface = Container(
+      padding: padding,
+      decoration: _decoration(
+        colorScheme,
+      ).copyWith(borderRadius: BorderRadius.circular(borderRadius)),
+      child: child,
+    );
+    // The surface is ~92% opaque, so the blur is subtle but forces an
+    // offscreen pass every frame; skip it on low-end devices.
+    final bool blur =
+        DeviceCapabilityService.instance.profile.allowsDecorativeEffects;
     return ClipRRect(
       borderRadius: BorderRadius.circular(borderRadius),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          padding: padding,
-          decoration: _decoration(
-            colorScheme,
-          ).copyWith(borderRadius: BorderRadius.circular(borderRadius)),
-          child: child,
-        ),
-      ),
+      child: blur
+          ? BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: surface,
+            )
+          : surface,
     );
   }
 
