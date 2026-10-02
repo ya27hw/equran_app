@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -707,11 +706,11 @@ class AppLocalizationsTr extends AppLocalizations {
       'eQuran, odaklanmış okuma, dinleme ve günlük yansıma için tasarlanmış modern bir Kuran arkadaşıdır.';
 
   @override
-  String get supportProject => 'Support';
+  String get supportProject => 'Destek';
 
   @override
   String get supportProjectDescription =>
-      'If eQuran helps you, you can support its development with a crypto donation.';
+      'eQuran işinize yarıyorsa, kripto bağışıyla geliştirilmesine destek olabilirsiniz.';
 
   @override
   String get bitcoin => 'Bitcoin (BTC)';
@@ -729,10 +728,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get litecoin => 'Litecoin (LTC)';
 
   @override
-  String get copyAddress => 'Copy address';
+  String get copyAddress => 'Adresi kopyala';
 
   @override
-  String get addressCopied => 'Address copied';
+  String get addressCopied => 'Adres kopyalandı';
 
   @override
   String versionLabel(String version) {

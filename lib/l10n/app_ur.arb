@@ -2215,5 +2215,14 @@
   "useLiveLocation": "لائیو لوکیشن",
   "usePinLocation": "پن لوکیشن استعمال کریں",
   "confirmLiveLocationTitle": "لائیو لوکیشن استعمال کریں",
-  "confirmLiveLocationMessage": "کیا آپ نماز کے اوقات کو اپنے آلے کی لائیو لوکیشن پر لاک کرنا چاہتے ہیں؟ سفر کے دوران ایپ خود بخود اوقات کو اپ ڈیٹ کر دے گی۔"
+  "confirmLiveLocationMessage": "کیا آپ نماز کے اوقات کو اپنے آلے کی لائیو لوکیشن پر لاک کرنا چاہتے ہیں؟ سفر کے دوران ایپ خود بخود اوقات کو اپ ڈیٹ کر دے گی۔",
+  "supportProject": "تعاون",
+  "supportProjectDescription": "اگر ای قرآن آپ کے لیے مفید ہے تو آپ کرپٹو عطیے کے ذریعے اس کی ترقی میں معاونت کر سکتے ہیں۔",
+  "bitcoin": "بٹ کوائن (BTC)",
+  "ethereum": "ایتھیریم (ETH)",
+  "solana": "سولانا (SOL)",
+  "litecoin": "لائٹ کوائن (LTC)",
+  "copyAddress": "پتہ کاپی کریں",
+  "addressCopied": "پتہ کاپی ہو گیا",
+  "usdcErc20": "USDC (ERC-20)"
 }

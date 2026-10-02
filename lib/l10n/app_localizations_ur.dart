@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -706,32 +705,32 @@ class AppLocalizationsUr extends AppLocalizations {
       'eQuran ایک جدید قرآنی ساتھی ہے جو توجہ مرکوز پڑھنے، سننے اور روزانہ کی عکاسی کے لیے ڈیزائن کیا گیا ہے۔';
 
   @override
-  String get supportProject => 'Support';
+  String get supportProject => 'تعاون';
 
   @override
   String get supportProjectDescription =>
-      'If eQuran helps you, you can support its development with a crypto donation.';
+      'اگر ای قرآن آپ کے لیے مفید ہے تو آپ کرپٹو عطیے کے ذریعے اس کی ترقی میں معاونت کر سکتے ہیں۔';
 
   @override
-  String get bitcoin => 'Bitcoin (BTC)';
+  String get bitcoin => 'بٹ کوائن (BTC)';
 
   @override
-  String get ethereum => 'Ethereum (ETH)';
+  String get ethereum => 'ایتھیریم (ETH)';
 
   @override
-  String get solana => 'Solana (SOL)';
+  String get solana => 'سولانا (SOL)';
 
   @override
   String get usdcErc20 => 'USDC (ERC-20)';
 
   @override
-  String get litecoin => 'Litecoin (LTC)';
+  String get litecoin => 'لائٹ کوائن (LTC)';
 
   @override
-  String get copyAddress => 'Copy address';
+  String get copyAddress => 'پتہ کاپی کریں';
 
   @override
-  String get addressCopied => 'Address copied';
+  String get addressCopied => 'پتہ کاپی ہو گیا';
 
   @override
   String versionLabel(String version) {
