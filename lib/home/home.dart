@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:equran/backend/library.dart';
+import 'package:equran/backend/qpc_v4_font_service.dart';
 import 'package:equran/widgets/prayer_widget_service.dart';
 import 'package:equran/duas/asma_ul_husna_page.dart';
 import 'package:equran/duas/duas_page.dart';
@@ -646,6 +647,7 @@ class _HomePageState extends State<HomePage> {
         : AdaptiveThemeMode.dark;
 
     await SettingsDB().put('themeMode', nextMode.isDark ? 'dark' : 'light');
+    QpcV4FontService.instance.clearCache();
     if (!mounted) return;
     AdaptiveTheme.of(context).setThemeMode(nextMode);
     WidgetsBinding.instance.addPostFrameCallback((_) {

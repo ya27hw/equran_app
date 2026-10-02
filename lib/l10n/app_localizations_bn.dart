@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -703,6 +704,34 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get aboutAppBody =>
       'eQuran হল একটি আধুনিক কুরআন সহচর যা মনোযোগ দিয়ে পড়া, শোনা এবং প্রতিদিনের প্রতিফলনের জন্য ডিজাইন করা হয়েছে।';
+
+  @override
+  String get supportProject => 'Support';
+
+  @override
+  String get supportProjectDescription =>
+      'If eQuran helps you, you can support its development with a crypto donation.';
+
+  @override
+  String get bitcoin => 'Bitcoin (BTC)';
+
+  @override
+  String get ethereum => 'Ethereum (ETH)';
+
+  @override
+  String get solana => 'Solana (SOL)';
+
+  @override
+  String get usdcErc20 => 'USDC (ERC-20)';
+
+  @override
+  String get litecoin => 'Litecoin (LTC)';
+
+  @override
+  String get copyAddress => 'Copy address';
+
+  @override
+  String get addressCopied => 'Address copied';
 
   @override
   String versionLabel(String version) {
@@ -3951,6 +3980,10 @@ class AppLocalizationsBn extends AppLocalizations {
       'মার্কেট অফলাইন। স্ট্যান্ডার্ড ক্যাশ করা মান ব্যবহার করা হচ্ছে।';
 
   @override
+  String get zakatDisclaimer =>
+      'দর ও নিসাবের হিসাব আনুমানিক; বিশ্বস্ত আলেম ও প্রযোজ্য নির্দেশনার সঙ্গে যাচাই করুন।';
+
+  @override
   String get overridePrices => 'মূল্য পরিবর্তন';
 
   @override
@@ -4183,10 +4216,10 @@ class AppLocalizationsBn extends AppLocalizations {
   String get bookmarksAndNotes => 'বুকমার্ক এবং নোট';
 
   @override
-  String get hideSettings => 'Hide settings';
+  String get hideSettings => 'সেটিংস লুকান';
 
   @override
-  String get showSettings => 'Show settings';
+  String get showSettings => 'সেটিংস দেখান';
 
   @override
   String get zakatCategoryCash => 'নগদ অর্থ ও পাওনা';

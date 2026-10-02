@@ -55,7 +55,7 @@ internal fun loadPrayerWidgetState(context: Context): PrayerWidgetState {
   val isDarkMode = when (themeMode) {
       "dark" -> true
       "light" -> false
-      else -> isSystemDark
+      else -> prefs.getBoolean("is_dark_mode", isSystemDark)
   }
 
   val bgKey = if (isDarkMode) "w_bg_dark" else "w_bg_light"

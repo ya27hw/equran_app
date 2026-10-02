@@ -1,6 +1,7 @@
 import 'dart:async' show unawaited;
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:equran/backend/library.dart' show SettingsDB;
+import 'package:equran/backend/qpc_v4_font_service.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/utils/app_radii.dart';
 import 'package:equran/utils/app_theme.dart';
@@ -79,6 +80,7 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
 
   Future<void> _changeScheme(String schemeId) async {
     await SettingsDB().put("themeScheme", schemeId);
+    QpcV4FontService.instance.clearCache();
     setState(() {
       _selectedScheme = schemeId;
     });
@@ -283,6 +285,7 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
       child: InkWell(
         onTap: () async {
           await SettingsDB().put("themeMode", _themeModeSettingValue(mode));
+          QpcV4FontService.instance.clearCache();
           if (context.mounted) {
             AdaptiveTheme.of(context).setThemeMode(mode);
             setState(() {});

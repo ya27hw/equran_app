@@ -325,7 +325,7 @@ class ReadQuranCard extends StatelessWidget {
                   );
                   return false;
                 }
-                return _showInputPrompt(context);
+                return await _showInputPrompt(context);
               } catch (_) {
                 return liked;
               }

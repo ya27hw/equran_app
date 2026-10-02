@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -703,6 +704,34 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get aboutAppBody =>
       'eQuran ایک جدید قرآنی ساتھی ہے جو توجہ مرکوز پڑھنے، سننے اور روزانہ کی عکاسی کے لیے ڈیزائن کیا گیا ہے۔';
+
+  @override
+  String get supportProject => 'Support';
+
+  @override
+  String get supportProjectDescription =>
+      'If eQuran helps you, you can support its development with a crypto donation.';
+
+  @override
+  String get bitcoin => 'Bitcoin (BTC)';
+
+  @override
+  String get ethereum => 'Ethereum (ETH)';
+
+  @override
+  String get solana => 'Solana (SOL)';
+
+  @override
+  String get usdcErc20 => 'USDC (ERC-20)';
+
+  @override
+  String get litecoin => 'Litecoin (LTC)';
+
+  @override
+  String get copyAddress => 'Copy address';
+
+  @override
+  String get addressCopied => 'Address copied';
 
   @override
   String versionLabel(String version) {
@@ -3952,6 +3981,10 @@ class AppLocalizationsUr extends AppLocalizations {
       'مارکیٹ آف لائن ہے۔ معیاری محفوظ شدہ ریٹس استعمال کیے جا رہے ہیں۔';
 
   @override
+  String get zakatDisclaimer =>
+      'ریٹس اور نصاب کے مفروضے اندازے ہیں؛ کسی معتبر عالم اور قابل اطلاق رہنمائی سے تصدیق کریں۔';
+
+  @override
   String get overridePrices => 'قیمتوں میں تبدیلی';
 
   @override
@@ -4185,10 +4218,10 @@ class AppLocalizationsUr extends AppLocalizations {
   String get bookmarksAndNotes => 'بک مارکس اور نوٹس';
 
   @override
-  String get hideSettings => 'Hide settings';
+  String get hideSettings => 'ترتیبات چھپائیں';
 
   @override
-  String get showSettings => 'Show settings';
+  String get showSettings => 'ترتیبات دکھائیں';
 
   @override
   String get zakatCategoryCash => 'نقد رقم اور واجب الوصول مابقیہ';

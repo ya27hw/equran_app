@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:equran/backend/library.dart';
 import 'package:equran/utils/quran_text.dart';
-import 'package:flutter/foundation.dart';
 import 'package:quran/quran.dart' as quran;
 
 class QuranTextSearchResult {
@@ -26,10 +25,6 @@ class QuranTextSearchResult {
 class QuranTextSearchService {
   const QuranTextSearchService();
 
-  static List<_SearchEntry>? _arabicIndex;
-  static final Map<quran.Translation, List<_SearchEntry>> _translationIndexes =
-      <quran.Translation, List<_SearchEntry>>{};
-
   Future<List<QuranTextSearchResult>> search(String query, {int limit = 80}) {
     final String trimmedQuery = query.trim();
     final String normalizedQuery = _normalizeSearchText(trimmedQuery);
@@ -39,9 +34,7 @@ class QuranTextSearchService {
       );
     }
 
-    return Future<List<QuranTextSearchResult>>.microtask(() {
-      return _searchSync(normalizedQuery, limit: limit);
-    });
+    return _searchIncrementally(normalizedQuery, limit: limit);
   }
 
   Future<void> storeRecentQuery(String query, int resultCount) async {
@@ -75,59 +68,48 @@ class QuranTextSearchService {
     return entries;
   }
 
-  List<QuranTextSearchResult> _searchSync(
+  Future<List<QuranTextSearchResult>> _searchIncrementally(
     String normalizedQuery, {
     required int limit,
-  }) {
+  }) async {
     final quran.Translation translation = _selectedTranslation();
     final Map<String, _SearchHit> hits = <String, _SearchHit>{};
 
-    void addHit(_SearchEntry entry, {required bool translationMatch}) {
-      final String id = entry.id;
+    void addHit(int surah, int verse, {required bool translationMatch}) {
+      final String id = '$surah:$verse';
       hits[id] = _SearchHit(
-        surah: entry.surah,
-        verse: entry.verse,
+        surah: surah,
+        verse: verse,
         translationMatch:
             (hits[id]?.translationMatch ?? false) || translationMatch,
       );
     }
 
-    try {
-      for (final _SearchEntry entry in _arabicEntries()) {
-        if (entry.normalizedArabic.contains(normalizedQuery)) {
-          addHit(entry, translationMatch: false);
-          if (hits.length >= limit) break;
+    // Scan in small asynchronous batches. This keeps memory bounded and gives
+    // cancellation/rebuilds a chance to run; a microtask would still execute
+    // the complete CPU-heavy loop on the UI isolate without yielding.
+    int inspected = 0;
+    for (int surah = 1; surah <= quran.totalSurahCount; surah++) {
+      final int verseCount = quran.getVerseCount(surah);
+      for (int verse = 1; verse <= verseCount; verse++) {
+        final String normalizedArabic = _normalizeSearchText(
+          quranVerseText(surah, verse),
+        );
+        final String normalizedTranslation = _normalizeSearchText(
+          _translationText(surah, verse, translation),
+        );
+        final bool arabicMatch = normalizedArabic.contains(normalizedQuery);
+        final bool translationMatch = normalizedTranslation.contains(
+          normalizedQuery,
+        );
+        if (arabicMatch || translationMatch) {
+          addHit(surah, verse, translationMatch: translationMatch);
+        }
+        inspected++;
+        if (inspected % 32 == 0) {
+          await Future<void>.delayed(Duration.zero);
         }
       }
-    } catch (error, stackTrace) {
-      debugPrint('Quran Arabic search failed: $error');
-      FlutterError.reportError(
-        FlutterErrorDetails(
-          exception: error,
-          stack: stackTrace,
-          library: 'quran_text_search_service',
-          context: ErrorDescription('while searching Arabic Quran text'),
-        ),
-      );
-    }
-
-    try {
-      for (final _SearchEntry entry in _translationEntries(translation)) {
-        if (entry.normalizedTranslation.contains(normalizedQuery)) {
-          addHit(entry, translationMatch: true);
-          if (hits.length >= limit) break;
-        }
-      }
-    } catch (error, stackTrace) {
-      debugPrint('Quran translation search failed: $error');
-      FlutterError.reportError(
-        FlutterErrorDetails(
-          exception: error,
-          stack: stackTrace,
-          library: 'quran_text_search_service',
-          context: ErrorDescription('while searching Quran translation'),
-        ),
-      );
     }
 
     final List<_SearchHit> orderedHits = hits.values.toList()
@@ -161,38 +143,6 @@ class QuranTextSearchService {
       return quran.Translation.values[saved];
     }
     return quran.Translation.enSaheeh;
-  }
-
-  List<_SearchEntry> _arabicEntries() {
-    return _arabicIndex ??= _buildIndex();
-  }
-
-  List<_SearchEntry> _translationEntries(quran.Translation translation) {
-    return _translationIndexes[translation] ??= _buildIndex(
-      translation: translation,
-    );
-  }
-
-  List<_SearchEntry> _buildIndex({quran.Translation? translation}) {
-    final List<_SearchEntry> entries = <_SearchEntry>[];
-    for (int surah = 1; surah <= quran.totalSurahCount; surah++) {
-      final int verseCount = quran.getVerseCount(surah);
-      for (int verse = 1; verse <= verseCount; verse++) {
-        final String arabic = quranVerseText(surah, verse);
-        final String translationText = translation == null
-            ? ''
-            : _translationText(surah, verse, translation);
-        entries.add(
-          _SearchEntry(
-            surah: surah,
-            verse: verse,
-            normalizedArabic: _normalizeSearchText(arabic),
-            normalizedTranslation: _normalizeSearchText(translationText),
-          ),
-        );
-      }
-    }
-    return List<_SearchEntry>.unmodifiable(entries);
   }
 
   String _translationText(int surah, int verse, quran.Translation translation) {
@@ -238,20 +188,4 @@ class _SearchHit {
   final int surah;
   final int verse;
   final bool translationMatch;
-}
-
-class _SearchEntry {
-  const _SearchEntry({
-    required this.surah,
-    required this.verse,
-    required this.normalizedArabic,
-    required this.normalizedTranslation,
-  });
-
-  final int surah;
-  final int verse;
-  final String normalizedArabic;
-  final String normalizedTranslation;
-
-  String get id => '$surah:$verse';
 }

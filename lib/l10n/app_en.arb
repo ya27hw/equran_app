@@ -317,6 +317,15 @@
   "moreHeroSubtitle": "Qibla, downloads, settings, plans, and tools gathered in one quiet place.",
   "openRoutine": "Open routine",
   "aboutAppBody": "eQuran is a modern Quran companion designed for focused reading, listening, and daily reflection.",
+  "supportProject": "Support",
+  "supportProjectDescription": "If eQuran helps you, you can support its development with a crypto donation.",
+  "bitcoin": "Bitcoin (BTC)",
+  "ethereum": "Ethereum (ETH)",
+  "solana": "Solana (SOL)",
+  "usdcErc20": "USDC (ERC-20)",
+  "litecoin": "Litecoin (LTC)",
+  "copyAddress": "Copy address",
+  "addressCopied": "Address copied",
   "versionLabel": "Version {version}",
   "@versionLabel": {
     "placeholders": {
@@ -2055,6 +2064,7 @@
   "fetchingLiveRates": "Fetching live market rates...",
   "ratesSyncSuccess": "Live metal rates synchronized successfully",
   "ratesSyncOffline": "Market offline. Using standard cached values.",
+  "zakatDisclaimer": "Rates and Nisab assumptions are estimates; verify with a trusted scholar and applicable guidance.",
   "overridePrices": "Override Prices",
   "reset": "Reset",
   "silverDefault": "Silver",

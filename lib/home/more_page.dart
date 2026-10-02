@@ -3,6 +3,7 @@ import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/widgets/common/equran_components.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:equran/hifz/hifz.dart';
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -29,6 +30,15 @@ const String _themeAsset = '$_appAssetBase/theme_mode.webp';
 const String _hifzAsset = '$_appAssetBase/hifz.webp';
 const String _shareAppAsset = '$_appAssetBase/share_app.webp';
 const String _feedbackAsset = '$_appAssetBase/feedback.webp';
+const String _bitcoinDonationAddress =
+    'bc1qs7jfrkxvpdh96qmfu9srtla38fe30gvdvc22av';
+const String _ethereumDonationAddress =
+    '0x9d60158D5315Fa46241FC47Bf76eEE6cF7abcAa9';
+const String _solanaDonationAddress =
+    'Gyy1Ar1Lu5zbyW9WEcisKkcGxBb4GPuUQEJvcQ4oV9va';
+const String _usdcDonationAddress =
+    '0x9d60158D5315Fa46241FC47Bf76eEE6cF7abcAa9';
+const String _litecoinDonationAddress = 'LZW5Jh52Lnni6Zr3FQhimGGkyZPywSAaDX';
 
 class MorePage extends StatelessWidget {
   const MorePage({
@@ -649,6 +659,78 @@ class _CustomAboutDialog extends StatefulWidget {
 class _CustomAboutDialogState extends State<_CustomAboutDialog> {
   int _clickCount = 0;
 
+  Future<void> _copyDonationAddress(String address) async {
+    await Clipboard.setData(ClipboardData(text: address));
+    if (!mounted) return;
+
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(localizations.addressCopied),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  Widget _supportDonationTile({
+    required _SupportDonation donation,
+    required ThemeData theme,
+    required EquranColors colors,
+    required AppLocalizations localizations,
+  }) {
+    final BorderRadius borderRadius = BorderRadius.circular(EquranRadii.medium);
+
+    return Material(
+      color: colors.surfaceAlt,
+      shape: RoundedRectangleBorder(
+        borderRadius: borderRadius,
+        side: BorderSide(color: colors.border),
+      ),
+      child: InkWell(
+        borderRadius: borderRadius,
+        onTap: () => _copyDonationAddress(donation.address),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      donation.label,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        color: colors.textPrimary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  Tooltip(
+                    message: localizations.copyAddress,
+                    child: Icon(
+                      Icons.copy_outlined,
+                      size: 17,
+                      color: colors.textMuted,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                donation.address,
+                textDirection: TextDirection.ltr,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colors.textSecondary,
+                  fontFamily: 'monospace',
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final AppLocalizations localizations = AppLocalizations.of(context)!;
@@ -725,10 +807,68 @@ class _CustomAboutDialogState extends State<_CustomAboutDialog> {
           ),
         ],
       ),
-      content: Text(
-        localizations.aboutAppBody,
-        style: theme.textTheme.bodyMedium?.copyWith(
-          color: colors.textSecondary,
+      content: SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 360),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Text(
+                localizations.aboutAppBody,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                localizations.supportProject,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: colors.textPrimary,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                localizations.supportProjectDescription,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 12),
+              for (final _SupportDonation donation in <_SupportDonation>[
+                _SupportDonation(
+                  label: localizations.bitcoin,
+                  address: _bitcoinDonationAddress,
+                ),
+                _SupportDonation(
+                  label: localizations.ethereum,
+                  address: _ethereumDonationAddress,
+                ),
+                _SupportDonation(
+                  label: localizations.solana,
+                  address: _solanaDonationAddress,
+                ),
+                _SupportDonation(
+                  label: localizations.usdcErc20,
+                  address: _usdcDonationAddress,
+                ),
+                _SupportDonation(
+                  label: localizations.litecoin,
+                  address: _litecoinDonationAddress,
+                ),
+              ])
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: _supportDonationTile(
+                    donation: donation,
+                    theme: theme,
+                    colors: colors,
+                    localizations: localizations,
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
       actions: <Widget>[
@@ -767,4 +907,11 @@ class _CustomAboutDialogState extends State<_CustomAboutDialog> {
       ],
     );
   }
+}
+
+class _SupportDonation {
+  const _SupportDonation({required this.label, required this.address});
+
+  final String label;
+  final String address;
 }

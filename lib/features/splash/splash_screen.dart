@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:equran/home/library.dart' show HomePage;
+import 'package:equran/backend/startup_coordinator.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -118,7 +119,8 @@ class _SplashScreenState extends State<SplashScreen>
     }
   }
 
-  void _navigateToHome() {
+  Future<void> _navigateToHome() async {
+    await StartupCoordinator.instance.startDeferred();
     if (!mounted) return;
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
