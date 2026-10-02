@@ -1,3 +1,4 @@
+import 'package:equran/widgets/common/equran_asset_image.dart';
 import 'dart:math' as math;
 import 'package:adhan_dart/adhan_dart.dart' as adhan;
 import 'package:equran/l10n/app_localizations.dart';
@@ -728,7 +729,7 @@ class _KaabaMarker extends StatelessWidget {
         ],
       ),
       child: ClipOval(
-        child: Image.asset(
+        child: EquranAssetImage(
           'assets/media/images/app/kaabah.webp',
           fit: BoxFit.cover,
         ),

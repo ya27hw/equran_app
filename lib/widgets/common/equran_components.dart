@@ -1,3 +1,4 @@
+import 'package:equran/widgets/common/equran_asset_image.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
 import 'package:flutter/material.dart';
@@ -240,7 +241,7 @@ class EquranShortcutTile extends StatelessWidget {
                   ? Icon(icon, color: colors.primary, size: 30)
                   : ClipRRect(
                       borderRadius: BorderRadius.circular(EquranRadii.small),
-                      child: Image.asset(
+                      child: EquranAssetImage(
                         assetPath!,
                         fit: BoxFit.contain,
                         errorBuilder: (context, error, stackTrace) {

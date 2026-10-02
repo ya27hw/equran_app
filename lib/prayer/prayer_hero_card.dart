@@ -1,3 +1,4 @@
+import 'package:equran/widgets/common/equran_asset_image.dart';
 import 'package:equran/prayer/prayer_models.dart';
 import 'package:equran/prayer/prayer_localizations.dart';
 import 'package:equran/prayer/prayer_notification_service.dart';
@@ -320,14 +321,14 @@ class _PrayerHeroDecoration extends StatelessWidget {
               padding: const EdgeInsetsDirectional.fromSTEB(4, 2, 0, 2),
               child: Align(
                 alignment: AlignmentDirectional.centerEnd,
-                child: Image.asset(
+                child: EquranAssetImage(
                   _prayerBannerAsset(kind),
                   width: constraints.maxWidth,
                   height: constraints.maxHeight,
                   fit: BoxFit.contain,
                   alignment: AlignmentDirectional.centerEnd,
                   errorBuilder: (context, error, stackTrace) {
-                    return Image.asset(
+                    return EquranAssetImage(
                       _fallbackPrayerAsset,
                       fit: BoxFit.contain,
                     );

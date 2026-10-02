@@ -1,3 +1,4 @@
+import 'package:equran/widgets/common/equran_asset_image.dart';
 import 'package:flutter/material.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/l10n/app_localizations.dart';
@@ -261,7 +262,7 @@ class _DailyToolsEditSheetState extends State<DailyToolsEditSheet> {
                                 )
                               : Opacity(
                                   opacity: isPinned ? 1.0 : 0.6,
-                                  child: Image.asset(
+                                  child: EquranAssetImage(
                                     tool.assetPath!,
                                     fit: BoxFit.contain,
                                     errorBuilder: (context, error, stackTrace) {

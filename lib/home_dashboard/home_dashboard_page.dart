@@ -1,3 +1,4 @@
+import 'package:equran/widgets/common/equran_asset_image.dart';
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -986,7 +987,7 @@ class _HomePremiumCard extends StatelessWidget {
                   width: assetWidth,
                   child: Opacity(
                     opacity: assetOpacity,
-                    child: Image.asset(
+                    child: EquranAssetImage(
                       assetPath!,
                       fit: BoxFit.contain,
                       errorBuilder: (context, error, stackTrace) =>
@@ -1035,7 +1036,7 @@ class _RoutinePlanCta extends StatelessWidget {
                 color: colors.mint,
                 borderRadius: BorderRadius.circular(AppRadii.pill),
               ),
-              child: Image.asset(
+              child: EquranAssetImage(
                 _routineAsset,
                 fit: BoxFit.contain,
                 errorBuilder: (context, error, stackTrace) {
@@ -1134,7 +1135,7 @@ class _RoutinePlanCta extends StatelessWidget {
                 ),
                 child: Transform.scale(
                   scale: 1.25,
-                  child: Image.asset(
+                  child: EquranAssetImage(
                     _routineAsset,
                     fit: BoxFit.contain,
                     errorBuilder: (context, error, stackTrace) {
@@ -1575,7 +1576,7 @@ class _DashboardActionTile extends StatelessWidget {
                   ),
                   child: assetPath == null
                       ? Icon(icon, color: colors.primary, size: 30)
-                      : Image.asset(
+                      : EquranAssetImage(
                           assetPath!,
                           fit: BoxFit.contain,
                           errorBuilder: (context, error, stackTrace) {
@@ -1642,7 +1643,7 @@ class _ExploreAllFeaturesRow extends StatelessWidget {
                     borderRadius: BorderRadius.circular(AppRadii.medium),
                     border: Border.all(color: colors.border.withAlpha(110)),
                   ),
-                  child: Image.asset(
+                  child: EquranAssetImage(
                     _settingsAsset,
                     fit: BoxFit.contain,
                     errorBuilder: (context, error, stackTrace) {
@@ -2052,7 +2053,7 @@ class _DashboardLastReadSection extends StatelessWidget {
                 width: 172,
                 child: Opacity(
                   opacity: 0.82,
-                  child: Image.asset(
+                  child: EquranAssetImage(
                     hasResume ? _quranAsset : _lastReadAsset,
                     fit: BoxFit.contain,
                   ),

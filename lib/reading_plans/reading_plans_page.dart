@@ -1,3 +1,4 @@
+import 'package:equran/widgets/common/equran_asset_image.dart';
 import 'package:equran/backend/library.dart';
 import 'package:equran/home/read.dart';
 import 'package:equran/l10n/app_localizations.dart';
@@ -190,7 +191,7 @@ class _RoutineHero extends StatelessWidget {
             height: 120,
             child: Opacity(
               opacity: 0.20,
-              child: Image.asset(_routineDesignAsset, fit: BoxFit.cover),
+              child: EquranAssetImage(_routineDesignAsset, fit: BoxFit.cover),
             ),
           ),
           Column(

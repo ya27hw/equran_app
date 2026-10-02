@@ -1,3 +1,4 @@
+import 'package:equran/widgets/common/equran_asset_image.dart';
 import 'package:equran/backend/library.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
@@ -368,7 +369,7 @@ class _MoreHeroArtwork extends StatelessWidget {
                       opacity: 0.18,
                       child: SizedBox(
                         width: artWidth,
-                        child: Image.asset(
+                        child: EquranAssetImage(
                           _routineAsset,
                           fit: BoxFit.contain,
                           errorBuilder: (context, error, stackTrace) =>
@@ -494,7 +495,7 @@ class _MoreActionArtwork extends StatelessWidget {
           ? Icon(icon, color: colors.primary, size: 23)
           : ClipRRect(
               borderRadius: BorderRadius.circular(EquranRadii.small),
-              child: Image.asset(
+              child: EquranAssetImage(
                 assetPath!,
                 fit: BoxFit.contain,
                 errorBuilder: (context, error, stackTrace) {
@@ -744,7 +745,7 @@ class _CustomAboutDialogState extends State<_CustomAboutDialog> {
         children: <Widget>[
           ClipRRect(
             borderRadius: BorderRadius.circular(EquranRadii.medium),
-            child: Image.asset(
+            child: EquranAssetImage(
               _appIconAsset,
               width: 40,
               height: 40,
@@ -882,7 +883,7 @@ class _CustomAboutDialogState extends State<_CustomAboutDialog> {
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(EquranRadii.medium),
-                  child: Image.asset(
+                  child: EquranAssetImage(
                     _appIconAsset,
                     width: 40,
                     height: 40,

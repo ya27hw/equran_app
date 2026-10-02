@@ -1,3 +1,4 @@
+import 'package:equran/widgets/common/equran_asset_image.dart';
 import 'package:equran/backend/library.dart';
 import 'package:equran/home/read.dart';
 import 'package:equran/theme/equran_colors.dart';
@@ -300,7 +301,7 @@ class EquranResumeImageCard extends StatelessWidget {
                           ),
                           child: SizedBox(
                             width: artWidth,
-                            child: Image.asset(
+                            child: EquranAssetImage(
                               trailingAssetPath,
                               fit: BoxFit.contain,
                               errorBuilder: (context, error, stackTrace) =>
