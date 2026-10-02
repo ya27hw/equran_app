@@ -27,6 +27,23 @@ void main() {
       provider.close();
     });
 
+    test('accepts one object per metal in a list response', () async {
+      final MetalsLiveRateProvider provider = MetalsLiveRateProvider(
+        client: MockClient(
+          (_) async => http.Response('[{"gold":310.0},{"silver":31.0}]', 200),
+        ),
+      );
+
+      final MetalRateSnapshot snapshot = await provider.fetch(
+        currency: 'USD',
+        now: () => DateTime.utc(2026, 1, 2),
+      );
+
+      expect(snapshot.goldPricePerGram, closeTo(310 / 31.1034768, 0.000001));
+      expect(snapshot.silverPricePerGram, closeTo(31 / 31.1034768, 0.000001));
+      provider.close();
+    });
+
     test(
       'rejects a response that cannot independently price both metals',
       () async {

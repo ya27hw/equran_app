@@ -139,6 +139,10 @@ class _PrayerMapLocationPageState extends State<PrayerMapLocationPage> {
         );
         setState(() {
           _userLocation = userCoords;
+          if (shouldCenterMap && widget.isPicker) {
+            _selectedCenter = userCoords;
+            _hasSelection = true;
+          }
         });
         if (shouldCenterMap) {
           if (widget.isPicker) {
