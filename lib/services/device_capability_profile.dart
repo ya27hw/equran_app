@@ -69,6 +69,8 @@ class DeviceCapabilityProfile {
     'userMode': userMode?.name,
   };
 
+  static const int _webAssumedProcessors = 6;
+
   static Future<DeviceCapabilityProfile> detect({
     bool reducedMotion = false,
     bool batterySaver = false,
@@ -83,7 +85,10 @@ class DeviceCapabilityProfile {
     }
     return DeviceCapabilityProfile(
       lowRam: lowRam,
-      processorCount: Platform.numberOfProcessors,
+      // dart:io's Platform is unavailable on web; assume a mid-range device.
+      processorCount: kIsWeb
+          ? _webAssumedProcessors
+          : Platform.numberOfProcessors,
       batterySaver: batterySaver,
       reducedMotion: reducedMotion,
     );

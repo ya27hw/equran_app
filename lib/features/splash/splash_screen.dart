@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:equran/home/library.dart' show HomePage;
 import 'package:equran/backend/startup_coordinator.dart';
+import 'package:equran/services/device_capability_service.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -78,16 +79,16 @@ class _SplashScreenState extends State<SplashScreen>
     });
 
     // 4. Update particles on pulse tick
-    _pulseController.addListener(() {
-      if (mounted) {
-        setState(() {
-          _updateParticles();
-        });
-      }
-    });
+    // Particles repaint themselves via ParticlePainter(repaint:), so no
+    // setState is needed (that would rebuild the whole splash every frame).
+    _pulseController.addListener(_updateParticles);
   }
 
   void _initializeParticles() {
+    // Purely decorative; skipped on low-end / reduced-motion devices.
+    if (!DeviceCapabilityService.instance.profile.allowsDecorativeEffects) {
+      return;
+    }
     final Size size = MediaQuery.of(context).size;
     for (int i = 0; i < _particleCount; i++) {
       _particles.add(
@@ -105,6 +106,7 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void _updateParticles() {
+    if (!mounted || _particles.isEmpty) return;
     final Size size = MediaQuery.of(context).size;
     for (final particle in _particles) {
       particle.y -= particle.speed;
@@ -203,13 +205,20 @@ class _SplashScreenState extends State<SplashScreen>
           // 2. Animated Twinkling Particles
           CustomPaint(
             size: size,
-            painter: ParticlePainter(particles: _particles, color: goldAccent),
+            painter: ParticlePainter(
+              particles: _particles,
+              color: goldAccent,
+              repaint: _pulseController,
+            ),
           ),
 
           // 3. Central Ambient Radial Glow
           Center(
             child: AnimatedBuilder(
-              animation: _fillAnimation,
+              animation: Listenable.merge(<Listenable>[
+                _fillAnimation,
+                _glowAnimation,
+              ]),
               builder: (context, child) {
                 final double currentGlow =
                     _fillAnimation.value * _glowAnimation.value;
@@ -346,7 +355,11 @@ class ParticlePainter extends CustomPainter {
   final List<FloatingParticle> particles;
   final Color color;
 
-  ParticlePainter({required this.particles, required this.color});
+  ParticlePainter({
+    required this.particles,
+    required this.color,
+    super.repaint,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -359,7 +372,8 @@ class ParticlePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant ParticlePainter oldDelegate) => true;
+  bool shouldRepaint(covariant ParticlePainter oldDelegate) =>
+      oldDelegate.color != color || oldDelegate.particles != particles;
 }
 
 class RubElHizbPainter extends CustomPainter {
