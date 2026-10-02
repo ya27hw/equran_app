@@ -4472,4 +4472,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get confirmLiveLocationMessage =>
       'Would you like to lock prayer times to your device\'s live location? The app will automatically update times as you travel.';
+
+  @override
+  String ratesLiveStatus(String source, String time) {
+    return '$source • live • $time';
+  }
+
+  @override
+  String ratesStaleStatus(String source, String time) {
+    return '$source • last known rate • $time';
+  }
 }

@@ -2339,5 +2339,27 @@
   "useLiveLocation": "Live Location",
   "usePinLocation": "Use Pin Location",
   "confirmLiveLocationTitle": "Use Live Location",
-  "confirmLiveLocationMessage": "Would you like to lock prayer times to your device's live location? The app will automatically update times as you travel."
+  "confirmLiveLocationMessage": "Would you like to lock prayer times to your device's live location? The app will automatically update times as you travel.",
+  "ratesLiveStatus": "{source} • live • {time}",
+  "@ratesLiveStatus": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "ratesStaleStatus": "{source} • last known rate • {time}",
+  "@ratesStaleStatus": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -2259,5 +2259,7 @@
   "litecoin": "Litecoin (LTC)",
   "copyAddress": "Adresse kopieren",
   "addressCopied": "Adresse kopiert",
-  "usdcErc20": "USDC (ERC-20)"
+  "usdcErc20": "USDC (ERC-20)",
+  "ratesLiveStatus": "{source} • live • {time}",
+  "ratesStaleStatus": "{source} • zuletzt bekannter Kurs • {time}"
 }

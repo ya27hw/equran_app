@@ -2224,5 +2224,7 @@
   "litecoin": "لائٹ کوائن (LTC)",
   "copyAddress": "پتہ کاپی کریں",
   "addressCopied": "پتہ کاپی ہو گیا",
-  "usdcErc20": "USDC (ERC-20)"
+  "usdcErc20": "USDC (ERC-20)",
+  "ratesLiveStatus": "{source} • براہِ راست • {time}",
+  "ratesStaleStatus": "{source} • آخری معلوم نرخ • {time}"
 }

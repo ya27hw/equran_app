@@ -4493,4 +4493,14 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get confirmLiveLocationMessage =>
       'Namaz vakitlerini cihazınızın canlı konumuna kilitlemek ister misiniz? Uygulama seyahat ettikçe vakitleri otomatik olarak güncelleyecektir.';
+
+  @override
+  String ratesLiveStatus(String source, String time) {
+    return '$source • canlı • $time';
+  }
+
+  @override
+  String ratesStaleStatus(String source, String time) {
+    return '$source • bilinen son fiyat • $time';
+  }
 }

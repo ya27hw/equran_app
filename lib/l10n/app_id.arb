@@ -2224,5 +2224,7 @@
   "litecoin": "Litecoin (LTC)",
   "copyAddress": "Salin alamat",
   "addressCopied": "Alamat disalin",
-  "usdcErc20": "USDC (ERC-20)"
+  "usdcErc20": "USDC (ERC-20)",
+  "ratesLiveStatus": "{source} • langsung • {time}",
+  "ratesStaleStatus": "{source} • harga terakhir diketahui • {time}"
 }

@@ -4483,4 +4483,14 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get confirmLiveLocationMessage =>
       'আপনি কি আপনার ডিভাইসের লাইভ লোকেশনে প্রার্থনার সময় লক করতে চান? আপনার ভ্রমণের সময় অ্যাপটি স্বয়ংক্রিয়ভাবে সময় আপডেট করবে।';
+
+  @override
+  String ratesLiveStatus(String source, String time) {
+    return '$source • লাইভ • $time';
+  }
+
+  @override
+  String ratesStaleStatus(String source, String time) {
+    return '$source • সর্বশেষ জানা দর • $time';
+  }
 }

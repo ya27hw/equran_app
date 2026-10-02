@@ -2224,5 +2224,7 @@
   "litecoin": "লাইটকয়েন (LTC)",
   "copyAddress": "ঠিকানা কপি করুন",
   "addressCopied": "ঠিকানা কপি হয়েছে",
-  "usdcErc20": "USDC (ERC-20)"
+  "usdcErc20": "USDC (ERC-20)",
+  "ratesLiveStatus": "{source} • লাইভ • {time}",
+  "ratesStaleStatus": "{source} • সর্বশেষ জানা দর • {time}"
 }
