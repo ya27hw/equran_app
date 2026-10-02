@@ -2215,5 +2215,14 @@
   "useLiveLocation": "Lokasi Langsung",
   "usePinLocation": "Gunakan Lokasi Pin",
   "confirmLiveLocationTitle": "Gunakan Lokasi Langsung",
-  "confirmLiveLocationMessage": "Apakah Anda ingin mengunci waktu sholat ke lokasi langsung perangkat Anda? Aplikasi akan memperbarui waktu secara otomatis saat Anda bepergian."
+  "confirmLiveLocationMessage": "Apakah Anda ingin mengunci waktu sholat ke lokasi langsung perangkat Anda? Aplikasi akan memperbarui waktu secara otomatis saat Anda bepergian.",
+  "supportProject": "Dukung",
+  "supportProjectDescription": "Jika eQuran bermanfaat bagi Anda, Anda dapat mendukung pengembangannya dengan donasi kripto.",
+  "bitcoin": "Bitcoin (BTC)",
+  "ethereum": "Ethereum (ETH)",
+  "solana": "Solana (SOL)",
+  "litecoin": "Litecoin (LTC)",
+  "copyAddress": "Salin alamat",
+  "addressCopied": "Alamat disalin",
+  "usdcErc20": "USDC (ERC-20)"
 }

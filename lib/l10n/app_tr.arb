@@ -2215,5 +2215,14 @@
   "useLiveLocation": "Canlı Konum",
   "usePinLocation": "İğne Konumunu Kullan",
   "confirmLiveLocationTitle": "Canlı Konumu Kullan",
-  "confirmLiveLocationMessage": "Namaz vakitlerini cihazınızın canlı konumuna kilitlemek ister misiniz? Uygulama seyahat ettikçe vakitleri otomatik olarak güncelleyecektir."
+  "confirmLiveLocationMessage": "Namaz vakitlerini cihazınızın canlı konumuna kilitlemek ister misiniz? Uygulama seyahat ettikçe vakitleri otomatik olarak güncelleyecektir.",
+  "supportProject": "Destek",
+  "supportProjectDescription": "eQuran işinize yarıyorsa, kripto bağışıyla geliştirilmesine destek olabilirsiniz.",
+  "bitcoin": "Bitcoin (BTC)",
+  "ethereum": "Ethereum (ETH)",
+  "solana": "Solana (SOL)",
+  "litecoin": "Litecoin (LTC)",
+  "copyAddress": "Adresi kopyala",
+  "addressCopied": "Adres kopyalandı",
+  "usdcErc20": "USDC (ERC-20)"
 }

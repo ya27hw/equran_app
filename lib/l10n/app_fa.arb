@@ -2330,5 +2330,14 @@
   "useLiveLocation": "موقعیت مکانی زنده",
   "usePinLocation": "استفاده از موقعیت پین",
   "confirmLiveLocationTitle": "استفاده از موقعیت زنده",
-  "confirmLiveLocationMessage": "آیا می‌خواهید اوقات شرعی را بر اساس موقعیت مکانی زنده دستگاه خود قفل کنید؟ برنامه با سفر شما زمان‌ها را به طور خودکار بروزرسانی می‌کند."
+  "confirmLiveLocationMessage": "آیا می‌خواهید اوقات شرعی را بر اساس موقعیت مکانی زنده دستگاه خود قفل کنید؟ برنامه با سفر شما زمان‌ها را به طور خودکار بروزرسانی می‌کند.",
+  "supportProject": "حمایت",
+  "supportProjectDescription": "اگر eQuran برایتان مفید است، می‌توانید با اهدای رمزارز از توسعه آن حمایت کنید.",
+  "bitcoin": "بیت‌کوین (BTC)",
+  "ethereum": "اتریوم (ETH)",
+  "solana": "سولانا (SOL)",
+  "litecoin": "لایت‌کوین (LTC)",
+  "copyAddress": "کپی نشانی",
+  "addressCopied": "نشانی کپی شد",
+  "usdcErc20": "USDC (ERC-20)"
 }

@@ -2215,5 +2215,14 @@
   "useLiveLocation": "লাইভ লোকেশন",
   "usePinLocation": "পিন লোকেশন ব্যবহার করুন",
   "confirmLiveLocationTitle": "লাইভ লোকেশন ব্যবহার করুন",
-  "confirmLiveLocationMessage": "আপনি কি আপনার ডিভাইসের লাইভ লোকেশনে প্রার্থনার সময় লক করতে চান? আপনার ভ্রমণের সময় অ্যাপটি স্বয়ংক্রিয়ভাবে সময় আপডেট করবে।"
+  "confirmLiveLocationMessage": "আপনি কি আপনার ডিভাইসের লাইভ লোকেশনে প্রার্থনার সময় লক করতে চান? আপনার ভ্রমণের সময় অ্যাপটি স্বয়ংক্রিয়ভাবে সময় আপডেট করবে।",
+  "supportProject": "সহায়তা",
+  "supportProjectDescription": "eQuran আপনার উপকারে এলে ক্রিপ্টো দানের মাধ্যমে এর উন্নয়নে সহায়তা করতে পারেন।",
+  "bitcoin": "বিটকয়েন (BTC)",
+  "ethereum": "ইথেরিয়াম (ETH)",
+  "solana": "সোলানা (SOL)",
+  "litecoin": "লাইটকয়েন (LTC)",
+  "copyAddress": "ঠিকানা কপি করুন",
+  "addressCopied": "ঠিকানা কপি হয়েছে",
+  "usdcErc20": "USDC (ERC-20)"
 }

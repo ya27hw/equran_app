@@ -2250,5 +2250,14 @@
   "useLiveLocation": "Live-Standort",
   "usePinLocation": "Stecknadel-Standort verwenden",
   "confirmLiveLocationTitle": "Live-Standort verwenden",
-  "confirmLiveLocationMessage": "Möchten Sie die Gebetszeiten an den Live-Standort Ihres Geräts binden? Die App aktualisiert die Zeiten automatisch, wenn Sie reisen."
+  "confirmLiveLocationMessage": "Möchten Sie die Gebetszeiten an den Live-Standort Ihres Geräts binden? Die App aktualisiert die Zeiten automatisch, wenn Sie reisen.",
+  "supportProject": "Unterstützen",
+  "supportProjectDescription": "Wenn Ihnen eQuran hilft, können Sie die Weiterentwicklung mit einer Krypto-Spende unterstützen.",
+  "bitcoin": "Bitcoin (BTC)",
+  "ethereum": "Ethereum (ETH)",
+  "solana": "Solana (SOL)",
+  "litecoin": "Litecoin (LTC)",
+  "copyAddress": "Adresse kopieren",
+  "addressCopied": "Adresse kopiert",
+  "usdcErc20": "USDC (ERC-20)"
 }
