@@ -1,3 +1,4 @@
+import 'package:equran/widgets/common/equran_asset_image.dart';
 import 'package:equran/prayer/prayer_models.dart';
 import 'package:equran/prayer/prayer_localizations.dart';
 import 'package:equran/theme/equran_colors.dart';
@@ -116,7 +117,7 @@ class PrayerTimeThumbCard extends StatelessWidget {
                     ),
                     Expanded(
                       child: Center(
-                        child: Image.asset(
+                        child: EquranAssetImage(
                           _prayerThumbAsset(entry.kind),
                           fit: BoxFit.contain,
                           width: imageWidth,
