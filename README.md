@@ -25,7 +25,7 @@
 </p>
 
 <p align="center">
-  <img alt="Flutter" src="https://img.shields.io/badge/Flutter-%E2%89%A53.41.7-02569B?logo=flutter&logoColor=white&style=flat-square">
+  <img alt="Flutter" src="https://img.shields.io/badge/Flutter-%E2%89%A53.44.0-02569B?logo=flutter&logoColor=white&style=flat-square">
   <img alt="Dart" src="https://img.shields.io/badge/Dart-%E2%89%A53.11.5-0175C2?logo=dart&logoColor=white&style=flat-square">
   <img alt="Release targets" src="https://img.shields.io/badge/targets-Android%20%7C%20Linux%20%7C%20Windows-0f766e?style=flat-square">
 </p>
@@ -111,7 +111,7 @@ Install the Flutter stable SDK and the platform tooling for the device you want 
 This project currently expects:
 
 ```text
-Flutter >=3.41.7
+Flutter >=3.44.0
 Dart >=3.11.5 <4.0.0
 ```
 
