@@ -1,13 +1,84 @@
-import 'dart:ui' show PlatformDispatcher;
+import 'dart:ui' show FontFeature, FontVariation, PlatformDispatcher;
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:equran/backend/settings_db.dart';
 import 'package:equran/theme/equran_colors.dart';
+import 'package:equran/theme/equran_tokens.dart';
 import 'package:quran/quran.dart' as quran;
 
 class EquranTextStyles {
   const EquranTextStyles._();
+
+  // Opt-in styles: do not change the existing body/Arabic text themes.
+  // Ratios and tracking follow the preview CSS (36/1.08 and 24/1.15).
+  static TextStyle displayPageTitle(BuildContext context, {Color? color}) =>
+      _display(context, size: 36, height: 1.08, tracking: -0.015, color: color);
+
+  static TextStyle displaySectionTitle(BuildContext context, {Color? color}) =>
+      _display(context, size: 24, height: 1.15, tracking: -0.01, color: color);
+
+  /// The preview's 22, 28 and 40 px counts/times share lining, tabular figures.
+  static TextStyle displayNumeral(
+    BuildContext context, {
+    double size = 22,
+    Color? color,
+  }) =>
+      _display(
+        context,
+        size: size,
+        height: 1.4,
+        tracking: -0.01,
+        color: color,
+      ).copyWith(
+        fontFeatures: const [
+          FontFeature.liningFigures(),
+          FontFeature.tabularFigures(),
+        ],
+      );
+
+  static TextStyle displayTranslation(BuildContext context, {Color? color}) =>
+      TextStyle(
+        fontFamily: 'Newsreader',
+        fontSize: 16,
+        height: 1.5,
+        fontWeight: FontWeight.w400,
+        fontStyle: FontStyle.italic,
+        fontVariations: const [
+          FontVariation('opsz', 16),
+          FontVariation('wght', 400),
+        ],
+        color: color ?? context.equranTokens.text2,
+      );
+
+  /// Callers uppercase the label; TextStyle cannot transform string content.
+  static TextStyle eyebrow(BuildContext context) => GoogleFonts.inter(
+    fontSize: 11,
+    height: 1,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 11 * 0.14,
+    color: context.equranTokens.goldText,
+  );
+
+  static TextStyle _display(
+    BuildContext context, {
+    required double size,
+    required double height,
+    required double tracking,
+    Color? color,
+  }) => TextStyle(
+    fontFamily: 'Newsreader',
+    fontSize: size,
+    height: height,
+    fontWeight: FontWeight.w500,
+    letterSpacing: size * tracking,
+    fontFeatures: const [FontFeature.liningFigures()],
+    fontVariations: [
+      FontVariation('opsz', size),
+      const FontVariation('wght', 500),
+    ],
+    color: color ?? context.equranColors.textPrimary,
+  );
 
   static TextTheme buildTextTheme(Brightness brightness, {Locale? locale}) {
     final TextTheme base = _baseFontTextThemeForLocale(

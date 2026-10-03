@@ -107,6 +107,7 @@ flutter:
     - assets/data/dua/hisn/categories/
     - assets/media/images/app/
     - assets/media/images/icon.webp
+    - assets/media/fonts/newsreader/OFL.txt
 
   fonts:
     - family: QuranIndoPak
@@ -115,3 +116,14 @@ flutter:
     - family: UthmanicHafs
       fonts:
         - asset: assets/media/fonts/UthmanicHafs_V22.ttf
+    - family: Newsreader
+      fonts:
+        - asset: assets/media/fonts/newsreader/Newsreader.ttf
+          weight: 400
+        - asset: assets/media/fonts/newsreader/Newsreader.ttf
+          weight: 500
+        - asset: assets/media/fonts/newsreader/Newsreader.ttf
+          weight: 600
+        - asset: assets/media/fonts/newsreader/Newsreader-Italic.ttf
+          weight: 400
+          style: italic
