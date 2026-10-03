@@ -4653,4 +4653,20 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get loggedToday => 'Heute erfasst';
+
+  @override
+  String get theNight => 'Die Nacht';
+
+  @override
+  String get prayerPassed => 'Vorbei';
+
+  @override
+  String prayerBeganAt(String time) {
+    return 'Beginn $time';
+  }
+
+  @override
+  String prayerEndsAt(String time) {
+    return 'Ende $time';
+  }
 }

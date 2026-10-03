@@ -1,4 +1,5 @@
 import 'package:equran/widgets/common/equran_asset_image.dart';
+import 'package:equran/prayer/prayer_arc_hero.dart';
 import 'package:equran/prayer/prayer_models.dart';
 import 'package:equran/prayer/prayer_localizations.dart';
 import 'package:equran/prayer/prayer_notification_service.dart';
@@ -22,6 +23,12 @@ class PrayerHeroCard extends StatelessWidget {
     this.exactAlarmPermission,
     this.titleOverride,
     this.subtitleOverride,
+    this.useRedesign = false,
+    this.now,
+    this.previousDay,
+    this.followingDay,
+    this.periodEndsAt,
+    this.isViewingToday = true,
   });
 
   final PrayerDay? day;
@@ -31,6 +38,12 @@ class PrayerHeroCard extends StatelessWidget {
   final String? titleOverride;
   final String? subtitleOverride;
   final VoidCallback onTap;
+  final bool useRedesign;
+  final DateTime? now;
+  final PrayerDay? previousDay;
+  final PrayerDay? followingDay;
+  final DateTime? periodEndsAt;
+  final bool isViewingToday;
 
   String _formatTime(
     DateTime time,
@@ -59,6 +72,32 @@ class PrayerHeroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Keep the existing nighttime hero until the brief's owner-designed
+    // night variant is agreed. Never display daylight progress at night.
+    final daylight =
+        day != null &&
+        now != null &&
+        followingDay != null &&
+        !now!.isBefore(day!.entryFor(PrayerTimeKind.sunrise).time) &&
+        now!.isBefore(followingDay!.entryFor(PrayerTimeKind.maghrib).time);
+    if (useRedesign &&
+        day != null &&
+        nextPrayer != null &&
+        (!isViewingToday || daylight)) {
+      return PrayerArcHero(
+        day: day!,
+        nextPrayer: nextPrayer!,
+        now: now!,
+        onTap: onTap,
+        previousDay: previousDay!,
+        followingDay: followingDay!,
+        currentPrayer: currentPrayer,
+        titleOverride: titleOverride,
+        subtitleOverride: subtitleOverride,
+        periodEndsAt: periodEndsAt,
+        isViewingToday: isViewingToday,
+      );
+    }
     final ThemeData theme = Theme.of(context);
     final EquranColors colors = context.equranColors;
     final AppLocalizations localizations = AppLocalizations.of(context)!;

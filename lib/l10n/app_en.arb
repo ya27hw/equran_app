@@ -2427,5 +2427,23 @@
     }
   },
   "backToDuas": "Back to Duas",
-  "loggedToday": "Logged today"
+  "loggedToday": "Logged today",
+  "theNight": "The night",
+  "prayerPassed": "Passed",
+  "prayerBeganAt": "Began {time}",
+  "@prayerBeganAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "prayerEndsAt": "Ends {time}",
+  "@prayerEndsAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  }
 }

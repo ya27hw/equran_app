@@ -2254,5 +2254,9 @@
   "searchCategoryCount": "{count} বিভাগে খুঁজুন",
   "searchInTheme": "{theme}-এ খুঁজুন",
   "backToDuas": "দোয়ায় ফিরে যান",
-  "loggedToday": "আজ নথিভুক্ত"
+  "loggedToday": "আজ নথিভুক্ত",
+  "theNight": "রাত",
+  "prayerPassed": "অতিবাহিত",
+  "prayerBeganAt": "শুরু {time}",
+  "prayerEndsAt": "শেষ {time}"
 }

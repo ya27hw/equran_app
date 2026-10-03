@@ -1720,5 +1720,9 @@
   "searchCategoryCount": "ابحث في {count} تصنيفًا",
   "searchInTheme": "ابحث في {theme}",
   "backToDuas": "العودة إلى الأدعية",
-  "loggedToday": "المسجّل اليوم"
+  "loggedToday": "المسجّل اليوم",
+  "theNight": "الليل",
+  "prayerPassed": "مضى",
+  "prayerBeganAt": "بدأ {time}",
+  "prayerEndsAt": "ينتهي {time}"
 }

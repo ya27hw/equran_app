@@ -4573,4 +4573,20 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get loggedToday => 'ثبت‌شده امروز';
+
+  @override
+  String get theNight => 'شب';
+
+  @override
+  String get prayerPassed => 'گذشته';
+
+  @override
+  String prayerBeganAt(String time) {
+    return 'شروع $time';
+  }
+
+  @override
+  String prayerEndsAt(String time) {
+    return 'پایان $time';
+  }
 }

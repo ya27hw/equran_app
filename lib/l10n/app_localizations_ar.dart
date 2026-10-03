@@ -4498,4 +4498,20 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get loggedToday => 'المسجّل اليوم';
+
+  @override
+  String get theNight => 'الليل';
+
+  @override
+  String get prayerPassed => 'مضى';
+
+  @override
+  String prayerBeganAt(String time) {
+    return 'بدأ $time';
+  }
+
+  @override
+  String prayerEndsAt(String time) {
+    return 'ينتهي $time';
+  }
 }

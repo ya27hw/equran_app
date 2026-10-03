@@ -8018,6 +8018,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Logged today'**
   String get loggedToday;
+
+  /// No description provided for @theNight.
+  ///
+  /// In en, this message translates to:
+  /// **'The night'**
+  String get theNight;
+
+  /// No description provided for @prayerPassed.
+  ///
+  /// In en, this message translates to:
+  /// **'Passed'**
+  String get prayerPassed;
+
+  /// No description provided for @prayerBeganAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Began {time}'**
+  String prayerBeganAt(String time);
+
+  /// No description provided for @prayerEndsAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Ends {time}'**
+  String prayerEndsAt(String time);
 }
 
 class _AppLocalizationsDelegate
