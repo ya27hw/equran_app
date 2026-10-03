@@ -4509,4 +4509,24 @@ class AppLocalizationsFa extends AppLocalizations {
   String wordByWordProvenance(String source, String license) {
     return 'معانی کلمات از $source ($license). ابزار کمکی برای خواندن است، نه ترجمه یا تفسیر.';
   }
+
+  @override
+  String savedAyahsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count آیه ذخیره‌شده',
+      one: '۱ آیه ذخیره‌شده',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get allSaved => 'همه ذخیره‌شده‌ها';
+
+  @override
+  String get newestFirst => 'جدیدترین ابتدا';
+
+  @override
+  String get browseSurahs => 'مرور سوره‌ها';
 }

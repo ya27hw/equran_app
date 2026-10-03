@@ -7922,6 +7922,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Word glosses from {source} ({license}). A reading aid, not a translation or tafsir.'**
   String wordByWordProvenance(String source, String license);
+
+  /// No description provided for @savedAyahsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 saved ayah} other{{count} saved ayahs}}'**
+  String savedAyahsCount(int count);
+
+  /// No description provided for @allSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'All saved'**
+  String get allSaved;
+
+  /// No description provided for @newestFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest first'**
+  String get newestFirst;
+
+  /// No description provided for @browseSurahs.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse surahs'**
+  String get browseSurahs;
 }
 
 class _AppLocalizationsDelegate

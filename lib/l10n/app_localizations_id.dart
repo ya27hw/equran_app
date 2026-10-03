@@ -4532,4 +4532,24 @@ class AppLocalizationsId extends AppLocalizations {
   String wordByWordProvenance(String source, String license) {
     return 'Arti kata dari $source ($license). Alat bantu baca, bukan terjemahan atau tafsir.';
   }
+
+  @override
+  String savedAyahsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ayat tersimpan',
+      one: '1 ayat tersimpan',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get allSaved => 'Semua tersimpan';
+
+  @override
+  String get newestFirst => 'Terbaru dahulu';
+
+  @override
+  String get browseSurahs => 'Jelajahi surah';
 }

@@ -2231,5 +2231,16 @@
   "wordByWordDescription": "পড়ার সময় যেকোনো শব্দে ট্যাপ করে তার অর্থ ও প্রতিবর্ণীকরণ দেখুন।",
   "wordMeaning": "অর্থ",
   "wordTransliteration": "প্রতিবর্ণীকরণ",
-  "wordByWordProvenance": "শব্দার্থ {source} ({license}) থেকে। এটি পড়ার সহায়ক, অনুবাদ বা তাফসির নয়।"
+  "wordByWordProvenance": "শব্দার্থ {source} ({license}) থেকে। এটি পড়ার সহায়ক, অনুবাদ বা তাফসির নয়।",
+  "savedAyahsCount": "{count, plural, =1{১টি সংরক্ষিত আয়াত} other{{count}টি সংরক্ষিত আয়াত}}",
+  "allSaved": "সব সংরক্ষিত",
+  "newestFirst": "নতুনগুলো আগে",
+  "browseSurahs": "সূরা দেখুন",
+  "@savedAyahsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

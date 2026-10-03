@@ -1697,5 +1697,16 @@
   "wordByWordDescription": "اضغط على أي كلمة أثناء القراءة لترى معناها ونطقها بالحروف اللاتينية.",
   "wordMeaning": "المعنى",
   "wordTransliteration": "النقل الحرفي",
-  "wordByWordProvenance": "معاني الكلمات من {source} ({license}). وسيلة مساعدة على القراءة وليست ترجمة ولا تفسيرًا."
+  "wordByWordProvenance": "معاني الكلمات من {source} ({license}). وسيلة مساعدة على القراءة وليست ترجمة ولا تفسيرًا.",
+  "savedAyahsCount": "{count, plural, =1{آية محفوظة واحدة} other{{count} آيات محفوظة}}",
+  "allSaved": "كل المحفوظات",
+  "newestFirst": "الأحدث أولاً",
+  "browseSurahs": "تصفح السور",
+  "@savedAyahsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

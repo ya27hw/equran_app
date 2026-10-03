@@ -4434,4 +4434,24 @@ class AppLocalizationsAr extends AppLocalizations {
   String wordByWordProvenance(String source, String license) {
     return 'معاني الكلمات من $source ($license). وسيلة مساعدة على القراءة وليست ترجمة ولا تفسيرًا.';
   }
+
+  @override
+  String savedAyahsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count آيات محفوظة',
+      one: 'آية محفوظة واحدة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get allSaved => 'كل المحفوظات';
+
+  @override
+  String get newestFirst => 'الأحدث أولاً';
+
+  @override
+  String get browseSurahs => 'تصفح السور';
 }

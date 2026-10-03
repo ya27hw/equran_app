@@ -35,6 +35,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage>
     with SingleTickerProviderStateMixin {
+  final FocusNode _favouritesSearchFocus = FocusNode();
   final Debouncer _debouncer = Debouncer(milliseconds: 400);
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _surahScrollController = ScrollController();
@@ -72,6 +73,7 @@ class _MainPageState extends State<MainPage>
   @override
   void dispose() {
     _debouncer.cancel();
+    _favouritesSearchFocus.dispose();
     widget.searchRequestListenable?.removeListener(
       _handleExternalSearchRequest,
     );
@@ -100,28 +102,44 @@ class _MainPageState extends State<MainPage>
       resizeToAvoidBottomInset: false,
       body: Column(
         children: <Widget>[
-          DecoratedBox(
-            decoration: _topBarDecoration(),
-            child: SafeArea(
+          if (_selectedSegment == 3)
+            SafeArea(
               bottom: false,
-              child: Material(
-                color: colors.background.withAlpha(0),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-                  child: _buildTopBar(theme),
+              child: SavedQuranHeader(
+                onTitleTap: _scrollToTop,
+                onSearch: () => _favouritesSearchFocus.requestFocus(),
+                onSelectSection: (index) => _tabController.animateTo(
+                  index,
+                  duration: MediaQuery.disableAnimationsOf(context)
+                      ? Duration.zero
+                      : const Duration(milliseconds: 220),
+                ),
+              ),
+            )
+          else ...[
+            DecoratedBox(
+              decoration: _topBarDecoration(),
+              child: SafeArea(
+                bottom: false,
+                child: Material(
+                  color: colors.background.withAlpha(0),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+                    child: _buildTopBar(theme),
+                  ),
                 ),
               ),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(
-              horizontalPadding,
-              10,
-              horizontalPadding,
-              15,
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                horizontalPadding,
+                10,
+                horizontalPadding,
+                15,
+              ),
+              child: _buildSectionHeader(theme),
             ),
-            child: _buildSectionHeader(theme),
-          ),
+          ],
 
           Expanded(child: _buildSegmentPager(horizontalPadding)),
         ],
@@ -479,10 +497,26 @@ class _MainPageState extends State<MainPage>
           ),
         ),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: PrimaryScrollController(
             controller: _favouritesScrollController,
-            child: FavouritesList(searchQuery: _searchQuery),
+            child: FavouritesList(
+              searchQuery: _searchQuery,
+              searchFocusNode: _favouritesSearchFocus,
+              onSearchChanged: (value) {
+                _searchController.text = value;
+                _changeSearchQuery(value);
+              },
+              onBrowseSurahs: () {
+                _closeSearch();
+                _tabController.animateTo(
+                  0,
+                  duration: MediaQuery.disableAnimationsOf(context)
+                      ? Duration.zero
+                      : const Duration(milliseconds: 220),
+                );
+              },
+            ),
           ),
         ),
       ],

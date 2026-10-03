@@ -2231,5 +2231,16 @@
   "wordByWordDescription": "پڑھتے وقت کسی بھی لفظ پر ٹیپ کریں تاکہ اس کا مطلب اور رومن تلفظ دیکھ سکیں۔",
   "wordMeaning": "مطلب",
   "wordTransliteration": "رومن تلفظ",
-  "wordByWordProvenance": "الفاظ کے معانی {source} ({license}) سے۔ یہ پڑھنے میں مدد ہے، ترجمہ یا تفسیر نہیں۔"
+  "wordByWordProvenance": "الفاظ کے معانی {source} ({license}) سے۔ یہ پڑھنے میں مدد ہے، ترجمہ یا تفسیر نہیں۔",
+  "savedAyahsCount": "{count, plural, =1{1 محفوظ آیت} other{{count} محفوظ آیات}}",
+  "allSaved": "تمام محفوظ آیات",
+  "newestFirst": "تازہ ترین پہلے",
+  "browseSurahs": "سورتیں دیکھیں",
+  "@savedAyahsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

@@ -4513,4 +4513,24 @@ class AppLocalizationsUr extends AppLocalizations {
   String wordByWordProvenance(String source, String license) {
     return 'الفاظ کے معانی $source ($license) سے۔ یہ پڑھنے میں مدد ہے، ترجمہ یا تفسیر نہیں۔';
   }
+
+  @override
+  String savedAyahsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count محفوظ آیات',
+      one: '1 محفوظ آیت',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get allSaved => 'تمام محفوظ آیات';
+
+  @override
+  String get newestFirst => 'تازہ ترین پہلے';
+
+  @override
+  String get browseSurahs => 'سورتیں دیکھیں';
 }
