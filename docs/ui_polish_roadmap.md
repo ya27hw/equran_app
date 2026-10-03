@@ -172,35 +172,145 @@ switch it, and nothing was seen on a device.
 
 ## 7. Feature ideas (not started)
 
-The app will stay free, so these are all candidates for the free app. They
-respect the F-Droid rules in `AGENTS.md`: offline-first, no Google services, no
-accounts or tracking.
+The app stays free (no monetisation, no paywall, no accounts), so everything
+below is meant for the free app. All of it must respect the F-Droid rules in
+`AGENTS.md`: offline-first, no Google Mobile Services or Firebase, no analytics,
+no proprietary SDKs. Notifications must be local only. Anything that needs a
+third-party dataset needs its licence checked before it goes in the repo.
 
-Higher impact:
+The codebase already does more than a first look suggests. **Check the
+"already exists" list before building anything**, and extend rather than
+duplicate.
 
-1. **Word-by-word follow-along:** highlight the current word during audio, with
-   tap-for-meaning. Check the data licence first.
-2. **Hifz test mode:** hide words or ayahs and reveal on tap, plus a mistakes
-   heatmap feeding the existing spaced-repetition scheduling.
-3. **A-B repeat and sleep timer** for audio, plus auto-scroll while listening.
-4. **Prayer tracker:** log each prayer (on time / late / missed), streaks,
-   qada counter. Fits the existing prayer module and stats.
-5. **Ramadan mode:** suhoor/iftar countdown, fasting tracker, khatam planner
-   that builds on reading plans.
-6. **Ayah notes and collections:** private notes, tagged or coloured bookmarks,
-   all local, exportable through the existing backup service.
-7. **Better sharing:** more ayah-card templates and themes on top of the
-   existing share image.
+### 7.1 Already exists (extend, do not rebuild)
 
-Smaller wins:
+| Capability | Where | Notes |
+| --- | --- | --- |
+| Sleep timer (duration or end of surah) | `lib/home/read.dart` (`_sleepTimer`, `_sleepTimerDurationMode`, `_sleepTimerEndSurahMode`) | |
+| Repeat each ayah N times, A-B interval repeat, delay between ayahs | `lib/home/read.dart` (`repeatAyahCount`, `intervalRepeatCount`, `playbackInterval`, `PlaybackInterval`, `RepeatChoice`) | Only a nicer UI would be new |
+| Playback speed | `lib/widgets/playback_rate.dart` | |
+| Follow-along scrolling while audio plays | `lib/home/read.dart` (`_scrollToVerseIfNeeded`) | |
+| Salah log (per day, per prayer, status) | `SalahLogEntry`, `SalahPrayer`, `SalahStatus`, logged and shown in `lib/home/quran_stats_page.dart`; storage in `lib/backend/companion_storage.dart` | Logging happens only from Statistics |
+| Dhikr sessions | `DhikrSessionEntry`, `lib/duas/tasbih_page.dart`, shown in Statistics | |
+| Khatam, streak and highlights | `lib/home/quran_stats_page.dart` | |
+| Hifz with spaced repetition | `lib/hifz/` (`HifzScheduler` ease/interval logic, `HifzReviewLog`, `hifz_session_page.dart` with again/hard/good/easy ratings) | |
+| Bookmarks with note, folder and tags | `QuranBookmarkEntry`, `lib/backend/quran_bookmark_service.dart` | Data layer is complete; check how much UI exposes folders and tags |
+| Share image (story and other sizes) | `lib/home/read.dart` (`_ShareImageMode`, `_buildShareImageWidget`), `ReadQuranCard(shareImageMode: true)` | |
+| Daily ayah and daily dua on Home | `lib/home_dashboard/home_dashboard_page.dart` (`_DailyAyahPreview`, `_DailyDuaPreview`), `lib/backend/daily_guidance_service.dart`, `lib/duas/daily_dua_repository.dart` | |
+| Reading plans with presets | `lib/reading_plans/` | Presets exist; there is no Ramadan preset |
+| Backup and restore | `lib/backend/backup_service.dart` | Manual only |
+| Local notifications and home-screen widgets | `lib/prayer/prayer_notification_service.dart`, `lib/widgets/prayer_widget_*`, `home_widget` + `workmanager` | Prayer-only today; reusable plumbing |
+| Hijri calendar with fasting info | `lib/prayer/hijri_calendar.dart`, `islamic_calendar_page.dart` | No reminders |
 
-- Daily ayah and Friday al-Kahf reminders using local notifications only, and a
-  daily-ayah home-screen widget (the widget plumbing already exists).
-- Adhkar completion tracking for morning/evening duas.
-- Tasbih history and custom dhikr sets.
-- Fasting reminders for Mondays/Thursdays and the White Days, and Islamic
-  calendar event reminders.
-- Automatic backup to a user-chosen folder (works with Syncthing-style sync, no
-  cloud).
-- Offline topic and transliteration search.
-- A tajweed legend, a large-text/low-vision reading mode and a simple kids mode.
+### 7.2 Features worth building
+
+Effort: S = a day or less, M = a few days, L = a week or more.
+
+1. **Quick prayer logging, streaks and qada counter** (M)
+   - Gap: salah logging only lives in Statistics, so it is easy to forget.
+   - Add a one-tap "mark prayed" on the Home prayer strip and the Prayer tab
+     cards (`prayer_time_thumb_card.dart`, `prayer_times_page.dart`), a streak
+     computed from `SalahLogEntry`, and a small qada counter (a new Hive entry).
+   - Optional: a notification action ("Prayed") on the existing prayer reminders.
+   - Pitfalls: day boundaries follow the Hijri/maghrib convention only if the
+     user wants it, so default to the local calendar date like the current log.
+     Keep the dashboard rebuild-per-minute in mind (do not replay animations).
+
+2. **Hifz recall (test) mode** (M)
+   - Gap: sessions show the ayah and ask for a rating; there is no
+     "can you recite it" check.
+   - In `hifz_session_page.dart`, add a mode that hides the text (or every Nth
+     word, or everything after the first words) and reveals on tap, then feeds
+     the existing again/hard/good/easy rating into `HifzScheduler`.
+   - Add a mistakes view from `HifzReviewLog` (surahs/ayahs rated "again"
+     most often).
+   - Do not change scheduling maths without tests. The repo has no `test/`
+     folder today, so add unit tests for `HifzScheduler` first if its logic
+     needs to change.
+
+3. **Daily ayah notification and home-screen widget** (M)
+   - Gap: the daily ayah is only visible inside the app; the widget and
+     notification plumbing is prayer-only.
+   - Reuse `flutter_local_notifications` (local only, no FCM) and the
+     `home_widget` + `workmanager` setup in `lib/widgets/prayer_widget_*`.
+   - Add a setting for time of day, deterministic daily selection (the same
+     logic as `_DailyAyahPreview`), and Android widget receiver(s) under
+     `android/app/src/main/kotlin/com/app/equran/`.
+   - Pitfalls: exact-alarm permission handling already exists for prayers; copy
+     that approach. Follow the F-Droid rules for any new Android dependency.
+
+4. **Ramadan mode** (M)
+   - Suhoor (Imsak/Fajr) and iftar (Maghrib) countdown on Home during
+     Ramadan, driven by `HijriCalendar` and the prayer times service. There is
+     no Imsak calculation yet, so decide whether it is Fajr minus a user-set
+     offset.
+   - A Ramadan khatam preset in `lib/reading_plans/` (30 days, with a catch-up
+     view), plus a simple fasting tracker (a day-level Hive entry, like the
+     salah log).
+   - Show the mode only when the Hijri month is Ramadan (respect the user's
+     Hijri offset setting).
+
+5. **Bookmark folders, tags and notes UI** (S-M)
+   - Gap: the data layer supports `note`, `folder` and `tags`, but the UI
+     appears to expose little of it. Verify in `lib/widgets/favourites_list.dart`
+     and `read_quran_card.dart` first.
+   - Add folder chips and a tag filter to the Saved tab, an edit-note sheet,
+     and optional colours. Everything already round-trips through
+     `backup_service.dart`.
+
+6. **More ayah share templates** (M)
+   - Build on `_ShareImageMode` / `ReadQuranCard(shareImageMode: true)`: add
+     background themes (the star lattice from `GeometricPattern` fits well),
+     optional translation and reference line, and a square format.
+   - The share path renders through a manual `RenderView`; test it on device
+     after any change (it cannot be exercised in the web preview).
+
+7. **Adhkar completion tracking** (M)
+   - Track whether the morning and evening adhkar (Hisn al-Muslim categories in
+     `lib/duas/hisn_al_muslim_repository.dart`) were completed each day, with a
+     streak, an optional local reminder after Fajr/Asr, and a small card on
+     Home. New Hive entry modelled on `SalahLogEntry`.
+
+8. **Fasting and calendar reminders** (S-M)
+   - Local notifications the evening before Monday/Thursday fasts and the
+     White Days (13-15 of each Hijri month), plus key events already listed in
+     `hijri_calendar.dart`. Reuse the prayer notification channel setup.
+
+9. **Tasbih history and custom dhikr sets** (S)
+   - `DhikrSessionEntry` data already exists. Add a history list (per day and
+     total), user-defined presets with their own targets, and an optional
+     vibration/sound toggle.
+
+10. **Automatic backup to a chosen folder** (M)
+    - Extend `backup_service.dart` with a scheduled export to a folder picked
+      through `file_picker`. This works with Syncthing-style sync and needs no
+      cloud. On Android a persisted SAF permission is required; test Windows
+      and Linux separately.
+    - Keep restore tolerant of older schema versions
+      (`schema_migration_service.dart`).
+
+11. **Word-by-word follow-along** (L)
+    - Highlight the current word while audio plays, with tap-for-meaning.
+    - No word-level data exists in the repo today (`surah_timing_repository.dart`
+      is ayah-level). Needs a word-timing and word-meaning dataset with a
+      compatible licence, bundled or downloaded through the existing resource
+      download service. Do not touch the QPC/CPAL font handling.
+
+12. **Offline transliteration and topic search** (M-L)
+    - `lib/search/quran_text_search_service.dart` and
+      `lib/backend/transliteration_service.dart` exist. Add transliteration to
+      the search index first (data is already local). Topic search needs a
+      topic-to-ayah dataset; check licensing.
+
+13. **Reading accessibility and learning aids** (S-M)
+    - A tajweed colour legend for the QPC v4 style, a large-text reading mode
+      (bigger spacing and tap targets) and a simple kids mode. These are mostly
+      UI; keep verse layout rules from section 3 in mind.
+
+### 7.3 Suggested order
+
+Quick log and streaks (1), hifz recall mode (2) and the daily ayah
+notification/widget (3) have the best value for the least risk because they
+reuse storage and plumbing that already exist. Ramadan mode (4) is best started
+a few weeks before Ramadan. Word-by-word (11) is the biggest and depends on a
+data licence, so decide that first.
