@@ -56,10 +56,17 @@ Colour notes:
 
 ## 3. Guardrails learned the hard way
 
-- **Flutter version:** CI builds on the latest *stable* (3.47.x at the time of
-  writing), not `>=3.41.7`. Analyze and build with that, or you will chase
-  errors that do not exist (and miss ones that do). `CupertinoPageTransitionsBuilder`
-  needs `import 'package:flutter/cupertino.dart'` on 3.47.
+- **Flutter version:** the declared floor on this branch is 3.44.0 (see
+  `CLAUDE.md`), but CI runs the latest *stable* (3.47.x at the time of
+  writing, unpinned). Analyze and build with the newest stable, or you will
+  chase errors that do not exist and miss ones that do.
+  `CupertinoPageTransitionsBuilder` needs
+  `import 'package:flutter/cupertino.dart'` on 3.47.
+- **Use `EquranAssetImage`, not `Image.asset`** (`CLAUDE.md`): several bundled
+  illustrations are very large and must be decoded at display size.
+- **Run the quality gates in `CLAUDE.md`** (dependency policy, localization
+  check, `flutter gen-l10n` sync, `dart format`, `flutter analyze
+  --fatal-infos`, `flutter test`) before pushing.
 - **Never put `Flexible` / `Expanded` in a `Wrap`.** `_JourneyStreakChip` and
   `_JourneyMetricChip` return `Flexible`; inside a `Wrap` they render as a grey
   error box in release builds. Use a `Row`.
@@ -224,8 +231,8 @@ Effort: S = a day or less, M = a few days, L = a week or more.
      the existing again/hard/good/easy rating into `HifzScheduler`.
    - Add a mistakes view from `HifzReviewLog` (surahs/ayahs rated "again"
      most often).
-   - Do not change scheduling maths without tests. The repo has no `test/`
-     folder today, so add unit tests for `HifzScheduler` first if its logic
+   - Do not change scheduling maths without tests. `test/` exists, but nothing
+     covers `HifzScheduler` today, so add unit tests for it first if its logic
      needs to change.
 
 3. **Daily ayah notification and home-screen widget** (M)
