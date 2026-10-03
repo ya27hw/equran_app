@@ -354,9 +354,7 @@ class ResourceDownloadService {
     // 50MB per entry, 300MB total — orders of magnitude above legit packs
     // (604 TTFs, small JSON/TXT/MP3) while blocking size bombs on 2GB devices.
     if (files.length > 2000) {
-      throw const ResourceInstallException(
-        'The ZIP contains too many files.',
-      );
+      throw const ResourceInstallException('The ZIP contains too many files.');
     }
 
     int totalDecompressedBytes = 0;

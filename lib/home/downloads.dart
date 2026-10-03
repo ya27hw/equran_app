@@ -1104,8 +1104,9 @@ class _DownloadsPageState extends State<DownloadsPage> {
       {'value': 'ayahs', 'label': 'Ayahs'},
     ];
 
-    final TextEditingController filterSearchController =
-        TextEditingController(text: pendingSearch);
+    final TextEditingController filterSearchController = TextEditingController(
+      text: pendingSearch,
+    );
 
     try {
       await showModalBottomSheet<void>(
@@ -1249,12 +1250,10 @@ class _DownloadsPageState extends State<DownloadsPage> {
                                               color: colors.textMuted,
                                               size: 18,
                                             ),
-                                            onPressed: () => setModalState(
-                                              () {
-                                                pendingSearch = '';
-                                                filterSearchController.clear();
-                                              },
-                                            ),
+                                            onPressed: () => setModalState(() {
+                                              pendingSearch = '';
+                                              filterSearchController.clear();
+                                            }),
                                           )
                                         : null,
                                     border: InputBorder.none,

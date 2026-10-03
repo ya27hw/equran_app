@@ -172,8 +172,7 @@ void _callbackDispatcher() {
         } else {
           // Fallback: infer from system brightness
           isDarkMode =
-              PlatformDispatcher.instance.platformBrightness ==
-              Brightness.dark;
+              PlatformDispatcher.instance.platformBrightness == Brightness.dark;
         }
 
         final colors = PrayerWidgetService.resolveColorsForScheme(

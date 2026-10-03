@@ -7972,18 +7972,16 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
       final int? highlightedVerse = _selectedInlineVerse ?? _playingVerse;
       final Map<int, TextStyle> styleForPage = <int, TextStyle>{};
       TextStyle styleFor(int page, bool highlighted) {
-        final TextStyle base =
-            styleForPage[page] ??=
-                TextStyle(
-                  fontFamily: EquranTextStyles.qpcV4FontFamilyForPage(
-                    page,
-                    darkMode: darkMode,
-                  ),
-                  fontFamilyFallback: const <String>['UthmanicHafs'],
-                  height: 1.8,
-                  fontSize: fontSize,
-                  color: colorScheme.onSurface,
-                );
+        final TextStyle base = styleForPage[page] ??= TextStyle(
+          fontFamily: EquranTextStyles.qpcV4FontFamilyForPage(
+            page,
+            darkMode: darkMode,
+          ),
+          fontFamilyFallback: const <String>['UthmanicHafs'],
+          height: 1.8,
+          fontSize: fontSize,
+          color: colorScheme.onSurface,
+        );
         return highlighted ? base.copyWith(color: colorScheme.primary) : base;
       }
 

@@ -478,8 +478,8 @@ class _DashboardSummary {
     // Newest active plan via a single pass: sorting the whole box on
     // every rebuild is O(n log n) for one row.
     ReadingPlanEntry? activePlan;
-    for (final ReadingPlanEntry plan in ReadingPlansDB().box.values
-        .whereType<ReadingPlanEntry>()) {
+    for (final ReadingPlanEntry plan
+        in ReadingPlansDB().box.values.whereType<ReadingPlanEntry>()) {
       if (!plan.active) continue;
       final ReadingPlanEntry? current = activePlan;
       if (current == null || plan.startedAt.isAfter(current.startedAt)) {
@@ -2060,11 +2060,7 @@ class _DailyDuaPreviewState extends State<_DailyDuaPreview> {
           padding: const EdgeInsets.fromLTRB(18, 14, 10, 14),
           child: Row(
             children: <Widget>[
-              Icon(
-                Icons.cloud_off_rounded,
-                color: colors.textMuted,
-                size: 26,
-              ),
+              Icon(Icons.cloud_off_rounded, color: colors.textMuted, size: 26),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
