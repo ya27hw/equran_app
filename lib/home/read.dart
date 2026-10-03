@@ -7521,7 +7521,9 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
                 end: Alignment.bottomCenter,
                 colors: <Color>[
                   colors.primaryGradientStart,
-                  colors.primaryGradientEnd,
+                  // Keep the tail dark enough for the white and gold text on
+                  // themes whose gradient ends in a pale tint.
+                  Color.lerp(colors.primaryGradientEnd, colors.primary, 0.65)!,
                 ],
               ),
               border: Border.all(color: colors.accentGold.withAlpha(115)),
@@ -7615,9 +7617,9 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.center,
                       style: theme.textTheme.labelSmall?.copyWith(
-                        color: colors.accentGold.withAlpha(191),
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
+                        color: colors.accentGold.withAlpha(235),
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w700,
                         letterSpacing: 1.2,
                       ),
                     ),
