@@ -142,11 +142,11 @@ jobs:
           EOF
 
       - name: Build Android Split APKs
-        run: flutter build apk --release --split-per-abi -PrequireReleaseSigning
+        run: flutter build apk --release --split-per-abi --split-debug-info=build/symbols -PrequireReleaseSigning
         shell: bash
 
       - name: Build Android App Bundle
-        run: flutter build appbundle --release -PrequireReleaseSigning
+        run: flutter build appbundle --release --split-debug-info=build/symbols -PrequireReleaseSigning
         shell: bash
 
       # More thorough scan using apkanalyzer
@@ -170,6 +170,14 @@ jobs:
           path: |
             build/app/outputs/flutter-apk/app-*-release.apk
             build/app/outputs/bundle/release/app-release.aab
+
+      # Debug symbols are stripped from libapp.so to shrink the APK; keep them
+      # to symbolicate release stack traces (flutter symbolize).
+      - name: Upload Android debug symbols
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-debug-symbols
+          path: build/symbols
 
   build-linux:
     needs: [version, quality]
