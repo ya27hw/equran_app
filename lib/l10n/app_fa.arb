@@ -2346,5 +2346,16 @@
   "wordByWordDescription": "هنگام خواندن روی هر کلمه بزنید تا معنا و آوانگاری آن را ببینید.",
   "wordMeaning": "معنا",
   "wordTransliteration": "آوانگاری",
-  "wordByWordProvenance": "معانی کلمات از {source} ({license}). ابزار کمکی برای خواندن است، نه ترجمه یا تفسیر."
+  "wordByWordProvenance": "معانی کلمات از {source} ({license}). ابزار کمکی برای خواندن است، نه ترجمه یا تفسیر.",
+  "savedAyahsCount": "{count, plural, =1{۱ آیه ذخیره‌شده} other{{count} آیه ذخیره‌شده}}",
+  "allSaved": "همه ذخیره‌شده‌ها",
+  "newestFirst": "جدیدترین ابتدا",
+  "browseSurahs": "مرور سوره‌ها",
+  "@savedAyahsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

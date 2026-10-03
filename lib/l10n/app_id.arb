@@ -2231,5 +2231,16 @@
   "wordByWordDescription": "Ketuk kata mana pun saat membaca untuk melihat arti dan transliterasinya.",
   "wordMeaning": "Arti",
   "wordTransliteration": "Transliterasi",
-  "wordByWordProvenance": "Arti kata dari {source} ({license}). Alat bantu baca, bukan terjemahan atau tafsir."
+  "wordByWordProvenance": "Arti kata dari {source} ({license}). Alat bantu baca, bukan terjemahan atau tafsir.",
+  "savedAyahsCount": "{count, plural, =1{1 ayat tersimpan} other{{count} ayat tersimpan}}",
+  "allSaved": "Semua tersimpan",
+  "newestFirst": "Terbaru dahulu",
+  "browseSurahs": "Jelajahi surah",
+  "@savedAyahsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

@@ -109,6 +109,7 @@ flutter:
     - assets/media/images/icon.webp
     - assets/media/fonts/newsreader/OFL.txt
     - assets/media/fonts/inter/OFL.txt
+    - assets/media/fonts/noto-naskh-arabic/OFL.txt
 
   fonts:
     - family: Inter
@@ -118,6 +119,14 @@ flutter:
         - asset: assets/media/fonts/inter/Inter.ttf
           weight: 500
         - asset: assets/media/fonts/inter/Inter.ttf
+          weight: 600
+    - family: NotoNaskhArabic
+      fonts:
+        - asset: assets/media/fonts/noto-naskh-arabic/NotoNaskhArabic.ttf
+          weight: 400
+        - asset: assets/media/fonts/noto-naskh-arabic/NotoNaskhArabic.ttf
+          weight: 500
+        - asset: assets/media/fonts/noto-naskh-arabic/NotoNaskhArabic.ttf
           weight: 600
     - family: QuranIndoPak
       fonts:

@@ -4589,4 +4589,24 @@ class AppLocalizationsDe extends AppLocalizations {
   String wordByWordProvenance(String source, String license) {
     return 'Wortbedeutungen von $source ($license). Eine Lesehilfe, keine Übersetzung und kein Tafsir.';
   }
+
+  @override
+  String savedAyahsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count gespeicherte Verse',
+      one: '1 gespeicherter Vers',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get allSaved => 'Alle gespeichert';
+
+  @override
+  String get newestFirst => 'Neueste zuerst';
+
+  @override
+  String get browseSurahs => 'Suren durchsuchen';
 }

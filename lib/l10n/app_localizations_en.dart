@@ -4500,4 +4500,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String wordByWordProvenance(String source, String license) {
     return 'Word glosses from $source ($license). A reading aid, not a translation or tafsir.';
   }
+
+  @override
+  String savedAyahsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count saved ayahs',
+      one: '1 saved ayah',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get allSaved => 'All saved';
+
+  @override
+  String get newestFirst => 'Newest first';
+
+  @override
+  String get browseSurahs => 'Browse surahs';
 }

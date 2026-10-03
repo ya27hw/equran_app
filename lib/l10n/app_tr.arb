@@ -2231,5 +2231,16 @@
   "wordByWordDescription": "Okurken herhangi bir kelimeye dokunarak anlamını ve okunuşunu görün.",
   "wordMeaning": "Anlam",
   "wordTransliteration": "Okunuş",
-  "wordByWordProvenance": "Kelime anlamları {source} ({license}) kaynağından. Okuma yardımcısıdır; çeviri ya da tefsir değildir."
+  "wordByWordProvenance": "Kelime anlamları {source} ({license}) kaynağından. Okuma yardımcısıdır; çeviri ya da tefsir değildir.",
+  "savedAyahsCount": "{count, plural, =1{1 kayıtlı ayet} other{{count} kayıtlı ayet}}",
+  "allSaved": "Tüm kayıtlar",
+  "newestFirst": "Önce en yeni",
+  "browseSurahs": "Surelere göz at",
+  "@savedAyahsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

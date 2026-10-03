@@ -2376,5 +2376,16 @@
         "type": "String"
       }
     }
+  },
+  "savedAyahsCount": "{count, plural, =1{1 saved ayah} other{{count} saved ayahs}}",
+  "allSaved": "All saved",
+  "newestFirst": "Newest first",
+  "browseSurahs": "Browse surahs",
+  "@savedAyahsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

@@ -4521,4 +4521,24 @@ class AppLocalizationsTr extends AppLocalizations {
   String wordByWordProvenance(String source, String license) {
     return 'Kelime anlamları $source ($license) kaynağından. Okuma yardımcısıdır; çeviri ya da tefsir değildir.';
   }
+
+  @override
+  String savedAyahsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count kayıtlı ayet',
+      one: '1 kayıtlı ayet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get allSaved => 'Tüm kayıtlar';
+
+  @override
+  String get newestFirst => 'Önce en yeni';
+
+  @override
+  String get browseSurahs => 'Surelere göz at';
 }

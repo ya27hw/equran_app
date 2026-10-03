@@ -4511,4 +4511,24 @@ class AppLocalizationsBn extends AppLocalizations {
   String wordByWordProvenance(String source, String license) {
     return 'শব্দার্থ $source ($license) থেকে। এটি পড়ার সহায়ক, অনুবাদ বা তাফসির নয়।';
   }
+
+  @override
+  String savedAyahsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countটি সংরক্ষিত আয়াত',
+      one: '১টি সংরক্ষিত আয়াত',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get allSaved => 'সব সংরক্ষিত';
+
+  @override
+  String get newestFirst => 'নতুনগুলো আগে';
+
+  @override
+  String get browseSurahs => 'সূরা দেখুন';
 }

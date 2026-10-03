@@ -2266,5 +2266,16 @@
   "wordByWordDescription": "Tippen Sie beim Lesen auf ein Wort, um Bedeutung und Umschrift zu sehen.",
   "wordMeaning": "Bedeutung",
   "wordTransliteration": "Umschrift",
-  "wordByWordProvenance": "Wortbedeutungen von {source} ({license}). Eine Lesehilfe, keine Übersetzung und kein Tafsir."
+  "wordByWordProvenance": "Wortbedeutungen von {source} ({license}). Eine Lesehilfe, keine Übersetzung und kein Tafsir.",
+  "savedAyahsCount": "{count, plural, =1{1 gespeicherter Vers} other{{count} gespeicherte Verse}}",
+  "allSaved": "Alle gespeichert",
+  "newestFirst": "Neueste zuerst",
+  "browseSurahs": "Suren durchsuchen",
+  "@savedAyahsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }
