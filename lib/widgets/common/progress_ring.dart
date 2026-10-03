@@ -17,8 +17,20 @@ class ProgressRing extends StatelessWidget {
     this.endColor,
     this.size = 84,
     this.strokeWidth = 8,
+    this.innerValue,
+    this.innerColor,
+    this.innerTrackColor,
+    this.innerStrokeWidth,
+    this.ringGap = 6,
     this.child,
-  });
+  }) : assert(innerValue == null || innerColor != null),
+       assert(size > 0 && strokeWidth > 0 && ringGap >= 0),
+       assert(
+         innerValue == null ||
+             size >
+                 2 * (strokeWidth + ringGap) +
+                     (innerStrokeWidth ?? strokeWidth),
+       );
 
   /// Progress from 0 to 1.
   final double value;
@@ -29,30 +41,62 @@ class ProgressRing extends StatelessWidget {
   final Color? endColor;
   final double size;
   final double strokeWidth;
+
+  /// Optional independent inner ring; existing one-ring callers are unchanged.
+  final double? innerValue;
+  final Color? innerColor;
+  final Color? innerTrackColor;
+  final double? innerStrokeWidth;
+
+  /// Clear space between the painted edges of the two rings.
+  final double ringGap;
   final Widget? child;
 
   @override
   Widget build(BuildContext context) {
     final bool reduceMotion = MediaQuery.disableAnimationsOf(context);
     final double target = value.clamp(0.0, 1.0).toDouble();
-    return TweenAnimationBuilder<double>(
-      tween: Tween<double>(begin: 0, end: target),
+    return TweenAnimationBuilder<Offset>(
+      tween: Tween<Offset>(
+        begin: Offset.zero,
+        end: Offset(target, (innerValue ?? 0).clamp(0.0, 1.0).toDouble()),
+      ),
       duration: reduceMotion
           ? Duration.zero
           : const Duration(milliseconds: 900),
       curve: Curves.easeOutCubic,
-      builder: (BuildContext context, double animated, Widget? child) {
+      builder: (BuildContext context, Offset animated, Widget? child) {
         return SizedBox.square(
           dimension: size,
-          child: CustomPaint(
-            painter: _RingPainter(
-              value: animated,
-              trackColor: trackColor,
-              color: color,
-              endColor: endColor,
-              strokeWidth: strokeWidth,
-            ),
-            child: Center(child: child),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Positioned.fill(
+                child: CustomPaint(
+                  painter: _RingPainter(
+                    value: animated.dx,
+                    trackColor: trackColor,
+                    color: color,
+                    endColor: endColor,
+                    strokeWidth: strokeWidth,
+                  ),
+                ),
+              ),
+              if (innerValue != null)
+                SizedBox.square(
+                  dimension: size - 2 * (strokeWidth + ringGap),
+                  child: CustomPaint(
+                    painter: _RingPainter(
+                      value: animated.dy,
+                      trackColor: innerTrackColor ?? trackColor,
+                      color: innerColor!,
+                      endColor: null,
+                      strokeWidth: innerStrokeWidth ?? strokeWidth,
+                    ),
+                  ),
+                ),
+              if (child != null) Center(child: child),
+            ],
           ),
         );
       },
