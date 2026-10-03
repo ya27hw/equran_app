@@ -2202,12 +2202,12 @@ class _JourneyPreviewCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 10),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 6,
+                Row(
                   children: <Widget>[
-                    if (showStreak)
+                    if (showStreak) ...<Widget>[
                       _JourneyStreakChip(streak: snapshot.currentStreak),
+                      const SizedBox(width: 8),
+                    ],
                     _JourneyMetricChip(
                       label: AppLocalizations.of(
                         context,
