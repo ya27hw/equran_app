@@ -25,7 +25,6 @@ class PrayerHeroCard extends StatelessWidget {
     this.subtitleOverride,
     this.useRedesign = false,
     this.now,
-    this.previousDay,
     this.followingDay,
     this.periodEndsAt,
     this.isViewingToday = true,
@@ -40,7 +39,6 @@ class PrayerHeroCard extends StatelessWidget {
   final VoidCallback onTap;
   final bool useRedesign;
   final DateTime? now;
-  final PrayerDay? previousDay;
   final PrayerDay? followingDay;
   final DateTime? periodEndsAt;
   final bool isViewingToday;
@@ -72,24 +70,12 @@ class PrayerHeroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Keep the existing nighttime hero until the brief's owner-designed
-    // night variant is agreed. Never display daylight progress at night.
-    final daylight =
-        day != null &&
-        now != null &&
-        followingDay != null &&
-        !now!.isBefore(day!.entryFor(PrayerTimeKind.sunrise).time) &&
-        now!.isBefore(followingDay!.entryFor(PrayerTimeKind.maghrib).time);
-    if (useRedesign &&
-        day != null &&
-        nextPrayer != null &&
-        (!isViewingToday || daylight)) {
+    if (useRedesign && day != null && nextPrayer != null) {
       return PrayerArcHero(
         day: day!,
         nextPrayer: nextPrayer!,
         now: now!,
         onTap: onTap,
-        previousDay: previousDay!,
         followingDay: followingDay!,
         currentPrayer: currentPrayer,
         titleOverride: titleOverride,

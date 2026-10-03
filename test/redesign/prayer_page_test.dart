@@ -211,13 +211,41 @@ void main() {
     expect(find.textContaining('Ends '), findsOneWidget);
   });
   testWidgets(
-    'night retains the existing hero while its new design is pending',
+    'moon arc advances across midnight and stays complete from Fajr to sunrise',
     (tester) async {
-      await pump(tester, now: DateTime.utc(2026, 10, 4, 17));
-      expect(find.byType(PrayerArcHero), findsNothing);
-      final hero = tester.widget<PrayerHeroCard>(find.byType(PrayerHeroCard));
-      expect(hero.currentPrayer!.kind, PrayerTimeKind.isha);
-      expect(find.byType(PrayerArch), findsNWidgets(6));
+      for (final now in [
+        DateTime.utc(2026, 10, 4, 17),
+        DateTime.utc(2026, 10, 4, 23),
+        DateTime.utc(2026, 10, 5, 1),
+      ]) {
+        await tester.pumpWidget(const SizedBox());
+        await pump(tester, now: now);
+        final hero = tester.widget<PrayerArcHero>(find.byType(PrayerArcHero));
+        final painter = tester
+            .widgetList<CustomPaint>(find.byType(CustomPaint))
+            .map((w) => w.painter)
+            .whereType<PrayerArcPainter>()
+            .single;
+        final maghrib = hero.day.entryFor(PrayerTimeKind.maghrib).time;
+        final fajr = hero.day.entryFor(PrayerTimeKind.fajr).time;
+        expect(painter.night, isTrue);
+        expect(painter.markers, isEmpty);
+        expect(
+          painter.fraction,
+          closeTo(prayerArcFraction(now, maghrib, fajr), .0001),
+        );
+        if (!now.isBefore(fajr)) expect(painter.fraction, 1);
+        expect(hero.nextPrayer.countdown.isNegative, isFalse);
+      }
+      await tester.pumpWidget(const SizedBox());
+      await pump(tester, now: DateTime.utc(2026, 10, 5, 2));
+      final painter = tester
+          .widgetList<CustomPaint>(find.byType(CustomPaint))
+          .map((w) => w.painter)
+          .whereType<PrayerArcPainter>()
+          .single;
+      expect(painter.night, isFalse);
+      expect(painter.fraction, greaterThan(0));
     },
   );
   for (final (name, colors, scale, locale) in [
@@ -242,6 +270,18 @@ void main() {
         matchesGoldenFile('goldens/prayer-details-$name.png'),
       );
       expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+      await pump(
+        tester,
+        colors: colors,
+        scale: scale,
+        locale: locale,
+        now: DateTime.utc(2026, 10, 4, 17),
+      );
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('goldens/prayer-night-$name.png'),
+      );
     });
   }
 }

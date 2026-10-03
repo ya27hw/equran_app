@@ -198,15 +198,6 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                           now: _now,
                           isViewingToday: isViewingToday,
                           periodEndsAt: periodEndsAt,
-                          previousDay: _service.calculateDay(
-                            date: DateTime(
-                              selectedDate.year,
-                              selectedDate.month,
-                              selectedDate.day - 1,
-                            ),
-                            location: location,
-                            settings: settings,
-                          ),
                           followingDay: _service.calculateDay(
                             date: DateTime(
                               selectedDate.year,

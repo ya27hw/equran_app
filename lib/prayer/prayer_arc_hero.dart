@@ -41,7 +41,6 @@ class PrayerArcHero extends StatelessWidget {
     required this.nextPrayer,
     required this.now,
     required this.onTap,
-    required this.previousDay,
     required this.followingDay,
     this.currentPrayer,
     this.titleOverride,
@@ -51,7 +50,6 @@ class PrayerArcHero extends StatelessWidget {
   });
   final PrayerDay day;
   final NextPrayer nextPrayer;
-  final PrayerDay previousDay;
   final PrayerDay followingDay;
   final DateTime now;
   final VoidCallback onTap;
@@ -75,7 +73,12 @@ class PrayerArcHero extends StatelessWidget {
     // PrayerDay begins at the previous evening's Maghrib. Daylight ends
     // at the following Islamic day's Maghrib on this sunrise's civil date.
     final maghrib = followingDay.entryFor(PrayerTimeKind.maghrib).time;
-    final fraction = prayerArcFraction(now, sunrise, maghrib);
+    final night = isViewingToday && now.isBefore(sunrise);
+    final arcStart = night
+        ? day.entryFor(PrayerTimeKind.maghrib).time
+        : sunrise;
+    final arcEnd = night ? day.entryFor(PrayerTimeKind.fajr).time : maghrib;
+    final fraction = prayerArcFraction(now, arcStart, arcEnd);
     final current = currentPrayer ?? nextPrayer.entry;
     final title = titleOverride ?? localizedPrayerName(l, current.kind);
     final countdown = nextPrayer.countdown.isNegative
@@ -125,20 +128,29 @@ class PrayerArcHero extends StatelessWidget {
                                 child: CustomPaint(
                                   painter: PrayerArcPainter(
                                     fraction: fraction,
+                                    night: night,
                                     gold: tokens.gold,
                                     background: tokens.featB,
-                                    markers: [
-                                      prayerArcFraction(
-                                        day.entryFor(PrayerTimeKind.dhuhr).time,
-                                        sunrise,
-                                        maghrib,
-                                      ),
-                                      prayerArcFraction(
-                                        day.entryFor(PrayerTimeKind.asr).time,
-                                        sunrise,
-                                        maghrib,
-                                      ),
-                                    ],
+                                    markers: night
+                                        ? const []
+                                        : [
+                                            prayerArcFraction(
+                                              day
+                                                  .entryFor(
+                                                    PrayerTimeKind.dhuhr,
+                                                  )
+                                                  .time,
+                                              sunrise,
+                                              maghrib,
+                                            ),
+                                            prayerArcFraction(
+                                              day
+                                                  .entryFor(PrayerTimeKind.asr)
+                                                  .time,
+                                              sunrise,
+                                              maghrib,
+                                            ),
+                                          ],
                                     showProgress: isViewingToday,
                                     rtl:
                                         Directionality.of(context) ==
@@ -191,13 +203,17 @@ class PrayerArcHero extends StatelessWidget {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   _ArcEndpoint(
-                                    label: l.prayerNameSunrise,
-                                    time: time(sunrise),
+                                    label: night
+                                        ? l.prayerNameMaghrib
+                                        : l.prayerNameSunrise,
+                                    time: time(arcStart),
                                     color: tokens.featText2,
                                   ),
                                   _ArcEndpoint(
-                                    label: l.prayerNameMaghrib,
-                                    time: time(maghrib),
+                                    label: night
+                                        ? l.prayerNameFajr
+                                        : l.prayerNameMaghrib,
+                                    time: time(arcEnd),
                                     color: tokens.featText2,
                                   ),
                                 ],
@@ -316,7 +332,9 @@ class PrayerArcPainter extends CustomPainter {
     required this.markers,
     this.rtl = false,
     this.showProgress = true,
+    this.night = false,
   });
+  final bool night;
   final double fraction;
   final Color gold;
   final Color background;
@@ -375,7 +393,18 @@ class PrayerArcPainter extends CustomPainter {
         ..color = gold.withValues(alpha: .16);
       canvas.drawCircle(point, 19, paint);
       paint.color = EquranTokens.mix(gold, EquranColors.dark.textPrimary, .2);
-      canvas.drawCircle(point, 10, paint);
+      if (night) {
+        final moon = Path.combine(
+          PathOperation.difference,
+          Path()..addOval(Rect.fromCircle(center: point, radius: 10)),
+          Path()..addOval(
+            Rect.fromCircle(center: point + const Offset(5, -4), radius: 9),
+          ),
+        );
+        canvas.drawPath(moon, paint);
+      } else {
+        canvas.drawCircle(point, 10, paint);
+      }
     }
     canvas.restore();
   }
@@ -383,6 +412,7 @@ class PrayerArcPainter extends CustomPainter {
   @override
   bool shouldRepaint(PrayerArcPainter old) =>
       old.fraction != fraction ||
+      old.night != night ||
       old.gold != gold ||
       old.background != background ||
       old.rtl != rtl ||

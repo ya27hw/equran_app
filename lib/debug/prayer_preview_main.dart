@@ -44,6 +44,7 @@ Future<void> main() async {
       },
       locale: Locale(params['locale'] ?? 'en'),
       scale: double.tryParse(params['scale'] ?? '') ?? 1,
+      now: params['night'] == 'true' ? DateTime.utc(2026, 10, 4, 17) : null,
     ),
   );
 }
