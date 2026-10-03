@@ -391,27 +391,30 @@ class _HomePageState extends State<HomePage> {
       destinations.length - 1,
     );
 
-    return ColoredBox(
-      color: colors.primary,
-      child: SafeArea(
-        top: false,
-        child: NavigationBar(
-          height: 68,
-          selectedIndex: selectedIdx,
-          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-          onDestinationSelected: (int index) {
-            if (index != selectedIdx) {
-              unawaited(HapticFeedback.selectionClick());
-            }
-            _onItemTapped(index);
-          },
-          destinations: destinations.map((d) {
-            return NavigationDestination(
-              icon: d.icon,
-              selectedIcon: d.selectedIcon,
-              label: d.label,
-            );
-          }).toList(),
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
+      child: ColoredBox(
+        color: colors.primary,
+        child: SafeArea(
+          top: false,
+          child: NavigationBar(
+            height: 68,
+            selectedIndex: selectedIdx,
+            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+            onDestinationSelected: (int index) {
+              if (index != selectedIdx) {
+                unawaited(HapticFeedback.selectionClick());
+              }
+              _onItemTapped(index);
+            },
+            destinations: destinations.map((d) {
+              return NavigationDestination(
+                icon: d.icon,
+                selectedIcon: d.selectedIcon,
+                label: d.label,
+              );
+            }).toList(),
+          ),
         ),
       ),
     );
