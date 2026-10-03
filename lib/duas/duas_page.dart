@@ -7,6 +7,7 @@ import 'package:equran/duas/tasbih_page.dart';
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/utils/app_radii.dart';
+import 'package:equran/widgets/common/geometric_pattern.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:hive/hive.dart';
@@ -319,41 +320,58 @@ class _DuasHero extends StatelessWidget {
           ),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
-        child: Row(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppRadii.large),
+        child: Stack(
           children: <Widget>[
-            Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
-                color: colors.onPrimary.withAlpha(24),
-                borderRadius: BorderRadius.circular(AppRadii.medium),
+            Positioned.fill(
+              child: GeometricPattern(
+                color: colors.onPrimary,
+                anchor: AlignmentDirectional.bottomEnd,
+                maxOpacity: 0.18,
               ),
-              child: Icon(Icons.auto_stories_outlined, color: colors.onPrimary),
             ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
+              child: Row(
                 children: <Widget>[
-                  Text(
-                    localizations.hisnAlMuslim,
-                    style: theme.textTheme.titleLarge?.copyWith(
+                  Container(
+                    width: 52,
+                    height: 52,
+                    decoration: BoxDecoration(
+                      color: colors.onPrimary.withAlpha(24),
+                      borderRadius: BorderRadius.circular(AppRadii.medium),
+                    ),
+                    child: Icon(
+                      Icons.auto_stories_outlined,
                       color: colors.onPrimary,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0,
                     ),
                   ),
-                  const SizedBox(height: 3),
-                  Text(
-                    localizations.arabicCategoriesDuasOffline(
-                      categoryCount,
-                      duaCount,
-                    ),
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colors.onPrimaryMuted,
-                      height: 1.3,
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          localizations.hisnAlMuslim,
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            color: colors.onPrimary,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          localizations.arabicCategoriesDuasOffline(
+                            categoryCount,
+                            duaCount,
+                          ),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colors.onPrimaryMuted,
+                            height: 1.3,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],

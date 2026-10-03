@@ -5,6 +5,7 @@ import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/utils/app_radii.dart';
 import 'package:equran/utils/quran_display.dart';
 import 'package:equran/widgets/holographic_card.dart';
+import 'package:equran/widgets/common/geometric_pattern.dart';
 import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
@@ -284,6 +285,13 @@ class EquranResumeImageCard extends StatelessWidget {
                 ),
                 child: Stack(
                   children: <Widget>[
+                    Positioned.fill(
+                      child: GeometricPattern(
+                        color: colors.onPrimary,
+                        anchor: AlignmentDirectional.bottomStart,
+                        maxOpacity: 0.18,
+                      ),
+                    ),
                     Align(
                       alignment: AlignmentDirectional.centerEnd,
                       child: Padding(

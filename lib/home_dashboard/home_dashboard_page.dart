@@ -20,6 +20,8 @@ import 'package:equran/utils/app_radii.dart';
 import 'package:equran/utils/quran_display.dart';
 import 'package:equran/utils/quran_text.dart';
 import 'package:equran/widgets/common/equran_components.dart';
+import 'package:equran/widgets/common/geometric_pattern.dart';
+import 'package:equran/widgets/common/progress_ring.dart';
 import 'package:equran/widgets/holographic_card.dart';
 import 'package:equran/prayer/hijri_calendar.dart';
 import 'package:equran/widgets/last_read_cards.dart';
@@ -150,146 +152,70 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
 
   Widget _buildHeader(ThemeData theme) {
     final EquranColors colors = context.equranColors;
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
     final PrayerLocation? location = _prayerStore.getLocation();
-    final String locationLabel =
-        location?.displayLabel ?? localizations.setPrayerLocation;
+    final int hijriOffset =
+        SettingsDB().get('hijri_offset', defaultValue: 0) as int;
+    final HijriCalendar hijri = HijriCalendar.fromDate(
+      _now,
+      offset: hijriOffset,
+    );
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         EquranSpacing.pagePadding,
-        10,
+        14,
         EquranSpacing.pagePadding,
-        8,
+        6,
       ),
-      child: Column(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Row(
-            children: <Widget>[
-              Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  color: colors.mint,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: colors.border),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(
+                  '\u0627\u0644\u0633\u0644\u0627\u0645 \u0639\u0644\u064A\u0643\u0645',
+                  textDirection: TextDirection.rtl,
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontFamily: 'UthmanicHafs',
+                    fontSize: 27,
+                    height: 1.35,
+                    color: colors.warning,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
-                child: Icon(
-                  Icons.nights_stay_rounded,
-                  color: colors.primary,
-                  size: 20,
+                const SizedBox(height: 2),
+                Text(
+                  _formatDashboardDate(_now),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    color: colors.textPrimary,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        Icon(
-                          Icons.location_on_rounded,
-                          size: 14,
-                          color: colors.primary,
-                        ),
-                        const SizedBox(width: 3),
-                        Text(
-                          localizations.currentLocation,
-                          style: theme.textTheme.labelMedium?.copyWith(
-                            color: colors.textMuted,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Text(
-                      locationLabel,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        color: colors.textPrimary,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ],
+                const SizedBox(height: 1),
+                Text(
+                  hijri.toString(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: colors.warning,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-              ),
-              // Container(
-              //   width: 42,
-              //   height: 42,
-              //   decoration: BoxDecoration(
-              //     color: colors.surface,
-              //     shape: BoxShape.circle,
-              //     border: Border.all(color: colors.border),
-              //   ),
-              //   child: IconButton(
-              //     tooltip: 'Search Quran text',
-              //     onPressed: widget.onOpenSearch,
-              //     color: colors.primary,
-              //     iconSize: 22,
-              //     padding: EdgeInsets.zero,
-              //     icon: const Icon(Icons.search_rounded),
-              //   ),
-              // ),
-            ],
+              ],
+            ),
           ),
-          const SizedBox(height: 10),
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text(
-                      _formatDashboardDate(_now),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: colors.textPrimary,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    // Integrated Hijri date (beautiful small gold text)
-                    Builder(
-                      builder: (BuildContext context) {
-                        final int offset =
-                            SettingsDB().get('hijri_offset', defaultValue: 0)
-                                as int;
-                        final HijriCalendar hijri = HijriCalendar.fromDate(
-                          _now,
-                          offset: offset,
-                        );
-                        return Text(
-                          hijri.toString(),
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: colors.accentGold,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              // TextButton(
-              //   onPressed: widget.onOpenPrayerTimes,
-              //   style: TextButton.styleFrom(
-              //     padding: const EdgeInsets.symmetric(horizontal: 4),
-              //     minimumSize: const Size(0, 32),
-              //     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              //   ),
-              //   child: const Row(
-              //     mainAxisSize: MainAxisSize.min,
-              //     children: <Widget>[
-              //       Text('Prayer Times'),
-              //       SizedBox(width: 2),
-              //       Icon(Icons.chevron_right_rounded, size: 18),
-              //     ],
-              //   ),
-              // ),
-            ],
-          ),
+          if (location != null) ...<Widget>[
+            const SizedBox(width: 12),
+            _LocationPill(
+              label: location.displayLabel,
+              onTap: widget.onOpenPrayerTimes,
+            ),
+          ],
         ],
       ),
     );
@@ -322,6 +248,54 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
     setState(() {
       _exactAlarmPermission = status;
     });
+  }
+}
+
+class _LocationPill extends StatelessWidget {
+  const _LocationPill({required this.label, required this.onTap});
+
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final EquranColors colors = context.equranColors;
+    final BorderRadius radius = BorderRadius.circular(EquranRadii.pill);
+    return Material(
+      color: colors.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: radius,
+        side: BorderSide(color: colors.border),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: radius,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(10, 8, 12, 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Icon(Icons.location_on_rounded, size: 16, color: colors.primary),
+              const SizedBox(width: 4),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 130),
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: colors.textPrimary,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -785,23 +759,33 @@ class _PrayerThumbCarousel extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final bool compact = constraints.maxWidth < 380;
+        // Let the strip run to the screen edges instead of clipping at the
+        // page margin, unless the dashboard is capped on a wide layout.
+        final double bleed = constraints.maxWidth >= 1000
+            ? 0
+            : EquranSpacing.pagePadding;
         return SizedBox(
           height: compact ? 138 : 144,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            itemCount: day.entries.length,
-            separatorBuilder: (context, index) => const SizedBox(width: 10),
-            itemBuilder: (context, index) {
-              final PrayerTimeEntry entry = day.entries[index];
-              return PrayerTimeThumbCard(
-                entry: entry,
-                use24HourFormat: day.settings.use24HourFormat,
-                isActive: entry.kind == activeKind,
-                width: compact ? 132 : 142,
-                onTap: onOpenPrayerTimes,
-              );
-            },
+          child: OverflowBox(
+            minWidth: constraints.maxWidth + bleed * 2,
+            maxWidth: constraints.maxWidth + bleed * 2,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
+              padding: EdgeInsets.symmetric(horizontal: bleed),
+              itemCount: day.entries.length,
+              separatorBuilder: (context, index) => const SizedBox(width: 10),
+              itemBuilder: (context, index) {
+                final PrayerTimeEntry entry = day.entries[index];
+                return PrayerTimeThumbCard(
+                  entry: entry,
+                  use24HourFormat: day.settings.use24HourFormat,
+                  isActive: entry.kind == activeKind,
+                  width: compact ? 132 : 142,
+                  onTap: onOpenPrayerTimes,
+                );
+              },
+            ),
           ),
         );
       },
@@ -1316,43 +1300,53 @@ class _CompanionSectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final EquranColors colors = context.equranColors;
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Container(
-          width: compact ? 32 : 36,
-          height: compact ? 32 : 36,
-          decoration: BoxDecoration(
-            color: colors.mint.withAlpha(170),
-            borderRadius: BorderRadius.circular(AppRadii.medium),
-            border: Border.all(color: colors.border.withAlpha(170)),
-          ),
-          child: Icon(icon, color: colors.primary, size: compact ? 17 : 19),
+        LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+            // The title keeps priority; the ornament only fills what is left
+            // and drops away when the title needs the full width.
+            const double minOrnament = 64;
+            final double titleMax = math.max(
+              0,
+              constraints.maxWidth - (compact ? 26 : 28) - minOrnament - 12,
+            );
+            return Row(
+              children: <Widget>[
+                Icon(icon, color: colors.primary, size: compact ? 18 : 20),
+                const SizedBox(width: 8),
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: titleMax),
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: colors.textPrimary,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: OrnamentDivider(
+                    color: colors.accentGold.withAlpha(150),
+                    starSize: 9,
+                  ),
+                ),
+              ],
+            );
+          },
         ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: colors.textPrimary,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-              const SizedBox(height: 1),
-              Text(
-                subtitle,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colors.textSecondary,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
+        const SizedBox(height: 3),
+        Text(
+          subtitle,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: colors.textSecondary,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ],
@@ -1402,7 +1396,6 @@ class _MuslimDailyQuickActionsState extends State<_MuslimDailyQuickActions> {
 
   @override
   Widget build(BuildContext context) {
-    final EquranColors colors = context.equranColors;
     final localizations = AppLocalizations.of(context)!;
 
     return ValueListenableBuilder<Box<dynamic>>(
@@ -1490,67 +1483,59 @@ class _MuslimDailyQuickActionsState extends State<_MuslimDailyQuickActions> {
         return Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 760),
-            child: _HomePremiumCard(
-              padding: const EdgeInsets.fromLTRB(12, 12, 12, 10),
-              baseColor: colors.surface,
-              accentColor: colors.primary,
-              assetPath: _designAsset,
-              assetOpacity: 0.035,
-              assetWidth: 170,
-              child: Column(
-                children: <Widget>[
-                  SizedBox(
-                    height: pageViewHeight,
-                    child: pages.isEmpty
-                        ? const SizedBox.shrink()
-                        : PageView.builder(
-                            controller: _pageController,
-                            physics: const BouncingScrollPhysics(),
-                            itemCount: pages.length,
-                            onPageChanged: (int value) {
-                              setState(() {
-                                _page = value;
-                              });
-                            },
-                            itemBuilder: (context, pageIndex) {
-                              final List<_QuickAction> pageItems =
-                                  pages[pageIndex];
-                              return GridView.builder(
-                                itemCount: pageItems.length,
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                padding: EdgeInsets.zero,
-                                gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 2,
-                                      mainAxisExtent: 78,
-                                      mainAxisSpacing: 10,
-                                      crossAxisSpacing: 8,
-                                    ),
-                                itemBuilder: (context, index) {
-                                  final _QuickAction item = pageItems[index];
-                                  return _DashboardActionTile(
-                                    icon: item.icon,
-                                    label: item.label,
-                                    onTap: item.onTap,
-                                    assetPath: item.assetPath,
-                                  );
-                                },
-                              );
-                            },
-                          ),
+            child: Column(
+              children: <Widget>[
+                SizedBox(
+                  height: pageViewHeight,
+                  child: pages.isEmpty
+                      ? const SizedBox.shrink()
+                      : PageView.builder(
+                          controller: _pageController,
+                          physics: const BouncingScrollPhysics(),
+                          itemCount: pages.length,
+                          onPageChanged: (int value) {
+                            setState(() {
+                              _page = value;
+                            });
+                          },
+                          itemBuilder: (context, pageIndex) {
+                            final List<_QuickAction> pageItems =
+                                pages[pageIndex];
+                            return GridView.builder(
+                              itemCount: pageItems.length,
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              padding: EdgeInsets.zero,
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                    mainAxisExtent: 78,
+                                    mainAxisSpacing: 10,
+                                    crossAxisSpacing: 8,
+                                  ),
+                              itemBuilder: (context, index) {
+                                final _QuickAction item = pageItems[index];
+                                return _DashboardActionTile(
+                                  icon: item.icon,
+                                  label: item.label,
+                                  onTap: item.onTap,
+                                  assetPath: item.assetPath,
+                                );
+                              },
+                            );
+                          },
+                        ),
+                ),
+                if (pages.length > 1) ...<Widget>[
+                  const SizedBox(height: 6),
+                  _QuickActionPageDots(
+                    itemCount: pages.length,
+                    activeIndex: _page,
                   ),
-                  if (pages.length > 1) ...<Widget>[
-                    const SizedBox(height: 6),
-                    _QuickActionPageDots(
-                      itemCount: pages.length,
-                      activeIndex: _page,
-                    ),
-                  ],
-                  const SizedBox(height: 9),
-                  _ExploreAllFeaturesRow(onTap: widget.actions.onOpenMore),
                 ],
-              ),
+                const SizedBox(height: 9),
+                _ExploreAllFeaturesRow(onTap: widget.actions.onOpenMore),
+              ],
             ),
           ),
         );
@@ -1587,12 +1572,18 @@ class _DashboardActionTile extends StatelessWidget {
         borderRadius: radius,
         child: Ink(
           decoration: BoxDecoration(
-            color: Color.alphaBlend(
-              colors.primary.withAlpha(18),
-              colors.surfaceSoft,
-            ),
+            color: colors.surface,
             borderRadius: radius,
-            border: Border.all(color: colors.border.withAlpha(130)),
+            border: Border.all(color: colors.border.withAlpha(170)),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: colors.shadow.withAlpha(
+                  Theme.of(context).brightness == Brightness.light ? 10 : 26,
+                ),
+                blurRadius: 14,
+                offset: const Offset(0, 6),
+              ),
+            ],
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -2269,94 +2260,88 @@ class _JourneyPreviewCard extends StatelessWidget {
       assetPath: _designAsset,
       assetOpacity: 0.055,
       assetWidth: 190,
-      padding: const EdgeInsets.fromLTRB(18, 15, 18, 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: const EdgeInsets.fromLTRB(18, 16, 14, 16),
+      child: Row(
         children: <Widget>[
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: Text(
-                  AppLocalizations.of(context)!.quranJourney,
-                  maxLines: 1,
+          ProgressRing(
+            value: progress,
+            size: 88,
+            strokeWidth: 9,
+            trackColor: colors.primary.withAlpha(46),
+            color: colors.primary,
+            endColor: colors.accentGold,
+            child: Text(
+              '$progressPercent%',
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: colors.textPrimary,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        AppLocalizations.of(context)!.quranJourney,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: colors.textSecondary,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                    Icon(
+                      Icons.chevron_right_rounded,
+                      size: 20,
+                      color: colors.textMuted,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                Text.rich(
+                  TextSpan(
+                    children: <InlineSpan>[
+                      TextSpan(
+                        text: '$ayahsRead / $dailyGoal',
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          color: colors.textPrimary,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      TextSpan(
+                        text: ' ${AppLocalizations.of(context)!.ayahsToday}',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colors.textSecondary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: colors.textPrimary,
-                    fontWeight: FontWeight.w900,
-                  ),
                 ),
-              ),
-              EquranIconBadge(
-                icon: Icons.auto_stories_outlined,
-                size: 36,
-                backgroundColor: colors.mint,
-                foregroundColor: colors.primary,
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: <Widget>[
-              Text(
-                '$ayahsRead / $dailyGoal',
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  color: colors.textPrimary,
-                  fontWeight: FontWeight.w900,
-                  height: 1.0,
+                const SizedBox(height: 10),
+                Row(
+                  children: <Widget>[
+                    if (showStreak) ...<Widget>[
+                      _JourneyStreakChip(streak: snapshot.currentStreak),
+                      const SizedBox(width: 8),
+                    ],
+                    _JourneyMetricChip(
+                      label: AppLocalizations.of(
+                        context,
+                      )!.lettersCount(snapshot.estimatedLettersRead),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(width: 5),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 2),
-                child: Text(
-                  AppLocalizations.of(context)!.ayahsToday,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colors.textPrimary,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 9),
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(AppRadii.pill),
-                  child: LinearProgressIndicator(
-                    value: progress,
-                    minHeight: 6,
-                    color: colors.primary,
-                    backgroundColor: colors.mint,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                '$progressPercent%',
-                textAlign: TextAlign.right,
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: colors.onPrimaryMuted,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: <Widget>[
-              if (showStreak) ...<Widget>[
-                _JourneyStreakChip(streak: snapshot.currentStreak),
-                const SizedBox(width: 8),
               ],
-              _JourneyMetricChip(
-                label: AppLocalizations.of(
-                  context,
-                )!.lettersCount(snapshot.estimatedLettersRead),
-              ),
-            ],
+            ),
           ),
         ],
       ),

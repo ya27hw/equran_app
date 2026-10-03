@@ -109,3 +109,10 @@ Incoming agents and developers must strictly follow these rules when editing the
     *   Never delete, remove, or list `pubspec.lock` in `.gitignore`. It must always be tracked and committed to lock exact dependency versions.
 5.  **F-Droid Compliance (No Google GMS/Firebase):**
     *   Do not integrate libraries or plugins that depend on Google Mobile Services (GMS), Firebase SDKs (such as analytics, crash reporting, or push notifications), or other proprietary non-free frameworks. The codebase must remain 100% compliant with F-Droid inclusion policies.
+
+---
+
+## 📎 Related Docs
+
+*   **[docs/ui_polish_roadmap.md](docs/ui_polish_roadmap.md)** -> Handoff for the ongoing UI/UX polish work: design language, guardrails, verification workflow and the next steps. Read it before doing any UI polish task.
+*   **[tool/ui_preview/README.md](tool/ui_preview/README.md)** -> How to take screenshots of the app from a web build (used for visual checks and the README screenshots).

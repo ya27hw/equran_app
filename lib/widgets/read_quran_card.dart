@@ -9,6 +9,7 @@ import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/theme/equran_text_styles.dart' show EquranTextStyles;
 import 'package:equran/utils/app_radii.dart';
 import 'package:equran/utils/quran_display.dart';
+import 'package:equran/widgets/number_badge.dart';
 import 'package:equran/word_by_word/word_alignment.dart';
 import 'package:equran/word_by_word/word_by_word_pack.dart';
 import 'package:equran/word_by_word/word_by_word_text.dart';
@@ -216,6 +217,43 @@ class ReadQuranCard extends StatelessWidget {
     final String ayahLabel = shareImageMode
         ? localizations.ayahNumber(currentVerse)
         : localizations.ayahOfTotal(currentVerse, totalVerses);
+
+    if (!shareImageMode) {
+      return Row(
+        children: <Widget>[
+          SurahNumberBadge(number: currentVerse, size: 44, active: true),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(
+                  ayahLabel,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    color: colorScheme.onSurface,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  localizedJuzLabel(localizations, juzNumber),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: mutedStyle?.copyWith(color: colors.warning),
+                ),
+              ],
+            ),
+          ),
+          if (showActions) ...<Widget>[
+            const SizedBox(width: 12),
+            _buildHeaderActions(context),
+          ],
+        ],
+      );
+    }
 
     return Row(
       children: <Widget>[
