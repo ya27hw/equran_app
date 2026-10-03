@@ -22,12 +22,13 @@ class EquranTextStyles {
   static TextStyle displayNumeral(
     BuildContext context, {
     double size = 22,
+    double height = 1.4,
     Color? color,
   }) =>
       _display(
         context,
         size: size,
-        height: 1.4,
+        height: height,
         tracking: -0.01,
         color: color,
       ).copyWith(
@@ -52,7 +53,8 @@ class EquranTextStyles {
       );
 
   /// Callers uppercase the label; TextStyle cannot transform string content.
-  static TextStyle eyebrow(BuildContext context) => GoogleFonts.inter(
+  static TextStyle eyebrow(BuildContext context) => TextStyle(
+    fontFamily: 'Inter',
     fontSize: 11,
     height: 1,
     fontWeight: FontWeight.w600,

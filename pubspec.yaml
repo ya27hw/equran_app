@@ -108,8 +108,17 @@ flutter:
     - assets/media/images/app/
     - assets/media/images/icon.webp
     - assets/media/fonts/newsreader/OFL.txt
+    - assets/media/fonts/inter/OFL.txt
 
   fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/media/fonts/inter/Inter.ttf
+          weight: 400
+        - asset: assets/media/fonts/inter/Inter.ttf
+          weight: 500
+        - asset: assets/media/fonts/inter/Inter.ttf
+          weight: 600
     - family: QuranIndoPak
       fonts:
         - asset: assets/media/fonts/QuranIndoPak.ttf
