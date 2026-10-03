@@ -94,11 +94,15 @@ class _RingPainter extends CustomPainter {
       ..strokeWidth = strokeWidth
       ..color = color;
     if (endColor != null) {
+      // The round cap pokes backwards past the start angle; start the sweep
+      // that far back so the cap keeps the start colour instead of wrapping
+      // around to the end colour.
+      final double capAngle = strokeWidth / (size.shortestSide - strokeWidth);
       arc.shader = SweepGradient(
         startAngle: 0,
         endAngle: math.pi * 2,
         colors: <Color>[color, endColor!],
-        transform: const GradientRotation(-math.pi / 2),
+        transform: GradientRotation(-math.pi / 2 - capAngle),
       ).createShader(rect);
     }
     canvas.drawArc(arcRect, -math.pi / 2, sweep, false, arc);
