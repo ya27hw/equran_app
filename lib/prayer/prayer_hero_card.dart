@@ -67,6 +67,7 @@ class PrayerHeroCard extends StatelessWidget {
     if (prayerDay == null || next == null) {
       return EquranGradientCard(
         onTap: onTap,
+        showPattern: true,
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
         child: SizedBox(
           height: 176,
@@ -176,6 +177,7 @@ class PrayerHeroCard extends StatelessWidget {
 
             return EquranGradientCard(
               onTap: onTap,
+              showPattern: true,
               padding: EdgeInsets.fromLTRB(
                 compact ? 16 : 20,
                 compact ? 14 : 16,

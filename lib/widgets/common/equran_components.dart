@@ -1,5 +1,6 @@
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
+import 'package:equran/widgets/common/geometric_pattern.dart';
 import 'package:equran/widgets/common/pressable_scale.dart';
 import 'package:flutter/material.dart';
 
@@ -71,12 +72,16 @@ class EquranGradientCard extends StatelessWidget {
     this.onTap,
     this.padding = const EdgeInsets.all(EquranSpacing.cardPadding),
     this.borderRadius = EquranRadii.xl,
+    this.showPattern = false,
   });
 
   final Widget child;
   final VoidCallback? onTap;
   final EdgeInsetsGeometry padding;
   final double borderRadius;
+
+  /// Adds a soft glow and a faded eight-pointed-star lattice behind [child].
+  final bool showPattern;
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +109,39 @@ class EquranGradientCard extends StatelessWidget {
               ),
             ],
           ),
-          child: Padding(padding: padding, child: child),
+          child: Stack(
+            fit: StackFit.passthrough,
+            children: <Widget>[
+              if (showPattern) ...<Widget>[
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: RadialGradient(
+                          center: AlignmentDirectional.topStart.resolve(
+                            Directionality.of(context),
+                          ),
+                          radius: 1.1,
+                          colors: <Color>[
+                            colors.onPrimary.withAlpha(34),
+                            colors.onPrimary.withAlpha(0),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned.fill(
+                  child: GeometricPattern(
+                    color: colors.onPrimary,
+                    anchor: AlignmentDirectional.bottomStart,
+                    maxOpacity: 0.2,
+                  ),
+                ),
+              ],
+              Padding(padding: padding, child: child),
+            ],
+          ),
         ),
       ),
     );
