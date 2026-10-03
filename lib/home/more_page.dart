@@ -265,11 +265,14 @@ class _MoreHero extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(
-                    localizations.yourIslamicCompanion,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      color: colors.onPrimary,
-                      fontWeight: FontWeight.w900,
+                  SizedBox(
+                    width: copyWidth,
+                    child: Text(
+                      localizations.yourIslamicCompanion,
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        color: colors.onPrimary,
+                        fontWeight: FontWeight.w900,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 8),

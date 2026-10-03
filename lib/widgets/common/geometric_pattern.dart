@@ -74,6 +74,7 @@ class _GeometricPatternPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     if (size.isEmpty || starRadius <= 0) return;
+    canvas.clipRect(Offset.zero & size);
 
     final double h = starRadius;
     final double tip = h * math.sqrt2;
