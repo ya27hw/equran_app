@@ -324,7 +324,8 @@ class EquranTheme {
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: tokens.primary,
-        indicatorColor: tokens.onPrimary.withAlpha(26),
+        indicatorColor: tokens.onPrimary.withAlpha(38),
+        indicatorShape: const StadiumBorder(),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           final bool selected = states.contains(WidgetState.selected);
           return textTheme.labelMedium?.copyWith(

@@ -20,9 +20,11 @@ import 'package:equran/reading_plans/reading_plans_page.dart';
 import 'package:equran/services/frame_rate_policy_manager.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/utils/responsive_nav.dart';
+import 'package:equran/widgets/common/tab_entrance.dart';
 import 'package:equran/zakat/zakat_page.dart';
 import 'package:equran/prayer/islamic_calendar_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:equran/l10n/app_localizations.dart';
 
 const String _homePointerRefreshBlocker = 'home.userPointerActive';
@@ -368,7 +370,10 @@ class _HomePageState extends State<HomePage> {
                     ],
                   )
                 : null,
-            body: destinations[selectedIdx].destination,
+            body: TabEntrance(
+              key: ValueKey<int>(selectedIdx),
+              child: destinations[selectedIdx].destination,
+            ),
             bottomNavigationBar: _buildBottomNavigation(state, destinations),
           ),
         );
@@ -395,6 +400,9 @@ class _HomePageState extends State<HomePage> {
           selectedIndex: selectedIdx,
           labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
           onDestinationSelected: (int index) {
+            if (index != selectedIdx) {
+              unawaited(HapticFeedback.selectionClick());
+            }
             _onItemTapped(index);
           },
           destinations: destinations.map((d) {
