@@ -9,6 +9,9 @@ import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/theme/equran_text_styles.dart' show EquranTextStyles;
 import 'package:equran/utils/app_radii.dart';
 import 'package:equran/utils/quran_display.dart';
+import 'package:equran/word_by_word/word_alignment.dart';
+import 'package:equran/word_by_word/word_by_word_pack.dart';
+import 'package:equran/word_by_word/word_by_word_text.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
 
@@ -30,6 +33,13 @@ class ReadQuranCard extends StatelessWidget {
   final String transliteration;
   final String verse;
   final String? basmala;
+
+  /// Word-by-word glosses for this ayah, with the pack provenance and the
+  /// active Quran script. When all are set and the glosses line up with the
+  /// rendered words, the ayah text becomes tappable; otherwise it is plain.
+  final List<WordGloss>? wordGlosses;
+  final WordByWordPackMeta? wordByWordMeta;
+  final String? quranScript;
 
   final double fontSize;
   final double fontSizeTranslation;
@@ -62,6 +72,9 @@ class ReadQuranCard extends StatelessWidget {
     required this.translation,
     this.transliteration = '',
     this.basmala,
+    this.wordGlosses,
+    this.wordByWordMeta,
+    this.quranScript,
     required this.verse,
     this.showActions = true,
     this.showTransliteration = false,
@@ -80,6 +93,36 @@ class ReadQuranCard extends StatelessWidget {
     this.isDownloading = false,
     this.isDownloaded = false,
   });
+
+  /// Tappable words when glosses are available and line up; plain text
+  /// otherwise (and always for share images).
+  Widget _buildVerseText(TextStyle style) {
+    final List<WordGloss>? glosses = wordGlosses;
+    final WordByWordPackMeta? meta = wordByWordMeta;
+    final String? script = quranScript;
+    if (!shareImageMode && glosses != null && meta != null && script != null) {
+      final List<WordRange>? ranges = alignWordRanges(
+        text: verse,
+        script: script,
+        wordCount: glosses.length,
+      );
+      if (ranges != null) {
+        return WordByWordText(
+          text: verse,
+          ranges: ranges,
+          glosses: glosses,
+          style: style,
+          meta: meta,
+        );
+      }
+    }
+    return Text(
+      verse,
+      textDirection: TextDirection.rtl,
+      textAlign: TextAlign.justify,
+      style: style,
+    );
+  }
 
   Future<bool> _showInputPrompt(BuildContext context) async {
     final TextEditingController textController = TextEditingController();
@@ -446,11 +489,8 @@ class ReadQuranCard extends StatelessWidget {
               if (hasVerse)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 6),
-                  child: Text(
-                    verse,
-                    textDirection: TextDirection.rtl,
-                    textAlign: TextAlign.justify,
-                    style: TextStyle(
+                  child: _buildVerseText(
+                    TextStyle(
                       fontFamily: EquranTextStyles.fontFamilyForVerse(
                         currentChapter,
                         currentVerse,

@@ -7892,6 +7892,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{source} • last known rate • {time}'**
   String ratesStaleStatus(String source, String time);
+
+  /// No description provided for @wordByWord.
+  ///
+  /// In en, this message translates to:
+  /// **'Word by word'**
+  String get wordByWord;
+
+  /// No description provided for @wordByWordDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap any word while reading to see its meaning and transliteration.'**
+  String get wordByWordDescription;
+
+  /// No description provided for @wordMeaning.
+  ///
+  /// In en, this message translates to:
+  /// **'Meaning'**
+  String get wordMeaning;
+
+  /// No description provided for @wordTransliteration.
+  ///
+  /// In en, this message translates to:
+  /// **'Transliteration'**
+  String get wordTransliteration;
+
+  /// No description provided for @wordByWordProvenance.
+  ///
+  /// In en, this message translates to:
+  /// **'Word glosses from {source} ({license}). A reading aid, not a translation or tafsir.'**
+  String wordByWordProvenance(String source, String license);
 }
 
 class _AppLocalizationsDelegate

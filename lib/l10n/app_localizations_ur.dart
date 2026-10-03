@@ -4495,4 +4495,22 @@ class AppLocalizationsUr extends AppLocalizations {
   String ratesStaleStatus(String source, String time) {
     return '$source • آخری معلوم نرخ • $time';
   }
+
+  @override
+  String get wordByWord => 'لفظ بہ لفظ';
+
+  @override
+  String get wordByWordDescription =>
+      'پڑھتے وقت کسی بھی لفظ پر ٹیپ کریں تاکہ اس کا مطلب اور رومن تلفظ دیکھ سکیں۔';
+
+  @override
+  String get wordMeaning => 'مطلب';
+
+  @override
+  String get wordTransliteration => 'رومن تلفظ';
+
+  @override
+  String wordByWordProvenance(String source, String license) {
+    return 'الفاظ کے معانی $source ($license) سے۔ یہ پڑھنے میں مدد ہے، ترجمہ یا تفسیر نہیں۔';
+  }
 }

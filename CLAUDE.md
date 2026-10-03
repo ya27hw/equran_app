@@ -38,6 +38,7 @@ flutter test
 - **Startup:** `StartupCoordinator` has a blocking stage (settings, capability detection) and a deferred stage (boxes, Quran data, audio, prayer, widgets). Keep new initialization in the deferred stage unless the first frame needs it.
 - **Web is a shipped target** (`deploy-web.yml` publishes to GitHub Pages). `dart:io` `Platform` getters throw on web, so guard with `kIsWeb` first.
 - **Roadmap features** (`lib/features/`, `lib/hifz/memory_*`, `reader_controllers`) are fail-closed behind `FeatureFlagStore` and not yet reachable from the UI. Do not enable a flag by default.
+- **Word by word** (`lib/word_by_word/`, `docs/word_by_word.md`): optional downloaded pack; `alignWordRanges` returns null unless word counts match exactly, so unexplained ayahs stay plain text. Never relax that to a best-effort match.
 - **Backup/restore** (`lib/backend/backup_service.dart`) validates everything, snapshots all boxes, and rolls back on failure. A new Hive box that holds user data must be added to the export, `_snapshotStores`, `_restoreStores` and the restore sections together.
 
 ## Running the app

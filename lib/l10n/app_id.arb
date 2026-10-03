@@ -2226,5 +2226,10 @@
   "addressCopied": "Alamat disalin",
   "usdcErc20": "USDC (ERC-20)",
   "ratesLiveStatus": "{source} • langsung • {time}",
-  "ratesStaleStatus": "{source} • harga terakhir diketahui • {time}"
+  "ratesStaleStatus": "{source} • harga terakhir diketahui • {time}",
+  "wordByWord": "Kata per kata",
+  "wordByWordDescription": "Ketuk kata mana pun saat membaca untuk melihat arti dan transliterasinya.",
+  "wordMeaning": "Arti",
+  "wordTransliteration": "Transliterasi",
+  "wordByWordProvenance": "Arti kata dari {source} ({license}). Alat bantu baca, bukan terjemahan atau tafsir."
 }

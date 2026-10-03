@@ -6,6 +6,7 @@ import 'package:archive/archive_io.dart';
 import 'package:crypto/crypto.dart';
 import 'package:equran/backend/resource_install_store.dart';
 import 'package:equran/backend/resource_models.dart';
+import 'package:equran/word_by_word/word_by_word_pack.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
@@ -385,6 +386,9 @@ class ResourceDownloadService {
       case ResourceType.translation:
         await _validateTranslation(directory);
         return;
+      case ResourceType.wordByWord:
+        await _validateWordByWord(directory);
+        return;
       case ResourceType.unknown:
         await _validateGeneric(directory);
         return;
@@ -445,6 +449,14 @@ class ResourceDownloadService {
           );
         }
       }
+    }
+  }
+
+  Future<void> _validateWordByWord(Directory directory) async {
+    try {
+      await validateWordByWordPack(directory);
+    } on WordByWordPackException catch (error) {
+      throw ResourceInstallException(error.message);
     }
   }
 

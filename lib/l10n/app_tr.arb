@@ -2226,5 +2226,10 @@
   "addressCopied": "Adres kopyalandı",
   "usdcErc20": "USDC (ERC-20)",
   "ratesLiveStatus": "{source} • canlı • {time}",
-  "ratesStaleStatus": "{source} • bilinen son fiyat • {time}"
+  "ratesStaleStatus": "{source} • bilinen son fiyat • {time}",
+  "wordByWord": "Kelime kelime",
+  "wordByWordDescription": "Okurken herhangi bir kelimeye dokunarak anlamını ve okunuşunu görün.",
+  "wordMeaning": "Anlam",
+  "wordTransliteration": "Okunuş",
+  "wordByWordProvenance": "Kelime anlamları {source} ({license}) kaynağından. Okuma yardımcısıdır; çeviri ya da tefsir değildir."
 }

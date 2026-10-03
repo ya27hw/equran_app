@@ -4416,4 +4416,22 @@ class AppLocalizationsAr extends AppLocalizations {
   String ratesStaleStatus(String source, String time) {
     return '$source • آخر سعر معروف • $time';
   }
+
+  @override
+  String get wordByWord => 'كلمة بكلمة';
+
+  @override
+  String get wordByWordDescription =>
+      'اضغط على أي كلمة أثناء القراءة لترى معناها ونطقها بالحروف اللاتينية.';
+
+  @override
+  String get wordMeaning => 'المعنى';
+
+  @override
+  String get wordTransliteration => 'النقل الحرفي';
+
+  @override
+  String wordByWordProvenance(String source, String license) {
+    return 'معاني الكلمات من $source ($license). وسيلة مساعدة على القراءة وليست ترجمة ولا تفسيرًا.';
+  }
 }

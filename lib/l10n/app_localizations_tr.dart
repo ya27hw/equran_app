@@ -4503,4 +4503,22 @@ class AppLocalizationsTr extends AppLocalizations {
   String ratesStaleStatus(String source, String time) {
     return '$source • bilinen son fiyat • $time';
   }
+
+  @override
+  String get wordByWord => 'Kelime kelime';
+
+  @override
+  String get wordByWordDescription =>
+      'Okurken herhangi bir kelimeye dokunarak anlamını ve okunuşunu görün.';
+
+  @override
+  String get wordMeaning => 'Anlam';
+
+  @override
+  String get wordTransliteration => 'Okunuş';
+
+  @override
+  String wordByWordProvenance(String source, String license) {
+    return 'Kelime anlamları $source ($license) kaynağından. Okuma yardımcısıdır; çeviri ya da tefsir değildir.';
+  }
 }

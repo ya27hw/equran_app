@@ -1692,5 +1692,10 @@
   "confirmLiveLocationTitle": "استخدام الموقع المباشر",
   "confirmLiveLocationMessage": "هل تريد قفل أوقات الصلاة على موقع جهازك المباشر؟ سيقوم التطبيق بتحديث الأوقات تلقائيًا أثناء سفرك.",
   "ratesLiveStatus": "{source} • مباشر • {time}",
-  "ratesStaleStatus": "{source} • آخر سعر معروف • {time}"
+  "ratesStaleStatus": "{source} • آخر سعر معروف • {time}",
+  "wordByWord": "كلمة بكلمة",
+  "wordByWordDescription": "اضغط على أي كلمة أثناء القراءة لترى معناها ونطقها بالحروف اللاتينية.",
+  "wordMeaning": "المعنى",
+  "wordTransliteration": "النقل الحرفي",
+  "wordByWordProvenance": "معاني الكلمات من {source} ({license}). وسيلة مساعدة على القراءة وليست ترجمة ولا تفسيرًا."
 }

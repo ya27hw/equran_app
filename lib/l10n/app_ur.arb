@@ -2226,5 +2226,10 @@
   "addressCopied": "پتہ کاپی ہو گیا",
   "usdcErc20": "USDC (ERC-20)",
   "ratesLiveStatus": "{source} • براہِ راست • {time}",
-  "ratesStaleStatus": "{source} • آخری معلوم نرخ • {time}"
+  "ratesStaleStatus": "{source} • آخری معلوم نرخ • {time}",
+  "wordByWord": "لفظ بہ لفظ",
+  "wordByWordDescription": "پڑھتے وقت کسی بھی لفظ پر ٹیپ کریں تاکہ اس کا مطلب اور رومن تلفظ دیکھ سکیں۔",
+  "wordMeaning": "مطلب",
+  "wordTransliteration": "رومن تلفظ",
+  "wordByWordProvenance": "الفاظ کے معانی {source} ({license}) سے۔ یہ پڑھنے میں مدد ہے، ترجمہ یا تفسیر نہیں۔"
 }

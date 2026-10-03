@@ -2361,5 +2361,20 @@
         "type": "String"
       }
     }
+  },
+  "wordByWord": "Word by word",
+  "wordByWordDescription": "Tap any word while reading to see its meaning and transliteration.",
+  "wordMeaning": "Meaning",
+  "wordTransliteration": "Transliteration",
+  "wordByWordProvenance": "Word glosses from {source} ({license}). A reading aid, not a translation or tafsir.",
+  "@wordByWordProvenance": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      },
+      "license": {
+        "type": "String"
+      }
+    }
   }
 }
