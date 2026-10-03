@@ -51,6 +51,8 @@ import 'package:equran/reading_plans/routine_progress.dart';
 import 'package:equran/utils/app_radii.dart';
 import 'package:equran/utils/quran_display.dart';
 import 'package:equran/utils/quran_text.dart';
+import 'package:equran/word_by_word/word_by_word_pack.dart';
+import 'package:equran/word_by_word/word_by_word_service.dart';
 import 'package:equran/utils/reciter.dart';
 import 'package:equran/backend/quran_stream_url.dart';
 import 'package:equran/utils/responsive_nav.dart';
@@ -556,6 +558,7 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
   int _activePointerCount = 0;
   int? _transliterationChapter;
   List<String> _chapterTransliterations = const <String>[];
+  final WordByWordService _wordByWord = WordByWordService.instance;
 
   @override
   void initState() {
@@ -574,6 +577,8 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     _pageFocusNode = FocusNode(debugLabel: 'Read Page Keyboard Focus');
     _getTotalVerses();
     unawaited(_loadChapterTransliterations());
+    _wordByWord.addListener(_onWordByWordChanged);
+    unawaited(_refreshWordByWordAvailability());
     _bindVersePlayer();
     _startReadingTimeTracking();
     if (!_viewMode && _currentVerse > 1) {
@@ -586,6 +591,7 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _wordByWord.removeListener(_onWordByWordChanged);
     _markReadingAudioStoppedForExit();
     _pauseReadingTimeTracking(flush: true);
     if (!_hasSavedOnExit) {
@@ -1520,6 +1526,29 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     if (_transliterationChapter != _currentChapter) return '';
     if (verse < 1 || verse > _chapterTransliterations.length) return '';
     return _chapterTransliterations[verse - 1].trim();
+  }
+
+  void _onWordByWordChanged() {
+    if (!mounted) return;
+    setState(() {});
+    if (!_wordByWord.isAvailable) unawaited(_refreshWordByWordAvailability());
+  }
+
+  Future<void> _refreshWordByWordAvailability() async {
+    await _wordByWord.ensureMeta();
+    if (mounted) setState(() {});
+  }
+
+  /// Glosses for [verse] of the current surah once the optional word-by-word
+  /// pack is installed and loaded; `null` otherwise (plain text is shown).
+  List<WordGloss>? _cardWordGlosses(int verse) {
+    if (!_wordByWord.isAvailable) return null;
+    final int chapter = _currentChapter;
+    if (!_wordByWord.isPrepared(chapter)) {
+      unawaited(_wordByWord.prepare(chapter));
+      return null;
+    }
+    return _wordByWord.glossesFor(chapter, verse);
   }
 
   String _cardTransliterationForVerse(int verse) {
@@ -7739,6 +7768,9 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
                               _currentVerse,
                             ),
                             basmala: null,
+                            wordGlosses: _cardWordGlosses(_currentVerse),
+                            wordByWordMeta: _wordByWord.meta,
+                            quranScript: SettingsDB().quranScriptStyle,
                             verse: _cardVerseText(
                               _currentChapter,
                               _currentVerse,

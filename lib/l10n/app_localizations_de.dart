@@ -4571,4 +4571,22 @@ class AppLocalizationsDe extends AppLocalizations {
   String ratesStaleStatus(String source, String time) {
     return '$source • zuletzt bekannter Kurs • $time';
   }
+
+  @override
+  String get wordByWord => 'Wort für Wort';
+
+  @override
+  String get wordByWordDescription =>
+      'Tippen Sie beim Lesen auf ein Wort, um Bedeutung und Umschrift zu sehen.';
+
+  @override
+  String get wordMeaning => 'Bedeutung';
+
+  @override
+  String get wordTransliteration => 'Umschrift';
+
+  @override
+  String wordByWordProvenance(String source, String license) {
+    return 'Wortbedeutungen von $source ($license). Eine Lesehilfe, keine Übersetzung und kein Tafsir.';
+  }
 }

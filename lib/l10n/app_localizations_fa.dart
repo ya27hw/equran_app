@@ -4491,4 +4491,22 @@ class AppLocalizationsFa extends AppLocalizations {
   String ratesStaleStatus(String source, String time) {
     return '$source • آخرین نرخ شناخته‌شده • $time';
   }
+
+  @override
+  String get wordByWord => 'کلمه به کلمه';
+
+  @override
+  String get wordByWordDescription =>
+      'هنگام خواندن روی هر کلمه بزنید تا معنا و آوانگاری آن را ببینید.';
+
+  @override
+  String get wordMeaning => 'معنا';
+
+  @override
+  String get wordTransliteration => 'آوانگاری';
+
+  @override
+  String wordByWordProvenance(String source, String license) {
+    return 'معانی کلمات از $source ($license). ابزار کمکی برای خواندن است، نه ترجمه یا تفسیر.';
+  }
 }

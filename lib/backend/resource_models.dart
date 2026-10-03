@@ -5,6 +5,7 @@ enum ResourceType {
   timings('timings'),
   quranFonts('quran_fonts'),
   translation('translation'),
+  wordByWord('word_by_word'),
   unknown('unknown');
 
   const ResourceType(this.value);
@@ -112,6 +113,7 @@ class DownloadableResource {
       ResourceType.timings => 'Audio Timings',
       ResourceType.quranFonts => 'Quran Fonts',
       ResourceType.translation => 'Translation',
+      ResourceType.wordByWord => 'Word by Word',
       ResourceType.unknown => rawType.isEmpty ? 'Resource' : rawType,
     };
   }

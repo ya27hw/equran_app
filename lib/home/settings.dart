@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'appearance_settings_page.dart';
 import 'navigation_settings_page.dart';
@@ -485,6 +486,21 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                       downloads: downloads,
                     ),
+                    // The pack is stored on disk, which web builds do not have.
+                    if (!kIsWeb &&
+                        manifest
+                            .resourcesOfType(ResourceType.wordByWord)
+                            .isNotEmpty)
+                      _buildResourceSubsection(
+                        context: context,
+                        manifest: manifest,
+                        title: localizations.wordByWord,
+                        description: localizations.wordByWordDescription,
+                        resources: manifest.resourcesOfType(
+                          ResourceType.wordByWord,
+                        ),
+                        downloads: downloads,
+                      ),
                     ListTile(
                       leading: const Icon(Icons.refresh_rounded),
                       title: Text(localizations.refreshManifest),
@@ -507,6 +523,7 @@ class _SettingsPageState extends State<SettingsPage> {
     required String title,
     required List<DownloadableResource> resources,
     required Map<String, ResourceDownloadProgress> downloads,
+    String? description,
   }) {
     if (resources.isEmpty) {
       final localizations = AppLocalizations.of(context)!;
@@ -529,6 +546,16 @@ class _SettingsPageState extends State<SettingsPage> {
             ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w800),
           ),
         ),
+        if (description != null)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+            child: Text(
+              description,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
         for (final DownloadableResource resource in resources)
           _buildResourceTile(
             context: context,
@@ -550,6 +577,7 @@ class _SettingsPageState extends State<SettingsPage> {
     final bool isTafsir = resource.type == ResourceType.tafsir;
     final bool isTranslation = resource.type == ResourceType.translation;
     final bool isQuranFonts = resource.type == ResourceType.quranFonts;
+    final bool isWordByWord = resource.type == ResourceType.wordByWord;
     final bool selected =
         (isTafsir &&
             store.selectedTafsirResourceIds(manifest).contains(resource.id)) ||
@@ -582,6 +610,8 @@ class _SettingsPageState extends State<SettingsPage> {
                         : Icons.translate_rounded
                   : isQuranFonts
                   ? Icons.font_download_outlined
+                  : isWordByWord
+                  ? Icons.touch_app_outlined
                   : Icons.graphic_eq_rounded,
             ),
       title: Text(resource.name),

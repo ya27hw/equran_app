@@ -2226,5 +2226,10 @@
   "addressCopied": "ঠিকানা কপি হয়েছে",
   "usdcErc20": "USDC (ERC-20)",
   "ratesLiveStatus": "{source} • লাইভ • {time}",
-  "ratesStaleStatus": "{source} • সর্বশেষ জানা দর • {time}"
+  "ratesStaleStatus": "{source} • সর্বশেষ জানা দর • {time}",
+  "wordByWord": "শব্দে শব্দে",
+  "wordByWordDescription": "পড়ার সময় যেকোনো শব্দে ট্যাপ করে তার অর্থ ও প্রতিবর্ণীকরণ দেখুন।",
+  "wordMeaning": "অর্থ",
+  "wordTransliteration": "প্রতিবর্ণীকরণ",
+  "wordByWordProvenance": "শব্দার্থ {source} ({license}) থেকে। এটি পড়ার সহায়ক, অনুবাদ বা তাফসির নয়।"
 }

@@ -2341,5 +2341,10 @@
   "addressCopied": "نشانی کپی شد",
   "usdcErc20": "USDC (ERC-20)",
   "ratesLiveStatus": "{source} • زنده • {time}",
-  "ratesStaleStatus": "{source} • آخرین نرخ شناخته‌شده • {time}"
+  "ratesStaleStatus": "{source} • آخرین نرخ شناخته‌شده • {time}",
+  "wordByWord": "کلمه به کلمه",
+  "wordByWordDescription": "هنگام خواندن روی هر کلمه بزنید تا معنا و آوانگاری آن را ببینید.",
+  "wordMeaning": "معنا",
+  "wordTransliteration": "آوانگاری",
+  "wordByWordProvenance": "معانی کلمات از {source} ({license}). ابزار کمکی برای خواندن است، نه ترجمه یا تفسیر."
 }

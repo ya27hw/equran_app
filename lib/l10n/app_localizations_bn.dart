@@ -4493,4 +4493,22 @@ class AppLocalizationsBn extends AppLocalizations {
   String ratesStaleStatus(String source, String time) {
     return '$source • সর্বশেষ জানা দর • $time';
   }
+
+  @override
+  String get wordByWord => 'শব্দে শব্দে';
+
+  @override
+  String get wordByWordDescription =>
+      'পড়ার সময় যেকোনো শব্দে ট্যাপ করে তার অর্থ ও প্রতিবর্ণীকরণ দেখুন।';
+
+  @override
+  String get wordMeaning => 'অর্থ';
+
+  @override
+  String get wordTransliteration => 'প্রতিবর্ণীকরণ';
+
+  @override
+  String wordByWordProvenance(String source, String license) {
+    return 'শব্দার্থ $source ($license) থেকে। এটি পড়ার সহায়ক, অনুবাদ বা তাফসির নয়।';
+  }
 }

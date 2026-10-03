@@ -2261,5 +2261,10 @@
   "addressCopied": "Adresse kopiert",
   "usdcErc20": "USDC (ERC-20)",
   "ratesLiveStatus": "{source} • live • {time}",
-  "ratesStaleStatus": "{source} • zuletzt bekannter Kurs • {time}"
+  "ratesStaleStatus": "{source} • zuletzt bekannter Kurs • {time}",
+  "wordByWord": "Wort für Wort",
+  "wordByWordDescription": "Tippen Sie beim Lesen auf ein Wort, um Bedeutung und Umschrift zu sehen.",
+  "wordMeaning": "Bedeutung",
+  "wordTransliteration": "Umschrift",
+  "wordByWordProvenance": "Wortbedeutungen von {source} ({license}). Eine Lesehilfe, keine Übersetzung und kein Tafsir."
 }

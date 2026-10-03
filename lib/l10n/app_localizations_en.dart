@@ -4482,4 +4482,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String ratesStaleStatus(String source, String time) {
     return '$source • last known rate • $time';
   }
+
+  @override
+  String get wordByWord => 'Word by word';
+
+  @override
+  String get wordByWordDescription =>
+      'Tap any word while reading to see its meaning and transliteration.';
+
+  @override
+  String get wordMeaning => 'Meaning';
+
+  @override
+  String get wordTransliteration => 'Transliteration';
+
+  @override
+  String wordByWordProvenance(String source, String license) {
+    return 'Word glosses from $source ($license). A reading aid, not a translation or tafsir.';
+  }
 }

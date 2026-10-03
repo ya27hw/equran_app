@@ -4514,4 +4514,22 @@ class AppLocalizationsId extends AppLocalizations {
   String ratesStaleStatus(String source, String time) {
     return '$source • harga terakhir diketahui • $time';
   }
+
+  @override
+  String get wordByWord => 'Kata per kata';
+
+  @override
+  String get wordByWordDescription =>
+      'Ketuk kata mana pun saat membaca untuk melihat arti dan transliterasinya.';
+
+  @override
+  String get wordMeaning => 'Arti';
+
+  @override
+  String get wordTransliteration => 'Transliterasi';
+
+  @override
+  String wordByWordProvenance(String source, String license) {
+    return 'Arti kata dari $source ($license). Alat bantu baca, bukan terjemahan atau tafsir.';
+  }
 }
