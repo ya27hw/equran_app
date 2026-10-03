@@ -197,8 +197,10 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
   void initState() {
     super.initState();
     _metalRateProvider = MetalsLiveRateProvider();
-    _baseCurrency =
-        SettingsDB().get('zakat_currency', defaultValue: 'USD') as String;
+    final dynamic savedCurrency = SettingsDB().get('zakat_currency');
+    _baseCurrency = savedCurrency is String && savedCurrency.isNotEmpty
+        ? savedCurrency
+        : 'USD';
     _restoreCachedMetalRates();
     _tabController = TabController(length: 2, vsync: this);
     // Localize default status and fetch live prices on start after build/initState is done

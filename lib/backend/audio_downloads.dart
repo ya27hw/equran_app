@@ -53,6 +53,13 @@ class AudioDownloadEntry {
 
 enum AudioDownloadType { surah, ayah, ayahSurah }
 
+class _TempAyahCacheEntry {
+  const _TempAyahCacheEntry(this.file, this.modified);
+
+  final File file;
+  final DateTime modified;
+}
+
 class AudioDownloadsSummary {
   const AudioDownloadsSummary({
     required this.surahDownloads,
@@ -524,9 +531,11 @@ class AudioDownloadService {
   }
 
   Future<void> _enforceTempAyahCacheLimit() async {
+    // Async FS access: the sync variants (listSync/lastModifiedSync) block
+    // the UI isolate and stall scrolling/playback on low-end devices.
     final Directory dir = await tempAyahDirectory();
-    final List<File> files = <File>[];
-    for (final FileSystemEntity entity in dir.listSync()) {
+    final List<_TempAyahCacheEntry> entries = <_TempAyahCacheEntry>[];
+    await for (final FileSystemEntity entity in dir.list()) {
       if (entity is! File) continue;
       if (entity.path.endsWith('.part')) {
         try {
@@ -536,18 +545,25 @@ class AudioDownloadService {
         }
         continue;
       }
-      if (!_isCompleteDownload(entity)) continue;
-      files.add(entity);
+      final FileStat stat;
+      try {
+        stat = await entity.stat();
+      } catch (_) {
+        continue;
+      }
+      if (stat.type != FileSystemEntityType.file || stat.size <= 0) continue;
+      entries.add(_TempAyahCacheEntry(entity, stat.modified));
     }
 
-    files.sort((File a, File b) {
-      return a.lastModifiedSync().compareTo(b.lastModifiedSync());
-    });
+    entries.sort(
+      (_TempAyahCacheEntry a, _TempAyahCacheEntry b) =>
+          a.modified.compareTo(b.modified),
+    );
 
-    while (files.length > _maxTempCachedAyahs) {
-      final File oldest = files.removeAt(0);
+    while (entries.length > _maxTempCachedAyahs) {
+      final _TempAyahCacheEntry oldest = entries.removeAt(0);
       try {
-        await oldest.delete();
+        await oldest.file.delete();
       } catch (_) {
         // Temporary cache cleanup is best-effort and must never affect user
         // downloads, which live in a separate documents directory.

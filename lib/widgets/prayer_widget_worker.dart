@@ -160,18 +160,20 @@ void _callbackDispatcher() {
           'is_dark_mode',
         );
         final bool isDarkMode;
-        if (storedIsDark != null) {
+        if (themeMode == 'dark') {
+          isDarkMode = true;
+        } else if (themeMode == 'light') {
+          isDarkMode = false;
+        } else if (storedIsDark != null) {
           // Trust the value written by the foreground app
           isDarkMode = storedIsDark is bool
               ? storedIsDark
               : storedIsDark.toString().toLowerCase() == 'true';
         } else {
-          // Fallback: infer from themeMode + system brightness
+          // Fallback: infer from system brightness
           isDarkMode =
-              themeMode == 'dark' ||
-              (themeMode == 'auto' &&
-                  PlatformDispatcher.instance.platformBrightness ==
-                      Brightness.dark);
+              PlatformDispatcher.instance.platformBrightness ==
+              Brightness.dark;
         }
 
         final colors = PrayerWidgetService.resolveColorsForScheme(

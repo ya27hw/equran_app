@@ -23,8 +23,8 @@ class SettingsDB extends BaseDB {
 
   /// Getter for tracking the script style preference key
   String get quranScriptStyle {
-    final String style =
-        get('quran_script_style', defaultValue: 'qpc-hafs') as String;
+    final dynamic raw = get('quran_script_style', defaultValue: 'qpc-hafs');
+    final String style = raw is String ? raw : 'qpc-hafs';
     return style == 'uthmani' ? 'qpc-hafs' : style;
   }
 
@@ -38,8 +38,8 @@ class SettingsDB extends BaseDB {
 
   /// Get visible daily tools from settings
   List<DailyToolType> getVisibleDailyTools() {
-    final List<dynamic>? saved = get('daily_tools_visible') as List<dynamic>?;
-    if (saved == null) {
+    final dynamic saved = get('daily_tools_visible');
+    if (saved is! List) {
       return List<DailyToolType>.from(DailyToolType.defaultTools);
     }
     return List<DailyToolType>.from(
