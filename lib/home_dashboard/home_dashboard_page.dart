@@ -1263,29 +1263,41 @@ class _CompanionSectionHeader extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Row(
-          children: <Widget>[
-            Icon(icon, color: colors.primary, size: compact ? 18 : 20),
-            const SizedBox(width: 8),
-            Flexible(
-              child: Text(
-                title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: colors.textPrimary,
-                  fontWeight: FontWeight.w900,
+        LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+            // The title keeps priority; the ornament only fills what is left
+            // and drops away when the title needs the full width.
+            const double minOrnament = 64;
+            final double titleMax = math.max(
+              0,
+              constraints.maxWidth - (compact ? 26 : 28) - minOrnament - 12,
+            );
+            return Row(
+              children: <Widget>[
+                Icon(icon, color: colors.primary, size: compact ? 18 : 20),
+                const SizedBox(width: 8),
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: titleMax),
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: colors.textPrimary,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: OrnamentDivider(
-                color: colors.accentGold.withAlpha(150),
-                starSize: 9,
-              ),
-            ),
-          ],
+                const SizedBox(width: 12),
+                Expanded(
+                  child: OrnamentDivider(
+                    color: colors.accentGold.withAlpha(150),
+                    starSize: 9,
+                  ),
+                ),
+              ],
+            );
+          },
         ),
         const SizedBox(height: 3),
         Text(
@@ -2142,7 +2154,7 @@ class _JourneyPreviewCard extends StatelessWidget {
             value: progress,
             size: 88,
             strokeWidth: 9,
-            trackColor: colors.border,
+            trackColor: colors.primary.withAlpha(46),
             color: colors.primary,
             endColor: colors.accentGold,
             child: Text(
