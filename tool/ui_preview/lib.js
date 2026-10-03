@@ -16,6 +16,9 @@ const CHROME =
   process.env.UI_PREVIEW_CHROME ||
   '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
 const PORT = Number(process.env.UI_PREVIEW_PORT || 8099);
+// Prayer times are computed in the browser's time zone, so match the seeded
+// location (Makkah) or the times look wrong.
+const TIMEZONE = process.env.UI_PREVIEW_TZ || 'Asia/Riyadh';
 
 for (const d of [WORK, SHOTS, FONTS, PROFILE]) fs.mkdirSync(d, { recursive: true });
 
@@ -57,7 +60,7 @@ async function open({ locale = 'en-US', scheme = 'dark', width = 390, height = 8
   const ctx = await chromium.launchPersistentContext(PROFILE, {
     executablePath: CHROME,
     args: ['--no-sandbox', '--use-gl=swiftshader', '--enable-unsafe-swiftshader'],
-    viewport: { width, height }, deviceScaleFactor: 2, colorScheme: scheme, locale,
+    viewport: { width, height }, deviceScaleFactor: 2, colorScheme: scheme, locale, timezoneId: TIMEZONE,
   });
   await ctx.route(/^https?:\/\/(?!localhost)/, async (route) => {
     const u = route.request().url();

@@ -4,7 +4,7 @@ Screenshots of the app from a Flutter **web build**, driven by Playwright. It
 exists because the cloud sandbox has no emulator, and it is how the UI polish
 work was checked and how the README screenshots were produced. It is a preview,
 not a device: it renders with CanvasKit, has no status bar, and prayer times
-come from the machine clock.
+are computed for the seeded location in the browser's time zone.
 
 ## Requirements
 
@@ -27,6 +27,7 @@ come from the machine clock.
 | `UI_PREVIEW_BUILD` | `$UI_PREVIEW_DIR/webbuild` | Folder holding the web build |
 | `UI_PREVIEW_CHROME` | `/opt/pw-browsers/chromium-1194/chrome-linux/chrome` | Chromium binary |
 | `UI_PREVIEW_PORT` | `8099` | Local port for the static server |
+| `UI_PREVIEW_TZ` | `Asia/Riyadh` | Browser time zone; keep it matching the seeded location so prayer times look right |
 | `PLAYWRIGHT_MODULE` | `playwright` | Where to `require` Playwright from |
 
 ## Workflow
