@@ -43,17 +43,17 @@ The goal is simple: keep the interface quiet, keep the text central, and make th
 ## Screenshots
 
 <p align="center">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" alt="eQuran home screen" width="180">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" alt="Quran reading screen" width="180">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" alt="Surah list screen" width="180">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" alt="Audio player screen" width="180">
+  <img src="docs/screenshots/01-home.png" alt="Home dashboard with prayer times and Quran journey" width="180">
+  <img src="docs/screenshots/02-home-continue.png" alt="Continue reading card and daily tools" width="180">
+  <img src="docs/screenshots/03-quran.png" alt="Surah list" width="180">
+  <img src="docs/screenshots/04-reader.png" alt="Quran reader" width="180">
 </p>
 
 <p align="center">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/5.png" alt="Downloads screen" width="180">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/6.png" alt="Favourites screen" width="180">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/7.png" alt="Prayer times screen" width="180">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/8.png" alt="Settings screen" width="180">
+  <img src="docs/screenshots/05-prayer.png" alt="Prayer times" width="180">
+  <img src="docs/screenshots/06-duas.png" alt="Duas and Hisn al-Muslim" width="180">
+  <img src="docs/screenshots/07-home-light.png" alt="Home dashboard in light theme" width="180">
+  <img src="docs/screenshots/08-home-arabic.png" alt="Home dashboard in Arabic (right-to-left)" width="180">
 </p>
 
 ## 💖 Support the Project
