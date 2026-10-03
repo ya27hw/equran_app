@@ -1,5 +1,6 @@
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
+import 'package:equran/widgets/common/pressable_scale.dart';
 import 'package:flutter/material.dart';
 
 class EquranSurfaceCard extends StatelessWidget {
@@ -23,7 +24,7 @@ class EquranSurfaceCard extends StatelessWidget {
     final EquranColors colors = context.equranColors;
     final BorderRadius borderRadius = BorderRadius.circular(EquranRadii.large);
 
-    return Material(
+    final Widget card = Material(
       color: Colors.transparent,
       borderRadius: borderRadius,
       clipBehavior: Clip.antiAlias,
@@ -58,6 +59,8 @@ class EquranSurfaceCard extends StatelessWidget {
         ),
       ),
     );
+
+    return onTap == null ? card : PressableScale(child: card);
   }
 }
 
@@ -80,7 +83,7 @@ class EquranGradientCard extends StatelessWidget {
     final EquranColors colors = context.equranColors;
     final BorderRadius radius = BorderRadius.circular(borderRadius);
 
-    return Material(
+    final Widget card = Material(
       color: Colors.transparent,
       borderRadius: radius,
       clipBehavior: Clip.antiAlias,
@@ -105,6 +108,8 @@ class EquranGradientCard extends StatelessWidget {
         ),
       ),
     );
+
+    return onTap == null ? card : PressableScale(child: card);
   }
 }
 

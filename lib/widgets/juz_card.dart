@@ -3,6 +3,7 @@ import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/utils/app_radii.dart';
 import 'package:equran/utils/quran_display.dart';
+import 'package:equran/widgets/common/pressable_scale.dart';
 import 'package:equran/widgets/number_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -33,90 +34,92 @@ class QuranJuzTile extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
-      child: Material(
-        color: colors.surface,
-        borderRadius: radius,
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
+      child: PressableScale(
+        child: Material(
+          color: colors.surface,
           borderRadius: radius,
-          onTap: () async {
-            await Future.delayed(const Duration(milliseconds: 180));
-            if (!context.mounted) return;
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => ReadPage(
-                  chapter: id,
-                  startVerse: startVerse,
-                  juzMode: true,
-                ),
-              ),
-            );
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: colors.surface,
-              borderRadius: radius,
-              border: Border.all(color: colors.border),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            child: Row(
-              children: <Widget>[
-                NumberBadge(label: id.toString()),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        arabicMode ? name : transliteration,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        textDirection: arabicMode ? TextDirection.rtl : null,
-                        style: arabicMode
-                            ? theme.textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.w700,
-                                color: colors.textPrimary,
-                                letterSpacing: 0,
-                              )
-                            : theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w700,
-                                color: colors.textPrimary,
-                                letterSpacing: 0,
-                              ),
-                      ),
-                      if (!arabicMode) ...<Widget>[
-                        const SizedBox(height: 4),
-                        Text(
-                          name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          textDirection: TextDirection.rtl,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontFamily:
-                                GoogleFonts.notoNaskhArabic().fontFamily,
-                            color: colors.textSecondary,
-                          ),
-                        ),
-                      ],
-                      const SizedBox(height: 10),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: <Widget>[
-                          _JuzMetaChip(
-                            icon: Icons.format_list_numbered_rounded,
-                            label: localizations.ayahRange(
-                              startVerse,
-                              endVerse,
-                            ),
-                            colors: colors,
-                          ),
-                        ],
-                      ),
-                    ],
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            borderRadius: radius,
+            onTap: () async {
+              await Future.delayed(const Duration(milliseconds: 180));
+              if (!context.mounted) return;
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => ReadPage(
+                    chapter: id,
+                    startVerse: startVerse,
+                    juzMode: true,
                   ),
                 ),
-              ],
+              );
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: colors.surface,
+                borderRadius: radius,
+                border: Border.all(color: colors.border),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              child: Row(
+                children: <Widget>[
+                  NumberBadge(label: id.toString()),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          arabicMode ? name : transliteration,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textDirection: arabicMode ? TextDirection.rtl : null,
+                          style: arabicMode
+                              ? theme.textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: colors.textPrimary,
+                                  letterSpacing: 0,
+                                )
+                              : theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: colors.textPrimary,
+                                  letterSpacing: 0,
+                                ),
+                        ),
+                        if (!arabicMode) ...<Widget>[
+                          const SizedBox(height: 4),
+                          Text(
+                            name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textDirection: TextDirection.rtl,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontFamily:
+                                  GoogleFonts.notoNaskhArabic().fontFamily,
+                              color: colors.textSecondary,
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: 10),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: <Widget>[
+                            _JuzMetaChip(
+                              icon: Icons.format_list_numbered_rounded,
+                              label: localizations.ayahRange(
+                                startVerse,
+                                endVerse,
+                              ),
+                              colors: colors,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
