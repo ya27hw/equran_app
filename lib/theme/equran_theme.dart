@@ -1,6 +1,7 @@
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/theme/equran_text_styles.dart';
+import 'package:equran/theme/equran_tokens.dart';
 import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 
@@ -92,7 +93,10 @@ class EquranTheme {
       useMaterial3: true,
       brightness: brightness,
       colorScheme: colorScheme,
-      extensions: <ThemeExtension<dynamic>>[tokens],
+      extensions: <ThemeExtension<dynamic>>[
+        tokens,
+        EquranTokens.fromColors(tokens),
+      ],
       textTheme: textTheme,
       primaryTextTheme: textTheme,
       scaffoldBackgroundColor: tokens.background,
