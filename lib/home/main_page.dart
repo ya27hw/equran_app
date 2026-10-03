@@ -205,7 +205,7 @@ class _MainPageState extends State<MainPage>
                       localizations.quran,
                       textAlign: TextAlign.center,
                       style: theme.textTheme.titleLarge?.copyWith(
-                        color: colors.onPrimary,
+                        color: colors.textPrimary,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 0,
                       ),
@@ -228,7 +228,7 @@ class _MainPageState extends State<MainPage>
                       key: const ValueKey<String>('search-button'),
                       tooltip: localizations.searchQuran,
                       onPressed: _openSearch,
-                      color: colors.onPrimary,
+                      color: colors.textPrimary,
                       icon: const Icon(Icons.search_rounded),
                     ),
             ],
