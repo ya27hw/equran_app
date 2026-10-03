@@ -1,0 +1,129 @@
+import 'dart:io';
+
+import 'package:equran/backend/settings_db.dart';
+import 'package:equran/l10n/app_localizations.dart';
+import 'package:equran/utils/app_theme.dart';
+import 'package:equran/widgets/read_quran_card.dart';
+import 'package:equran/word_by_word/word_by_word_pack.dart';
+import 'package:equran/word_by_word/word_by_word_text.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:hive/hive.dart';
+
+const String _verse = 'قُلۡ هُوَ ٱللَّهُ أَحَدٌ';
+const List<WordGloss> _fourGlosses = <WordGloss>[
+  WordGloss(meaning: 'Say', transliteration: 'qul'),
+  WordGloss(meaning: 'He', transliteration: 'huwa'),
+  WordGloss(meaning: 'Allah', transliteration: 'allahu'),
+  WordGloss(meaning: 'the One', transliteration: 'ahadun'),
+];
+const WordByWordPackMeta _meta = WordByWordPackMeta(
+  schema: 1,
+  id: 'word_by_word_en',
+  language: 'en',
+  version: '1.0.0',
+  source: 'Test Source',
+  license: 'Test-License',
+  attribution: 'x',
+  reviewStatus: 'reviewed',
+);
+
+Widget _card({
+  List<WordGloss>? glosses,
+  WordByWordPackMeta? meta,
+  String? script,
+  bool shareImageMode = false,
+}) {
+  return MaterialApp(
+    theme: AppTheme.buildLightTheme(Colors.green),
+    localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
+      AppLocalizations.delegate,
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    supportedLocales: AppLocalizations.supportedLocales,
+    home: Scaffold(
+      body: SingleChildScrollView(
+        child: ReadQuranCard(
+          currentChapter: 112,
+          currentVerse: 1,
+          totalVerses: 4,
+          fontSize: 28,
+          fontSizeTranslation: 16,
+          juzNumber: 30,
+          translation: 'Say, He is Allah, One.',
+          verse: _verse,
+          showActions: false,
+          shareImageMode: shareImageMode,
+          wordGlosses: glosses,
+          wordByWordMeta: meta,
+          quranScript: script,
+        ),
+      ),
+    ),
+  );
+}
+
+void main() {
+  late Directory temp;
+
+  setUpAll(() async {
+    temp = Directory.systemTemp.createTempSync('wbw_card_');
+    Hive.init(temp.path);
+    await SettingsDB().initBox();
+  });
+
+  tearDownAll(() async {
+    await Hive.close();
+    temp.deleteSync(recursive: true);
+  });
+
+  testWidgets('aligned glosses make the ayah words tappable', (tester) async {
+    await tester.pumpWidget(
+      _card(glosses: _fourGlosses, meta: _meta, script: 'qpc-hafs'),
+    );
+    expect(find.byType(WordByWordText), findsOneWidget);
+  });
+
+  testWidgets('a gloss count that does not match keeps plain text', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _card(
+        glosses: _fourGlosses.sublist(0, 3),
+        meta: _meta,
+        script: 'qpc-hafs',
+      ),
+    );
+    expect(find.byType(WordByWordText), findsNothing);
+    expect(find.text(_verse), findsOneWidget);
+  });
+
+  testWidgets('share images are never tappable', (tester) async {
+    await tester.pumpWidget(
+      _card(
+        glosses: _fourGlosses,
+        meta: _meta,
+        script: 'qpc-hafs',
+        shareImageMode: true,
+      ),
+    );
+    expect(find.byType(WordByWordText), findsNothing);
+    expect(find.text(_verse), findsOneWidget);
+  });
+
+  testWidgets('without a pack the card is unchanged plain text', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_card());
+    expect(find.byType(WordByWordText), findsNothing);
+    expect(find.text(_verse), findsOneWidget);
+  });
+
+  testWidgets('a missing script keeps plain text', (tester) async {
+    await tester.pumpWidget(_card(glosses: _fourGlosses, meta: _meta));
+    expect(find.byType(WordByWordText), findsNothing);
+  });
+}
