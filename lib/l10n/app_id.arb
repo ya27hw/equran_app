@@ -2242,5 +2242,17 @@
         "type": "int"
       }
     }
-  }
+  },
+  "forThisMorning": "Untuk pagi ini",
+  "forThisEvening": "Untuk sore ini",
+  "continueAction": "Lanjutkan",
+  "suggestedForYou": "Disarankan untuk Anda",
+  "browseByTheme": "Jelajahi berdasarkan tema",
+  "beginAction": "Mulai",
+  "categoriesCount": "{count} kategori",
+  "themesCount": "{count} tema",
+  "searchCategoryCount": "Cari dalam {count} kategori",
+  "searchInTheme": "Cari dalam {theme}",
+  "backToDuas": "Kembali ke Doa",
+  "loggedToday": "Dicatat hari ini"
 }

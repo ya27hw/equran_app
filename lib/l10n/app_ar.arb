@@ -1708,5 +1708,17 @@
         "type": "int"
       }
     }
-  }
+  },
+  "forThisMorning": "لهذا الصباح",
+  "forThisEvening": "لهذا المساء",
+  "continueAction": "متابعة",
+  "suggestedForYou": "مقترح لك",
+  "browseByTheme": "تصفح حسب الموضوع",
+  "beginAction": "ابدأ",
+  "categoriesCount": "{count} تصنيفات",
+  "themesCount": "{count} موضوعات",
+  "searchCategoryCount": "ابحث في {count} تصنيفًا",
+  "searchInTheme": "ابحث في {theme}",
+  "backToDuas": "العودة إلى الأدعية",
+  "loggedToday": "المسجّل اليوم"
 }

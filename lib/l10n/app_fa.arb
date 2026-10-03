@@ -2357,5 +2357,17 @@
         "type": "int"
       }
     }
-  }
+  },
+  "forThisMorning": "برای این صبح",
+  "forThisEvening": "برای این عصر",
+  "continueAction": "ادامه",
+  "suggestedForYou": "پیشنهاد برای شما",
+  "browseByTheme": "مرور بر اساس موضوع",
+  "beginAction": "شروع",
+  "categoriesCount": "{count} دسته",
+  "themesCount": "{count} موضوع",
+  "searchCategoryCount": "جستجو در {count} دسته",
+  "searchInTheme": "جستجو در {theme}",
+  "backToDuas": "بازگشت به دعاها",
+  "loggedToday": "ثبت‌شده امروز"
 }

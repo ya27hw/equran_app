@@ -4609,4 +4609,48 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get browseSurahs => 'Suren durchsuchen';
+
+  @override
+  String get forThisMorning => 'Für diesen Morgen';
+
+  @override
+  String get forThisEvening => 'Für diesen Abend';
+
+  @override
+  String get continueAction => 'Fortsetzen';
+
+  @override
+  String get suggestedForYou => 'Für dich empfohlen';
+
+  @override
+  String get browseByTheme => 'Nach Thema stöbern';
+
+  @override
+  String get beginAction => 'Beginnen';
+
+  @override
+  String categoriesCount(int count) {
+    return '$count Kategorien';
+  }
+
+  @override
+  String themesCount(int count) {
+    return '$count Themen';
+  }
+
+  @override
+  String searchCategoryCount(int count) {
+    return '$count Kategorien durchsuchen';
+  }
+
+  @override
+  String searchInTheme(String theme) {
+    return 'In $theme suchen';
+  }
+
+  @override
+  String get backToDuas => 'Zurück zu Duas';
+
+  @override
+  String get loggedToday => 'Heute erfasst';
 }

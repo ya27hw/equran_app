@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'package:equran/duas/widgets/dua_browser_widgets.dart';
+import 'package:equran/theme/equran_tokens.dart';
+import 'package:equran/widgets/redesign/redesign_widgets.dart';
 
 import 'package:equran/backend/library.dart' show DuaInteractionsDB;
 import 'package:equran/duas/hisn_al_muslim_models.dart';
@@ -307,6 +310,144 @@ class _CategoryMessage extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// A theme browser. Opening a row retains the existing category reader route.
+class DuasThemePage extends StatefulWidget {
+  const DuasThemePage({
+    super.key,
+    required this.group,
+    required this.categoryIndex,
+    required this.repository,
+    this.now,
+  });
+  final DuaGroup group;
+  final List<DuaCategoryIndex> categoryIndex;
+  final HisnAlMuslimRepository repository;
+  final DateTime Function()? now;
+  @override
+  State<DuasThemePage> createState() => _DuasThemePageState();
+}
+
+class _DuasThemePageState extends State<DuasThemePage> {
+  final _search = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    _search.addListener(_update);
+  }
+
+  void _update() => setState(() {});
+  @override
+  void dispose() {
+    _search.removeListener(_update);
+    _search.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final categories = widget.categoryIndex
+        .where((c) => c.group == widget.group)
+        .toList();
+    final groupName = duaGroupName(l, widget.group);
+    final total = categories.fold<int>(0, (sum, c) => sum + c.duaCount);
+    return Scaffold(
+      backgroundColor: context.equranColors.background,
+      body: SafeArea(
+        child: DuaBrowserTypography(
+          child: DuaSuggestionScope(
+            categories: widget.categoryIndex,
+            now: widget.now,
+            builder: (context, suggestion) => ListView(
+              padding: const EdgeInsets.fromLTRB(20, 64, 20, 28),
+              children: [
+                Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 820),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: IconButton44(
+                            icon: Icons.arrow_back,
+                            tooltip: l.backToDuas,
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          children: [
+                            DuaGroupDisc(group: widget.group, size: 52),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    groupName,
+                                    style: duaDisplayStyle(context, size: 32),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${l.categoriesCount(categories.length)} · ${l.duasCount(total)}',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: context.equranTokens.muted,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 22),
+                        DuaSearchField(
+                          key: const Key('duas-theme-search'),
+                          controller: _search,
+                          hint: l.searchInTheme(groupName),
+                        ),
+                        const SizedBox(height: 12),
+                        if (!categories.any(
+                          (c) => duaCategoryMatches(c, _search.text, context),
+                        ))
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 24),
+                            child: Text(l.noMatchingCategories),
+                          ),
+                        for (var i = 0; i < categories.length; i++)
+                          if (duaCategoryMatches(
+                            categories[i],
+                            _search.text,
+                            context,
+                          ))
+                            DuaCategoryRow(
+                              key: ValueKey('dua-category-${categories[i].id}'),
+                              category: categories[i],
+                              position: i + 1,
+                              suggestion: suggestion,
+                              onTap: () => Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) => DuasCategoryPage(
+                                    categoryIndex: categories[i],
+                                    repository: widget.repository,
+                                  ),
+                                ),
+                              ),
+                            ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

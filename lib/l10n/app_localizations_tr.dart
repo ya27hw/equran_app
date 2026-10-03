@@ -4541,4 +4541,48 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get browseSurahs => 'Surelere göz at';
+
+  @override
+  String get forThisMorning => 'Bu sabah için';
+
+  @override
+  String get forThisEvening => 'Bu akşam için';
+
+  @override
+  String get continueAction => 'Devam et';
+
+  @override
+  String get suggestedForYou => 'Sizin için önerilen';
+
+  @override
+  String get browseByTheme => 'Temaya göre göz at';
+
+  @override
+  String get beginAction => 'Başla';
+
+  @override
+  String categoriesCount(int count) {
+    return '$count kategori';
+  }
+
+  @override
+  String themesCount(int count) {
+    return '$count tema';
+  }
+
+  @override
+  String searchCategoryCount(int count) {
+    return '$count kategoride ara';
+  }
+
+  @override
+  String searchInTheme(String theme) {
+    return '$theme içinde ara';
+  }
+
+  @override
+  String get backToDuas => 'Dualara dön';
+
+  @override
+  String get loggedToday => 'Bugün kaydedilen';
 }

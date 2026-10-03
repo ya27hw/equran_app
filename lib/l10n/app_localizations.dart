@@ -7946,6 +7946,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Browse surahs'**
   String get browseSurahs;
+
+  /// No description provided for @forThisMorning.
+  ///
+  /// In en, this message translates to:
+  /// **'For this morning'**
+  String get forThisMorning;
+
+  /// No description provided for @forThisEvening.
+  ///
+  /// In en, this message translates to:
+  /// **'For this evening'**
+  String get forThisEvening;
+
+  /// No description provided for @continueAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueAction;
+
+  /// No description provided for @suggestedForYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested for you'**
+  String get suggestedForYou;
+
+  /// No description provided for @browseByTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse by theme'**
+  String get browseByTheme;
+
+  /// No description provided for @beginAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Begin'**
+  String get beginAction;
+
+  /// No description provided for @categoriesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} categories'**
+  String categoriesCount(int count);
+
+  /// No description provided for @themesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} themes'**
+  String themesCount(int count);
+
+  /// No description provided for @searchCategoryCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Search {count} categories'**
+  String searchCategoryCount(int count);
+
+  /// No description provided for @searchInTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Search in {theme}'**
+  String searchInTheme(String theme);
+
+  /// No description provided for @backToDuas.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Duas'**
+  String get backToDuas;
+
+  /// No description provided for @loggedToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Logged today'**
+  String get loggedToday;
 }
 
 class _AppLocalizationsDelegate
