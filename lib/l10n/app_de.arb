@@ -2289,5 +2289,9 @@
   "searchCategoryCount": "{count} Kategorien durchsuchen",
   "searchInTheme": "In {theme} suchen",
   "backToDuas": "Zurück zu Duas",
-  "loggedToday": "Heute erfasst"
+  "loggedToday": "Heute erfasst",
+  "theNight": "Die Nacht",
+  "prayerPassed": "Vorbei",
+  "prayerBeganAt": "Beginn {time}",
+  "prayerEndsAt": "Ende {time}"
 }

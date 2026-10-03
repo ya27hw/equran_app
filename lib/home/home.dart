@@ -320,9 +320,7 @@ class _HomePageState extends State<HomePage> {
           onPointerCancel: (_) => _handleGlobalPointerReleased(),
           onPointerSignal: (_) => AndroidAudioDisplayMode.notifyUserActivity(),
           child: Scaffold(
-            appBar:
-                (destinations[selectedIdx].destination is PrayerTimesPage ||
-                    destinations[selectedIdx].destination is MorePage)
+            appBar: (destinations[selectedIdx].destination is MorePage)
                 ? AppBar(
                     toolbarHeight: ResponsiveNav.toolbarHeight(context),
                     title: Text(destinations[selectedIdx].label),

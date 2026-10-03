@@ -10,11 +10,13 @@ class PillTag extends StatelessWidget {
     this.selected = false,
     this.gold = false,
     this.icon,
+    this.compact = false,
   });
   final String label;
   final bool selected;
   final bool gold;
   final IconData? icon;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -25,10 +27,10 @@ class PillTag extends StatelessWidget {
         ? tokens.emText
         : tokens.text2;
     return Container(
-      constraints: const BoxConstraints(minHeight: 28),
-      padding: const EdgeInsetsDirectional.symmetric(
-        horizontal: 11,
-        vertical: 5,
+      constraints: BoxConstraints(minHeight: compact ? 22 : 28),
+      padding: EdgeInsetsDirectional.symmetric(
+        horizontal: compact ? 9 : 11,
+        vertical: compact ? 3 : 5,
       ),
       decoration: BoxDecoration(
         color: gold
@@ -56,7 +58,8 @@ class PillTag extends StatelessWidget {
             label,
             style: TextStyle(
               fontFamily: 'Inter',
-              fontSize: 12,
+              fontSize: compact ? 10.5 : 12,
+              letterSpacing: compact ? .84 : null,
               height: 1.25,
               fontWeight: FontWeight.w500,
               color: color,

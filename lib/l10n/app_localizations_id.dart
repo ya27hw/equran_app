@@ -4596,4 +4596,20 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get loggedToday => 'Dicatat hari ini';
+
+  @override
+  String get theNight => 'Malam';
+
+  @override
+  String get prayerPassed => 'Berlalu';
+
+  @override
+  String prayerBeganAt(String time) {
+    return 'Dimulai $time';
+  }
+
+  @override
+  String prayerEndsAt(String time) {
+    return 'Berakhir $time';
+  }
 }

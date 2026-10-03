@@ -4577,4 +4577,20 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get loggedToday => 'آج درج شدہ';
+
+  @override
+  String get theNight => 'رات';
+
+  @override
+  String get prayerPassed => 'گزر گیا';
+
+  @override
+  String prayerBeganAt(String time) {
+    return 'آغاز $time';
+  }
+
+  @override
+  String prayerEndsAt(String time) {
+    return 'اختتام $time';
+  }
 }

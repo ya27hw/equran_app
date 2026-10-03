@@ -4585,4 +4585,20 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get loggedToday => 'Bugün kaydedilen';
+
+  @override
+  String get theNight => 'Gece';
+
+  @override
+  String get prayerPassed => 'Geçti';
+
+  @override
+  String prayerBeganAt(String time) {
+    return 'Başlangıç $time';
+  }
+
+  @override
+  String prayerEndsAt(String time) {
+    return 'Bitiş $time';
+  }
 }

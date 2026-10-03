@@ -4575,4 +4575,20 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get loggedToday => 'আজ নথিভুক্ত';
+
+  @override
+  String get theNight => 'রাত';
+
+  @override
+  String get prayerPassed => 'অতিবাহিত';
+
+  @override
+  String prayerBeganAt(String time) {
+    return 'শুরু $time';
+  }
+
+  @override
+  String prayerEndsAt(String time) {
+    return 'শেষ $time';
+  }
 }

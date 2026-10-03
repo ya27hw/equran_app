@@ -2254,5 +2254,9 @@
   "searchCategoryCount": "{count} kategoride ara",
   "searchInTheme": "{theme} içinde ara",
   "backToDuas": "Dualara dön",
-  "loggedToday": "Bugün kaydedilen"
+  "loggedToday": "Bugün kaydedilen",
+  "theNight": "Gece",
+  "prayerPassed": "Geçti",
+  "prayerBeganAt": "Başlangıç {time}",
+  "prayerEndsAt": "Bitiş {time}"
 }

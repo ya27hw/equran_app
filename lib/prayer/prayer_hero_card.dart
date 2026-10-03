@@ -1,4 +1,5 @@
 import 'package:equran/widgets/common/equran_asset_image.dart';
+import 'package:equran/prayer/prayer_arc_hero.dart';
 import 'package:equran/prayer/prayer_models.dart';
 import 'package:equran/prayer/prayer_localizations.dart';
 import 'package:equran/prayer/prayer_notification_service.dart';
@@ -22,6 +23,11 @@ class PrayerHeroCard extends StatelessWidget {
     this.exactAlarmPermission,
     this.titleOverride,
     this.subtitleOverride,
+    this.useRedesign = false,
+    this.now,
+    this.followingDay,
+    this.periodEndsAt,
+    this.isViewingToday = true,
   });
 
   final PrayerDay? day;
@@ -31,6 +37,11 @@ class PrayerHeroCard extends StatelessWidget {
   final String? titleOverride;
   final String? subtitleOverride;
   final VoidCallback onTap;
+  final bool useRedesign;
+  final DateTime? now;
+  final PrayerDay? followingDay;
+  final DateTime? periodEndsAt;
+  final bool isViewingToday;
 
   String _formatTime(
     DateTime time,
@@ -59,6 +70,20 @@ class PrayerHeroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (useRedesign && day != null && nextPrayer != null) {
+      return PrayerArcHero(
+        day: day!,
+        nextPrayer: nextPrayer!,
+        now: now!,
+        onTap: onTap,
+        followingDay: followingDay!,
+        currentPrayer: currentPrayer,
+        titleOverride: titleOverride,
+        subtitleOverride: subtitleOverride,
+        periodEndsAt: periodEndsAt,
+        isViewingToday: isViewingToday,
+      );
+    }
     final ThemeData theme = Theme.of(context);
     final EquranColors colors = context.equranColors;
     final AppLocalizations localizations = AppLocalizations.of(context)!;

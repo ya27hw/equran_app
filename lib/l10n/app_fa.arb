@@ -2369,5 +2369,9 @@
   "searchCategoryCount": "جستجو در {count} دسته",
   "searchInTheme": "جستجو در {theme}",
   "backToDuas": "بازگشت به دعاها",
-  "loggedToday": "ثبت‌شده امروز"
+  "loggedToday": "ثبت‌شده امروز",
+  "theNight": "شب",
+  "prayerPassed": "گذشته",
+  "prayerBeganAt": "شروع {time}",
+  "prayerEndsAt": "پایان {time}"
 }

@@ -2254,5 +2254,9 @@
   "searchCategoryCount": "{count} زمروں میں تلاش کریں",
   "searchInTheme": "{theme} میں تلاش کریں",
   "backToDuas": "دعاؤں پر واپس جائیں",
-  "loggedToday": "آج درج شدہ"
+  "loggedToday": "آج درج شدہ",
+  "theNight": "رات",
+  "prayerPassed": "گزر گیا",
+  "prayerBeganAt": "آغاز {time}",
+  "prayerEndsAt": "اختتام {time}"
 }
