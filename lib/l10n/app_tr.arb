@@ -2242,5 +2242,17 @@
         "type": "int"
       }
     }
-  }
+  },
+  "forThisMorning": "Bu sabah için",
+  "forThisEvening": "Bu akşam için",
+  "continueAction": "Devam et",
+  "suggestedForYou": "Sizin için önerilen",
+  "browseByTheme": "Temaya göre göz at",
+  "beginAction": "Başla",
+  "categoriesCount": "{count} kategori",
+  "themesCount": "{count} tema",
+  "searchCategoryCount": "{count} kategoride ara",
+  "searchInTheme": "{theme} içinde ara",
+  "backToDuas": "Dualara dön",
+  "loggedToday": "Bugün kaydedilen"
 }

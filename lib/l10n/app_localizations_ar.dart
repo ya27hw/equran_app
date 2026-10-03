@@ -4454,4 +4454,48 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get browseSurahs => 'تصفح السور';
+
+  @override
+  String get forThisMorning => 'لهذا الصباح';
+
+  @override
+  String get forThisEvening => 'لهذا المساء';
+
+  @override
+  String get continueAction => 'متابعة';
+
+  @override
+  String get suggestedForYou => 'مقترح لك';
+
+  @override
+  String get browseByTheme => 'تصفح حسب الموضوع';
+
+  @override
+  String get beginAction => 'ابدأ';
+
+  @override
+  String categoriesCount(int count) {
+    return '$count تصنيفات';
+  }
+
+  @override
+  String themesCount(int count) {
+    return '$count موضوعات';
+  }
+
+  @override
+  String searchCategoryCount(int count) {
+    return 'ابحث في $count تصنيفًا';
+  }
+
+  @override
+  String searchInTheme(String theme) {
+    return 'ابحث في $theme';
+  }
+
+  @override
+  String get backToDuas => 'العودة إلى الأدعية';
+
+  @override
+  String get loggedToday => 'المسجّل اليوم';
 }

@@ -4531,4 +4531,48 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get browseSurahs => 'সূরা দেখুন';
+
+  @override
+  String get forThisMorning => 'এই সকালের জন্য';
+
+  @override
+  String get forThisEvening => 'এই সন্ধ্যার জন্য';
+
+  @override
+  String get continueAction => 'চালিয়ে যান';
+
+  @override
+  String get suggestedForYou => 'আপনার জন্য প্রস্তাবিত';
+
+  @override
+  String get browseByTheme => 'বিষয় অনুযায়ী দেখুন';
+
+  @override
+  String get beginAction => 'শুরু করুন';
+
+  @override
+  String categoriesCount(int count) {
+    return '$count বিভাগ';
+  }
+
+  @override
+  String themesCount(int count) {
+    return '$count বিষয়';
+  }
+
+  @override
+  String searchCategoryCount(int count) {
+    return '$count বিভাগে খুঁজুন';
+  }
+
+  @override
+  String searchInTheme(String theme) {
+    return '$theme-এ খুঁজুন';
+  }
+
+  @override
+  String get backToDuas => 'দোয়ায় ফিরে যান';
+
+  @override
+  String get loggedToday => 'আজ নথিভুক্ত';
 }

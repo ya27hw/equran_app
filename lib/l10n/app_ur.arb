@@ -2242,5 +2242,17 @@
         "type": "int"
       }
     }
-  }
+  },
+  "forThisMorning": "اس صبح کے لیے",
+  "forThisEvening": "اس شام کے لیے",
+  "continueAction": "جاری رکھیں",
+  "suggestedForYou": "آپ کے لیے تجویز کردہ",
+  "browseByTheme": "موضوع کے لحاظ سے دیکھیں",
+  "beginAction": "شروع کریں",
+  "categoriesCount": "{count} زمرے",
+  "themesCount": "{count} موضوعات",
+  "searchCategoryCount": "{count} زمروں میں تلاش کریں",
+  "searchInTheme": "{theme} میں تلاش کریں",
+  "backToDuas": "دعاؤں پر واپس جائیں",
+  "loggedToday": "آج درج شدہ"
 }

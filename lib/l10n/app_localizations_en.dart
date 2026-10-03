@@ -4520,4 +4520,48 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get browseSurahs => 'Browse surahs';
+
+  @override
+  String get forThisMorning => 'For this morning';
+
+  @override
+  String get forThisEvening => 'For this evening';
+
+  @override
+  String get continueAction => 'Continue';
+
+  @override
+  String get suggestedForYou => 'Suggested for you';
+
+  @override
+  String get browseByTheme => 'Browse by theme';
+
+  @override
+  String get beginAction => 'Begin';
+
+  @override
+  String categoriesCount(int count) {
+    return '$count categories';
+  }
+
+  @override
+  String themesCount(int count) {
+    return '$count themes';
+  }
+
+  @override
+  String searchCategoryCount(int count) {
+    return 'Search $count categories';
+  }
+
+  @override
+  String searchInTheme(String theme) {
+    return 'Search in $theme';
+  }
+
+  @override
+  String get backToDuas => 'Back to Duas';
+
+  @override
+  String get loggedToday => 'Logged today';
 }

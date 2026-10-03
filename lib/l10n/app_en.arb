@@ -2387,5 +2387,45 @@
         "type": "int"
       }
     }
-  }
+  },
+  "forThisMorning": "For this morning",
+  "forThisEvening": "For this evening",
+  "continueAction": "Continue",
+  "suggestedForYou": "Suggested for you",
+  "browseByTheme": "Browse by theme",
+  "beginAction": "Begin",
+  "categoriesCount": "{count} categories",
+  "@categoriesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "themesCount": "{count} themes",
+  "@themesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchCategoryCount": "Search {count} categories",
+  "@searchCategoryCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchInTheme": "Search in {theme}",
+  "@searchInTheme": {
+    "placeholders": {
+      "theme": {
+        "type": "String"
+      }
+    }
+  },
+  "backToDuas": "Back to Duas",
+  "loggedToday": "Logged today"
 }

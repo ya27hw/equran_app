@@ -4552,4 +4552,48 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get browseSurahs => 'Jelajahi surah';
+
+  @override
+  String get forThisMorning => 'Untuk pagi ini';
+
+  @override
+  String get forThisEvening => 'Untuk sore ini';
+
+  @override
+  String get continueAction => 'Lanjutkan';
+
+  @override
+  String get suggestedForYou => 'Disarankan untuk Anda';
+
+  @override
+  String get browseByTheme => 'Jelajahi berdasarkan tema';
+
+  @override
+  String get beginAction => 'Mulai';
+
+  @override
+  String categoriesCount(int count) {
+    return '$count kategori';
+  }
+
+  @override
+  String themesCount(int count) {
+    return '$count tema';
+  }
+
+  @override
+  String searchCategoryCount(int count) {
+    return 'Cari dalam $count kategori';
+  }
+
+  @override
+  String searchInTheme(String theme) {
+    return 'Cari dalam $theme';
+  }
+
+  @override
+  String get backToDuas => 'Kembali ke Doa';
+
+  @override
+  String get loggedToday => 'Dicatat hari ini';
 }

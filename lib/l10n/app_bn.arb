@@ -2242,5 +2242,17 @@
         "type": "int"
       }
     }
-  }
+  },
+  "forThisMorning": "এই সকালের জন্য",
+  "forThisEvening": "এই সন্ধ্যার জন্য",
+  "continueAction": "চালিয়ে যান",
+  "suggestedForYou": "আপনার জন্য প্রস্তাবিত",
+  "browseByTheme": "বিষয় অনুযায়ী দেখুন",
+  "beginAction": "শুরু করুন",
+  "categoriesCount": "{count} বিভাগ",
+  "themesCount": "{count} বিষয়",
+  "searchCategoryCount": "{count} বিভাগে খুঁজুন",
+  "searchInTheme": "{theme}-এ খুঁজুন",
+  "backToDuas": "দোয়ায় ফিরে যান",
+  "loggedToday": "আজ নথিভুক্ত"
 }

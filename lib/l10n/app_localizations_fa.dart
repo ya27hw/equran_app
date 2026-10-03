@@ -4529,4 +4529,48 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get browseSurahs => 'مرور سوره‌ها';
+
+  @override
+  String get forThisMorning => 'برای این صبح';
+
+  @override
+  String get forThisEvening => 'برای این عصر';
+
+  @override
+  String get continueAction => 'ادامه';
+
+  @override
+  String get suggestedForYou => 'پیشنهاد برای شما';
+
+  @override
+  String get browseByTheme => 'مرور بر اساس موضوع';
+
+  @override
+  String get beginAction => 'شروع';
+
+  @override
+  String categoriesCount(int count) {
+    return '$count دسته';
+  }
+
+  @override
+  String themesCount(int count) {
+    return '$count موضوع';
+  }
+
+  @override
+  String searchCategoryCount(int count) {
+    return 'جستجو در $count دسته';
+  }
+
+  @override
+  String searchInTheme(String theme) {
+    return 'جستجو در $theme';
+  }
+
+  @override
+  String get backToDuas => 'بازگشت به دعاها';
+
+  @override
+  String get loggedToday => 'ثبت‌شده امروز';
 }

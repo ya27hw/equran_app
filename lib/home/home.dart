@@ -322,7 +322,6 @@ class _HomePageState extends State<HomePage> {
           child: Scaffold(
             appBar:
                 (destinations[selectedIdx].destination is PrayerTimesPage ||
-                    destinations[selectedIdx].destination is DuasPage ||
                     destinations[selectedIdx].destination is MorePage)
                 ? AppBar(
                     toolbarHeight: ResponsiveNav.toolbarHeight(context),

@@ -4533,4 +4533,48 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get browseSurahs => 'سورتیں دیکھیں';
+
+  @override
+  String get forThisMorning => 'اس صبح کے لیے';
+
+  @override
+  String get forThisEvening => 'اس شام کے لیے';
+
+  @override
+  String get continueAction => 'جاری رکھیں';
+
+  @override
+  String get suggestedForYou => 'آپ کے لیے تجویز کردہ';
+
+  @override
+  String get browseByTheme => 'موضوع کے لحاظ سے دیکھیں';
+
+  @override
+  String get beginAction => 'شروع کریں';
+
+  @override
+  String categoriesCount(int count) {
+    return '$count زمرے';
+  }
+
+  @override
+  String themesCount(int count) {
+    return '$count موضوعات';
+  }
+
+  @override
+  String searchCategoryCount(int count) {
+    return '$count زمروں میں تلاش کریں';
+  }
+
+  @override
+  String searchInTheme(String theme) {
+    return '$theme میں تلاش کریں';
+  }
+
+  @override
+  String get backToDuas => 'دعاؤں پر واپس جائیں';
+
+  @override
+  String get loggedToday => 'آج درج شدہ';
 }
