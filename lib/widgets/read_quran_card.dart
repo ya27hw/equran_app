@@ -94,6 +94,20 @@ class ReadQuranCard extends StatelessWidget {
     this.isDownloaded = false,
   });
 
+  /// Brackets a sheet with the same overlay handling as the card's dialogs, so
+  /// the reader stops animating live progress while it is open.
+  Future<void> _withVisualOverlay(Future<void> Function() open) async {
+    AndroidAudioDisplayMode.notifyUserActivity();
+    onVisualOverlayChanged?.call(true);
+    unawaited(AndroidAudioDisplayMode.setLowFpsSuppressed(true));
+    try {
+      await open();
+    } finally {
+      onVisualOverlayChanged?.call(false);
+      unawaited(AndroidAudioDisplayMode.setLowFpsSuppressed(false));
+    }
+  }
+
   /// Tappable words when glosses are available and line up; plain text
   /// otherwise (and always for share images).
   Widget _buildVerseText(TextStyle style) {
@@ -113,6 +127,7 @@ class ReadQuranCard extends StatelessWidget {
           glosses: glosses,
           style: style,
           meta: meta,
+          wrapSheet: _withVisualOverlay,
         );
       }
     }

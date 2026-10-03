@@ -4,9 +4,11 @@ import 'package:equran/backend/settings_db.dart';
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/utils/app_theme.dart';
 import 'package:equran/widgets/read_quran_card.dart';
+import 'package:equran/word_by_word/word_alignment.dart';
 import 'package:equran/word_by_word/word_by_word_pack.dart';
 import 'package:equran/word_by_word/word_by_word_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
@@ -30,6 +32,7 @@ const WordByWordPackMeta _meta = WordByWordPackMeta(
 );
 
 Widget _card({
+  ValueChanged<bool>? onOverlay,
   List<WordGloss>? glosses,
   WordByWordPackMeta? meta,
   String? script,
@@ -60,6 +63,7 @@ Widget _card({
           wordGlosses: glosses,
           wordByWordMeta: meta,
           quranScript: script,
+          onVisualOverlayChanged: onOverlay,
         ),
       ),
     ),
@@ -85,6 +89,57 @@ void main() {
       _card(glosses: _fourGlosses, meta: _meta, script: 'qpc-hafs'),
     );
     expect(find.byType(WordByWordText), findsOneWidget);
+  });
+
+  testWidgets('tapping a word opens the sheet inside the overlay bracket', (
+    tester,
+  ) async {
+    final List<bool> overlay = <bool>[];
+    await tester.pumpWidget(
+      _card(
+        glosses: _fourGlosses,
+        meta: _meta,
+        script: 'qpc-hafs',
+        onOverlay: overlay.add,
+      ),
+    );
+    final List<WordRange> ranges = alignWordRanges(
+      text: _verse,
+      script: 'qpc-hafs',
+      wordCount: 4,
+    )!;
+    final RenderParagraph paragraph = tester.renderObject<RenderParagraph>(
+      find
+          .descendant(
+            of: find.byType(WordByWordText),
+            matching: find.byType(RichText),
+          )
+          .first,
+    );
+    final Offset secondWord = paragraph.localToGlobal(
+      paragraph
+          .getBoxesForSelection(
+            TextSelection(
+              baseOffset: ranges[1].start,
+              extentOffset: ranges[1].end,
+            ),
+          )
+          .first
+          .toRect()
+          .center,
+    );
+
+    await tester.tapAt(secondWord);
+    await tester.pumpAndSettle();
+    expect(find.text('He'), findsOneWidget, reason: 'meaning of word 2');
+    expect(overlay, <bool>[true], reason: 'sheet is open');
+
+    await tester.tapAt(const Offset(5, 5)); // dismiss via the scrim
+    await tester.pumpAndSettle();
+    expect(find.text('He'), findsNothing);
+    expect(overlay, <bool>[true, false]);
+    // The overlay helper arms an idle timer; let it expire.
+    await tester.pump(const Duration(minutes: 5));
   });
 
   testWidgets('a gloss count that does not match keeps plain text', (

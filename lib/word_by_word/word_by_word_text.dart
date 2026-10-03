@@ -1,3 +1,5 @@
+import 'dart:async' show unawaited;
+
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/word_by_word/word_alignment.dart';
 import 'package:equran/word_by_word/word_by_word_pack.dart';
@@ -20,6 +22,7 @@ class WordByWordText extends StatefulWidget {
     required this.meta,
     this.textAlign = TextAlign.justify,
     this.onWordTap,
+    this.wrapSheet,
   });
 
   final String text;
@@ -31,6 +34,10 @@ class WordByWordText extends StatefulWidget {
 
   /// Overrides the default bottom sheet (used by tests).
   final void Function(int index)? onWordTap;
+
+  /// Lets the host bracket the sheet's lifetime (the reader pauses its live
+  /// progress animation while an overlay is open). Must await [open].
+  final Future<void> Function(Future<void> Function() open)? wrapSheet;
 
   @override
   State<WordByWordText> createState() => _WordByWordTextState();
@@ -81,7 +88,7 @@ class _WordByWordTextState extends State<WordByWordText> {
       override(index);
       return;
     }
-    showWordMeaningSheet(
+    Future<void> open() => showWordMeaningSheet(
       context,
       arabic: widget.text.substring(
         widget.ranges[index].start,
@@ -91,6 +98,9 @@ class _WordByWordTextState extends State<WordByWordText> {
       meta: widget.meta,
       arabicStyle: widget.style,
     );
+    final Future<void> Function(Future<void> Function() open)? wrap =
+        widget.wrapSheet;
+    unawaited(wrap == null ? open() : wrap(open));
   }
 
   @override
@@ -113,10 +123,18 @@ class _WordByWordTextState extends State<WordByWordText> {
     if (cursor < widget.text.length) {
       spans.add(TextSpan(text: widget.text.substring(cursor)));
     }
-    return Text.rich(
-      TextSpan(style: widget.style, children: spans),
+    // Per-word recognizers would split the ayah into several screen-reader
+    // nodes. Keep it one node, exactly as a plain Text is, so assistive
+    // technology reads the ayah as before; word meanings are a touch feature.
+    return Semantics(
+      label: widget.text,
       textDirection: TextDirection.rtl,
-      textAlign: widget.textAlign,
+      excludeSemantics: true,
+      child: Text.rich(
+        TextSpan(style: widget.style, children: spans),
+        textDirection: TextDirection.rtl,
+        textAlign: widget.textAlign,
+      ),
     );
   }
 }

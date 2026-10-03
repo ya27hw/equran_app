@@ -281,6 +281,68 @@ void main() {
       expect(taps, <int>[1, 2, 0]);
     });
 
+    testWidgets('a horizontal swipe over the words still reaches the parent', (
+      WidgetTester tester,
+    ) async {
+      final List<int> taps = <int>[];
+      int swipes = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: GestureDetector(
+              onHorizontalDragEnd: (_) => swipes++,
+              child: Center(
+                child: WordByWordText(
+                  text: text,
+                  ranges: ranges,
+                  glosses: glosses,
+                  style: const TextStyle(fontSize: 30),
+                  meta: meta,
+                  onWordTap: taps.add,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.dragFrom(centerOfWord(tester, 1), const Offset(-200, 0));
+      await tester.pump();
+      expect(swipes, 1, reason: 'swipe between ayahs must keep working');
+      expect(taps, isEmpty, reason: 'a swipe is not a word tap');
+    });
+
+    testWidgets('stays a single screen-reader node, like a plain Text', (
+      WidgetTester tester,
+    ) async {
+      final SemanticsHandle handle = tester.ensureSemantics();
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: WordByWordText(
+              text: text,
+              ranges: ranges,
+              glosses: glosses,
+              style: const TextStyle(fontSize: 30),
+              meta: meta,
+            ),
+          ),
+        ),
+      );
+      final List<String> labels = <String>[];
+      void visit(SemanticsNode node) {
+        final String label = node.getSemanticsData().label;
+        if (label.isNotEmpty) labels.add(label);
+        node.visitChildren((SemanticsNode child) {
+          visit(child);
+          return true;
+        });
+      }
+
+      visit(tester.getSemantics(find.byType(WordByWordText)));
+      expect(labels, <String>[text]);
+      handle.dispose();
+    });
+
     testWidgets('renders exactly the original text', (
       WidgetTester tester,
     ) async {

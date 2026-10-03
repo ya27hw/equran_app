@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'appearance_settings_page.dart';
 import 'navigation_settings_page.dart';
@@ -485,9 +486,11 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                       downloads: downloads,
                     ),
-                    if (manifest
-                        .resourcesOfType(ResourceType.wordByWord)
-                        .isNotEmpty)
+                    // The pack is stored on disk, which web builds do not have.
+                    if (!kIsWeb &&
+                        manifest
+                            .resourcesOfType(ResourceType.wordByWord)
+                            .isNotEmpty)
                       _buildResourceSubsection(
                         context: context,
                         manifest: manifest,

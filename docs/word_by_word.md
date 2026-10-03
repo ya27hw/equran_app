@@ -56,7 +56,17 @@ Equal counts alone could hide a shifted word, so the test also compares every
 word of IndoPak against Hafs by letter skeleton wherever both align.
 
 Not covered yet: the continuous page/mushaf view and the ayah-details sheet
-still show plain text.
+still show plain text. Word taps are a touch feature: the ayah stays a single
+screen-reader node, exactly as before. The section is hidden on web, which has
+no file system for packs.
+
+Validation beyond word counts: for the 6,229 Hafs-aligned ayahs, each word's
+letter skeleton was compared with the dataset's own transliteration at the same
+position (median similarity 1.00, 0.2% of 77,355 words below 0.5); shifting by
+one word scores a median of 0.25. That check was run once offline against the
+dataset and is not part of the test suite, which only holds integer counts.
+QPC v4 text is glyph codes and was validated by structure (one glyph per word
+plus the ayah-number glyph) and counts, not by content.
 
 ## Publishing a pack (maintainer checklist)
 
@@ -70,5 +80,5 @@ still show plain text.
    (`ya27hw/equran-assets`).
 4. Add the printed entry (with the real `url`, `sha256`, `sizeBytes`) to the
    remote `resource_manifest.json`.
-5. In the app: Settings → Downloads → Refresh, install "Word by word", open any
-   ayah and tap a word.
+5. In the app: Settings → Downloadable Resources → "Refresh manifest", install
+   "Word by word", open any ayah and tap a word.
