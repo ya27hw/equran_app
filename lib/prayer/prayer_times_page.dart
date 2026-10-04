@@ -382,12 +382,25 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                   button: true,
                   child: InkWell(
                     onTap: () => _selectPrayerDate(day.date),
-                    child: Text(
-                      '${location.cityLabel} · ${hijri.toLocalizedDateString(l.localeName)}',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: context.equranTokens.muted,
-                      ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.location_on_outlined,
+                          size: 15,
+                          color: context.equranTokens.muted,
+                        ),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            '${location.cityLabel} · ${hijri.toLocalizedDateString(l.localeName)}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: context.equranTokens.muted,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
