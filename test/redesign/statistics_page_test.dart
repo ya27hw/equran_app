@@ -3,6 +3,8 @@ import 'package:equran/debug/statistics_preview_main.dart';
 import 'package:equran/hifz/hifz.dart';
 import 'package:equran/home/quran_stats_page.dart';
 import 'package:equran/home/read.dart';
+import 'package:equran/prayer/prayer_models.dart';
+import 'package:equran/prayer/prayer_settings_store.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/widgets/redesign/redesign_widgets.dart';
 import 'package:flutter/material.dart';
@@ -60,6 +62,7 @@ void main() {
     Locale locale = const Locale('en'),
     List<NavigatorObserver> observers = const [],
     StatisticsPreviewRepository? fixture,
+    DateTime? now,
   }) async {
     await tester.binding.setSurfaceSize(const Size(390, 844));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -71,6 +74,7 @@ void main() {
         scale: scale,
         locale: locale,
         navigatorObservers: observers,
+        now: now,
       ),
     );
     await tester.pumpAndSettle();
@@ -119,6 +123,49 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  // The legend only explains glyphs on screen. With a location, prayers that
+  // have not begun are locked ("Not yet"); without one nothing is locked.
+  for (final (name, withLocation) in [
+    ('lists "Not yet" while a prayer is still locked', true),
+    ('drops "Not yet" when no prayer is locked (no location)', false),
+  ]) {
+    testWidgets('prayer legend $name', (tester) async {
+      // Not seedPrayerPreview(): it clears SettingsDB, which holds the
+      // prayer-tracking opt-in that seedStatisticsPreview just set.
+      final store = PrayerSettingsStore();
+      if (withLocation) {
+        await store.saveLocation(
+          const PrayerLocation(
+            latitude: 23.588,
+            longitude: 58.3829,
+            label: 'Muscat',
+            mode: PrayerLocationMode.manual,
+            countryCode: 'OM',
+            timezoneId: 'Asia/Muscat',
+          ),
+        );
+      } else {
+        await store.clearLocation();
+      }
+      // 09:12 UTC is 13:12 in Muscat: Asr, Maghrib and Isha have not begun.
+      await pump(tester, now: DateTime.utc(2026, 10, 4, 9, 12));
+      await scrollTo(tester, 'statistics-prayer');
+      final card = find.byKey(const ValueKey('statistics-prayer'));
+      expect(
+        find.descendant(of: card, matching: find.text('Not yet')),
+        withLocation ? findsOneWidget : findsNothing,
+      );
+      // The four designed entries are always listed.
+      for (final label in ['On time', 'Late', 'Missed', 'Not logged']) {
+        expect(
+          find.descendant(of: card, matching: find.text(label)),
+          findsWidgets,
+          reason: label,
+        );
+      }
+    });
+  }
 
   testWidgets('Hifz load failure leaves Today and prayer logging available', (
     tester,

@@ -3449,12 +3449,6 @@ abstract class AppLocalizations {
   /// **'Note'**
   String get note;
 
-  /// No description provided for @privateNote.
-  ///
-  /// In en, this message translates to:
-  /// **'Private note'**
-  String get privateNote;
-
   /// No description provided for @writeReflectionHint.
   ///
   /// In en, this message translates to:
@@ -5060,12 +5054,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reward is with Allah.'**
   String get rewardIsWithAllah;
-
-  /// No description provided for @totalZakahWealth.
-  ///
-  /// In en, this message translates to:
-  /// **'Total wealth must be at least 200 to calculate Zakah.'**
-  String get totalZakahWealth;
 
   /// No description provided for @hifzTitle.
   ///

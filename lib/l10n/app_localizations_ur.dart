@@ -1523,7 +1523,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get removeFavourite => 'پسندیدہ کو ہٹا دیں۔';
 
   @override
-  String get saveDuasHere => 'فوری رسائی کے لیے دعائیں یہاں محفوظ کریں۔';
+  String get saveDuasHere => 'فوری رسائی کے لیے محفوظ';
 
   @override
   String savedDuasCount(int count, String label) {
@@ -1889,9 +1889,6 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get note => 'نوٹ';
-
-  @override
-  String get privateNote => 'نجی نوٹ';
 
   @override
   String get writeReflectionHint => 'ایک عکاسی لکھیں...';
@@ -2867,10 +2864,6 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get rewardIsWithAllah => 'اجر اللہ کے پاس ہے۔';
-
-  @override
-  String get totalZakahWealth =>
-      'زکوٰۃ کے حساب کے لیے کل دولت کم از کم 200 ہونی چاہیے۔';
 
   @override
   String get hifzTitle => 'Hifz';

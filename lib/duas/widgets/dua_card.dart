@@ -1,3 +1,4 @@
+import 'package:equran/utils/text_direction.dart';
 import 'package:equran/backend/dua_favourites_db.dart';
 import 'package:equran/backend/settings_db.dart';
 import 'package:equran/duas/hisn_al_muslim_models.dart';
@@ -139,6 +140,10 @@ class DuaCard extends StatelessWidget {
                           const SizedBox(height: 14),
                           Text(
                             dua.transliteration!,
+                            textDirection: scriptDirectionIn(
+                              context,
+                              dua.transliteration!,
+                            ),
                             textAlign: TextAlign.justify,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               fontSize: (translationFontSize - 2)
@@ -161,6 +166,10 @@ class DuaCard extends StatelessWidget {
                           const SizedBox(height: 14),
                           Text(
                             dua.localizedTranslation(translationLang)!,
+                            textDirection: scriptDirectionIn(
+                              context,
+                              dua.localizedTranslation(translationLang)!,
+                            ),
                             textAlign: TextAlign.justify,
                             style: theme.textTheme.bodyLarge?.copyWith(
                               fontSize: translationFontSize,

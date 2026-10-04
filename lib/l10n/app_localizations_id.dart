@@ -1531,7 +1531,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get removeFavourite => 'Hapus favorit';
 
   @override
-  String get saveDuasHere => 'Simpan doa di sini untuk akses cepat';
+  String get saveDuasHere => 'Disimpan untuk akses cepat';
 
   @override
   String savedDuasCount(int count, String label) {
@@ -1900,9 +1900,6 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get note => 'Catatan';
-
-  @override
-  String get privateNote => 'Catatan pribadi';
 
   @override
   String get writeReflectionHint => 'Tulis refleksi...';
@@ -2881,10 +2878,6 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get rewardIsWithAllah => 'Pahala ada di sisi Allah.';
-
-  @override
-  String get totalZakahWealth =>
-      'Total kekayaan harus minimal 200 untuk menghitung Zakat.';
 
   @override
   String get hifzTitle => 'Hifz';

@@ -8971,7 +8971,7 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
                           maxLines: 4,
                           minLines: 2,
                           decoration: InputDecoration(
-                            labelText: localizations.privateNote,
+                            labelText: localizations.note,
                             hintText: localizations.writeReflectionHint,
                           ),
                         ),

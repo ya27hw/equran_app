@@ -764,7 +764,7 @@
   "favouriteDuas": "Lieblingsduas",
   "favourite": "Favorit",
   "removeFavourite": "Favorit entfernen",
-  "saveDuasHere": "Speichern Sie Duas hier für einen schnellen Zugriff",
+  "saveDuasHere": "Für schnellen Zugriff gespeichert",
   "savedDuasCount": "{count} hat {label} gespeichert",
   "@savedDuasCount": {
     "placeholders": {
@@ -969,7 +969,6 @@
   "saveAyahsNotesHere": "Speichern Sie Ayahs, Notizen und Reflexionen hier.",
   "savedAyahLibraryHint": "Fügen Sie Ayahs schnell zu Ihren Favoriten hinzu oder fügen Sie Ordner, Tags und private Notizen aus den Leseoptionen hinzu.",
   "note": "Notiz",
-  "privateNote": "Private Notiz",
   "writeReflectionHint": "Schreiben Sie eine Reflexion ...",
   "createFolder": "Ordner erstellen",
   "tagsHint": "Dankbarkeit, Duas",
@@ -1237,7 +1236,6 @@
   "totalRead": "Insgesamt gelesen",
   "estimatedLettersRead": "Geschätzte gelesene Briefe",
   "rewardIsWithAllah": "Der Lohn liegt bei Allah.",
-  "totalZakahWealth": "Zur Berechnung der Zakah muss das Gesamtvermögen mindestens 200 betragen.",
   "hifzTitle": "Hifz",
   "hifzJourneyTitle": "Ihre Hifz-Reise",
   "hifzNewTodayLabel": "{count}/{max} heute neu",

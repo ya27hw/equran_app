@@ -221,7 +221,7 @@ class _StatisticsToday extends StatelessWidget {
             children: [
               Expanded(
                 child: _CountLabel(
-                  '${data.tasbihCount}',
+                  formatGroupedCount(data.tasbihCount, l.localeName),
                   l.dhikrLabel,
                   size: 22,
                   singleLine: true,
@@ -230,7 +230,7 @@ class _StatisticsToday extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: _CountLabel(
-                  '${data.duasViewed}',
+                  formatGroupedCount(data.duasViewed, l.localeName),
                   l.duasViewed,
                   size: 22,
                   singleLine: true,
@@ -239,7 +239,10 @@ class _StatisticsToday extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: _CountLabel(
-                  mastered?.toString() ?? '—',
+                  switch (mastered) {
+                    final int count => formatGroupedCount(count, l.localeName),
+                    null => '—',
+                  },
                   l.hifzMemorized,
                   size: 22,
                   singleLine: true,
@@ -398,13 +401,13 @@ class _StatisticsPrayerRow extends StatelessWidget {
                     size: 28,
                     state: _statisticsGlyph(
                       prayer.statusFor(entry),
-                      available: availability.isLoggable(prayer),
+                      available: availability.isLoggable(prayer, now: now),
                     ),
                     semanticLabel: _statisticsGlyphLabel(
                       l,
                       _statisticsGlyph(
                         prayer.statusFor(entry),
-                        available: availability.isLoggable(prayer),
+                        available: availability.isLoggable(prayer, now: now),
                       ),
                     ),
                   ),
@@ -452,6 +455,20 @@ class _StatisticsPrayer extends StatelessWidget {
         entry.date: entry,
     };
     final availability = _salahLogAvailabilityForNow(now: now);
+    SalahGlyphState glyphFor(SalahPrayer prayer, DateTime day) {
+      final entry = logs[_dateKey(day)] ?? SalahLogEntry(date: _dateKey(day));
+      return _statisticsGlyph(
+        prayer.statusFor(entry),
+        available: day != today || availability.isLoggable(prayer, now: now),
+      );
+    }
+
+    // The design's legend has four fixed entries; "Not yet" is added only
+    // while a prayer later today is still locked.
+    final usedGlyphStates = <SalahGlyphState>{
+      for (final prayer in SalahPrayer.values)
+        for (final day in days) glyphFor(prayer, day),
+    };
     return HairlineCard(
       key: const ValueKey('statistics-prayer'),
       padding: const EdgeInsets.all(18),
@@ -577,14 +594,7 @@ class _StatisticsPrayer extends StatelessWidget {
                       child: Builder(
                         builder: (context) {
                           final isToday = day == today;
-                          final entry =
-                              logs[_dateKey(day)] ??
-                              SalahLogEntry(date: _dateKey(day));
-                          final state = _statisticsGlyph(
-                            prayer.statusFor(entry),
-                            available:
-                                !isToday || availability.isLoggable(prayer),
-                          );
+                          final state = glyphFor(prayer, day);
                           final label =
                               '${_dateChipLabel(day, l)} · ${_salahPrayerLabel(l, prayer)} · ${_statisticsGlyphLabel(l, state)}';
                           return Tooltip(
@@ -621,18 +631,20 @@ class _StatisticsPrayer extends StatelessWidget {
             runSpacing: 8,
             children: [
               for (final state in SalahGlyphState.values)
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SalahGlyph(
-                      state: state,
-                      size: 14,
-                      semanticLabel: _statisticsGlyphLabel(l, state),
-                    ),
-                    const SizedBox(width: 6),
-                    _StatsText(_statisticsGlyphLabel(l, state), size: 11.5),
-                  ],
-                ),
+                if (state != SalahGlyphState.notYet ||
+                    usedGlyphStates.contains(state))
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SalahGlyph(
+                        state: state,
+                        size: 14,
+                        semanticLabel: _statisticsGlyphLabel(l, state),
+                      ),
+                      const SizedBox(width: 6),
+                      _StatsText(_statisticsGlyphLabel(l, state), size: 11.5),
+                    ],
+                  ),
             ],
           ),
           const SizedBox(height: 16),
@@ -729,11 +741,16 @@ class _StatisticsQuran extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(child: _StatisticsTile('${data.totalAyahs}', l.ayahsRead)),
+            Expanded(
+              child: _StatisticsTile(
+                formatGroupedCount(data.totalAyahs, l.localeName),
+                l.ayahsRead,
+              ),
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: _StatisticsTile(
-                _compactNumber(data.totalLetters),
+                formatCompactCount(data.totalLetters, l.localeName),
                 l.lettersRead,
               ),
             ),
@@ -744,7 +761,10 @@ class _StatisticsQuran extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: _StatisticsTile('${data.activeDays}', l.activeDays),
+              child: _StatisticsTile(
+                formatGroupedCount(data.activeDays, l.localeName),
+                l.activeDays,
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -970,7 +990,11 @@ class _StatisticsChart extends StatelessWidget {
                 children: [
                   _StatsText(l.ayahsRead),
                   const SizedBox(height: 6),
-                  DisplayNumeral('$total', size: 40, height: 1),
+                  DisplayNumeral(
+                    formatGroupedCount(total, l.localeName),
+                    size: 40,
+                    height: 1,
+                  ),
                 ],
               ),
               PillTag(l.dailyQuranGoalSubtitle(goal), gold: true),
@@ -1253,7 +1277,11 @@ class _StatisticsHifz extends StatelessWidget {
             children: [
               _StatsText(l.hifzStatsTotalMemorized),
               const SizedBox(height: 6),
-              DisplayNumeral('${data.totalMemorized}', size: 40, height: 1),
+              DisplayNumeral(
+                formatGroupedCount(data.totalMemorized, l.localeName),
+                size: 40,
+                height: 1,
+              ),
               const SizedBox(height: 18),
               Row(
                 children: [
@@ -1291,7 +1319,7 @@ class _StatisticsHifz extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: _CountLabel(
-                      '${data.totalReviews}',
+                      formatGroupedCount(data.totalReviews, l.localeName),
                       l.hifzStatsTotalReviews,
                       size: 22,
                     ),
@@ -1407,7 +1435,11 @@ class _StatisticsTasbih extends StatelessWidget {
         children: [
           RedesignEyebrow(l.dhikrLabel),
           const SizedBox(height: 14),
-          DisplayNumeral('${data.totalDhikr}', size: 30, height: 1),
+          DisplayNumeral(
+            formatGroupedCount(data.totalDhikr, l.localeName),
+            size: 30,
+            height: 1,
+          ),
           const SizedBox(height: 5),
           _StatsText(l.totalDhikr),
           const SizedBox(height: 12),
@@ -1448,7 +1480,11 @@ class _StatisticsDuas extends StatelessWidget {
         children: [
           RedesignEyebrow(l.duas),
           const SizedBox(height: 14),
-          DisplayNumeral('${data.viewedCount}', size: 30, height: 1),
+          DisplayNumeral(
+            formatGroupedCount(data.viewedCount, l.localeName),
+            size: 30,
+            height: 1,
+          ),
           const SizedBox(height: 5),
           _StatsText(l.duasViewed),
           const SizedBox(height: 12),

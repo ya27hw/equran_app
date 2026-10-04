@@ -1,3 +1,4 @@
+import 'package:equran/utils/text_direction.dart';
 import 'dart:math' as math;
 
 import 'package:equran/backend/library.dart';
@@ -886,6 +887,10 @@ class _BookmarkRowState extends State<_BookmarkRow> {
                               const SizedBox(height: 7),
                               Text(
                                 entry.note,
+                                textDirection: scriptDirectionIn(
+                                  context,
+                                  entry.note,
+                                ),
                                 style: TextStyle(
                                   fontSize: 14,
                                   height: 1.5,
@@ -952,11 +957,19 @@ class _AyahHeading extends StatelessWidget {
               width: 34,
               height: 34,
               child: Center(
-                child: DisplayNumeral(
-                  '${entry.surah}',
-                  size: 13,
-                  height: 1,
-                  color: context.equranTokens.goldText,
+                // Fixed-size star: shrink the number instead of letting
+                // large text scales push it past the medallion edge.
+                child: SizedBox.square(
+                  dimension: 18,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: DisplayNumeral(
+                      '${entry.surah}',
+                      size: 13,
+                      height: 1,
+                      color: context.equranTokens.goldText,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -1835,7 +1848,7 @@ class _CollapsibleVerseState extends State<_CollapsibleVerse> {
               widget.translationStyle,
               _translationLines,
               width,
-              Directionality.of(context),
+              scriptDirectionIn(context, widget.translation),
             );
         final clamp = !_expanded;
         return Column(
@@ -1856,6 +1869,7 @@ class _CollapsibleVerseState extends State<_CollapsibleVerse> {
               const SizedBox(height: 8),
               Text(
                 widget.translation,
+                textDirection: scriptDirectionIn(context, widget.translation),
                 maxLines: clamp ? _translationLines : null,
                 overflow: clamp ? TextOverflow.fade : TextOverflow.clip,
                 style: widget.translationStyle,

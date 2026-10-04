@@ -1530,7 +1530,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get removeFavourite => 'Favoriyi kaldır';
 
   @override
-  String get saveDuasHere => 'Hızlı erişim için duaları buraya kaydedin';
+  String get saveDuasHere => 'Hızlı erişim için kaydedildi';
 
   @override
   String savedDuasCount(int count, String label) {
@@ -1896,9 +1896,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get note => 'Not';
-
-  @override
-  String get privateNote => 'Özel not';
 
   @override
   String get writeReflectionHint => 'Bir yansıma yazın...';
@@ -2876,10 +2873,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get rewardIsWithAllah => 'Mükâfat Allah\'ındır.';
-
-  @override
-  String get totalZakahWealth =>
-      'Zekat hesaplamak için toplam servetin en az 200 olması gerekir.';
 
   @override
   String get hifzTitle => 'Hıfz';

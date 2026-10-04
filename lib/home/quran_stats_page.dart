@@ -14,6 +14,7 @@ import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/widgets/redesign/redesign_widgets.dart';
 import 'package:equran/widgets/redesign/page_typography.dart';
 import 'package:equran/utils/app_radii.dart';
+import 'package:equran/utils/number_formatting.dart';
 import 'package:equran/utils/quran_display.dart';
 import 'package:equran/utils/quran_text.dart';
 import 'package:flutter/foundation.dart';
@@ -3396,12 +3397,6 @@ String _dateKey(DateTime date) {
   return '${date.year.toString().padLeft(4, '0')}-'
       '${date.month.toString().padLeft(2, '0')}-'
       '${date.day.toString().padLeft(2, '0')}';
-}
-
-String _compactNumber(int value) {
-  if (value >= 1000000) return '${(value / 1000000).toStringAsFixed(1)}M';
-  if (value >= 10000) return '${(value / 1000).toStringAsFixed(1)}K';
-  return value.toString();
 }
 
 String _averageLabel(double value) {

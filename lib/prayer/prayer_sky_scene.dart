@@ -56,6 +56,10 @@ class PrayerSkyScene {
     sunVisibility: 1,
     stars: 0,
   );
+
+  /// The golden moment of sunrise: sun clear of the horizon, no stars. Used
+  /// by the setup hero, which has no prayer times to anchor a real instant.
+  static const PrayerSkyScene sunrisePeak = _sunrise;
   static const PrayerSkyScene _morning = PrayerSkyScene(
     top: Color(0xff236c8e),
     middle: Color(0xff67adbb),

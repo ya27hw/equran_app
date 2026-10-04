@@ -1525,7 +1525,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get removeFavourite => 'প্রিয় সরান';
 
   @override
-  String get saveDuasHere => 'দ্রুত অ্যাক্সেসের জন্য এখানে দোয়া সংরক্ষণ করুন';
+  String get saveDuasHere => 'দ্রুত অ্যাক্সেসের জন্য সংরক্ষিত';
 
   @override
   String savedDuasCount(int count, String label) {
@@ -1888,9 +1888,6 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get note => 'নোট';
-
-  @override
-  String get privateNote => 'ব্যক্তিগত নোট';
 
   @override
   String get writeReflectionHint => 'একটি প্রতিফলন লিখুন...';
@@ -2867,10 +2864,6 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get rewardIsWithAllah => 'পুরস্কার আল্লাহর কাছে।';
-
-  @override
-  String get totalZakahWealth =>
-      'যাকাত হিসাব করার জন্য মোট সম্পদ কমপক্ষে 200 হতে হবে।';
 
   @override
   String get hifzTitle => 'হিফজ';

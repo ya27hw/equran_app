@@ -1,3 +1,4 @@
+import 'package:equran/utils/text_direction.dart';
 import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/widgets/redesign/design_icon.dart';
@@ -61,6 +62,7 @@ class PillTag extends StatelessWidget {
           ],
           Text(
             label,
+            textDirection: scriptDirectionIn(context, label),
             style: TextStyle(
               fontFamily: 'Inter',
               fontSize: compact ? 10.5 : 12,
@@ -127,7 +129,7 @@ class ChipButton extends StatelessWidget {
                 Icon(icon, size: 16),
                 const SizedBox(width: 6),
               ],
-              Text(label),
+              Text(label, textDirection: scriptDirectionIn(context, label)),
               if (count != null) ...[
                 const SizedBox(width: 6),
                 Text(

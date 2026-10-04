@@ -764,7 +764,7 @@
   "favouriteDuas": "دعاهای علاقه‌مندی",
   "favourite": "علاقه‌مندی",
   "removeFavourite": "حذف از علاقه‌مندی‌ها",
-  "saveDuasHere": "برای دسترسی سریع، دعاها را در اینجا ذخیره کنید",
+  "saveDuasHere": "ذخیره‌شده برای دسترسی سریع",
   "savedDuasCount": "{count} {label} ذخیره شده",
   "@savedDuasCount": {
     "placeholders": {
@@ -969,7 +969,6 @@
   "saveAyahsNotesHere": "آیه‌ها، یادداشت‌ها و تأملات خود را در اینجا ذخیره کنید.",
   "savedAyahLibraryHint": "با استفاده از گزینه‌های خواندن، می‌توانید آیه‌ها را به سرعت مورد علاقه قرار دهید یا پوشه، برچسب و یادداشت‌های خصوصی اضافه کنید.",
   "note": "یادداشت",
-  "privateNote": "یادداشت خصوصی",
   "writeReflectionHint": "تأملات خود را بنویسید...",
   "createFolder": "ایجاد پوشه",
   "tagsHint": "سپاسگزاری، دعاها",
@@ -1237,7 +1236,6 @@
   "totalRead": "کل خوانده شده",
   "estimatedLettersRead": "حروف خوانده شده تخمینی",
   "rewardIsWithAllah": "پاداش نزد الله است.",
-  "totalZakahWealth": "برای محاسبه زکات، کل دارایی باید حداقل ۲۰۰ باشد.",
   "hifzTitle": "حفظ",
   "hifzJourneyTitle": "مسیر حفظ شما",
   "hifzNewTodayLabel": "{count} از {max} مورد جدید امروز",

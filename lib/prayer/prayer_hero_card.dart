@@ -70,7 +70,10 @@ class PrayerHeroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (useRedesign && day != null && nextPrayer != null) {
+    if (useRedesign && (day == null || nextPrayer == null)) {
+      return PrayerArcSetupHero(onTap: onTap);
+    }
+    if (useRedesign) {
       return PrayerArcHero(
         day: day!,
         nextPrayer: nextPrayer!,

@@ -205,4 +205,36 @@ void main() {
       });
     }
   });
+
+  testWidgets(
+    'setup hero holds the sunrise sky, shows default copy, opens setup',
+    (tester) async {
+      int tapped = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 350,
+                child: PrayerArcSetupHero(onTap: () => tapped++),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(painter(tester).scene, PrayerSkyScene.sunrisePeak);
+      expect(painter(tester).scene.sunVisibility, 1);
+      expect(find.text('Prayer Times'), findsOneWidget);
+      expect(
+        find.text('Choose a location to show the next prayer time here.'),
+        findsOneWidget,
+      );
+      expect(find.text('Set up location'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('prayer-arc-setup-hero')));
+      expect(tapped, 1);
+    },
+  );
 }

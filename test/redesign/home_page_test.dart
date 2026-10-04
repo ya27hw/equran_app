@@ -7,6 +7,7 @@ import 'package:equran/duas/hisn_al_muslim_repository.dart';
 import 'package:equran/hifz/hifz.dart';
 import 'package:equran/home_dashboard/home_dashboard_page.dart';
 import 'package:equran/l10n/app_localizations.dart';
+import 'package:equran/prayer/prayer_settings_store.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -42,7 +43,7 @@ Future<void> _seed({required bool rich}) async {
   await QuranStatsDB().clear();
   await BookmarkDB().clear();
   if (!rich) {
-    await SettingsDB().delete('prayer_location');
+    await PrayerSettingsStore().clearLocation();
     return;
   }
   final now = prayerPreviewNow();
@@ -222,9 +223,7 @@ void main() {
     ('arabic-rtl', EquranColors.dark, 1.0, const Locale('ar')),
   ];
   for (final (name, colors, scale, locale) in variants) {
-    // The fresh-install hero (EquranResumeImageCard) overflows by 24 px at 1.3x
-    // text; heroes are out of scope here, so only the data-rich state is pinned.
-    for (final rich in [true, if (scale == 1) false]) {
+    for (final rich in [true, false]) {
       testWidgets('Home ${rich ? 'rich' : 'fresh'} golden $name', (
         tester,
       ) async {

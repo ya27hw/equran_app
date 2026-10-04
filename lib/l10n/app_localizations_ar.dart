@@ -1509,7 +1509,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get removeFavourite => 'إزالة من المفضلة';
 
   @override
-  String get saveDuasHere => 'احفظ الأدعية هنا للوصول السريع';
+  String get saveDuasHere => 'محفوظة للوصول السريع';
 
   @override
   String savedDuasCount(int count, String label) {
@@ -1874,9 +1874,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get note => 'ملاحظة';
-
-  @override
-  String get privateNote => 'ملاحظة خاصة';
 
   @override
   String get writeReflectionHint => 'اكتب تأملاً...';
@@ -2803,10 +2800,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get rewardIsWithAllah => 'الأجر عند الله.';
-
-  @override
-  String get totalZakahWealth =>
-      'يجب أن يكون إجمالي الثروة 200 على الأقل لحساب الزكاة.';
 
   @override
   String get hifzTitle => 'الحفظ';

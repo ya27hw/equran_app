@@ -1886,9 +1886,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get note => 'Note';
 
   @override
-  String get privateNote => 'Private note';
-
-  @override
   String get writeReflectionHint => 'Write a reflection...';
 
   @override
@@ -2862,10 +2859,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get rewardIsWithAllah => 'Reward is with Allah.';
-
-  @override
-  String get totalZakahWealth =>
-      'Total wealth must be at least 200 to calculate Zakah.';
 
   @override
   String get hifzTitle => 'Hifz';

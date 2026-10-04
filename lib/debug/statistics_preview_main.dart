@@ -273,8 +273,10 @@ class StatisticsPreviewApp extends StatelessWidget {
     this.locale = const Locale('en'),
     this.scale = 1,
     this.navigatorObservers = const [],
+    this.now,
   });
   final StatisticsRepository repository;
+  final DateTime? now;
   final EquranColors colors;
   final Locale locale;
   final double scale;
@@ -304,7 +306,7 @@ class StatisticsPreviewApp extends StatelessWidget {
     home: Scaffold(
       body: StatisticsPage(
         previewRepository: repository,
-        previewNow: statisticsPreviewNow(),
+        previewNow: now ?? statisticsPreviewNow(),
       ),
     ),
   );

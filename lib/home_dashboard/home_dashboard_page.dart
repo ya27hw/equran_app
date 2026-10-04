@@ -1,3 +1,5 @@
+import 'package:equran/utils/text_direction.dart';
+import 'package:equran/zakat/zakat_page.dart';
 import 'package:equran/widgets/common/equran_asset_image.dart';
 import 'dart:async';
 import 'dart:math' as math;
@@ -22,12 +24,12 @@ import 'package:equran/home_dashboard/daily_tools_edit_sheet.dart';
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:equran/theme/equran_text_styles.dart';
 import 'package:equran/utils/app_radii.dart';
+import 'package:equran/utils/number_formatting.dart';
 import 'package:equran/utils/quran_display.dart';
 import 'package:equran/utils/quran_text.dart';
 import 'package:equran/widgets/common/equran_components.dart';
-import 'package:equran/widgets/holographic_card.dart';
 import 'package:equran/prayer/hijri_calendar.dart';
-import 'package:equran/widgets/last_read_cards.dart';
+import 'package:equran/widgets/quran_reading_hero.dart';
 import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -38,7 +40,6 @@ import 'package:equran/duas/hisn_al_muslim_models.dart';
 import 'package:equran/duas/duas_category_page.dart';
 import 'package:equran/backend/daily_tools_config.dart';
 import 'package:equran/home/hijri_calendar_page.dart' hide HijriCalendar;
-import 'package:equran/home/zakah_calculator_page.dart';
 import 'package:equran/hifz/hifz.dart';
 import 'package:equran/duas/asma_ul_husna_page.dart';
 
@@ -356,6 +357,10 @@ class _DashboardContent extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             PrayerHeroCard(
+              useRedesign: true,
+              now: now,
+              followingDay: summary.prayerSummary.followingDay,
+              periodEndsAt: summary.prayerSummary.currentPeriod?.endsAt,
               day: summary.prayerSummary.day,
               nextPrayer: summary.prayerSummary.nextPrayer,
               currentPrayer: summary.prayerSummary.currentPrayer,
@@ -549,6 +554,7 @@ class _PrayerSummary {
   const _PrayerSummary({
     required this.location,
     required this.day,
+    required this.followingDay,
     required this.currentPeriod,
     required this.nextPrayer,
     required this.heroTitleOverride,
@@ -557,6 +563,7 @@ class _PrayerSummary {
 
   final PrayerLocation? location;
   final PrayerDay? day;
+  final PrayerDay? followingDay;
   final PrayerCurrentPeriod? currentPeriod;
   final NextPrayer? nextPrayer;
   final String? heroTitleOverride;
@@ -583,6 +590,7 @@ class _PrayerSummary {
       return const _PrayerSummary(
         location: null,
         day: null,
+        followingDay: null,
         currentPeriod: null,
         nextPrayer: null,
         heroTitleOverride: null,
@@ -637,6 +645,7 @@ class _PrayerSummary {
     return _PrayerSummary(
       location: location,
       day: today,
+      followingDay: tomorrow,
       currentPeriod: currentPeriod,
       nextPrayer: nextPrayer,
       heroTitleOverride: _heroTitleOverrideFor(currentPeriod, localizations),
@@ -1266,10 +1275,7 @@ class _ContinueExperience extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _HomeQuranLastReadCard(
-      entry: latestReading,
-      onOpenQuran: onOpenQuran,
-    );
+    return _HomeQuranLastReadCard(entry: latestReading);
   }
 }
 
@@ -1360,7 +1366,7 @@ class _MuslimDailyQuickActionsState extends State<_MuslimDailyQuickActions> {
                 case DailyToolType.zakah:
                   Navigator.of(context).push(
                     MaterialPageRoute<void>(
-                      builder: (context) => const ZakahCalculatorPage(),
+                      builder: (context) => const ZakatCalculatorPage(),
                     ),
                   );
                   break;
@@ -1687,6 +1693,7 @@ class _DailyAyahPreviewState extends State<_DailyAyahPreview> {
               const SizedBox(height: 12),
               Text(
                 ayah.translation,
+                textDirection: scriptDirectionIn(context, ayah.translation),
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
@@ -1835,6 +1842,7 @@ class _DailyDuaPreviewState extends State<_DailyDuaPreview> {
                     const SizedBox(height: 12),
                     Text(
                       translation,
+                      textDirection: scriptDirectionIn(context, translation),
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.center,
@@ -2136,7 +2144,12 @@ class _JourneyPreviewCard extends StatelessWidget {
                         designIcon: 'flame',
                       ),
                     Text(
-                      localizations.lettersCount(snapshot.estimatedLettersRead),
+                      localizations.lettersCount(
+                        formatGroupedCount(
+                          snapshot.estimatedLettersRead,
+                          localizations.localeName,
+                        ),
+                      ),
                       style: theme.textTheme.labelMedium?.copyWith(
                         color: tokens.muted,
                       ),
@@ -2539,56 +2552,36 @@ class _PrayerDashboardCard extends StatelessWidget {
 }
 
 class _HomeQuranLastReadCard extends StatelessWidget {
-  const _HomeQuranLastReadCard({
-    required this.entry,
-    required this.onOpenQuran,
-  });
+  const _HomeQuranLastReadCard({required this.entry});
 
   final ResumeStateEntry? entry;
-  final VoidCallback onOpenQuran;
 
   @override
   Widget build(BuildContext context) {
     final ResumeStateEntry? current = entry;
     final int? surah = current?.surah;
     final int? ayah = current?.ayah;
-    final localizations = AppLocalizations.of(context)!;
-    final Widget card;
-    if (surah == null || ayah == null) {
-      card = EquranResumeImageCard(
-        primary: localizations.beginWithQuran,
-        subtitle: localizations.startReadingSubtitle,
-        actionText:
-            localizations.localeName == 'ar' ||
-                localizations.localeName == 'fa' ||
-                localizations.localeName == 'ur'
-            ? '<- ${localizations.startReading}'
-            : '${localizations.startReading} ->',
-        trailingAssetPath: _quranAsset,
-        onTap: onOpenQuran,
-        enforceCompactWidth: false,
-      );
-    } else {
-      card = EquranResumeImageCard(
-        primary: localizedSurahName(localizations, surah),
-        subtitle: localizations.ayahNumber(ayah),
-        actionText:
-            localizations.localeName == 'ar' ||
-                localizations.localeName == 'fa' ||
-                localizations.localeName == 'ur'
-            ? '<- ${localizations.continueReading}'
-            : '${localizations.continueReading} ->',
-        trailingAssetPath: _quranAsset,
+    if (current == null || surah == null || ayah == null) {
+      return QuranReadingHero(
         onTap: () => Navigator.of(context).push(
           MaterialPageRoute<void>(
-            builder: (context) => ReadPage(chapter: surah, startVerse: ayah),
+            builder: (context) => const ReadPage(chapter: 1, startVerse: 1),
           ),
         ),
-        enforceCompactWidth: false,
       );
     }
-
-    return HolographicCardWrapper(child: card);
+    return QuranReadingHero(
+      entry: ReadingEntry(
+        surah: surah,
+        verse: ayah,
+        timestamp: current.updatedAt,
+      ),
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (context) => ReadPage(chapter: surah, startVerse: ayah),
+        ),
+      ),
+    );
   }
 }
 

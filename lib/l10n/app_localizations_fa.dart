@@ -1521,7 +1521,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get removeFavourite => 'حذف از علاقه‌مندی‌ها';
 
   @override
-  String get saveDuasHere => 'برای دسترسی سریع، دعاها را در اینجا ذخیره کنید';
+  String get saveDuasHere => 'ذخیره‌شده برای دسترسی سریع';
 
   @override
   String savedDuasCount(int count, String label) {
@@ -1888,9 +1888,6 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get note => 'یادداشت';
-
-  @override
-  String get privateNote => 'یادداشت خصوصی';
 
   @override
   String get writeReflectionHint => 'تأملات خود را بنویسید...';
@@ -2869,10 +2866,6 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get rewardIsWithAllah => 'پاداش نزد الله است.';
-
-  @override
-  String get totalZakahWealth =>
-      'برای محاسبه زکات، کل دارایی باید حداقل ۲۰۰ باشد.';
 
   @override
   String get hifzTitle => 'حفظ';
