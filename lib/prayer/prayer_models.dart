@@ -243,6 +243,13 @@ class PrayerLocation {
     return trimmedLabel;
   }
 
+  /// [displayLabel] cut to its first part, so "Muscat, Oman" reads "Muscat".
+  String get cityLabel {
+    final String label = displayLabel;
+    final String first = label.split(RegExp('[,،]')).first.trim();
+    return first.isEmpty ? label : first;
+  }
+
   String get coordinateLabel {
     return '${latitude.toStringAsFixed(4)}, ${longitude.toStringAsFixed(4)}';
   }

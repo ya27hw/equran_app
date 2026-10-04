@@ -383,7 +383,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                   child: InkWell(
                     onTap: () => _selectPrayerDate(day.date),
                     child: Text(
-                      '${location.displayLabel} · ${hijri.toLocalizedDateString(l.localeName)}',
+                      '${location.cityLabel} · ${hijri.toLocalizedDateString(l.localeName)}',
                       style: TextStyle(
                         fontSize: 14,
                         color: context.equranTokens.muted,
