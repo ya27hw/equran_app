@@ -385,9 +385,10 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
-                          Icons.location_on_outlined,
+                        DesignIcon(
+                          'pin',
                           size: 15,
+                          strokeWidth: 1.7,
                           color: context.equranTokens.muted,
                         ),
                         const SizedBox(width: 6),
@@ -410,13 +411,13 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
         ),
         const SizedBox(width: 12),
         IconButton44(
-          icon: Icons.tune,
+          designIcon: 'sliders',
           tooltip: l.prayerTimesSettings,
           onPressed: _openPrayerSettings,
         ),
         const SizedBox(width: 10),
         IconButton44(
-          icon: Icons.explore_outlined,
+          designIcon: 'compass',
           tooltip: l.qibla,
           onPressed: () => Navigator.of(
             context,
@@ -540,7 +541,12 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
         children: [
           Row(
             children: [
-              Icon(Icons.dark_mode_outlined, size: 16, color: tokens.goldText),
+              DesignIcon(
+                'moon',
+                size: 16,
+                strokeWidth: 1.7,
+                color: tokens.goldText,
+              ),
               const SizedBox(width: 8),
               RedesignEyebrow(l.theNight),
             ],
@@ -551,7 +557,6 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
             children: [
               Expanded(
                 child: _NightTimeValue(
-                  icon: Icons.nights_stay_outlined,
                   label: l.middleOfNight,
                   value: _formatTime(night.middle, settings.use24HourFormat, l),
                 ),
@@ -559,7 +564,6 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
               const SizedBox(width: 14),
               Expanded(
                 child: _NightTimeValue(
-                  icon: Icons.dark_mode_outlined,
                   label: l.lastThirdStarts,
                   value: _formatTime(
                     night.lastThirdStart,
@@ -682,11 +686,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
         children: [
           Padding(
             padding: const EdgeInsets.only(top: 1),
-            child: Icon(
-              Icons.info_outline_rounded,
-              color: tokens.muted,
-              size: 16,
-            ),
+            child: DesignIcon('info', color: tokens.muted, size: 16),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -1575,12 +1575,10 @@ class _LocationSummaryRow extends StatelessWidget {
 
 class _NightTimeValue extends StatelessWidget {
   const _NightTimeValue({
-    required this.icon,
     required this.label,
     required this.value,
     this.gold = false,
   });
-  final IconData icon;
   final String label;
   final String value;
   final bool gold;

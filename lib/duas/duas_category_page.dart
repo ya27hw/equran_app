@@ -376,7 +376,7 @@ class _DuasThemePageState extends State<DuasThemePage> {
                         Align(
                           alignment: AlignmentDirectional.centerStart,
                           child: IconButton44(
-                            icon: Icons.arrow_back,
+                            designIcon: 'back',
                             tooltip: l.backToDuas,
                             onPressed: () => Navigator.of(context).pop(),
                           ),

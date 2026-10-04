@@ -756,7 +756,7 @@
   "retryAction": "Retry",
   "noDuasFound": "No duas found",
   "offlineHisnAlMuslimEmpty": "The offline Hisn al Muslim file did not contain any duas.",
-  "hisnAlMuslim": "Hisn al Muslim",
+  "hisnAlMuslim": "Hisn al-Muslim",
   "arabicCategoriesDuasOffline": "{categoryCount} Arabic categories - {duaCount} duas offline",
   "@arabicCategoriesDuasOffline": {
     "placeholders": {
@@ -771,7 +771,7 @@
   "favouriteDuas": "Favourite duas",
   "favourite": "Favourite",
   "removeFavourite": "Remove favourite",
-  "saveDuasHere": "Save duas here for quick access",
+  "saveDuasHere": "Saved for quick access",
   "savedDuasCount": "{count} saved {label}",
   "@savedDuasCount": {
     "placeholders": {
@@ -2439,7 +2439,7 @@
     }
   },
   "backToDuas": "Back to Duas",
-  "loggedToday": "Logged today",
+  "loggedToday": "Counted today",
   "theNight": "The night",
   "prayerPassed": "Passed",
   "prayerBeganAt": "Began {time}",

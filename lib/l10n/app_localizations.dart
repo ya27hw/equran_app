@@ -2727,7 +2727,7 @@ abstract class AppLocalizations {
   /// No description provided for @hisnAlMuslim.
   ///
   /// In en, this message translates to:
-  /// **'Hisn al Muslim'**
+  /// **'Hisn al-Muslim'**
   String get hisnAlMuslim;
 
   /// No description provided for @arabicCategoriesDuasOffline.
@@ -2757,7 +2757,7 @@ abstract class AppLocalizations {
   /// No description provided for @saveDuasHere.
   ///
   /// In en, this message translates to:
-  /// **'Save duas here for quick access'**
+  /// **'Saved for quick access'**
   String get saveDuasHere;
 
   /// No description provided for @savedDuasCount.
@@ -8022,7 +8022,7 @@ abstract class AppLocalizations {
   /// No description provided for @loggedToday.
   ///
   /// In en, this message translates to:
-  /// **'Logged today'**
+  /// **'Counted today'**
   String get loggedToday;
 
   /// No description provided for @theNight.

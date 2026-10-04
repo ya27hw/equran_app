@@ -222,7 +222,8 @@ class _DuasContent extends StatelessWidget {
                               label: l.favouriteDuas,
                               subtitle: l.saveDuasHere,
                               count: box.length,
-                              icon: Icons.favorite,
+                              icon: 'heart',
+                              filledIcon: true,
                               gold: true,
                               onTap: () => Navigator.of(context).push(
                                 MaterialPageRoute<void>(
@@ -255,7 +256,7 @@ class _DuasContent extends StatelessWidget {
                                 label: l.tasbihAndDhikr,
                                 subtitle: l.loggedToday,
                                 count: count,
-                                icon: Icons.auto_awesome_outlined,
+                                icon: 'sparkle',
                                 onTap: () => Navigator.of(context).push(
                                   MaterialPageRoute<void>(
                                     builder: (_) =>
@@ -357,13 +358,15 @@ class _QuickTile extends StatelessWidget {
     required this.subtitle,
     required this.count,
     required this.icon,
+    this.filledIcon = false,
     required this.onTap,
     this.gold = false,
   });
   final String label;
   final String subtitle;
   final int count;
-  final IconData icon;
+  final String icon;
+  final bool filledIcon;
   final VoidCallback onTap;
   final bool gold;
   @override
@@ -375,9 +378,10 @@ class _QuickTile extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Icon(
+            DesignIcon(
               icon,
               size: 22,
+              filled: filledIcon,
               color: gold
                   ? context.equranTokens.gold
                   : context.equranTokens.emText,
