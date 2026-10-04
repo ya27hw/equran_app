@@ -241,6 +241,17 @@ class AppLocalizationsBn extends AppLocalizations {
   String get beginWithQuran => 'কুরআন পাঠ';
 
   @override
+  String get yourQuran => 'আপনার কুরআন';
+
+  @override
+  String get beginQuranReading => 'কুরআন দিয়ে শুরু করুন';
+
+  @override
+  String startWithSurah(String surah) {
+    return '$surah দিয়ে শুরু করুন';
+  }
+
+  @override
   String get startReadingSubtitle =>
       'পড়া শুরু করুন এবং আপনার স্থান এখানে প্রদর্শিত হবে.';
 

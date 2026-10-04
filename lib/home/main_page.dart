@@ -9,7 +9,7 @@ import 'package:equran/utils/app_radii.dart';
 import 'package:equran/hifz/hifz.dart';
 import 'package:equran/utils/debouncer.dart';
 import 'package:equran/utils/quran_display.dart';
-import 'package:equran/widgets/holographic_card.dart';
+import 'package:equran/widgets/quran_reading_hero.dart';
 import 'package:equran/widgets/library.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -709,7 +709,12 @@ class _QuranLastReadSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LastReadCard(entries: entries);
+    return LastReadCard(
+      entries: entries,
+      estimatedCardHeight: 200,
+      cardBuilder: (context, entry, onTap) =>
+          QuranReadingHero(entry: entry, onTap: onTap),
+    );
   }
 }
 
@@ -718,18 +723,11 @@ class _QuranLastReadEmptySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-    return HolographicCardWrapper(
-      child: EquranResumeImageCard(
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute<void>(
-            builder: (context) => const ReadPage(chapter: 1, startVerse: 1),
-          ),
+    return QuranReadingHero(
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (context) => const ReadPage(chapter: 1, startVerse: 1),
         ),
-        primary: localizations.beginWithQuran,
-        subtitle: localizations.startReadingSubtitle,
-        actionText: localizations.startReading,
-        trailingAssetPath: equranResumeQuranAsset,
       ),
     );
   }

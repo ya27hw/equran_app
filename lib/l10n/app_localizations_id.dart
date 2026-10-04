@@ -241,6 +241,17 @@ class AppLocalizationsId extends AppLocalizations {
   String get beginWithQuran => 'Membaca Alquran';
 
   @override
+  String get yourQuran => 'Al-Quran Anda';
+
+  @override
+  String get beginQuranReading => 'Mulai dengan Al-Quran';
+
+  @override
+  String startWithSurah(String surah) {
+    return 'Mulai dengan $surah';
+  }
+
+  @override
   String get startReadingSubtitle =>
       'Mulailah membaca dan tempat Anda akan muncul di sini.';
 

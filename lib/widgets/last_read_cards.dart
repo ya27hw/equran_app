@@ -19,10 +19,14 @@ class LastReadCard extends StatefulWidget {
     super.key,
     required this.entries,
     this.enforceCompactWidth = true,
+    this.cardBuilder,
+    this.estimatedCardHeight = 158,
   });
 
   final List<ReadingEntry> entries;
   final bool enforceCompactWidth;
+  final Widget Function(BuildContext, ReadingEntry, VoidCallback)? cardBuilder;
+  final double estimatedCardHeight;
 
   static List<ReadingEntry> displayReadingHistory(Iterable<dynamic> values) {
     final rawEntries = values.whereType<ReadingEntry>().toList();
@@ -76,6 +80,23 @@ class _LastReadCardState extends State<LastReadCard> {
           itemCount: entries.length,
           itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) {
             final ReadingEntry entry = entries[itemIndex];
+            void openReading() => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (context) =>
+                    ReadPage(chapter: entry.surah, startVerse: entry.verse),
+              ),
+            );
+            final customCard = widget.cardBuilder?.call(
+              context,
+              entry,
+              openReading,
+            );
+            if (customCard != null) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: customCard,
+              );
+            }
             return Padding(
               padding: const EdgeInsets.fromLTRB(8, 0, 8, 10),
               child: HolographicCardWrapper(
@@ -88,21 +109,14 @@ class _LastReadCardState extends State<LastReadCard> {
                   actionText: localizations.continueReading,
                   trailingAssetPath: equranResumeQuranAsset,
                   enforceCompactWidth: widget.enforceCompactWidth,
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (context) => ReadPage(
-                        chapter: entry.surah,
-                        startVerse: entry.verse,
-                      ),
-                    ),
-                  ),
+                  onTap: openReading,
                 ),
               ),
             );
           },
           options: ExpandableCarouselOptions(
             showIndicator: false,
-            estimatedPageSize: 158,
+            estimatedPageSize: widget.estimatedCardHeight,
             enableInfiniteScroll: false,
             viewportFraction: 1,
             initialPage: 0,

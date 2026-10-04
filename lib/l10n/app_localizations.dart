@@ -548,6 +548,24 @@ abstract class AppLocalizations {
   /// **'Quran Reading'**
   String get beginWithQuran;
 
+  /// No description provided for @yourQuran.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Quran'**
+  String get yourQuran;
+
+  /// No description provided for @beginQuranReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Begin with Quran'**
+  String get beginQuranReading;
+
+  /// No description provided for @startWithSurah.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with {surah}'**
+  String startWithSurah(String surah);
+
   /// No description provided for @startReadingSubtitle.
   ///
   /// In en, this message translates to:

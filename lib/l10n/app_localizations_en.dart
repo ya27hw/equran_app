@@ -239,6 +239,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get beginWithQuran => 'Quran Reading';
 
   @override
+  String get yourQuran => 'Your Quran';
+
+  @override
+  String get beginQuranReading => 'Begin with Quran';
+
+  @override
+  String startWithSurah(String surah) {
+    return 'Start with $surah';
+  }
+
+  @override
   String get startReadingSubtitle =>
       'Start reading and your place will appear here.';
 

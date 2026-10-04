@@ -241,6 +241,17 @@ class AppLocalizationsTr extends AppLocalizations {
   String get beginWithQuran => 'Kuran Okuma';
 
   @override
+  String get yourQuran => 'Kur’anınız';
+
+  @override
+  String get beginQuranReading => 'Kur’an ile başlayın';
+
+  @override
+  String startWithSurah(String surah) {
+    return '$surah ile başlayın';
+  }
+
+  @override
   String get startReadingSubtitle =>
       'Okumaya başladığınızda yeriniz burada görünecektir.';
 
