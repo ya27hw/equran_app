@@ -1040,6 +1040,21 @@ class AppLocalizationsBn extends AppLocalizations {
   String get distanceUnavailable => 'দূরত্ব অনুপলব্ধ';
 
   @override
+  String get qiblaStatBearing => 'দিক';
+
+  @override
+  String get qiblaStatDistance => 'দূরত্ব';
+
+  @override
+  String get qiblaFixedCoordinates =>
+      'গণনার জন্য নির্দিষ্ট স্থানাঙ্ক ব্যবহার করা হচ্ছে, লাইভ GPS নয়।';
+
+  @override
+  String kilometersValue(String distance) {
+    return '$distance কিমি';
+  }
+
+  @override
   String kilometersToKaaba(String distance) {
     return 'কাবা থেকে $distance কিমি';
   }

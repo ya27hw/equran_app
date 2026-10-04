@@ -538,6 +538,17 @@
   "currentLocationUnavailable": "Current location unavailable",
   "currentLocation": "Current location",
   "distanceUnavailable": "Distance unavailable",
+  "qiblaStatBearing": "Bearing",
+  "qiblaStatDistance": "Distance",
+  "qiblaFixedCoordinates": "Using fixed coordinates for calculation, not live GPS.",
+  "kilometersValue": "{distance} km",
+  "@kilometersValue": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
   "kilometersToKaaba": "{distance} km to Kaaba",
   "@kilometersToKaaba": {
     "placeholders": {

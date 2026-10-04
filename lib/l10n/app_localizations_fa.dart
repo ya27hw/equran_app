@@ -1039,6 +1039,21 @@ class AppLocalizationsFa extends AppLocalizations {
   String get distanceUnavailable => 'فاصله در دسترس نیست';
 
   @override
+  String get qiblaStatBearing => 'جهت';
+
+  @override
+  String get qiblaStatDistance => 'فاصله';
+
+  @override
+  String get qiblaFixedCoordinates =>
+      'برای محاسبه از مختصات ثابت استفاده می‌شود، نه GPS زنده.';
+
+  @override
+  String kilometersValue(String distance) {
+    return '$distance کیلومتر';
+  }
+
+  @override
   String kilometersToKaaba(String distance) {
     return '$distance کیلومتر تا کعبه';
   }

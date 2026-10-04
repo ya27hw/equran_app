@@ -1060,6 +1060,21 @@ class AppLocalizationsDe extends AppLocalizations {
   String get distanceUnavailable => 'Entfernung nicht verfügbar';
 
   @override
+  String get qiblaStatBearing => 'Richtung';
+
+  @override
+  String get qiblaStatDistance => 'Entfernung';
+
+  @override
+  String get qiblaFixedCoordinates =>
+      'Für die Berechnung werden feste Koordinaten verwendet, nicht das Live-GPS.';
+
+  @override
+  String kilometersValue(String distance) {
+    return '$distance km';
+  }
+
+  @override
   String kilometersToKaaba(String distance) {
     return '$distance km bis zur Kaaba';
   }

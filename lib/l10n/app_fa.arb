@@ -518,6 +518,10 @@
   "currentLocationUnavailable": "مکان فعلی در دسترس نیست",
   "currentLocation": "مکان فعلی",
   "distanceUnavailable": "فاصله در دسترس نیست",
+  "qiblaStatBearing": "جهت",
+  "qiblaStatDistance": "فاصله",
+  "qiblaFixedCoordinates": "برای محاسبه از مختصات ثابت استفاده می‌شود، نه GPS زنده.",
+  "kilometersValue": "{distance} کیلومتر",
   "kilometersToKaaba": "{distance} کیلومتر تا کعبه",
   "@kilometersToKaaba": {
     "placeholders": {

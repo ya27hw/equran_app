@@ -1033,6 +1033,21 @@ class AppLocalizationsAr extends AppLocalizations {
   String get distanceUnavailable => 'المسافة غير متاحة';
 
   @override
+  String get qiblaStatBearing => 'الاتجاه';
+
+  @override
+  String get qiblaStatDistance => 'المسافة';
+
+  @override
+  String get qiblaFixedCoordinates =>
+      'يتم استخدام إحداثيات ثابتة للحساب، وليس نظام GPS المباشر.';
+
+  @override
+  String kilometersValue(String distance) {
+    return '$distance كم';
+  }
+
+  @override
   String kilometersToKaaba(String distance) {
     return '$distance كم إلى الكعبة';
   }

@@ -1046,6 +1046,21 @@ class AppLocalizationsId extends AppLocalizations {
   String get distanceUnavailable => 'Jarak tidak tersedia';
 
   @override
+  String get qiblaStatBearing => 'Arah';
+
+  @override
+  String get qiblaStatDistance => 'Jarak';
+
+  @override
+  String get qiblaFixedCoordinates =>
+      'Menggunakan koordinat tetap untuk perhitungan, bukan GPS langsung.';
+
+  @override
+  String kilometersValue(String distance) {
+    return '$distance km';
+  }
+
+  @override
   String kilometersToKaaba(String distance) {
     return '$distance km ke Ka\'bah';
   }

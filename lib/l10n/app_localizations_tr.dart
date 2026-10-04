@@ -1044,6 +1044,21 @@ class AppLocalizationsTr extends AppLocalizations {
   String get distanceUnavailable => 'Mesafe mevcut değil';
 
   @override
+  String get qiblaStatBearing => 'Yön';
+
+  @override
+  String get qiblaStatDistance => 'Mesafe';
+
+  @override
+  String get qiblaFixedCoordinates =>
+      'Hesaplama için sabit koordinatlar kullanılıyor, canlı GPS değil.';
+
+  @override
+  String kilometersValue(String distance) {
+    return '$distance km';
+  }
+
+  @override
   String kilometersToKaaba(String distance) {
     return 'Kabe\'ye $distance km';
   }

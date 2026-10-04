@@ -1974,6 +1974,30 @@ abstract class AppLocalizations {
   /// **'Distance unavailable'**
   String get distanceUnavailable;
 
+  /// No description provided for @qiblaStatBearing.
+  ///
+  /// In en, this message translates to:
+  /// **'Bearing'**
+  String get qiblaStatBearing;
+
+  /// No description provided for @qiblaStatDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get qiblaStatDistance;
+
+  /// No description provided for @qiblaFixedCoordinates.
+  ///
+  /// In en, this message translates to:
+  /// **'Using fixed coordinates for calculation, not live GPS.'**
+  String get qiblaFixedCoordinates;
+
+  /// No description provided for @kilometersValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance} km'**
+  String kilometersValue(String distance);
+
   /// No description provided for @kilometersToKaaba.
   ///
   /// In en, this message translates to:

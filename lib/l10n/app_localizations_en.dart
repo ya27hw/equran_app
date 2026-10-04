@@ -1039,6 +1039,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get distanceUnavailable => 'Distance unavailable';
 
   @override
+  String get qiblaStatBearing => 'Bearing';
+
+  @override
+  String get qiblaStatDistance => 'Distance';
+
+  @override
+  String get qiblaFixedCoordinates =>
+      'Using fixed coordinates for calculation, not live GPS.';
+
+  @override
+  String kilometersValue(String distance) {
+    return '$distance km';
+  }
+
+  @override
   String kilometersToKaaba(String distance) {
     return '$distance km to Kaaba';
   }

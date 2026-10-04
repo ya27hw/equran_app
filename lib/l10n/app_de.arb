@@ -518,6 +518,10 @@
   "currentLocationUnavailable": "Aktueller Standort nicht verfügbar",
   "currentLocation": "Aktueller Standort",
   "distanceUnavailable": "Entfernung nicht verfügbar",
+  "qiblaStatBearing": "Richtung",
+  "qiblaStatDistance": "Entfernung",
+  "qiblaFixedCoordinates": "Für die Berechnung werden feste Koordinaten verwendet, nicht das Live-GPS.",
+  "kilometersValue": "{distance} km",
   "kilometersToKaaba": "{distance} km bis zur Kaaba",
   "@kilometersToKaaba": {
     "placeholders": {
