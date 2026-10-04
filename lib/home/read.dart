@@ -46,6 +46,7 @@ import 'package:equran/backend/library.dart'
 import 'package:equran/backend/qpc_v4_font_service.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
+import 'package:equran/widgets/playback_options_sheet.dart';
 import 'package:equran/theme/equran_text_styles.dart';
 import 'package:equran/reading_plans/routine_progress.dart';
 import 'package:equran/utils/app_radii.dart';
@@ -6123,13 +6124,18 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
         context: context,
         isScrollControlled: true,
         useSafeArea: true,
-        showDragHandle: true,
+        showDragHandle: false,
+        backgroundColor: context.equranColors.background,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(EquranRadii.xxl),
+          ),
+        ),
+        clipBehavior: Clip.antiAlias,
         constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width),
         builder: (sheetContext) {
           return StatefulBuilder(
             builder: (sheetContext, setSheetState) {
-              final ThemeData theme = Theme.of(sheetContext);
-              final ColorScheme colorScheme = theme.colorScheme;
               final AppLocalizations localizations = AppLocalizations.of(
                 sheetContext,
               )!;
@@ -6322,211 +6328,83 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
                 minChildSize: 0.42,
                 maxChildSize: 0.92,
                 builder: (context, scrollController) {
-                  return ListView(
-                    controller: scrollController,
-                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Container(
-                            width: 42,
-                            height: 42,
-                            decoration: BoxDecoration(
-                              color: colorScheme.primary.withAlpha(18),
-                              borderRadius: BorderRadius.circular(
-                                AppRadii.medium,
-                              ),
-                            ),
-                            child: Icon(
-                              Icons.tune_rounded,
-                              color: colorScheme.primary,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  localizations.playbackOptions,
-                                  style: theme.textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                                Text(
-                                  localizations.customizeRecitationBehavior,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 18),
-                      _buildAudioDownloadOptionsSection(
-                        context: context,
-                        currentAyahDownloading: currentAyahDownloading,
-                        onDownloadSurah: () => unawaited(downloadSurahAudio()),
-                        onToggleCurrentAyah: () =>
-                            unawaited(toggleCurrentAyahAudio()),
-                        downloadProgressNotifier:
-                            _surahDownloadProgressNotifier,
-                      ),
-                      const SizedBox(height: 10),
-                      _buildPlaybackOptionsSection(
-                        context: context,
-                        title: localizations.recitation,
-                        children: <Widget>[
-                          ListTile(
-                            leading: const Icon(
-                              Icons.record_voice_over_rounded,
-                            ),
-                            title: Text(localizations.reciter),
-                            subtitle: Text(
-                              _localizedReciterName(
-                                QuranAudioService().selectedReciter,
-                                localizations,
-                              ),
-                            ),
-                            trailing: const Icon(Icons.chevron_right_rounded),
-                            onTap: selectReciter,
-                          ),
-                          _buildSliderOption(
-                            context: context,
-                            title: localizations.playbackSpeed,
-                            subtitle: '${rate.toStringAsFixed(2)}x',
-                            value: rate,
-                            min: 0.5,
-                            max: 2.0,
-                            divisions: 6,
-                            label: '${rate.toStringAsFixed(2)}x',
-                            onChanged: (value) async {
-                              final double normalized = _normalizePlaybackRate(
-                                value,
-                              );
-                              await _setPlaybackRate(normalized);
-                              if (mounted) setState(() {});
-                              if (sheetContext.mounted) setSheetState(() {});
-                            },
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      _buildPlaybackOptionsSection(
-                        context: context,
-                        title: localizations.timing,
-                        children: <Widget>[
-                          _buildSliderOption(
-                            context: context,
-                            title: localizations.ayahDelay,
-                            subtitle: _delayLabel(_ayahDelaySeconds),
-                            value: _delaySteps
-                                .indexOf(_ayahDelaySeconds)
-                                .clamp(0, 11)
-                                .toDouble(),
-                            min: 0,
-                            max: 11,
-                            divisions: 11,
-                            label: _delayLabel(_ayahDelaySeconds),
-                            onChanged: (value) {
-                              setState(() {
-                                final int idx = value.round().clamp(
-                                  0,
-                                  _delaySteps.length - 1,
-                                );
-                                _ayahDelaySeconds = _delaySteps[idx];
-                              });
-                              setSheetState(() {});
-                              unawaited(_persistPlaybackOptions());
-                            },
-                            onChangeEnd: (value) {
-                              if (_playerMounted ||
-                                  _isVersePlaying ||
-                                  _isVerseLoading) {
-                                final QuranPosition position = _playingPosition;
-                                unawaited(
-                                  _playVerse(
-                                    position.surah,
-                                    position.ayah,
-                                    continuous: _continuousPlayback,
-                                    smoothScroll: false,
-                                    preservePlayerPresentationState: true,
-                                    preserveRefreshState: true,
-                                    resetPlaybackCounters: false,
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      _buildPlaybackOptionsSection(
-                        context: context,
-                        title: localizations.intervalOption,
-                        children: <Widget>[
-                          ListTile(
-                            leading: const Icon(Icons.segment_rounded),
-                            title: Text(localizations.intervalOption),
-                            subtitle: Text(
-                              _formatIntervalSummary(_playbackInterval),
-                            ),
-                            trailing: const Icon(Icons.chevron_right_rounded),
-                            onTap: () async {
-                              await _showIntervalSelectionSheet();
-                              if (sheetContext.mounted) setSheetState(() {});
-                            },
-                          ),
-                          ListTile(
-                            leading: const Icon(Icons.repeat_rounded),
-                            title: Text(localizations.intervalRepeatOption),
-                            subtitle: Text(
-                              _intervalRepeatChoice.localizedLabel(
-                                localizations,
-                              ),
-                            ),
-                            trailing: const Icon(Icons.chevron_right_rounded),
-                            onTap: selectIntervalRepeat,
-                          ),
-                          ListTile(
-                            leading: const Icon(Icons.repeat_one_rounded),
-                            title: Text(localizations.repeatEachAyahOption),
-                            subtitle: Text(
-                              _repeatAyahChoice.localizedLabel(localizations),
-                            ),
-                            trailing: const Icon(Icons.chevron_right_rounded),
-                            onTap: selectRepeatAyah,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      _buildPlaybackOptionsSection(
-                        context: context,
-                        title: localizations.sleepTimerOption,
-                        children: <Widget>[
-                          ListTile(
-                            leading: const Icon(Icons.bedtime_outlined),
-                            title: Text(localizations.sleepTimerOption),
-                            subtitle: Text(_sleepTimerOptionsSubtitle()),
-                            trailing: const Icon(Icons.chevron_right_rounded),
-                            onTap: () async {
-                              await _showUpgradedSleepTimerSheet();
-                              if (sheetContext.mounted) {
-                                setSheetState(() {});
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 18),
-                      OutlinedButton.icon(
-                        onPressed: resetOptions,
-                        icon: const Icon(Icons.restart_alt_rounded),
-                        label: Text(localizations.resetPlaybackOptions),
-                      ),
+                  return PlaybackOptionsSheet(
+                    scrollController: scrollController,
+                    reciterName: _localizedReciterName(
+                      QuranAudioService().selectedReciter,
+                      localizations,
+                    ),
+                    onReciter: selectReciter,
+                    rate: rate,
+                    onRateSelected: (value) async {
+                      final double normalized = _normalizePlaybackRate(value);
+                      await _setPlaybackRate(normalized);
+                      if (mounted) setState(() {});
+                      if (sheetContext.mounted) setSheetState(() {});
+                    },
+                    delayLabels: <String>[
+                      for (final double seconds in _delaySteps)
+                        _delayLabel(seconds),
                     ],
+                    delayIndex: _delaySteps
+                        .indexOf(_ayahDelaySeconds)
+                        .clamp(0, _delaySteps.length - 1),
+                    onDelayChanged: (int index) {
+                      setState(() {
+                        _ayahDelaySeconds =
+                            _delaySteps[index.clamp(0, _delaySteps.length - 1)];
+                      });
+                      setSheetState(() {});
+                      unawaited(_persistPlaybackOptions());
+                    },
+                    onDelayChangeEnd: (_) {
+                      if (_playerMounted ||
+                          _isVersePlaying ||
+                          _isVerseLoading) {
+                        final QuranPosition position = _playingPosition;
+                        unawaited(
+                          _playVerse(
+                            position.surah,
+                            position.ayah,
+                            continuous: _continuousPlayback,
+                            smoothScroll: false,
+                            preservePlayerPresentationState: true,
+                            preserveRefreshState: true,
+                            resetPlaybackCounters: false,
+                          ),
+                        );
+                      }
+                    },
+                    intervalSummary: _formatIntervalSummary(_playbackInterval),
+                    onInterval: () async {
+                      await _showIntervalSelectionSheet();
+                      if (sheetContext.mounted) setSheetState(() {});
+                    },
+                    intervalRepeatLabel: _intervalRepeatChoice.localizedLabel(
+                      localizations,
+                    ),
+                    onIntervalRepeat: selectIntervalRepeat,
+                    repeatAyahLabel: _repeatAyahChoice.localizedLabel(
+                      localizations,
+                    ),
+                    onRepeatAyah: selectRepeatAyah,
+                    sleepSummary: _sleepTimerOptionsSubtitle(),
+                    onSleepTimer: () async {
+                      await _showUpgradedSleepTimerSheet();
+                      if (sheetContext.mounted) setSheetState(() {});
+                    },
+                    surahDownloadProgress: _surahDownloadProgressNotifier,
+                    surahDownloading: _isDownloadingSurahAyahs,
+                    surahDownloaded: _hasDownloadedSurahAyahs,
+                    onDownloadSurah: () => unawaited(downloadSurahAudio()),
+                    ayahDownloading: currentAyahDownloading,
+                    ayahDownloaded: _hasDownloadedCurrentAyah,
+                    ayahSubtitle: localizations.surahLabel(
+                      localizedSurahName(localizations, _currentChapter),
+                      _currentVerse,
+                    ),
+                    onToggleAyah: () => unawaited(toggleCurrentAyahAudio()),
+                    onReset: () => unawaited(resetOptions()),
                   );
                 },
               );
@@ -8091,170 +7969,6 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     setState(() {
       _selectedInlineVerse = null;
     });
-  }
-
-  Widget _buildPlaybackOptionsSection({
-    required BuildContext context,
-    required String title,
-    required List<Widget> children,
-  }) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
-    return Material(
-      color: colorScheme.surfaceContainerLow,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppRadii.medium),
-        side: BorderSide(color: colorScheme.outlineVariant),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 4),
-            child: Text(
-              title,
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: colorScheme.primary,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-          ),
-          ...children,
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAudioDownloadOptionsSection({
-    required BuildContext context,
-    required bool currentAyahDownloading,
-    required VoidCallback onDownloadSurah,
-    required VoidCallback onToggleCurrentAyah,
-    required ValueNotifier<double?> downloadProgressNotifier,
-  }) {
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    return _buildPlaybackOptionsSection(
-      context: context,
-      title: localizations.audioDownloads,
-      children: <Widget>[
-        ValueListenableBuilder<double?>(
-          valueListenable: downloadProgressNotifier,
-          builder: (context, progressFraction, _) {
-            final bool isCurrentlyDownloading =
-                _isDownloadingSurahAyahs || progressFraction != null;
-            return ListTile(
-              leading: isCurrentlyDownloading
-                  ? SizedBox.square(
-                      dimension: 30,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            value:
-                                (progressFraction == 0.0 ||
-                                    progressFraction == null)
-                                ? null
-                                : progressFraction,
-                            color: Theme.of(context).colorScheme.primary,
-                            backgroundColor: Theme.of(
-                              context,
-                            ).colorScheme.outlineVariant,
-                          ),
-                          if (progressFraction != null &&
-                              progressFraction > 0.0)
-                            Text(
-                              '${(progressFraction * 100).round()}%',
-                              style: Theme.of(context).textTheme.labelSmall
-                                  ?.copyWith(
-                                    fontSize: 8.5,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                            ),
-                        ],
-                      ),
-                    )
-                  : Icon(
-                      _hasDownloadedSurahAyahs
-                          ? Icons.offline_pin_rounded
-                          : Icons.download_for_offline_rounded,
-                    ),
-              title: Text(
-                _hasDownloadedSurahAyahs
-                    ? localizations.surahAudioDownloaded
-                    : localizations.downloadSurahAudio,
-              ),
-              subtitle: Text(
-                _hasDownloadedSurahAyahs
-                    ? localizations.allAyahsAvailableOffline
-                    : localizations.downloadEveryAyahInSurah,
-              ),
-              enabled: !isCurrentlyDownloading && !_hasDownloadedSurahAyahs,
-              onTap: !isCurrentlyDownloading && !_hasDownloadedSurahAyahs
-                  ? onDownloadSurah
-                  : null,
-            );
-          },
-        ),
-        if (!_hasDownloadedSurahAyahs)
-          ListTile(
-            leading: Icon(
-              currentAyahDownloading
-                  ? Icons.downloading_rounded
-                  : _hasDownloadedCurrentAyah
-                  ? Icons.delete_outline_rounded
-                  : Icons.download_rounded,
-            ),
-            title: Text(
-              currentAyahDownloading
-                  ? localizations.downloadingCurrentAyah
-                  : _hasDownloadedCurrentAyah
-                  ? localizations.deleteCurrentAyahAudio
-                  : localizations.downloadCurrentAyah,
-            ),
-            subtitle: Text(
-              localizations.surahLabel(
-                localizedSurahName(localizations, _currentChapter),
-                _currentVerse,
-              ),
-            ),
-            enabled: !currentAyahDownloading,
-            onTap: currentAyahDownloading ? null : onToggleCurrentAyah,
-          ),
-      ],
-    );
-  }
-
-  Widget _buildSliderOption({
-    required BuildContext context,
-    required String title,
-    required String subtitle,
-    required double value,
-    required double min,
-    required double max,
-    required int divisions,
-    required String label,
-    required ValueChanged<double> onChanged,
-    ValueChanged<double>? onChangeEnd,
-  }) {
-    return ListTile(
-      title: Text(title),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(subtitle),
-          Slider(
-            min: min,
-            max: max,
-            divisions: divisions,
-            value: value.clamp(min, max).toDouble(),
-            label: label,
-            onChanged: onChanged,
-            onChangeEnd: onChangeEnd,
-          ),
-        ],
-      ),
-    );
   }
 
   Future<AppReciter?> _showReciterPickerDialog() async {
