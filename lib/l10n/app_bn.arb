@@ -2260,5 +2260,12 @@
   "theNight": "রাত",
   "prayerPassed": "অতিবাহিত",
   "prayerBeganAt": "শুরু {time}",
-  "prayerEndsAt": "শেষ {time}"
+  "prayerEndsAt": "শেষ {time}",
+  "tasbihAndDuas": "তাসবিহ ও দোয়া",
+  "surahMap": "সূরার মানচিত্র",
+  "tapCellToOpen": "খুলতে ঘরে চাপ দিন",
+  "less": "কম",
+  "khatmProgress": "খতমের অগ্রগতি",
+  "notLogged": "লিপিবদ্ধ হয়নি",
+  "mostReadSurah": "সবচেয়ে বেশি পঠিত সূরা"
 }

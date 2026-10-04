@@ -10,6 +10,9 @@ import 'package:equran/prayer/prayer_settings_store.dart';
 import 'package:equran/prayer/prayer_times_service.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
+import 'package:equran/theme/equran_tokens.dart';
+import 'package:equran/widgets/redesign/redesign_widgets.dart';
+import 'package:equran/widgets/redesign/page_typography.dart';
 import 'package:equran/utils/app_radii.dart';
 import 'package:equran/utils/quran_display.dart';
 import 'package:equran/utils/quran_text.dart';
@@ -18,15 +21,9 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:quran/quran.dart' as quran;
 
+part 'statistics_redesign.dart';
+
 const int _totalSurahs = 114;
-const int _surahGridColumns = 8;
-const int _surahCellAnimationMs = 300;
-const int _surahCellStaggerMs = 8;
-const int _surahGridAnimationMs =
-    _surahCellAnimationMs + ((_totalSurahs - 1) * _surahCellStaggerMs);
-const int _salahRingAnimationMs = 700;
-const int _salahRingStaggerMs = 100;
-const double _statCardMinHeight = 130;
 
 final Map<String, int> _letterCountCache = <String, int>{};
 
@@ -88,19 +85,23 @@ enum SalahPrayer {
 }
 
 class StatisticsPage extends StatefulWidget {
-  const StatisticsPage({super.key});
+  const StatisticsPage({super.key, this.previewRepository, this.previewNow});
+
+  /// Debug fixtures supply existing data types without changing production loads.
+  @visibleForTesting
+  final StatisticsRepository? previewRepository;
+  @visibleForTesting
+  final DateTime? previewNow;
 
   @override
   State<StatisticsPage> createState() => _StatisticsPageState();
 }
 
-class _StatisticsPageState extends State<StatisticsPage>
-    with SingleTickerProviderStateMixin {
+class _StatisticsPageState extends State<StatisticsPage> {
   late final StatisticsRepository _repository;
   late final ValueNotifier<StatRange> _rangeNotifier;
   late final ValueNotifier<int> _refreshNotifier;
   late final ScrollController _scrollController;
-  late final AnimationController _surahGridController;
   late final ValueListenable<Box<dynamic>> _quranListener;
   late final ValueListenable<Box<dynamic>> _dhikrListener;
   late final ValueListenable<Box<dynamic>> _duasListener;
@@ -114,14 +115,10 @@ class _StatisticsPageState extends State<StatisticsPage>
   @override
   void initState() {
     super.initState();
-    _repository = StatisticsRepository();
+    _repository = widget.previewRepository ?? StatisticsRepository();
     _rangeNotifier = ValueNotifier<StatRange>(StatRange.week);
     _refreshNotifier = ValueNotifier<int>(0);
     _scrollController = ScrollController();
-    _surahGridController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: _surahGridAnimationMs),
-    )..forward();
     _quranListener = QuranActivityDB().listener;
     _dhikrListener = DhikrSessionsDB().listener;
     _duasListener = DuaInteractionsDB().listener;
@@ -156,7 +153,6 @@ class _StatisticsPageState extends State<StatisticsPage>
     }
     _surahGridExpanded = false;
     _scrollController.dispose();
-    _surahGridController.dispose();
     _rangeNotifier.dispose();
     _refreshNotifier.dispose();
     super.dispose();
@@ -201,7 +197,9 @@ class _StatisticsPageState extends State<StatisticsPage>
     }
     _scrollController.animateTo(
       targetOffset,
-      duration: const Duration(milliseconds: 350),
+      duration: MediaQuery.disableAnimationsOf(context)
+          ? Duration.zero
+          : const Duration(milliseconds: 350),
       curve: Curves.easeInOutCubic,
     );
   }
@@ -221,130 +219,178 @@ class _StatisticsPageState extends State<StatisticsPage>
 
   @override
   Widget build(BuildContext context) {
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final EquranColors colors = context.equranColors;
+    final l = AppLocalizations.of(context)!;
     return ColoredBox(
-      color: colors.background,
-      child: SafeArea(
-        top: true,
-        bottom: true,
-        child: ValueListenableBuilder<int>(
-          valueListenable: _refreshNotifier,
-          builder: (context, refreshToken, _) {
-            return CustomScrollView(
+      color: context.equranColors.background,
+      child: RedesignPageTypography(
+        child: SafeArea(
+          child: ValueListenableBuilder<int>(
+            valueListenable: _refreshNotifier,
+            builder: (context, refreshToken, _) => CustomScrollView(
               controller: _scrollController,
               physics: const BouncingScrollPhysics(),
-              slivers: <Widget>[
+              slivers: [
                 _PageContentSliver(
-                  topPadding: 16,
-                  child: _DataSection<OverviewStats>(
-                    refreshToken: refreshToken,
-                    load: () => _repository.overview(localizations),
-                    placeholderHeight: 170,
-                    builder: (context, data) => _OverviewHeaderCard(data: data),
+                  topPadding: 64,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l.statistics,
+                              style: redesignDisplayStyle(context),
+                            ),
+                            const SizedBox(height: 8),
+                            _StatsText(
+                              '${l.assalamuAlaikum}. ${l.continueYourJourneyToday}',
+                              size: 14,
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (Navigator.of(context).canPop())
+                        IconButton44(
+                          icon: Icons.arrow_back_rounded,
+                          tooltip: MaterialLocalizations.of(
+                            context,
+                          ).backButtonTooltip,
+                          onPressed: () => Navigator.of(context).pop(),
+                        ),
+                    ],
                   ),
                 ),
                 _PageContentSliver(
-                  child: _DataSection<StreakStats>(
-                    refreshToken: refreshToken,
-                    load: () => _repository.streaks(),
-                    placeholderHeight: 64,
-                    builder: (context, data) => data.highest <= 0
-                        ? const SizedBox.shrink()
-                        : _StreakBanner(streak: data.highest),
-                  ),
-                ),
-                _PageContentSliver(
+                  topPadding: 20,
                   child: _RangeToggle(rangeListenable: _rangeNotifier),
                 ),
-                _StickySectionHeader(label: localizations.prayerStats),
+                _PageContentSliver(
+                  topPadding: 22,
+                  child:
+                      _DataSection<
+                        ({OverviewStats overview, HifzSectionData? hifz})
+                      >(
+                        refreshToken: refreshToken,
+                        placeholderHeight: 340,
+                        load: () async {
+                          final overview = await _repository.overview(l);
+                          HifzSectionData? hifz;
+                          try {
+                            hifz = await _repository.getHifzData();
+                          } catch (_) {
+                            // Keep overview/logging available when this separate
+                            // section fails; an unknown count is not zero.
+                          }
+                          return (overview: overview, hifz: hifz);
+                        },
+                        builder: (context, data) => _StatisticsToday(
+                          data: data.overview,
+                          mastered: data.hifz?.totalMemorized,
+                          now: widget.previewNow,
+                          onLogSaved: _handleDataChanged,
+                        ),
+                      ),
+                ),
+                _FlowSectionHeader(label: l.prayer),
                 _PageContentSliver(
                   child: _RangeAwareSection<SalahSectionData>(
                     refreshToken: refreshToken,
                     rangeListenable: _rangeNotifier,
                     load: _repository.getSalahData,
-                    placeholderHeight: 360,
+                    placeholderHeight: 500,
                     builder: (context, data) => _SalahSectionHost(
                       data: data,
                       optInDismissed: _prayerTrackingOptInDismissed,
                       onEnable: _enablePrayerTracking,
                       onMaybeLater: _dismissPrayerTrackingOptIn,
                       onLogSaved: _handleDataChanged,
+                      now: widget.previewNow,
                     ),
                   ),
                 ),
-                _StickySectionHeader(label: localizations.quranStats),
+                _FlowSectionHeader(label: l.quran),
                 _PageContentSliver(
                   child: _RangeAwareSection<QuranStatsData>(
                     refreshToken: refreshToken,
                     rangeListenable: _rangeNotifier,
-                    load: (range) =>
-                        _repository.quranStats(range, localizations),
-                    placeholderHeight: 680,
-                    builder: (context, data) => _QuranSection(
+                    load: (range) => _repository.quranStats(range, l),
+                    placeholderHeight: 850,
+                    builder: (context, data) => _StatisticsQuran(
                       data: data,
-                      surahProgressKey: _surahProgressKey,
-                      surahGridExpanded: _surahGridExpanded,
-                      animationController: _surahGridController,
+                      range: _rangeNotifier.value,
+                      sectionKey: _surahProgressKey,
+                      expanded: _surahGridExpanded,
                       onOpenSurah: _openSurah,
-                      onToggleSurahGrid: _toggleSurahGridExpanded,
+                      onToggle: _toggleSurahGridExpanded,
                     ),
                   ),
                 ),
-                _StickySectionHeader(label: localizations.hifzStatsSection),
+                _FlowSectionHeader(label: l.hifzStatsSection),
                 _PageContentSliver(
                   child: _DataSection<HifzSectionData>(
                     refreshToken: refreshToken,
                     load: _repository.getHifzData,
                     placeholderHeight: 350,
-                    builder: (context, data) => _HifzSection(
+                    builder: (context, data) => _StatisticsHifz(
                       data: data,
-                      surahGridExpanded: _surahGridExpanded,
-                      onToggleSurahGrid: _toggleSurahGridExpanded,
+                      now: widget.previewNow,
+                      expanded: _surahGridExpanded,
+                      onToggle: _toggleSurahGridExpanded,
                     ),
                   ),
                 ),
-                _StickySectionHeader(label: localizations.tasbihStats),
+                _FlowSectionHeader(label: l.tasbihAndDuas),
                 _PageContentSliver(
-                  child: _RangeAwareSection<TasbihStatsData>(
-                    refreshToken: refreshToken,
-                    rangeListenable: _rangeNotifier,
-                    load: _repository.tasbih,
-                    placeholderHeight: 260,
-                    builder: (context, data) => _TasbihSection(data: data),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: _RangeAwareSection<TasbihStatsData>(
+                          refreshToken: refreshToken,
+                          rangeListenable: _rangeNotifier,
+                          load: _repository.tasbih,
+                          placeholderHeight: 280,
+                          builder: (context, data) =>
+                              _StatisticsTasbih(data: data),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _RangeAwareSection<DuasStatsData>(
+                          refreshToken: refreshToken,
+                          rangeListenable: _rangeNotifier,
+                          load: _repository.duas,
+                          placeholderHeight: 280,
+                          builder: (context, data) =>
+                              _StatisticsDuas(data: data),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                _StickySectionHeader(label: localizations.duaStats),
-                _PageContentSliver(
-                  child: _RangeAwareSection<DuasStatsData>(
-                    refreshToken: refreshToken,
-                    rangeListenable: _rangeNotifier,
-                    load: _repository.duas,
-                    placeholderHeight: 220,
-                    builder: (context, data) => _DuasSection(data: data),
-                  ),
-                ),
-                _StickySectionHeader(label: localizations.activityHistory),
+                _FlowSectionHeader(label: l.activityHistory),
                 _PageContentSliver(
                   child: _MonthlyActivitySection(
                     refreshToken: refreshToken,
                     repository: _repository,
+                    now: widget.previewNow,
                   ),
                 ),
-                _StickySectionHeader(label: localizations.streaksLabel),
+                _FlowSectionHeader(label: l.streaksLabel),
                 _PageContentSliver(
                   bottomPadding: 32,
                   child: _DataSection<StreakStats>(
                     refreshToken: refreshToken,
-                    load: () => _repository.streaks(),
-                    placeholderHeight: 150,
-                    builder: (context, data) =>
-                        _WorshipStreakSection(data: data),
+                    load: _repository.streaks,
+                    placeholderHeight: 280,
+                    builder: (context, data) => _StatisticsStreaks(data: data),
                   ),
                 ),
               ],
-            );
-          },
+            ),
+          ),
         ),
       ),
     );
@@ -778,7 +824,7 @@ class _PageContentSliver extends StatelessWidget {
   const _PageContentSliver({
     required this.child,
     this.topPadding = 0,
-    this.bottomPadding = 24,
+    this.bottomPadding = 0,
   });
 
   final Widget child;
@@ -798,68 +844,11 @@ class _PageContentSliver extends StatelessWidget {
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 860),
-            child: child,
+            child: SizedBox(width: double.infinity, child: child),
           ),
         ),
       ),
     );
-  }
-}
-
-class _StickySectionHeader extends StatelessWidget {
-  const _StickySectionHeader({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverPersistentHeader(
-      pinned: true,
-      delegate: _SectionHeaderDelegate(label: label),
-    );
-  }
-}
-
-class _SectionHeaderDelegate extends SliverPersistentHeaderDelegate {
-  const _SectionHeaderDelegate({required this.label});
-
-  final String label;
-
-  @override
-  double get minExtent => 36;
-
-  @override
-  double get maxExtent => 36;
-
-  @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
-    final EquranColors colors = context.equranColors;
-    return ColoredBox(
-      color: colors.background,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: EquranSpacing.pagePadding,
-        ),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 860),
-            child: Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: _SectionLabel(label),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  bool shouldRebuild(covariant _SectionHeaderDelegate oldDelegate) {
-    return label != oldDelegate.label;
   }
 }
 
@@ -1058,693 +1047,6 @@ class _LoadingOverlay extends StatelessWidget {
   }
 }
 
-class _OverviewHeaderCard extends StatefulWidget {
-  const _OverviewHeaderCard({required this.data});
-
-  final OverviewStats data;
-
-  @override
-  State<_OverviewHeaderCard> createState() => _OverviewHeaderCardState();
-}
-
-class _OverviewHeaderCardState extends State<_OverviewHeaderCard>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final Animation<double> _fadeAnimation;
-  late final Animation<Offset> _slideAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 500),
-    );
-    final CurvedAnimation curved = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOutCubic,
-    );
-    _fadeAnimation = curved;
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.04),
-      end: Offset.zero,
-    ).animate(curved);
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: SlideTransition(
-        position: _slideAnimation,
-        child: _OverviewHeroContent(data: widget.data),
-      ),
-    );
-  }
-}
-
-class _OverviewHeroContent extends StatelessWidget {
-  const _OverviewHeroContent({required this.data});
-
-  final OverviewStats data;
-
-  @override
-  Widget build(BuildContext context) {
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final EquranColors colors = context.equranColors;
-    final BorderRadius radius = BorderRadius.circular(AppRadii.xl);
-    final DateTime now = DateTime.now();
-    final _SalahLogAvailability? salahAvailability = data.prayerTrackingEnabled
-        ? _salahLogAvailabilityForNow(now: now)
-        : null;
-
-    return Material(
-      color: Colors.transparent,
-      borderRadius: radius,
-      clipBehavior: Clip.antiAlias,
-      child: Ink(
-        decoration: BoxDecoration(
-          borderRadius: radius,
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: <Color>[
-              colors.primaryGradientStart,
-              colors.primaryGradientEnd,
-            ],
-          ),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-              color: colors.shadow,
-              blurRadius: 24,
-              offset: const Offset(0, 12),
-            ),
-          ],
-        ),
-        child: Stack(
-          children: <Widget>[
-            Positioned(
-              top: 0,
-              right: 0,
-              width: 160,
-              height: 160,
-              child: CustomPaint(
-                painter: IslamicPatternPainter(
-                  color: colors.onPrimary,
-                  opacity: 0.07,
-                ),
-              ),
-            ),
-            Positioned.fill(
-              child: CustomPaint(
-                painter: HeroCornerOrnamentsPainter(
-                  color: colors.accentGold.withAlpha(128),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(EquranSpacing.cardPadding),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  _HeroTopRow(dateLabel: _heroDateLabel(now, localizations)),
-                  const SizedBox(height: 4),
-                  _HeroGreeting(streak: data.highestStreak),
-                  const _HeroGoldDivider(),
-                  _HeroMetricsRow(data: data),
-                  const SizedBox(height: 16),
-                  _DailyQuranGoalProgress(progress: data.quranGoalProgress),
-                  if (salahAvailability != null) ...<Widget>[
-                    const SizedBox(height: 12),
-                    _HeroMiniSalahRow(
-                      entry: data.todaySalahEntry,
-                      availability: salahAvailability,
-                    ),
-                  ],
-                  const SizedBox(height: 10),
-                  Text(
-                    _dailyHeroQuote(now, localizations),
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: colors.onPrimaryMuted,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _HeroTopRow extends StatelessWidget {
-  const _HeroTopRow({required this.dateLabel});
-
-  final String dateLabel;
-
-  @override
-  Widget build(BuildContext context) {
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: Text(
-            localizations.todaysWorship.toUpperCase(),
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: colors.onPrimary.withAlpha(179),
-              fontWeight: FontWeight.w700,
-              letterSpacing: 1.5,
-            ),
-          ),
-        ),
-        DecoratedBox(
-          decoration: BoxDecoration(
-            color: colors.onPrimary.withAlpha(31),
-            borderRadius: BorderRadius.circular(AppRadii.pill),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-            child: Text(
-              dateLabel,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: colors.onPrimary,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _HeroGreeting extends StatelessWidget {
-  const _HeroGreeting({required this.streak});
-
-  final int streak;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final EquranColors colors = context.equranColors;
-    final String line = streak > 0
-        ? localizations.onStreakDay(streak)
-        : localizations.continueYourJourneyToday;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          localizations.assalamuAlaikum,
-          style: theme.textTheme.headlineMedium?.copyWith(
-            color: colors.onPrimary,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          line,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: colors.onPrimaryMuted,
-            fontStyle: FontStyle.italic,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _HeroGoldDivider extends StatelessWidget {
-  const _HeroGoldDivider();
-
-  @override
-  Widget build(BuildContext context) {
-    final EquranColors colors = context.equranColors;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 14),
-      child: SizedBox(
-        height: 1,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: <Color>[
-                colors.accentGold.withAlpha(153),
-                colors.accentGold.withAlpha(0),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _HeroMetricsRow extends StatelessWidget {
-  const _HeroMetricsRow({required this.data});
-
-  final OverviewStats data;
-
-  @override
-  Widget build(BuildContext context) {
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final int masteredCount = HifzDB.getAllEntries()
-        .where((e) => e.status == 'mastered')
-        .length;
-
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: _HeroMetricCard(
-            icon: Icons.menu_book_rounded,
-            value: _compactNumber(data.quranAyahs),
-            label: localizations.ayahsLabel,
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: _HeroMetricCard(
-            icon: Icons.radio_button_checked_rounded,
-            value: _compactNumber(data.tasbihCount),
-            label: localizations.dhikrLabel,
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: _HeroMetricCard(
-            icon: Icons.volunteer_activism_rounded,
-            value: _compactNumber(data.duasViewed),
-            label: localizations.duas,
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: data.prayerTrackingEnabled
-              ? _HeroMetricCard(
-                  icon: Icons.mosque_rounded,
-                  value: '${data.salahPrayersToday}/5',
-                  label: localizations.salah,
-                )
-              : _HeroMetricCard(
-                  icon: Icons.local_fire_department_rounded,
-                  value: _compactNumber(data.highestStreak),
-                  label: localizations.dayStreakLabel,
-                ),
-        ),
-        if (masteredCount > 0) ...[
-          const SizedBox(width: 8),
-          Expanded(
-            child: _HeroMetricCard(
-              icon: Icons.military_tech_rounded,
-              value: '$masteredCount',
-              label: localizations.hifzStatsPill(masteredCount),
-            ),
-          ),
-        ],
-      ],
-    );
-  }
-}
-
-class _HeroMetricCard extends StatelessWidget {
-  const _HeroMetricCard({
-    required this.icon,
-    required this.value,
-    required this.label,
-  });
-
-  final IconData icon;
-  final String value;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.onPrimary.withAlpha(20),
-        border: Border.all(color: colors.onPrimary.withAlpha(20)),
-        borderRadius: BorderRadius.circular(AppRadii.large),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Icon(icon, color: colors.accentGold, size: 18),
-            const SizedBox(height: 6),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                value,
-                maxLines: 1,
-                style: theme.textTheme.titleLarge?.copyWith(
-                  color: colors.onPrimary,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: colors.onPrimaryMuted,
-                letterSpacing: 0.5,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _DailyQuranGoalProgress extends StatefulWidget {
-  const _DailyQuranGoalProgress({required this.progress});
-
-  final double progress;
-
-  @override
-  State<_DailyQuranGoalProgress> createState() =>
-      _DailyQuranGoalProgressState();
-}
-
-class _DailyQuranGoalProgressState extends State<_DailyQuranGoalProgress> {
-  bool _animateIn = false;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        setState(() => _animateIn = true);
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final EquranColors colors = context.equranColors;
-    final BorderRadius radius = BorderRadius.circular(AppRadii.pill);
-    final double clampedProgress = widget.progress.clamp(0.0, 1.0);
-    final int percent = (clampedProgress * 100).round();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        Row(
-          children: <Widget>[
-            Expanded(
-              child: Text(
-                localizations.dailyQuranGoal.toUpperCase(),
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: colors.onPrimaryMuted,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.5,
-                ),
-              ),
-            ),
-            Text(
-              '$percent%',
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: colors.accentGold,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        ClipRRect(
-          borderRadius: radius,
-          child: SizedBox(
-            height: 6,
-            child: Stack(
-              children: <Widget>[
-                Positioned.fill(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: colors.onPrimary.withAlpha(38),
-                      borderRadius: radius,
-                    ),
-                  ),
-                ),
-                Positioned.fill(
-                  child: Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: AnimatedFractionallySizedBox(
-                      alignment: AlignmentDirectional.centerStart,
-                      widthFactor: _animateIn ? clampedProgress : 0,
-                      heightFactor: 1,
-                      duration: const Duration(milliseconds: 900),
-                      curve: Curves.easeOutCubic,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: <Color>[
-                              colors.accentGold,
-                              colors.primaryGradientEnd,
-                            ],
-                          ),
-                          borderRadius: radius,
-                        ),
-                        child: const SizedBox.expand(),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _HeroMiniSalahRow extends StatelessWidget {
-  const _HeroMiniSalahRow({required this.entry, required this.availability});
-
-  final SalahLogEntry entry;
-  final _SalahLogAvailability availability;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        for (final SalahPrayer prayer in SalahPrayer.values) ...<Widget>[
-          if (prayer != SalahPrayer.values.first) const SizedBox(width: 5),
-          Expanded(
-            child: _HeroMiniSalahChip(
-              prayer: prayer,
-              status: availability.isLoggable(prayer)
-                  ? prayer.statusFor(entry)
-                  : SalahStatus.unlogged,
-            ),
-          ),
-        ],
-      ],
-    );
-  }
-}
-
-class _HeroMiniSalahChip extends StatelessWidget {
-  const _HeroMiniSalahChip({required this.prayer, required this.status});
-
-  final SalahPrayer prayer;
-  final SalahStatus status;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final ColorScheme colorScheme = theme.colorScheme;
-    final EquranColors colors = context.equranColors;
-    final bool prayed = status.countsAsPrayer;
-    final bool notPrayed = status == SalahStatus.notPrayed;
-    final Color borderColor = notPrayed
-        ? colorScheme.error
-        : prayed
-        ? colors.accentGold.withAlpha(102)
-        : colors.onPrimary.withAlpha(20);
-    final Color backgroundColor = notPrayed
-        ? colorScheme.error
-        : prayed
-        ? colors.accentGold.withAlpha(51)
-        : colors.onPrimary.withAlpha(15);
-    final Color foregroundColor = notPrayed
-        ? colorScheme.onError
-        : colors.onPrimaryMuted;
-    final Color dotColor = prayed
-        ? colors.accentGold
-        : colors.onPrimary.withAlpha(51);
-
-    return SizedBox(
-      height: 32,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          border: Border.all(color: borderColor),
-          borderRadius: BorderRadius.circular(AppRadii.small),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                _salahPrayerLabel(localizations, prayer),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: foregroundColor,
-                  height: 1,
-                ),
-              ),
-              const SizedBox(height: 3),
-              if (notPrayed)
-                Icon(Icons.close_rounded, size: 8, color: foregroundColor)
-              else
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: dotColor,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const SizedBox.square(dimension: 5),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class HeroCornerOrnamentsPainter extends CustomPainter {
-  const HeroCornerOrnamentsPainter({required this.color});
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1
-      ..strokeCap = StrokeCap.square;
-    const double inset = 10;
-    const double length = 16;
-
-    final Path path = Path()
-      ..moveTo(inset, inset + length)
-      ..lineTo(inset, inset)
-      ..lineTo(inset + length, inset)
-      ..moveTo(size.width - inset - length, inset)
-      ..lineTo(size.width - inset, inset)
-      ..lineTo(size.width - inset, inset + length)
-      ..moveTo(inset, size.height - inset - length)
-      ..lineTo(inset, size.height - inset)
-      ..lineTo(inset + length, size.height - inset)
-      ..moveTo(size.width - inset - length, size.height - inset)
-      ..lineTo(size.width - inset, size.height - inset)
-      ..lineTo(size.width - inset, size.height - inset - length);
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant HeroCornerOrnamentsPainter oldDelegate) {
-    return color != oldDelegate.color;
-  }
-}
-
-class _RangeToggle extends StatelessWidget {
-  const _RangeToggle({required this.rangeListenable});
-
-  final ValueNotifier<StatRange> rangeListenable;
-
-  @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder<StatRange>(
-      valueListenable: rangeListenable,
-      builder: (context, selected, _) {
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          physics: const BouncingScrollPhysics(),
-          child: Row(
-            children: <Widget>[
-              for (final StatRange range in StatRange.values) ...<Widget>[
-                if (range != StatRange.values.first) const SizedBox(width: 8),
-                _RangePill(
-                  range: range,
-                  selected: range == selected,
-                  onTap: () => rangeListenable.value = range,
-                ),
-              ],
-            ],
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _RangePill extends StatelessWidget {
-  const _RangePill({
-    required this.range,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final StatRange range;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final EquranColors colors = context.equranColors;
-    final BorderRadius radius = BorderRadius.circular(AppRadii.pill);
-    return Material(
-      color: selected ? colors.primary : colors.surfaceAlt,
-      borderRadius: radius,
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: radius,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Text(
-            _statRangeLabel(localizations, range),
-            style: theme.textTheme.labelMedium?.copyWith(
-              color: selected ? colors.onPrimary : colors.textSecondary,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _SalahSectionHost extends StatelessWidget {
   const _SalahSectionHost({
     required this.data,
@@ -1752,6 +1054,7 @@ class _SalahSectionHost extends StatelessWidget {
     required this.onEnable,
     required this.onMaybeLater,
     required this.onLogSaved,
+    this.now,
   });
 
   final SalahSectionData data;
@@ -1759,11 +1062,14 @@ class _SalahSectionHost extends StatelessWidget {
   final Future<void> Function() onEnable;
   final VoidCallback onMaybeLater;
   final VoidCallback onLogSaved;
+  final DateTime? now;
 
   @override
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 250),
+      duration: MediaQuery.disableAnimationsOf(context)
+          ? Duration.zero
+          : const Duration(milliseconds: 250),
       switchInCurve: Curves.easeOutCubic,
       switchOutCurve: Curves.easeInCubic,
       transitionBuilder: (child, animation) {
@@ -1774,6 +1080,7 @@ class _SalahSectionHost extends StatelessWidget {
               key: const ValueKey<String>('salah-section'),
               data: data,
               onLogSaved: onLogSaved,
+              now: now,
             )
           : optInDismissed
           ? _PrayerTrackingMiniEnable(
@@ -1807,8 +1114,8 @@ class _PrayerTrackingOptInCard extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: BorderRadius.circular(AppRadii.large),
-        border: Border.all(color: colors.border),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: context.equranTokens.hair),
       ),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -1821,12 +1128,12 @@ class _PrayerTrackingOptInCard extends StatelessWidget {
                 width: 56,
                 height: 56,
                 decoration: BoxDecoration(
-                  color: colors.mint,
+                  color: context.equranTokens.emWash,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.mosque_rounded,
-                  color: colors.primary,
+                  color: context.equranTokens.emText,
                   size: 32,
                 ),
               ),
@@ -1856,7 +1163,7 @@ class _PrayerTrackingOptInCard extends StatelessWidget {
             TextButton(
               onPressed: onMaybeLater,
               style: TextButton.styleFrom(
-                foregroundColor: colors.textMuted,
+                foregroundColor: context.equranTokens.muted,
                 textStyle: theme.textTheme.bodySmall,
               ),
               child: Text(localizations.maybeLater),
@@ -1877,12 +1184,11 @@ class _PrayerTrackingMiniEnable extends StatelessWidget {
   Widget build(BuildContext context) {
     final AppLocalizations localizations = AppLocalizations.of(context)!;
     final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
     return Center(
       child: TextButton(
         onPressed: onEnable,
         style: TextButton.styleFrom(
-          foregroundColor: colors.textMuted,
+          foregroundColor: context.equranTokens.muted,
           textStyle: theme.textTheme.bodySmall?.copyWith(
             fontWeight: FontWeight.w700,
           ),
@@ -1902,12 +1208,11 @@ class _PrimaryPillButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
     final BorderRadius radius = BorderRadius.circular(AppRadii.pill);
     return SizedBox(
       width: double.infinity,
       child: Material(
-        color: colors.primary,
+        color: context.equranTokens.filled,
         borderRadius: radius,
         clipBehavior: Clip.antiAlias,
         child: InkWell(
@@ -1919,7 +1224,7 @@ class _PrimaryPillButton extends StatelessWidget {
               label,
               textAlign: TextAlign.center,
               style: theme.textTheme.titleSmall?.copyWith(
-                color: colors.onPrimary,
+                color: Colors.white,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -2058,15 +1363,6 @@ String _formatSalahLogTime(DateTime time, bool use24HourFormat) {
 
 String _twoDigits(int value) => value.toString().padLeft(2, '0');
 
-String _statRangeLabel(AppLocalizations localizations, StatRange range) {
-  return switch (range) {
-    StatRange.week => localizations.thisWeek,
-    StatRange.month => localizations.thisMonth,
-    StatRange.year => localizations.thisYear,
-    StatRange.allTime => localizations.allTime,
-  };
-}
-
 String _salahStatusLabel(AppLocalizations localizations, SalahStatus status) {
   return switch (status) {
     SalahStatus.onTime => localizations.onTime,
@@ -2091,10 +1387,12 @@ class _SalahSection extends StatelessWidget {
     super.key,
     required this.data,
     required this.onLogSaved,
+    this.now,
   });
 
   final SalahSectionData data;
   final VoidCallback onLogSaved;
+  final DateTime? now;
 
   Future<void> _openLogSheet(
     BuildContext context,
@@ -2164,465 +1462,11 @@ class _SalahSection extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        _PrayerChipsRow(
-          entry: data.todayEntry,
-          availability: _salahLogAvailabilityForNow(),
-          onPrayerTap: (prayer) => _openLogSheet(context, prayer),
-        ),
-        const SizedBox(height: 16),
-        _SalahWeeklyStatsGrid(data: data),
-        const SizedBox(height: 16),
-        _SalahRingStats(stats: data.prayerStats),
-        const SizedBox(height: 16),
-        _FajrConsistencyCallout(data: data),
-      ],
-    );
-  }
-}
-
-class _PrayerChipsRow extends StatelessWidget {
-  const _PrayerChipsRow({
-    required this.entry,
-    required this.availability,
-    required this.onPrayerTap,
-  });
-
-  final SalahLogEntry entry;
-  final _SalahLogAvailability availability;
-  final ValueChanged<SalahPrayer> onPrayerTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        for (final SalahPrayer prayer in SalahPrayer.values) ...<Widget>[
-          if (prayer.index > 0) const SizedBox(width: 8),
-          Expanded(
-            child: _PrayerChip(
-              prayer: prayer,
-              status: prayer.statusFor(entry),
-              isLoggable: availability.isLoggable(prayer),
-              onTap: () => onPrayerTap(prayer),
-            ),
-          ),
-        ],
-      ],
-    );
-  }
-}
-
-class _PrayerChip extends StatelessWidget {
-  const _PrayerChip({
-    required this.prayer,
-    required this.status,
-    required this.isLoggable,
-    required this.onTap,
-  });
-
-  final SalahPrayer prayer;
-  final SalahStatus status;
-  final bool isLoggable;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
-    final EquranColors colors = context.equranColors;
-    final BorderRadius radius = BorderRadius.circular(AppRadii.medium);
-    final bool locked = !isLoggable;
-    final IconData? icon = locked ? null : _salahStatusIcon(status);
-    final bool notPrayed = !locked && status == SalahStatus.notPrayed;
-    final Color statusColor = locked
-        ? colors.textMuted
-        : _salahStatusColor(colorScheme, colors, status);
-    final String statusLabel = locked
-        ? localizations.notYet
-        : _salahStatusLabel(localizations, status);
-    return Opacity(
-      opacity: locked ? 0.4 : 1,
-      child: Material(
-        color: locked
-            ? colors.surfaceAlt
-            : _salahStatusBackground(colorScheme, colors, status),
-        borderRadius: radius,
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: radius,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: radius,
-              border: Border.all(
-                color: notPrayed ? colorScheme.error : colors.border,
-              ),
-            ),
-            child: SizedBox(
-              height: 60,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    SizedBox(
-                      height: 12,
-                      child: icon == null
-                          ? const SizedBox.shrink()
-                          : Icon(icon, size: 12, color: statusColor),
-                    ),
-                    const SizedBox(height: 2),
-                    FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Text(
-                        _salahPrayerLabel(localizations, prayer),
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: notPrayed ? statusColor : colors.textSecondary,
-                          fontWeight: FontWeight.w700,
-                          height: 1,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 1),
-                    FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Text(
-                        statusLabel,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: statusColor,
-                          fontWeight: FontWeight.w700,
-                          height: 1,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SalahWeeklyStatsGrid extends StatelessWidget {
-  const _SalahWeeklyStatsGrid({required this.data});
-
-  final SalahSectionData data;
-
-  @override
-  Widget build(BuildContext context) {
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final double gap = constraints.maxWidth >= 720 ? 12 : 10;
-        return Column(
-          children: <Widget>[
-            _StatGridRow(
-              gap: gap,
-              children: <Widget>[
-                _StatCard(
-                  icon: Icons.check_circle_rounded,
-                  value: '${data.onTimeThisWeek}',
-                  label: localizations.onTimeThisWeek,
-                ),
-                _StatCard(
-                  icon: Icons.schedule_rounded,
-                  value: '${data.lateThisWeek}',
-                  label: localizations.lateThisWeek,
-                ),
-              ],
-            ),
-            SizedBox(height: gap),
-            _StatGridRow(
-              gap: gap,
-              children: <Widget>[
-                _StatCard(
-                  icon: Icons.star_rounded,
-                  value: data.bestPrayer == null
-                      ? localizations.noPrayerYet
-                      : _salahPrayerLabel(localizations, data.bestPrayer!),
-                  label: localizations.bestPrayer,
-                ),
-                _StatCard(
-                  icon: Icons.wb_twilight_rounded,
-                  value: '${data.fajrStreak}',
-                  label: localizations.currentFajrStreak,
-                ),
-              ],
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _SalahRingStats extends StatefulWidget {
-  const _SalahRingStats({required this.stats});
-
-  final List<SalahPrayerStats> stats;
-
-  @override
-  State<_SalahRingStats> createState() => _SalahRingStatsState();
-}
-
-class _SalahRingStatsState extends State<_SalahRingStats>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: Duration(
-        milliseconds:
-            _salahRingAnimationMs +
-            ((SalahPrayer.values.length - 1) * _salahRingStaggerMs),
-      ),
-    )..forward();
-  }
-
-  @override
-  void didUpdateWidget(covariant _SalahRingStats oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.stats != widget.stats) {
-      _controller.forward(from: 0);
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, _) {
-        final int totalMs =
-            _salahRingAnimationMs +
-            ((SalahPrayer.values.length - 1) * _salahRingStaggerMs);
-        return Row(
-          children: <Widget>[
-            for (
-              int index = 0;
-              index < widget.stats.length;
-              index++
-            ) ...<Widget>[
-              if (index > 0) const SizedBox(width: 8),
-              Expanded(
-                child: _SalahRingIndicator(
-                  stats: widget.stats[index],
-                  animationProgress: Curves.easeOutCubic.transform(
-                    (((_controller.value * totalMs) -
-                                (index * _salahRingStaggerMs)) /
-                            _salahRingAnimationMs)
-                        .clamp(0.0, 1.0),
-                  ),
-                ),
-              ),
-            ],
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _SalahRingIndicator extends StatelessWidget {
-  const _SalahRingIndicator({
-    required this.stats,
-    required this.animationProgress,
-  });
-
-  final SalahPrayerStats stats;
-  final double animationProgress;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final EquranColors colors = context.equranColors;
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final double ringSize = math.min(52, constraints.maxWidth);
-        return Column(
-          children: <Widget>[
-            SizedBox.square(
-              dimension: ringSize,
-              child: CustomPaint(
-                painter: _SalahRingPainter(
-                  onTimeRate: stats.onTimeRate,
-                  lateRate: stats.lateRate,
-                  progress: animationProgress.clamp(0.0, 1.0),
-                  trackColor: colors.surfaceAlt,
-                  onTimeColor: colors.primary,
-                  lateColor: colors.accentGold,
-                ),
-                child: Center(
-                  child: Text(
-                    '${(stats.onTimeRate * 100).round()}%',
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: colors.textPrimary,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              _salahPrayerLabel(localizations, stats.prayer),
-              textAlign: TextAlign.center,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: colors.textSecondary,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _SalahRingPainter extends CustomPainter {
-  const _SalahRingPainter({
-    required this.onTimeRate,
-    required this.lateRate,
-    required this.progress,
-    required this.trackColor,
-    required this.onTimeColor,
-    required this.lateColor,
-  });
-
-  final double onTimeRate;
-  final double lateRate;
-  final double progress;
-  final Color trackColor;
-  final Color onTimeColor;
-  final Color lateColor;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final double stroke = 4;
-    final Offset center = size.center(Offset.zero);
-    final double radius = (size.shortestSide - stroke) / 2;
-    final Rect rect = Rect.fromCircle(center: center, radius: radius);
-    final Paint paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = stroke
-      ..strokeCap = StrokeCap.round;
-    canvas.drawCircle(center, radius, paint..color = trackColor);
-    final double onTimeSweep = math.pi * 2 * onTimeRate * progress;
-    final double lateSweep = math.pi * 2 * lateRate * progress;
-    const double startAngle = -math.pi / 2;
-    if (onTimeSweep > 0) {
-      canvas.drawArc(
-        rect,
-        startAngle,
-        onTimeSweep,
-        false,
-        paint..color = onTimeColor,
-      );
-    }
-    if (lateSweep > 0) {
-      canvas.drawArc(
-        rect,
-        startAngle + onTimeSweep,
-        lateSweep,
-        false,
-        paint..color = lateColor,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _SalahRingPainter oldDelegate) {
-    return onTimeRate != oldDelegate.onTimeRate ||
-        lateRate != oldDelegate.lateRate ||
-        progress != oldDelegate.progress ||
-        trackColor != oldDelegate.trackColor ||
-        onTimeColor != oldDelegate.onTimeColor ||
-        lateColor != oldDelegate.lateColor;
-  }
-}
-
-class _FajrConsistencyCallout extends StatelessWidget {
-  const _FajrConsistencyCallout({required this.data});
-
-  final SalahSectionData data;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final EquranColors colors = context.equranColors;
-    final double? fajrOnTimePct = data.perPrayerOnTimePct[SalahPrayer.fajr.key];
-    final String body = fajrOnTimePct == null || fajrOnTimePct <= 0
-        ? localizations.startLoggingFajr
-        : fajrOnTimePct >= 0.8
-        ? localizations.fajrVeryConsistent
-        : fajrOnTimePct >= 0.5
-        ? localizations.fajrGettingStronger
-        : localizations.fajrEveryAttemptCounts;
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(AppRadii.large),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: colors.surface,
-          borderRadius: BorderRadius.circular(AppRadii.large),
-          border: Border.all(color: colors.accentGold.withAlpha(77)),
-        ),
-        child: IntrinsicHeight(
-          child: Row(
-            children: <Widget>[
-              ColoredBox(
-                color: colors.accentGold,
-                child: const SizedBox(width: 3),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        localizations.fajrConsistency,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          color: colors.textPrimary,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        body,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colors.textSecondary,
-                          height: 1.5,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => _StatisticsPrayer(
+    data: data,
+    now: now,
+    onPrayerTap: (prayer) => _openLogSheet(context, prayer),
+  );
 }
 
 class _SalahLogSheet extends StatefulWidget {
@@ -2659,7 +1503,9 @@ class _SalahLogSheetState extends State<_SalahLogSheet> {
       if (!_scrollController.hasClients) return;
       _scrollController.animateTo(
         widget.initialPrayer.index * 68,
-        duration: const Duration(milliseconds: 250),
+        duration: MediaQuery.disableAnimationsOf(context)
+            ? Duration.zero
+            : const Duration(milliseconds: 250),
         curve: Curves.easeOutCubic,
       );
     });
@@ -2819,7 +1665,9 @@ class _SalahLogPrayerRow extends StatelessWidget {
     final bool locked = !isLoggable && !hasSavedStatus;
     final bool readOnly = !isLoggable && hasSavedStatus;
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 250),
+      duration: MediaQuery.disableAnimationsOf(context)
+          ? Duration.zero
+          : const Duration(milliseconds: 250),
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
         color: highlighted ? colors.mint.withAlpha(128) : Colors.transparent,
@@ -3025,459 +1873,6 @@ class _SalahStatusButton extends StatelessWidget {
   }
 }
 
-class _QuranSection extends StatelessWidget {
-  const _QuranSection({
-    required this.data,
-    required this.surahProgressKey,
-    required this.surahGridExpanded,
-    required this.animationController,
-    required this.onOpenSurah,
-    required this.onToggleSurahGrid,
-  });
-
-  final QuranStatsData data;
-  final GlobalKey surahProgressKey;
-  final bool surahGridExpanded;
-  final AnimationController animationController;
-  final ValueChanged<int> onOpenSurah;
-  final VoidCallback onToggleSurahGrid;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        _ActivityCard(buckets: data.buckets),
-        const SizedBox(height: 20),
-        _LifetimeTotalsGrid(data: data),
-        const SizedBox(height: 20),
-        _InsightsRow(insights: data.insights),
-        const SizedBox(height: 20),
-        _SurahProgressSection(
-          sectionKey: surahProgressKey,
-          completedSurahs: data.completedSurahs,
-          expanded: surahGridExpanded,
-          animationController: animationController,
-          onOpenSurah: onOpenSurah,
-          onToggleExpanded: onToggleSurahGrid,
-        ),
-        const SizedBox(height: 20),
-        _KhatmTrackerSection(completionDates: data.khatmCompletionDates),
-      ],
-    );
-  }
-}
-
-class _ActivityCard extends StatelessWidget {
-  const _ActivityCard({required this.buckets});
-
-  final List<ActivityBucket> buckets;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final EquranColors colors = context.equranColors;
-    final BorderRadius radius = BorderRadius.circular(AppRadii.large);
-    final int maxAyahs = buckets.fold<int>(
-      1,
-      (max, bucket) => math.max(max, bucket.count),
-    );
-    final Color activeBarFill = theme.colorScheme.primary;
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: radius,
-        border: Border.all(color: colors.border),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            _SectionLabel(localizations.quranActivity),
-            const SizedBox(height: 16),
-            SizedBox(
-              height: math.max(
-                200.0,
-                math.min(248.0, MediaQuery.sizeOf(context).width * 0.45),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: <Widget>[
-                  for (final ActivityBucket bucket in buckets)
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 3),
-                        child: Column(
-                          children: <Widget>[
-                            Expanded(
-                              child: Tooltip(
-                                triggerMode: TooltipTriggerMode.tap,
-                                message:
-                                    '${bucket.detailLabel}\n${localizations.ayahsCount(bucket.count)}',
-                                child: Align(
-                                  alignment: Alignment.bottomCenter,
-                                  child: bucket.count <= 0
-                                      ? SizedBox(
-                                          height: 6,
-                                          child: DecoratedBox(
-                                            decoration: BoxDecoration(
-                                              color: colors.surfaceAlt,
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    AppRadii.pill,
-                                                  ),
-                                            ),
-                                            child: const SizedBox.expand(),
-                                          ),
-                                        )
-                                      : FractionallySizedBox(
-                                          heightFactor:
-                                              (bucket.count / maxAyahs)
-                                                  .clamp(0.08, 1.0)
-                                                  .toDouble(),
-                                          child: DecoratedBox(
-                                            decoration: BoxDecoration(
-                                              color: activeBarFill,
-                                              gradient: LinearGradient(
-                                                begin: Alignment.topCenter,
-                                                end: Alignment.bottomCenter,
-                                                colors: <Color>[
-                                                  colors.primaryGradientStart,
-                                                  colors.primaryGradientEnd,
-                                                ],
-                                              ),
-                                              borderRadius:
-                                                  const BorderRadius.vertical(
-                                                    top: Radius.circular(
-                                                      AppRadii.pill,
-                                                    ),
-                                                  ),
-                                            ),
-                                            child: const SizedBox.expand(),
-                                          ),
-                                        ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            _RotatedAxisLabel(label: bucket.label),
-                          ],
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _RotatedAxisLabel extends StatelessWidget {
-  const _RotatedAxisLabel({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
-    return SizedBox(
-      height: 32,
-      child: OverflowBox(
-        minWidth: 0,
-        maxWidth: 72,
-        alignment: Alignment.topCenter,
-        child: Transform.rotate(
-          angle: -math.pi / 4,
-          alignment: Alignment.topCenter,
-          child: Text(
-            label,
-            maxLines: 1,
-            softWrap: false,
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: colors.textMuted,
-              fontWeight: FontWeight.w700,
-              height: 1,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _LifetimeTotalsGrid extends StatelessWidget {
-  const _LifetimeTotalsGrid({required this.data});
-
-  final QuranStatsData data;
-
-  @override
-  Widget build(BuildContext context) {
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final double gap = constraints.maxWidth >= 720 ? 12 : 10;
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            _StatGridRow(
-              gap: gap,
-              children: <Widget>[
-                _StatCard(
-                  icon: Icons.done_all_rounded,
-                  value: '${data.totalAyahs}',
-                  label: localizations.ayahsRead,
-                ),
-                _StatCard(
-                  icon: Icons.text_fields_rounded,
-                  value: _compactNumber(data.totalLetters),
-                  label: localizations.lettersRead,
-                ),
-              ],
-            ),
-            SizedBox(height: gap),
-            _StatGridRow(
-              gap: gap,
-              children: <Widget>[
-                _StatCard(
-                  icon: Icons.calendar_today_rounded,
-                  value: '${data.activeDays}',
-                  label: localizations.activeDays,
-                ),
-                _StatCard(
-                  icon: Icons.event_available_rounded,
-                  value: data.mostActiveWeekday == null
-                      ? localizations.noDayYet
-                      : _weekdayName(data.mostActiveWeekday!, localizations),
-                  label: localizations.mostActiveDay,
-                ),
-              ],
-            ),
-            SizedBox(height: gap),
-            _FeatureCard(
-              title: data.mostReadSurah == null
-                  ? localizations.noSurahYet
-                  : localizedSurahName(localizations, data.mostReadSurah!),
-              subtitle: localizations.ayahsReadCount(data.mostReadSurahAyahs),
-              icon: Icons.menu_book_rounded,
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _StatGridRow extends StatelessWidget {
-  const _StatGridRow({required this.children, required this.gap});
-
-  final List<Widget> children;
-  final double gap;
-
-  @override
-  Widget build(BuildContext context) {
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          for (int index = 0; index < children.length; index++) ...<Widget>[
-            if (index > 0) SizedBox(width: gap),
-            Expanded(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  minHeight: _statCardMinHeight,
-                ),
-                child: children[index],
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _StatCard extends StatelessWidget {
-  const _StatCard({
-    required this.icon,
-    required this.value,
-    required this.label,
-  });
-
-  final IconData icon;
-  final String value;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
-    return ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: _statCardMinHeight),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: colors.surface,
-          borderRadius: BorderRadius.circular(AppRadii.large),
-          border: Border.all(color: colors.border),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              _StatIcon(icon: icon),
-              const SizedBox(height: 14),
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                alignment: AlignmentDirectional.centerStart,
-                child: Text(
-                  value,
-                  maxLines: 1,
-                  style: theme.textTheme.headlineLarge?.copyWith(
-                    color: colors.textPrimary,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                label,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colors.textSecondary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _MostRecitedStatCard extends StatelessWidget {
-  const _MostRecitedStatCard({
-    required this.icon,
-    required this.name,
-    required this.count,
-  });
-
-  final IconData icon;
-  final String name;
-  final int count;
-
-  @override
-  Widget build(BuildContext context) {
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
-    return ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: _statCardMinHeight),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: colors.surface,
-          borderRadius: BorderRadius.circular(AppRadii.large),
-          border: Border.all(color: colors.border),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              _StatIcon(icon: icon),
-              const SizedBox(height: 14),
-              Text(
-                name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleLarge?.copyWith(
-                  color: colors.textPrimary,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                localizations.recitationsCount(count),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colors.textSecondary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _FeatureCard extends StatelessWidget {
-  const _FeatureCard({
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-  });
-
-  final String title;
-  final String subtitle;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(AppRadii.large),
-        border: Border.all(color: colors.border),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: colors.textPrimary,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    subtitle,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 14),
-            _StatIcon(icon: icon),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _InsightsRow extends StatelessWidget {
   const _InsightsRow({required this.insights});
 
@@ -3534,10 +1929,9 @@ class _InsightChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: colors.mint,
+        color: context.equranTokens.emWash,
         borderRadius: BorderRadius.circular(AppRadii.large),
       ),
       child: Padding(
@@ -3545,12 +1939,12 @@ class _InsightChip extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Icon(insight.icon, color: colors.primary, size: 16),
+            Icon(insight.icon, color: context.equranTokens.emText, size: 16),
             const SizedBox(width: 8),
             Text(
               insight.label,
               style: theme.textTheme.bodySmall?.copyWith(
-                color: colors.primary,
+                color: context.equranTokens.emText,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -3561,552 +1955,16 @@ class _InsightChip extends StatelessWidget {
   }
 }
 
-class _SurahProgressSection extends StatelessWidget {
-  const _SurahProgressSection({
-    required this.sectionKey,
-    required this.completedSurahs,
-    required this.expanded,
-    required this.animationController,
-    required this.onOpenSurah,
-    required this.onToggleExpanded,
-  });
-
-  final GlobalKey sectionKey;
-  final Set<int> completedSurahs;
-  final bool expanded;
-  final AnimationController animationController;
-  final ValueChanged<int> onOpenSurah;
-  final VoidCallback onToggleExpanded;
-
-  @override
-  Widget build(BuildContext context) {
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
-    return Column(
-      key: sectionKey,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        _SectionLabel(localizations.surahProgress),
-        const SizedBox(height: 12),
-        Text(
-          localizations.surahsComplete(completedSurahs.length, _totalSurahs),
-          textAlign: TextAlign.center,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: colors.textSecondary,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 12),
-        LayoutBuilder(
-          builder: (context, constraints) {
-            const double gap = 4;
-            final double cellSize =
-                (constraints.maxWidth - (gap * (_surahGridColumns - 1))) /
-                _surahGridColumns;
-            final int rows = (_totalSurahs / _surahGridColumns).ceil();
-            final double fullHeight = (cellSize * rows) + (gap * (rows - 1));
-            final double collapsedHeight = (cellSize + gap) * 4;
-            final double gridHeight = expanded ? fullHeight : collapsedHeight;
-
-            return AnimatedSize(
-              duration: const Duration(milliseconds: 350),
-              curve: Curves.easeInOutCubic,
-              alignment: Alignment.topCenter,
-              child: SizedBox(
-                height: gridHeight,
-                child: Stack(
-                  clipBehavior: expanded ? Clip.none : Clip.hardEdge,
-                  children: <Widget>[
-                    SizedBox(
-                      height: fullHeight,
-                      child: AnimatedBuilder(
-                        animation: animationController,
-                        builder: (context, _) {
-                          return GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            padding: EdgeInsets.zero,
-                            itemCount: _totalSurahs,
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: _surahGridColumns,
-                                  childAspectRatio: 1,
-                                  mainAxisSpacing: gap,
-                                  crossAxisSpacing: gap,
-                                ),
-                            itemBuilder: (context, index) {
-                              final int surah = index + 1;
-                              final bool complete = completedSurahs.contains(
-                                surah,
-                              );
-                              final double progress = _surahCellProgress(
-                                animationController.value,
-                                index,
-                              );
-                              return _SurahProgressCell(
-                                surah: surah,
-                                complete: complete,
-                                animationProgress: progress,
-                                onTap: complete
-                                    ? () => onOpenSurah(surah)
-                                    : null,
-                              );
-                            },
-                          );
-                        },
-                      ),
-                    ),
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      height: collapsedHeight * 0.3,
-                      child: IgnorePointer(
-                        child: AnimatedOpacity(
-                          opacity: expanded ? 0 : 1,
-                          duration: const Duration(milliseconds: 250),
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: <Color>[
-                                  colors.background.withAlpha(0),
-                                  colors.background,
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-        const SizedBox(height: 12),
-        Center(
-          child: _SurahGridToggleButton(
-            expanded: expanded,
-            onPressed: onToggleExpanded,
-          ),
-        ),
-      ],
-    );
-  }
-
-  double _surahCellProgress(double controllerValue, int index) {
-    final double elapsedMs =
-        (controllerValue * _surahGridAnimationMs) -
-        (index * _surahCellStaggerMs);
-    final double linear = (elapsedMs / _surahCellAnimationMs).clamp(0.0, 1.0);
-    return Curves.easeOutCubic.transform(linear);
-  }
-}
-
-class _SurahGridToggleButton extends StatelessWidget {
-  const _SurahGridToggleButton({
-    required this.expanded,
-    required this.onPressed,
-  });
-
-  final bool expanded;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final EquranColors colors = context.equranColors;
-    final BorderRadius radius = BorderRadius.circular(AppRadii.pill);
-    return Material(
-      color: colors.surface,
-      borderRadius: radius,
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: radius,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            borderRadius: radius,
-            border: Border.all(color: colors.border),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Icon(
-                  expanded
-                      ? Icons.keyboard_arrow_up
-                      : Icons.keyboard_arrow_down,
-                  size: 16,
-                  color: colors.textMuted,
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  expanded
-                      ? localizations.showLess
-                      : localizations.showAllSurahs(_totalSurahs),
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: colors.textSecondary,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SurahProgressCell extends StatelessWidget {
-  const _SurahProgressCell({
-    required this.surah,
-    required this.complete,
-    required this.animationProgress,
-    required this.onTap,
-  });
-
-  final int surah;
-  final bool complete;
-  final double animationProgress;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
-    final BorderRadius radius = BorderRadius.circular(AppRadii.small);
-    final Color background = complete ? colors.primary : colors.surfaceAlt;
-    final Color foreground = complete ? colors.onPrimary : colors.textMuted;
-    final Widget label = Center(
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-        child: Text(
-          '$surah',
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: foreground,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
-    );
-
-    return Opacity(
-      opacity: animationProgress,
-      child: Transform.scale(
-        scale: 0.8 + (0.2 * animationProgress),
-        child: onTap == null
-            ? DecoratedBox(
-                decoration: BoxDecoration(
-                  color: background,
-                  borderRadius: radius,
-                ),
-                child: label,
-              )
-            : Material(
-                color: background,
-                borderRadius: radius,
-                clipBehavior: Clip.antiAlias,
-                child: InkWell(
-                  onTap: onTap,
-                  borderRadius: radius,
-                  child: label,
-                ),
-              ),
-      ),
-    );
-  }
-}
-
-class _KhatmTrackerSection extends StatelessWidget {
-  const _KhatmTrackerSection({required this.completionDates});
-
-  final List<DateTime> completionDates;
-
-  @override
-  Widget build(BuildContext context) {
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        _SectionLabel(localizations.quranCompletions),
-        const SizedBox(height: 12),
-        Text(
-          '${completionDates.length}',
-          textAlign: TextAlign.center,
-          style: theme.textTheme.headlineLarge?.copyWith(
-            color: colors.textPrimary,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          localizations.fullCompletions,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: colors.textSecondary,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 14),
-        if (completionDates.isEmpty)
-          Text(
-            localizations.completeAllSurahsForFirstKhatm(_totalSurahs),
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colors.textMuted,
-              fontStyle: FontStyle.italic,
-            ),
-          )
-        else
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            child: Row(
-              children: <Widget>[
-                for (
-                  int index = 0;
-                  index < completionDates.length;
-                  index++
-                ) ...<Widget>[
-                  if (index > 0) const SizedBox(width: 10),
-                  _KhatmDateChip(
-                    number: index + 1,
-                    date: completionDates[index],
-                  ),
-                ],
-              ],
-            ),
-          ),
-      ],
-    );
-  }
-}
-
-class _KhatmDateChip extends StatelessWidget {
-  const _KhatmDateChip({required this.number, required this.date});
-
-  final int number;
-  final DateTime date;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final EquranColors colors = context.equranColors;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.surfaceAlt,
-        borderRadius: BorderRadius.circular(AppRadii.pill),
-        border: Border.all(color: colors.border),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-        child: Text(
-          localizations.khatmDateLabel(
-            number,
-            _dateChipLabel(date, localizations),
-          ),
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: colors.textSecondary,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _TasbihSection extends StatelessWidget {
-  const _TasbihSection({required this.data});
-
-  final TasbihStatsData data;
-
-  @override
-  Widget build(BuildContext context) {
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    if (!data.hasData) {
-      return _EmptyStatsSection(
-        icon: Icons.radio_button_checked_rounded,
-        message: localizations.startFirstTasbihSession,
-      );
-    }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final double gap = constraints.maxWidth >= 720 ? 12 : 10;
-            return Column(
-              children: <Widget>[
-                _StatGridRow(
-                  gap: gap,
-                  children: <Widget>[
-                    _StatCard(
-                      icon: Icons.tag_rounded,
-                      value: '${data.totalDhikr}',
-                      label: localizations.totalDhikr,
-                    ),
-                    _StatCard(
-                      icon: Icons.show_chart_rounded,
-                      value: _averageLabel(data.dailyAverage),
-                      label: localizations.dailyAverage,
-                    ),
-                  ],
-                ),
-                SizedBox(height: gap),
-                _StatGridRow(
-                  gap: gap,
-                  children: <Widget>[
-                    _MostRecitedStatCard(
-                      icon: Icons.favorite_rounded,
-                      name: data.mostRecitedName.isEmpty
-                          ? localizations.dhikrLabel
-                          : _localizedDhikrStatsLabel(
-                              data.mostRecitedName,
-                              localizations,
-                            ),
-                      count: data.mostRecitedCount,
-                    ),
-                    _StatCard(
-                      icon: Icons.calendar_month_rounded,
-                      value: '${data.activeDays}',
-                      label: localizations.activeDays,
-                    ),
-                  ],
-                ),
-                SizedBox(height: gap),
-                _FeatureCard(
-                  title: data.mostRecitedName.isEmpty
-                      ? localizations.dhikrLabel
-                      : _localizedDhikrStatsLabel(
-                          data.mostRecitedName,
-                          localizations,
-                        ),
-                  subtitle: localizations.recitationsCount(
-                    data.mostRecitedCount,
-                  ),
-                  icon: Icons.spa_rounded,
-                ),
-              ],
-            );
-          },
-        ),
-      ],
-    );
-  }
-}
-
-class _DuasSection extends StatelessWidget {
-  const _DuasSection({required this.data});
-
-  final DuasStatsData data;
-
-  @override
-  Widget build(BuildContext context) {
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    if (!data.hasData) {
-      return _EmptyStatsSection(
-        icon: Icons.auto_stories_rounded,
-        message: localizations.openDuaToBeginHistory,
-      );
-    }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        _StatGridRow(
-          gap: 10,
-          children: <Widget>[
-            _StatCard(
-              icon: Icons.visibility_rounded,
-              value: '${data.viewedCount}',
-              label: localizations.duasViewed,
-            ),
-            _StatCard(
-              icon: Icons.favorite_rounded,
-              value: '${data.favouriteCount}',
-              label: localizations.favouriteDuas,
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        _FeatureCard(
-          title: data.mostViewedCategoryCount == 0
-              ? localizations.noCategoryYet
-              : (data.mostViewedCategoryId != null
-                    ? getLocalizedCategoryTitle(
-                        context,
-                        data.mostViewedCategoryId!,
-                        data.mostViewedCategory,
-                      )
-                    : data.mostViewedCategory),
-          subtitle: localizations.viewsCount(data.mostViewedCategoryCount),
-          icon: Icons.category_rounded,
-        ),
-      ],
-    );
-  }
-}
-
-class _EmptyStatsSection extends StatelessWidget {
-  const _EmptyStatsSection({required this.icon, required this.message});
-
-  final IconData icon;
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        DecoratedBox(
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: BorderRadius.circular(AppRadii.large),
-            border: Border.all(color: colors.border),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(18),
-            child: Column(
-              children: <Widget>[
-                _StatIcon(icon: icon),
-                const SizedBox(height: 10),
-                Text(
-                  message,
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colors.textSecondary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class _MonthlyActivitySection extends StatefulWidget {
   const _MonthlyActivitySection({
     required this.refreshToken,
     required this.repository,
+    this.now,
   });
 
   final int refreshToken;
   final StatisticsRepository repository;
+  final DateTime? now;
 
   @override
   State<_MonthlyActivitySection> createState() =>
@@ -4126,7 +1984,7 @@ class _MonthlyActivitySectionState extends State<_MonthlyActivitySection> {
   @override
   void initState() {
     super.initState();
-    _displayedMonth = _monthStart(DateTime.now());
+    _displayedMonth = _monthStart(widget.now ?? DateTime.now());
     _load(notify: false);
   }
 
@@ -4168,7 +2026,12 @@ class _MonthlyActivitySectionState extends State<_MonthlyActivitySection> {
     final DateTime target = _monthStart(
       DateTime(_displayedMonth.year, _displayedMonth.month + monthOffset),
     );
-    if (monthOffset > 0 && _isFutureMonth(target)) return;
+    if (monthOffset > 0 &&
+        (widget.now == null
+            ? _isFutureMonth(target)
+            : target.isAfter(_monthStart(widget.now!)))) {
+      return;
+    }
     setState(() {
       _displayedMonth = target;
       _slideDirection = monthOffset > 0 ? 1 : -1;
@@ -4216,7 +2079,8 @@ class _MonthlyActivitySectionState extends State<_MonthlyActivitySection> {
                   _dateChipLabel(day.date, localizations),
                   style: theme.textTheme.titleSmall?.copyWith(
                     color: colors.textPrimary,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 12.5,
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -4242,25 +2106,24 @@ class _MonthlyActivitySectionState extends State<_MonthlyActivitySection> {
       return const _ShimmerPlaceholder(height: 360);
     }
 
-    final EquranColors colors = context.equranColors;
     final String targetKey = _monthCacheKey(data.month.year, data.month.month);
     return _LoadingOverlay(
       loading: _loading,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: colors.surface,
-          borderRadius: BorderRadius.circular(AppRadii.large),
-          border: Border.all(color: colors.border),
-        ),
+      child: HairlineCard(
+        key: const ValueKey('statistics-history'),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(18),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               _MonthlyActivityHeader(
                 month: data.month,
+                activeDays: data.activeDays,
                 onPrevious: () => _changeMonth(-1),
-                onNext: _isCurrentMonth(_displayedMonth)
+                onNext:
+                    (widget.now == null
+                        ? _isCurrentMonth(_displayedMonth)
+                        : _displayedMonth == _monthStart(widget.now!))
                     ? null
                     : () => _changeMonth(1),
               ),
@@ -4271,7 +2134,9 @@ class _MonthlyActivitySectionState extends State<_MonthlyActivitySection> {
                 onHorizontalDragUpdate: _handleDragUpdate,
                 onHorizontalDragEnd: _handleDragEnd,
                 child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 250),
+                  duration: MediaQuery.disableAnimationsOf(context)
+                      ? Duration.zero
+                      : const Duration(milliseconds: 250),
                   switchInCurve: Curves.easeInOut,
                   switchOutCurve: Curves.easeInOut,
                   transitionBuilder:
@@ -4301,6 +2166,7 @@ class _MonthlyActivitySectionState extends State<_MonthlyActivitySection> {
                     key: ValueKey<String>(targetKey),
                     data: data,
                     onDayTap: _showDayDetails,
+                    now: widget.now,
                   ),
                 ),
               ),
@@ -4315,17 +2181,18 @@ class _MonthlyActivitySectionState extends State<_MonthlyActivitySection> {
 class _MonthlyActivityHeader extends StatelessWidget {
   const _MonthlyActivityHeader({
     required this.month,
+    required this.activeDays,
     required this.onPrevious,
     required this.onNext,
   });
 
   final DateTime month;
+  final int activeDays;
   final VoidCallback onPrevious;
   final VoidCallback? onNext;
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
     final AppLocalizations localizations = AppLocalizations.of(context)!;
     final EquranColors colors = context.equranColors;
     return Row(
@@ -4333,23 +2200,37 @@ class _MonthlyActivityHeader extends StatelessWidget {
         IconButton(
           tooltip: localizations.previousMonth,
           onPressed: onPrevious,
-          icon: Icon(Icons.chevron_left_rounded, color: colors.textSecondary),
+          icon: Icon(
+            Directionality.of(context) == TextDirection.rtl
+                ? Icons.chevron_right_rounded
+                : Icons.chevron_left_rounded,
+            color: colors.textSecondary,
+          ),
         ),
         Expanded(
-          child: Text(
-            _monthYearLabel(month, localizations),
-            textAlign: TextAlign.center,
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: colors.textPrimary,
-              fontWeight: FontWeight.w800,
-            ),
+          child: Column(
+            children: [
+              Text(
+                _monthYearLabel(month, localizations),
+                textAlign: TextAlign.center,
+                style: redesignDisplayStyle(context, size: 20),
+              ),
+              const SizedBox(height: 2),
+              _StatsText(
+                localizations.activeDaysCount(activeDays),
+                size: 12,
+                align: TextAlign.center,
+              ),
+            ],
           ),
         ),
         IconButton(
           tooltip: localizations.nextMonth,
           onPressed: onNext,
           icon: Icon(
-            Icons.chevron_right_rounded,
+            Directionality.of(context) == TextDirection.rtl
+                ? Icons.chevron_left_rounded
+                : Icons.chevron_right_rounded,
             color: onNext == null ? colors.textMuted : colors.textSecondary,
           ),
         ),
@@ -4363,10 +2244,12 @@ class _MonthlyActivityBody extends StatelessWidget {
     super.key,
     required this.data,
     required this.onDayTap,
+    this.now,
   });
 
   final MonthlyActivityData data;
   final ValueChanged<MonthlyActivityDay> onDayTap;
+  final DateTime? now;
 
   @override
   Widget build(BuildContext context) {
@@ -4376,7 +2259,7 @@ class _MonthlyActivityBody extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        _MonthlyCalendarGrid(data: data, onDayTap: onDayTap),
+        _MonthlyCalendarGrid(data: data, onDayTap: onDayTap, now: now),
         const SizedBox(height: 14),
         Text(
           _monthlySummaryLabel(data, localizations),
@@ -4392,16 +2275,20 @@ class _MonthlyActivityBody extends StatelessWidget {
 }
 
 class _MonthlyCalendarGrid extends StatelessWidget {
-  const _MonthlyCalendarGrid({required this.data, required this.onDayTap});
+  const _MonthlyCalendarGrid({
+    required this.data,
+    required this.onDayTap,
+    this.now,
+  });
 
   final MonthlyActivityData data;
   final ValueChanged<MonthlyActivityDay> onDayTap;
+  final DateTime? now;
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final EquranColors colors = context.equranColors;
     final List<MonthlyActivityDay?> cells = _monthlyCalendarCells(data);
     final List<String> dayLabels = _weekdayInitials(localizations);
     return Column(
@@ -4416,7 +2303,7 @@ class _MonthlyCalendarGrid extends StatelessWidget {
                     label,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: colors.textMuted,
+                      color: context.equranTokens.muted,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -4430,14 +2317,15 @@ class _MonthlyCalendarGrid extends StatelessWidget {
           itemCount: cells.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 7,
-            crossAxisSpacing: 5,
-            mainAxisSpacing: 5,
+            crossAxisSpacing: 6,
+            mainAxisSpacing: 6,
           ),
           itemBuilder: (context, index) {
             final MonthlyActivityDay? day = cells[index];
             return _MonthlyCalendarCell(
               day: day,
-              isToday: day != null && _isSameDate(day.date, _getShiftedNow()),
+              isToday:
+                  day != null && _isSameDate(day.date, now ?? _getShiftedNow()),
               onTap: onDayTap,
             );
           },
@@ -4465,16 +2353,26 @@ class _MonthlyCalendarCell extends StatelessWidget {
 
     final ThemeData theme = Theme.of(context);
     final EquranColors colors = context.equranColors;
-    final BorderRadius radius = BorderRadius.circular(AppRadii.small);
-    final Color background = _monthlyActivityColor(colors, activity.total);
-    final Color foreground = activity.total >= 31
-        ? colors.onPrimary
-        : colors.textSecondary;
+    final BorderRadius radius = BorderRadius.circular(12);
+    final tokens = context.equranTokens;
+    final Color background = activity.total == 0
+        ? tokens.hair
+        : activity.total < 11
+        ? Color.alphaBlend(tokens.filled.withValues(alpha: .3), colors.surface)
+        : activity.total < 31
+        ? Color.alphaBlend(tokens.filled.withValues(alpha: .6), colors.surface)
+        : tokens.filled;
+    final Color foreground = EquranTokens.ensure(
+      tokens.text2,
+      against: [background],
+      target: 4.5,
+      toward: background.computeLuminance() > .5 ? Colors.black : Colors.white,
+    );
     return DecoratedBox(
       decoration: BoxDecoration(
         color: background,
         borderRadius: radius,
-        border: isToday ? Border.all(color: colors.accentGold) : null,
+        border: isToday ? Border.all(color: tokens.gold) : null,
       ),
       child: ClipRRect(
         borderRadius: radius,
@@ -4486,8 +2384,9 @@ class _MonthlyCalendarCell extends StatelessWidget {
               child: Text(
                 '${activity.date.day}',
                 style: theme.textTheme.labelSmall?.copyWith(
-                  color: activity.total == 0 ? colors.textMuted : foreground,
-                  fontWeight: FontWeight.w800,
+                  color: foreground,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 12.5,
                 ),
               ),
             ),
@@ -4495,308 +2394,6 @@ class _MonthlyCalendarCell extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class _WorshipStreakSection extends StatelessWidget {
-  const _WorshipStreakSection({required this.data});
-
-  final StreakStats data;
-
-  @override
-  Widget build(BuildContext context) {
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        Row(
-          children: <Widget>[
-            Expanded(
-              child: _StreakDetailCard(
-                icon: Icons.menu_book_rounded,
-                value: data.quran,
-                label: localizations.quranStreak,
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _StreakDetailCard(
-                icon: Icons.spa_rounded,
-                value: data.tasbih,
-                label: localizations.tasbihStreak,
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _StreakDetailCard(
-                icon: Icons.local_fire_department_rounded,
-                value: data.overall,
-                label: localizations.overallStreak,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _StreakDetailCard extends StatelessWidget {
-  const _StreakDetailCard({
-    required this.icon,
-    required this.value,
-    required this.label,
-  });
-
-  final IconData icon;
-  final int value;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(AppRadii.large),
-        border: Border.all(color: colors.border),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            _StatIcon(icon: icon),
-            const SizedBox(height: 12),
-            Text(
-              '$value',
-              style: theme.textTheme.headlineMedium?.copyWith(
-                color: colors.textPrimary,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            Text(
-              label,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colors.textSecondary,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _StreakBanner extends StatelessWidget {
-  const _StreakBanner({required this.streak});
-
-  final int streak;
-
-  @override
-  Widget build(BuildContext context) {
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.goldSoft,
-        borderRadius: BorderRadius.circular(AppRadii.large),
-        border: Border.all(color: colors.accentGold),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        child: Row(
-          children: <Widget>[
-            Icon(
-              Icons.local_fire_department_rounded,
-              color: colors.accentGold,
-              size: 22,
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                localizations.dayWorshipStreak(streak),
-                style: theme.textTheme.titleSmall?.copyWith(
-                  color: colors.warning,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _StatIcon extends StatelessWidget {
-  const _StatIcon({required this.icon});
-
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    final EquranColors colors = context.equranColors;
-    return Container(
-      width: 36,
-      height: 36,
-      decoration: BoxDecoration(color: colors.mint, shape: BoxShape.circle),
-      child: Icon(icon, color: colors.primary, size: 18),
-    );
-  }
-}
-
-class _SectionLabel extends StatelessWidget {
-  const _SectionLabel(this.label);
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
-    return Text(
-      label.toUpperCase(),
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: theme.textTheme.titleSmall?.copyWith(
-        color: colors.textSecondary,
-        fontWeight: FontWeight.w700,
-        letterSpacing: 1.2,
-      ),
-    );
-  }
-}
-
-class _ShimmerPlaceholder extends StatefulWidget {
-  const _ShimmerPlaceholder({required this.height});
-
-  final double height;
-
-  @override
-  State<_ShimmerPlaceholder> createState() => _ShimmerPlaceholderState();
-}
-
-class _ShimmerPlaceholderState extends State<_ShimmerPlaceholder>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1200),
-    )..repeat();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final EquranColors colors = context.equranColors;
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, _) {
-        return ShaderMask(
-          blendMode: BlendMode.srcATop,
-          shaderCallback: (Rect bounds) {
-            final double value = _controller.value;
-            return LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              stops: <double>[
-                (value - 0.3).clamp(0.0, 1.0),
-                value.clamp(0.0, 1.0),
-                (value + 0.3).clamp(0.0, 1.0),
-              ],
-              colors: <Color>[
-                colors.surfaceAlt,
-                colors.surface,
-                colors.surfaceAlt,
-              ],
-            ).createShader(bounds);
-          },
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: colors.surfaceAlt,
-              borderRadius: BorderRadius.circular(AppRadii.large),
-            ),
-            child: SizedBox(height: widget.height),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class IslamicPatternPainter extends CustomPainter {
-  IslamicPatternPainter({required this.color, this.opacity = 0.06});
-
-  final Color color;
-  final double opacity;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()
-      ..color = color.withAlpha((opacity.clamp(0.0, 1.0) * 255).round())
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 0.8;
-    const double tileSize = 80;
-    for (double x = 0; x < size.width + tileSize; x += tileSize) {
-      for (double y = 0; y < size.height + tileSize; y += tileSize) {
-        _drawStar(
-          canvas,
-          paint,
-          Offset(x + tileSize / 2, y + tileSize / 2),
-          36,
-        );
-        _drawStar(
-          canvas,
-          paint,
-          Offset(x + tileSize / 2, y + tileSize / 2),
-          22,
-        );
-      }
-    }
-  }
-
-  void _drawStar(Canvas canvas, Paint paint, Offset center, double radius) {
-    final Path path = Path();
-    for (int i = 0; i < 8; i++) {
-      final double angle = (i * 45 - 90) * (math.pi / 180);
-      final double innerAngle = angle + (22.5 * math.pi / 180);
-      final Offset outerPoint = Offset(
-        center.dx + radius * math.cos(angle),
-        center.dy + radius * math.sin(angle),
-      );
-      final Offset innerPoint = Offset(
-        center.dx + (radius * 0.5) * math.cos(innerAngle),
-        center.dy + (radius * 0.5) * math.sin(innerAngle),
-      );
-      if (i == 0) {
-        path.moveTo(outerPoint.dx, outerPoint.dy);
-      } else {
-        path.lineTo(outerPoint.dx, outerPoint.dy);
-      }
-      path.lineTo(innerPoint.dx, innerPoint.dy);
-    }
-    path.close();
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant IslamicPatternPainter oldDelegate) {
-    return color != oldDelegate.color || opacity != oldDelegate.opacity;
   }
 }
 
@@ -5883,41 +3480,6 @@ List<MonthlyActivityDay?> _monthlyCalendarCells(MonthlyActivityData data) {
   ];
 }
 
-Color _monthlyActivityColor(EquranColors colors, int actions) {
-  return switch (actions) {
-    <= 0 => colors.surfaceAlt,
-    <= 10 => colors.primary.withValues(alpha: 0.20),
-    <= 30 => colors.primary.withValues(alpha: 0.45),
-    < 60 => colors.primary.withValues(alpha: 0.70),
-    _ => colors.primary,
-  };
-}
-
-String _heroDateLabel(DateTime date, AppLocalizations localizations) {
-  return '${_shortWeekdayLabel(date.weekday, localizations)}, ${date.day} '
-      '${_shortMonthLabel(date, localizations)}';
-}
-
-String _dailyHeroQuote(DateTime date, AppLocalizations localizations) {
-  final List<String> quotes = <String>[
-    localizations.dailyQuoteSmallDeeds,
-    localizations.dailyQuoteBeginAgain,
-    localizations.dailyQuoteSteadyHeart,
-    localizations.dailyQuoteGentleConsistent,
-    localizations.dailyQuoteEveryAyah,
-  ];
-  return quotes[_dayOfYear(date) % quotes.length];
-}
-
-int _dayOfYear(DateTime date) {
-  return DateTime(
-        date.year,
-        date.month,
-        date.day,
-      ).difference(DateTime(date.year)).inDays +
-      1;
-}
-
 String _shortWeekdayLabel(int weekday, AppLocalizations localizations) {
   final List<String> weekdays = <String>[
     localizations.mondayShort,
@@ -6041,469 +3603,108 @@ DateTime? _dateTimeOrNull(Object? value) {
   return null;
 }
 
-class _HifzSection extends StatelessWidget {
-  const _HifzSection({
-    required this.data,
-    required this.surahGridExpanded,
-    required this.onToggleSurahGrid,
-  });
+class _ShimmerPlaceholder extends StatelessWidget {
+  const _ShimmerPlaceholder({required this.height});
+  final double height;
+  @override
+  Widget build(BuildContext context) =>
+      HairlineCard(child: SizedBox(height: height));
+}
 
-  final HifzSectionData data;
-  final bool surahGridExpanded;
-  final VoidCallback onToggleSurahGrid;
+class HeroCornerOrnamentsPainter extends CustomPainter {
+  const HeroCornerOrnamentsPainter({required this.color});
+
+  final Color color;
 
   @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final EquranColors colors = context.equranColors;
+  void paint(Canvas canvas, Size size) {
+    final Paint paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1
+      ..strokeCap = StrokeCap.square;
+    const double inset = 10;
+    const double length = 16;
 
-    // Check empty state
-    if (data.totalMemorized == 0 && data.totalReviews == 0) {
-      final radius = BorderRadius.circular(AppRadii.large);
-      return Container(
-        decoration: BoxDecoration(
-          color: colors.surface,
-          borderRadius: radius,
-          border: Border.all(color: colors.border),
-        ),
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            Icon(Icons.menu_book_rounded, color: colors.textMuted, size: 48),
-            const SizedBox(height: 16),
-            Text(
-              localizations.hifzStatsNoEntries,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: colors.textSecondary,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (_) => const HifzHomePage()));
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colors.primary,
-                foregroundColor: colors.onPrimary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppRadii.pill),
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
-                ),
-              ),
-              child: Text(
-                localizations.hifzTitle,
-                style: theme.textTheme.labelMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
+    final Path path = Path()
+      ..moveTo(inset, inset + length)
+      ..lineTo(inset, inset)
+      ..lineTo(inset + length, inset)
+      ..moveTo(size.width - inset - length, inset)
+      ..lineTo(size.width - inset, inset)
+      ..lineTo(size.width - inset, inset + length)
+      ..moveTo(inset, size.height - inset - length)
+      ..lineTo(inset, size.height - inset)
+      ..lineTo(inset + length, size.height - inset)
+      ..moveTo(size.width - inset - length, size.height - inset)
+      ..lineTo(size.width - inset, size.height - inset)
+      ..lineTo(size.width - inset, size.height - inset - length);
+    canvas.drawPath(path, paint);
+  }
 
-    final double screenWidth = MediaQuery.sizeOf(context).width;
-    final bool isSmallScreen = screenWidth < 500;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        if (isSmallScreen) ...[
-          _StatCard(
-            icon: Icons.military_tech_rounded,
-            value: '${data.totalMemorized}',
-            label: localizations.hifzStatsTotalMemorized,
-          ),
-          const SizedBox(height: 12),
-          _StatCard(
-            icon: Icons.local_fire_department_rounded,
-            value: '${data.currentStreak}',
-            label: localizations.hifzStatsDailyStreak,
-          ),
-          const SizedBox(height: 12),
-          _StatCard(
-            icon: Icons.insights_rounded,
-            value: localizations.hifzStatsRetentionSuffix(
-              (data.retentionRate * 100).round().toString(),
-            ),
-            label: localizations.hifzStatsRetentionRate,
-          ),
-          const SizedBox(height: 12),
-          _StatCard(
-            icon: Icons.repeat_rounded,
-            value: '${data.totalReviews}',
-            label: localizations.hifzStatsTotalReviews,
-          ),
-        ] else ...[
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: _StatCard(
-                  icon: Icons.military_tech_rounded,
-                  value: '${data.totalMemorized}',
-                  label: localizations.hifzStatsTotalMemorized,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _StatCard(
-                  icon: Icons.local_fire_department_rounded,
-                  value: '${data.currentStreak}',
-                  label: localizations.hifzStatsDailyStreak,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: _StatCard(
-                  icon: Icons.insights_rounded,
-                  value: localizations.hifzStatsRetentionSuffix(
-                    (data.retentionRate * 100).round().toString(),
-                  ),
-                  label: localizations.hifzStatsRetentionRate,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _StatCard(
-                  icon: Icons.repeat_rounded,
-                  value: '${data.totalReviews}',
-                  label: localizations.hifzStatsTotalReviews,
-                ),
-              ),
-            ],
-          ),
-        ],
-        const SizedBox(height: 20),
-        if (data.nextDueEntry != null) ...[
-          _HifzNextDueCard(entry: data.nextDueEntry!),
-          const SizedBox(height: 20),
-        ],
-        _HifzSurahProgressSection(
-          masteredPerSurah: data.masteredPerSurah,
-          expanded: surahGridExpanded,
-          onToggleExpanded: onToggleSurahGrid,
-        ),
-      ],
-    );
+  @override
+  bool shouldRepaint(covariant HeroCornerOrnamentsPainter oldDelegate) {
+    return color != oldDelegate.color;
   }
 }
 
-class _HifzNextDueCard extends StatelessWidget {
-  const _HifzNextDueCard({required this.entry});
+class IslamicPatternPainter extends CustomPainter {
+  IslamicPatternPainter({required this.color, this.opacity = 0.06});
 
-  final HifzEntry entry;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final EquranColors colors = context.equranColors;
-    final radius = BorderRadius.circular(AppRadii.large);
-
-    final surahName = localizedSurahName(localizations, entry.surah);
-    final valueText = localizations.hifzStatsNextDueValue(
-      surahName,
-      entry.ayah,
-    );
-
-    final now = _getShiftedNow();
-    final today = DateTime(now.year, now.month, now.day);
-    final due = DateTime(
-      entry.dueDate.year,
-      entry.dueDate.month,
-      entry.dueDate.day,
-    );
-
-    String dateStr;
-    if (due == today) {
-      dateStr = localizations.hifzNextReviewToday;
-    } else if (due == today.add(const Duration(days: 1))) {
-      dateStr = localizations.hifzNextReviewTomorrow;
-    } else {
-      dateStr =
-          '${entry.dueDate.day}/${entry.dueDate.month}/${entry.dueDate.year}';
-    }
-
-    final dateText = localizations.hifzStatsNextDueDate(dateStr);
-
-    return Material(
-      color: Colors.transparent,
-      borderRadius: radius,
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () {
-          Navigator.of(
-            context,
-          ).push(MaterialPageRoute(builder: (_) => const HifzHomePage()));
-        },
-        borderRadius: radius,
-        child: Ink(
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: radius,
-            border: Border.all(color: colors.border),
-          ),
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: colors.primary.withAlpha(20),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.alarm_rounded,
-                  color: colors.primary,
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      localizations.hifzStatsNextDue,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colors.textSecondary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      valueText,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: colors.textPrimary,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Text(
-                dateText,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colors.primary,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(width: 4),
-              Icon(Icons.chevron_right_rounded, color: colors.textMuted),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _HifzSurahProgressSection extends StatelessWidget {
-  const _HifzSurahProgressSection({
-    required this.masteredPerSurah,
-    required this.expanded,
-    required this.onToggleExpanded,
-  });
-
-  final Map<int, int> masteredPerSurah;
-  final bool expanded;
-  final VoidCallback onToggleExpanded;
+  final Color color;
+  final double opacity;
 
   @override
-  Widget build(BuildContext context) {
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
-
-    int masteredCount = 0;
-    for (int surah = 1; surah <= _totalSurahs; surah++) {
-      final mastered = masteredPerSurah[surah] ?? 0;
-      final total = quran.getVerseCount(surah);
-      if (mastered == total && total > 0) {
-        masteredCount++;
+  void paint(Canvas canvas, Size size) {
+    final Paint paint = Paint()
+      ..color = color.withAlpha((opacity.clamp(0.0, 1.0) * 255).round())
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.8;
+    const double tileSize = 80;
+    for (double x = 0; x < size.width + tileSize; x += tileSize) {
+      for (double y = 0; y < size.height + tileSize; y += tileSize) {
+        _drawStar(
+          canvas,
+          paint,
+          Offset(x + tileSize / 2, y + tileSize / 2),
+          36,
+        );
+        _drawStar(
+          canvas,
+          paint,
+          Offset(x + tileSize / 2, y + tileSize / 2),
+          22,
+        );
       }
     }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        _SectionLabel(localizations.hifzStatsSurahProgress),
-        const SizedBox(height: 12),
-        Text(
-          localizations.hifzSurahsMastered(masteredCount),
-          textAlign: TextAlign.center,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: colors.textSecondary,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 12),
-        LayoutBuilder(
-          builder: (context, constraints) {
-            const int columns = 10;
-            const double gap = 4;
-            final double cellSize =
-                (constraints.maxWidth - (gap * (columns - 1))) / columns;
-            final int rows = (_totalSurahs / columns).ceil();
-            final double fullHeight = (cellSize * rows) + (gap * (rows - 1));
-            final double collapsedHeight = (cellSize + gap) * 4;
-            final double gridHeight = expanded ? fullHeight : collapsedHeight;
-
-            return AnimatedSize(
-              duration: const Duration(milliseconds: 350),
-              curve: Curves.easeInOutCubic,
-              alignment: Alignment.topCenter,
-              child: SizedBox(
-                height: gridHeight,
-                child: Stack(
-                  clipBehavior: expanded ? Clip.none : Clip.hardEdge,
-                  children: <Widget>[
-                    SizedBox(
-                      height: fullHeight,
-                      child: GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        padding: EdgeInsets.zero,
-                        itemCount: _totalSurahs,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: columns,
-                              childAspectRatio: 1,
-                              mainAxisSpacing: gap,
-                              crossAxisSpacing: gap,
-                            ),
-                        itemBuilder: (context, index) {
-                          final int surah = index + 1;
-                          final mastered = masteredPerSurah[surah] ?? 0;
-                          final total = quran.getVerseCount(surah);
-                          final double progress = total > 0
-                              ? (mastered / total)
-                              : 0.0;
-
-                          return _HifzProgressCell(
-                            surah: surah,
-                            progress: progress,
-                            mastered: mastered,
-                            total: total,
-                          );
-                        },
-                      ),
-                    ),
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      height: collapsedHeight * 0.3,
-                      child: IgnorePointer(
-                        child: AnimatedOpacity(
-                          opacity: expanded ? 0 : 1,
-                          duration: const Duration(milliseconds: 250),
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: <Color>[
-                                  colors.background.withAlpha(0),
-                                  colors.background,
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-        const SizedBox(height: 12),
-        Center(
-          child: _SurahGridToggleButton(
-            expanded: expanded,
-            onPressed: onToggleExpanded,
-          ),
-        ),
-      ],
-    );
   }
-}
 
-class _HifzProgressCell extends StatelessWidget {
-  const _HifzProgressCell({
-    required this.surah,
-    required this.progress,
-    required this.mastered,
-    required this.total,
-  });
-
-  final int surah;
-  final double progress;
-  final int mastered;
-  final int total;
+  void _drawStar(Canvas canvas, Paint paint, Offset center, double radius) {
+    final Path path = Path();
+    for (int i = 0; i < 8; i++) {
+      final double angle = (i * 45 - 90) * (math.pi / 180);
+      final double innerAngle = angle + (22.5 * math.pi / 180);
+      final Offset outerPoint = Offset(
+        center.dx + radius * math.cos(angle),
+        center.dy + radius * math.sin(angle),
+      );
+      final Offset innerPoint = Offset(
+        center.dx + (radius * 0.5) * math.cos(innerAngle),
+        center.dy + (radius * 0.5) * math.sin(innerAngle),
+      );
+      if (i == 0) {
+        path.moveTo(outerPoint.dx, outerPoint.dy);
+      } else {
+        path.lineTo(outerPoint.dx, outerPoint.dy);
+      }
+      path.lineTo(innerPoint.dx, innerPoint.dy);
+    }
+    path.close();
+    canvas.drawPath(path, paint);
+  }
 
   @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
-    final BorderRadius radius = BorderRadius.circular(AppRadii.small);
-
-    final Color background = progress == 0.0
-        ? colors.surfaceAlt
-        : (progress == 1.0
-              ? colors.primary
-              : colors.primary.withAlpha(
-                  ((0.1 + 0.6 * progress) * 255).round(),
-                ));
-
-    final Color foreground = progress == 0.0
-        ? colors.textMuted
-        : (progress == 1.0 ? colors.onPrimary : colors.textPrimary);
-
-    final Widget label = Center(
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-        child: Text(
-          '$surah',
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: foreground,
-            fontWeight: progress > 0 ? FontWeight.w900 : FontWeight.w500,
-          ),
-        ),
-      ),
-    );
-
-    final tooltipMessage = 'Surah $surah: $mastered / $total ayahs mastered';
-
-    return Tooltip(
-      message: tooltipMessage,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: background,
-          borderRadius: radius,
-          border: Border.all(
-            color: progress > 0 && progress < 1.0
-                ? colors.primary.withAlpha(102)
-                : Colors.transparent,
-          ),
-        ),
-        child: label,
-      ),
-    );
+  bool shouldRepaint(covariant IslamicPatternPainter oldDelegate) {
+    return color != oldDelegate.color || opacity != oldDelegate.opacity;
   }
 }

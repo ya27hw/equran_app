@@ -8054,6 +8054,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Ends {time}'**
   String prayerEndsAt(String time);
+
+  /// Statistics redesign interface label.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasbih and duas'**
+  String get tasbihAndDuas;
+
+  /// Statistics redesign interface label.
+  ///
+  /// In en, this message translates to:
+  /// **'Surah map'**
+  String get surahMap;
+
+  /// Statistics redesign interface label.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a cell to open'**
+  String get tapCellToOpen;
+
+  /// Statistics redesign interface label.
+  ///
+  /// In en, this message translates to:
+  /// **'Less'**
+  String get less;
+
+  /// Statistics redesign interface label.
+  ///
+  /// In en, this message translates to:
+  /// **'Khatm progress'**
+  String get khatmProgress;
+
+  /// Statistics redesign interface label.
+  ///
+  /// In en, this message translates to:
+  /// **'Not logged'**
+  String get notLogged;
+
+  /// Statistics label for the surah read most often.
+  ///
+  /// In en, this message translates to:
+  /// **'Most-read surah'**
+  String get mostReadSurah;
 }
 
 class _AppLocalizationsDelegate

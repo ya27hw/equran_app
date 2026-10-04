@@ -4620,4 +4620,25 @@ class AppLocalizationsId extends AppLocalizations {
   String prayerEndsAt(String time) {
     return 'Berakhir $time';
   }
+
+  @override
+  String get tasbihAndDuas => 'Tasbih dan doa';
+
+  @override
+  String get surahMap => 'Peta surah';
+
+  @override
+  String get tapCellToOpen => 'Ketuk sel untuk membuka';
+
+  @override
+  String get less => 'Lebih sedikit';
+
+  @override
+  String get khatmProgress => 'Kemajuan khatam';
+
+  @override
+  String get notLogged => 'Belum dicatat';
+
+  @override
+  String get mostReadSurah => 'Surah yang paling sering dibaca';
 }

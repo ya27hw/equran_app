@@ -4597,4 +4597,25 @@ class AppLocalizationsFa extends AppLocalizations {
   String prayerEndsAt(String time) {
     return 'پایان $time';
   }
+
+  @override
+  String get tasbihAndDuas => 'تسبیح و دعاها';
+
+  @override
+  String get surahMap => 'نقشه سوره‌ها';
+
+  @override
+  String get tapCellToOpen => 'برای باز کردن روی خانه بزنید';
+
+  @override
+  String get less => 'کمتر';
+
+  @override
+  String get khatmProgress => 'پیشرفت ختم';
+
+  @override
+  String get notLogged => 'ثبت نشده';
+
+  @override
+  String get mostReadSurah => 'سوره با بیشترین خواندن';
 }
