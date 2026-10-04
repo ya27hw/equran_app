@@ -577,6 +577,7 @@
   "lettersCount": "{count} حرف",
   "dayStreakCount": "{count} يوم متتالية",
   "ayahsCount": "{count} آية",
+  "prayersCount": "{count, plural, other{{count} صلوات}}",
   "daysCount": "{count} يوم",
   "todaysPortionComplete": "الجزء اليوم كامل",
   "catchUpAyahsIncluded": "يتضمن {count} آية للتعويض",

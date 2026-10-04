@@ -884,7 +884,7 @@
     }
   },
   "assalamuAlaikum": "Assalamu Alaikum",
-  "continueYourJourneyToday": "Continue your journey today",
+  "continueYourJourneyToday": "Keep going today",
   "onStreakDay": "You're on a {streak}-day streak — keep going",
   "@onStreakDay": {
     "placeholders": {
@@ -995,8 +995,16 @@
   "resumeRecitation": "Resume recitation{progress}",
   "ayahsToday": "ayahs today",
   "lettersCount": "{count} letters",
-  "dayStreakCount": "{count, plural, =1{1 day streak} other{{count} day streak}}",
+  "dayStreakCount": "{count, plural, =1{1-day streak} other{{count}-day streak}}",
   "ayahsCount": "{count, plural, =1{1 ayah} other{{count} ayahs}}",
+  "prayersCount": "{count, plural, =1{1 prayer} other{{count} prayers}}",
+  "@prayersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "daysCount": "{count, plural, =1{1 day} other{{count} days}}",
   "todaysPortionComplete": "Today's portion complete",
   "catchUpAyahsIncluded": "Includes {count} catch-up ayahs",

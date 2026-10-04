@@ -3045,7 +3045,7 @@ abstract class AppLocalizations {
   /// No description provided for @continueYourJourneyToday.
   ///
   /// In en, this message translates to:
-  /// **'Continue your journey today'**
+  /// **'Keep going today'**
   String get continueYourJourneyToday;
 
   /// No description provided for @onStreakDay.
@@ -3488,7 +3488,7 @@ abstract class AppLocalizations {
   /// No description provided for @dayStreakCount.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{1 day streak} other{{count} day streak}}'**
+  /// **'{count, plural, =1{1-day streak} other{{count}-day streak}}'**
   String dayStreakCount(num count);
 
   /// No description provided for @ayahsCount.
@@ -3496,6 +3496,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 ayah} other{{count} ayahs}}'**
   String ayahsCount(num count);
+
+  /// No description provided for @prayersCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 prayer} other{{count} prayers}}'**
+  String prayersCount(int count);
 
   /// No description provided for @daysCount.
   ///

@@ -1257,6 +1257,7 @@
   "lettersCount": "{count} حروف",
   "dayStreakCount": "{count, plural, =1{1 دن کا سلسلہ} other{{count} دن کا سلسلہ}}",
   "ayahsCount": "{count, plural, =1{1 آیت} other{{count} آیات}}",
+  "prayersCount": "{count, plural, other{{count} نمازیں}}",
   "daysCount": "{count, plural, =1{1 دن} other{{count} دن}}",
   "todaysPortionComplete": "آج کا حصہ مکمل",
   "catchUpAyahsIncluded": "{count} کیچ اپ آیات پر مشتمل ہے۔",

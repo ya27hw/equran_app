@@ -1257,6 +1257,7 @@
   "lettersCount": "{count} অক্ষর",
   "dayStreakCount": "{count, plural, =1{১ দিনের ধারাবাহিকতা} other{{count} দিনের ধারাবাহিকতা}}",
   "ayahsCount": "{count, plural, =1{১টি আয়াত} other{{count}টি আয়াত}}",
+  "prayersCount": "{count, plural, other{{count}টি নামাজ}}",
   "daysCount": "{count, plural, =1{১ দিন} other{{count} দিন}}",
   "todaysPortionComplete": "আজকের অংশ সম্পূর্ণ",
   "catchUpAyahsIncluded": "{count} ক্যাচ-আপ আয়াত অন্তর্ভুক্ত",

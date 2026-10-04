@@ -1257,6 +1257,7 @@
   "lettersCount": "{count} huruf",
   "dayStreakCount": "{count, plural, =1{1 hari beruntun} other{{count} hari beruntun}}",
   "ayahsCount": "{count, plural, =1{1 ayat} other{{count} ayat}}",
+  "prayersCount": "{count, plural, other{{count} shalat}}",
   "daysCount": "{count, plural, =1{1 hari} other{{count} hari}}",
   "todaysPortionComplete": "Porsi hari ini selesai",
   "catchUpAyahsIncluded": "Termasuk {count} ayah mengejar ketinggalan",
