@@ -119,6 +119,16 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                   settings: settings,
                 );
 
+          final PrayerDay followingDay = _service.calculateDay(
+            date: DateTime(
+              selectedDate.year,
+              selectedDate.month,
+              selectedDate.day + 1,
+            ),
+            location: location,
+            settings: settings,
+          );
+
           final _PrayerHeroTiming heroTiming;
           final PrayerTimeKind? highlightedPrayer;
           PrayerTimeEntry? heroCurrentPrayer;
@@ -198,15 +208,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                           now: _now,
                           isViewingToday: isViewingToday,
                           periodEndsAt: periodEndsAt,
-                          followingDay: _service.calculateDay(
-                            date: DateTime(
-                              selectedDate.year,
-                              selectedDate.month,
-                              selectedDate.day + 1,
-                            ),
-                            location: location,
-                            settings: settings,
-                          ),
+                          followingDay: followingDay,
                           day: selectedDay,
                           nextPrayer: NextPrayer(
                             entry: heroTiming.entry,
@@ -224,7 +226,10 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                         const SizedBox(height: 20),
                         _buildPrayerGrid(
                           context,
-                          selectedDay,
+                          selectedDay.displayEntries(
+                            followingDay,
+                            now: isViewingToday ? _now : null,
+                          ),
                           highlightedPrayer,
                           settings,
                           isViewingToday,
@@ -625,7 +630,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
 
   Widget _buildPrayerGrid(
     BuildContext context,
-    PrayerDay day,
+    List<PrayerTimeEntry> entries,
     PrayerTimeKind? highlightedKind,
     PrayerTimeSettings settings,
     bool isViewingToday,
@@ -635,7 +640,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
     child: HairlineCard(
       child: Column(
         children: [
-          for (var i = 0; i < day.entries.length; i++) ...[
+          for (var i = 0; i < entries.length; i++) ...[
             if (i > 0)
               Divider(
                 height: 1,
@@ -643,8 +648,8 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                 color: context.equranTokens.hair,
               ),
             PrayerTimeThumbCard(
-              entry: day.entries[i],
-              isActive: highlightedKind == day.entries[i].kind,
+              entry: entries[i],
+              isActive: highlightedKind == entries[i].kind,
               use24HourFormat: settings.use24HourFormat,
               listRow: true,
               periodEndsAt: periodEndsAt,

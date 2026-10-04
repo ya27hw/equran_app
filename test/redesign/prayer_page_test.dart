@@ -138,6 +138,42 @@ void main() {
     },
   );
   testWidgets(
+    'Maghrib and Isha rows are dated to today, never "Passed" before they begin',
+    (tester) async {
+      // Muscat is UTC+4. 13:12, 18:30 and 02:00 local.
+      for (final (now, passedRows, activeKind) in [
+        (DateTime.utc(2026, 10, 4, 9, 12), 2, PrayerTimeKind.dhuhr),
+        (DateTime.utc(2026, 10, 4, 14, 30), 0, PrayerTimeKind.maghrib),
+        (DateTime.utc(2026, 10, 4, 22), 1, PrayerTimeKind.isha),
+      ]) {
+        await tester.pumpWidget(const SizedBox());
+        await pump(tester, now: now);
+        expect(find.text('Passed'), findsNWidgets(passedRows), reason: '$now');
+        final rows = tester
+            .widgetList<PrayerTimeThumbCard>(find.byType(PrayerTimeThumbCard))
+            .toList();
+        expect(rows.where((r) => r.isActive).single.entry.kind, activeKind);
+        final hero = tester.widget<PrayerArcHero>(find.byType(PrayerArcHero));
+        final fajr = hero.day.entryFor(PrayerTimeKind.fajr).time;
+        for (final kind in [PrayerTimeKind.maghrib, PrayerTimeKind.isha]) {
+          final row = rows.singleWhere((r) => r.entry.kind == kind);
+          // Before Fajr the list keeps the evening that just happened; from
+          // Fajr on it looks ahead to this evening (the hero's own Maghrib).
+          expect(
+            row.entry.time,
+            now.isBefore(fajr)
+                ? hero.day.entryFor(kind).time
+                : hero.followingDay.entryFor(kind).time,
+            reason: '$kind at $now',
+          );
+        }
+      }
+      await tester.pumpWidget(const SizedBox());
+      await pump(tester);
+      expect(find.textContaining(RegExp(r'^In 4h \d\dm$')), findsOneWidget);
+    },
+  );
+  testWidgets(
     'week strip drives existing date state; Today restores live period',
     (tester) async {
       await pump(tester);

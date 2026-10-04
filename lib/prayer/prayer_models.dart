@@ -693,6 +693,28 @@ class PrayerDay {
   PrayerTimeEntry entryFor(PrayerTimeKind kind) {
     return entries.firstWhere((PrayerTimeEntry entry) => entry.kind == kind);
   }
+
+  /// The six times as the Prayer list should show them.
+  ///
+  /// The service dates Maghrib and Isha to the evening before (the Islamic day
+  /// starts at Maghrib). During that night, before Fajr, those are the right
+  /// ones: Isha is current or just passed. From Fajr on, the list should look
+  /// ahead to this evening, so Maghrib and Isha come from [following], the day
+  /// after. [now] is null when browsing another date, which always looks
+  /// ahead. Without this, from Fajr until Maghrib the list marks the evening
+  /// prayers "Passed" even though they have not begun.
+  List<PrayerTimeEntry> displayEntries(PrayerDay following, {DateTime? now}) {
+    final bool lookAhead =
+        now == null || !now.isBefore(entryFor(PrayerTimeKind.fajr).time);
+    return <PrayerTimeEntry>[
+      for (final PrayerTimeEntry entry in entries)
+        switch (entry.kind) {
+          PrayerTimeKind.maghrib ||
+          PrayerTimeKind.isha when lookAhead => following.entryFor(entry.kind),
+          _ => entry,
+        },
+    ];
+  }
 }
 
 enum PrayerCurrentPeriodType {
