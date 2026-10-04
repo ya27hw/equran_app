@@ -1724,5 +1724,12 @@
   "theNight": "الليل",
   "prayerPassed": "مضى",
   "prayerBeganAt": "بدأ {time}",
-  "prayerEndsAt": "ينتهي {time}"
+  "prayerEndsAt": "ينتهي {time}",
+  "tasbihAndDuas": "التسبيح والأدعية",
+  "surahMap": "خريطة السور",
+  "tapCellToOpen": "اضغط على خلية للفتح",
+  "less": "أقل",
+  "khatmProgress": "تقدم الختمة",
+  "notLogged": "لم يُسجّل",
+  "mostReadSurah": "السورة الأكثر قراءة"
 }

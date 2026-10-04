@@ -2293,5 +2293,12 @@
   "theNight": "Die Nacht",
   "prayerPassed": "Vorbei",
   "prayerBeganAt": "Beginn {time}",
-  "prayerEndsAt": "Ende {time}"
+  "prayerEndsAt": "Ende {time}",
+  "tasbihAndDuas": "Tasbih und Duas",
+  "surahMap": "Surenkarte",
+  "tapCellToOpen": "Zum Öffnen auf ein Feld tippen",
+  "less": "Weniger",
+  "khatmProgress": "Khatm-Fortschritt",
+  "notLogged": "Nicht erfasst",
+  "mostReadSurah": "Meistgelesene Sure"
 }

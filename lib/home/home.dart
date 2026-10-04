@@ -85,6 +85,7 @@ class _HomePageState extends State<HomePage> {
         label = localizations.settings;
       } else if (T == StatisticsPage) {
         label = localizations.statistics;
+        showAppBar = false;
       } else if (T == ReadingPlansPage) {
         label = localizations.readingRoutine;
       } else if (T == TasbihPage) {

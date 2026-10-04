@@ -4580,4 +4580,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String prayerEndsAt(String time) {
     return 'Ends $time';
   }
+
+  @override
+  String get tasbihAndDuas => 'Tasbih and duas';
+
+  @override
+  String get surahMap => 'Surah map';
+
+  @override
+  String get tapCellToOpen => 'Tap a cell to open';
+
+  @override
+  String get less => 'Less';
+
+  @override
+  String get khatmProgress => 'Khatm progress';
+
+  @override
+  String get notLogged => 'Not logged';
+
+  @override
+  String get mostReadSurah => 'Most-read surah';
 }

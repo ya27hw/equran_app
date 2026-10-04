@@ -4593,4 +4593,25 @@ class AppLocalizationsUr extends AppLocalizations {
   String prayerEndsAt(String time) {
     return 'اختتام $time';
   }
+
+  @override
+  String get tasbihAndDuas => 'تسبیح اور دعائیں';
+
+  @override
+  String get surahMap => 'سورتوں کا نقشہ';
+
+  @override
+  String get tapCellToOpen => 'کھولنے کے لیے خانے پر دبائیں';
+
+  @override
+  String get less => 'کم';
+
+  @override
+  String get khatmProgress => 'ختم کی پیش رفت';
+
+  @override
+  String get notLogged => 'درج نہیں کیا گیا';
+
+  @override
+  String get mostReadSurah => 'سب سے زیادہ پڑھی گئی سورت';
 }

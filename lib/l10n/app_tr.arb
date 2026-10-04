@@ -2258,5 +2258,12 @@
   "theNight": "Gece",
   "prayerPassed": "Geçti",
   "prayerBeganAt": "Başlangıç {time}",
-  "prayerEndsAt": "Bitiş {time}"
+  "prayerEndsAt": "Bitiş {time}",
+  "tasbihAndDuas": "Tesbih ve dualar",
+  "surahMap": "Sure haritası",
+  "tapCellToOpen": "Açmak için bir hücreye dokunun",
+  "less": "Daha az",
+  "khatmProgress": "Hatim ilerlemesi",
+  "notLogged": "Kaydedilmedi",
+  "mostReadSurah": "En çok okunan sure"
 }
