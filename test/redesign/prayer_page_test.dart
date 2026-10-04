@@ -200,6 +200,23 @@ void main() {
       await tester.pumpAndSettle();
     },
   );
+  testWidgets('week strip shows one-letter weekday initials', (tester) async {
+    await pump(tester); // Sunday 4 October 2026 in the centre: Thu to Wed.
+    final initials = [
+      for (var i = -3; i <= 3; i++)
+        tester
+            .widget<Text>(
+              find
+                  .descendant(
+                    of: find.byKey(ValueKey('prayer-week-$i')),
+                    matching: find.byType(Text),
+                  )
+                  .first,
+            )
+            .data,
+    ];
+    expect(initials, ['T', 'F', 'S', 'S', 'M', 'T', 'W']);
+  });
   testWidgets(
     'header and hero keep settings navigation, Qibla remains reachable',
     (tester) async {

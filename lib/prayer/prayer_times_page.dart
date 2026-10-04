@@ -420,15 +420,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
   ) {
     final l = AppLocalizations.of(context)!;
     final tokens = context.equranTokens;
-    final weekdays = [
-      l.mondayShort,
-      l.tuesdayShort,
-      l.wednesdayShort,
-      l.thursdayShort,
-      l.fridayShort,
-      l.saturdayShort,
-      l.sundayShort,
-    ];
+    final narrowWeekday = DateFormat('ccccc', l.localeName);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -474,7 +466,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                                   FittedBox(
                                     fit: BoxFit.scaleDown,
                                     child: Text(
-                                      weekdays[date.weekday - 1],
+                                      narrowWeekday.format(date),
                                       style: TextStyle(
                                         fontSize: 11,
                                         fontWeight: FontWeight.w500,
