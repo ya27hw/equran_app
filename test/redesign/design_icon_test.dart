@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets('every design icon parses and draws', (tester) async {
-    await tester.binding.setSurfaceSize(const Size(480, 330));
+    await tester.binding.setSurfaceSize(const Size(480, 390));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
       Directionality(
