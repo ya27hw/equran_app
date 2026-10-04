@@ -2493,6 +2493,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get showLess => 'کم دکھائیں۔';
 
   @override
+  String get showMore => 'مزید دکھائیں';
+
+  @override
   String showAllSurahs(Object count) {
     return 'تمام $count سورتیں دکھائیں۔';
   }

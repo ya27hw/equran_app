@@ -1410,6 +1410,7 @@
   "surahProgress": "Kemajuan Surat",
   "surahsComplete": "{completed} / {total} Surat selesai",
   "showLess": "Tampilkan lebih sedikit",
+  "showMore": "Tampilkan lebih banyak",
   "showAllSurahs": "Tampilkan semua surah {count}",
   "quranCompletions": "Penyelesaian Alquran",
   "fullCompletions": "Penyelesaian penuh",

@@ -4415,6 +4415,12 @@ abstract class AppLocalizations {
   /// **'Show less'**
   String get showLess;
 
+  /// No description provided for @showMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Show more'**
+  String get showMore;
+
   /// No description provided for @showAllSurahs.
   ///
   /// In en, this message translates to:

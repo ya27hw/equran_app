@@ -730,6 +730,7 @@
   "surahProgress": "تقدم السور",
   "surahsComplete": "{completed} / {total} سورة مكتملة",
   "showLess": "عرض أقل",
+  "showMore": "عرض المزيد",
   "showAllSurahs": "عرض كل السور ({count})",
   "quranCompletions": "ختمات القرآن",
   "fullCompletions": "الختمات الكاملة",

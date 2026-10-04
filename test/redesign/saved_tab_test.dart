@@ -7,6 +7,7 @@ import 'package:equran/widgets/quran_card_list.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/theme/equran_colors.dart';
+import 'package:equran/utils/quran_text.dart';
 import 'package:equran/widgets/favourites_list.dart';
 import 'package:equran/widgets/redesign/redesign_widgets.dart';
 import 'package:flutter/material.dart';
@@ -248,6 +249,50 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Browse surahs'));
     expect(browsed, isTrue);
+    // Nothing saved yet: no search, no sort row, no folder manager.
+    expect(find.byKey(const Key('saved-search')), findsNothing);
+    expect(find.text('Newest first'), findsNothing);
+    expect(find.byTooltip('Manage folders'), findsNothing);
+  });
+  testWidgets('a long ayah is capped with Show more / Show less', (
+    tester,
+  ) async {
+    final id = favouriteAyahKey(2, 282);
+    final date = DateTime(2026, 5, 13);
+    await QuranBookmarksDB().put(
+      id,
+      QuranBookmarkEntry(
+        id: id,
+        surah: 2,
+        verse: 282,
+        isFavourite: false,
+        note: '',
+        folder: 'Gratitude',
+        tags: const [],
+        createdAt: date,
+        updatedAt: date,
+        legacyKey: id,
+      ),
+    );
+    await pump(tester);
+    final more = find.text('Show more');
+    await tester.scrollUntilVisible(
+      more,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(more, findsWidgets); // long ayahs only
+    expect(find.text('Show less'), findsNothing);
+    await tester.ensureVisible(more.first);
+    await tester.pumpAndSettle();
+    await tester.tap(more.first);
+    await tester.pumpAndSettle();
+    expect(find.text('Show less'), findsOneWidget);
+    await tester.ensureVisible(find.text('Show less'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Show less'));
+    await tester.pumpAndSettle();
+    expect(find.text('Show less'), findsNothing);
   });
   testWidgets('verse tap retains reader chapter and starting ayah', (
     tester,
@@ -267,7 +312,8 @@ void main() {
   testWidgets('production Saved search focuses and Browse switches to Surahs', (
     tester,
   ) async {
-    await seedSavedPreview(empty: true);
+    // Search only exists once something is saved; 'test' then matches nothing.
+    await seedSavedPreview();
     await SettingsDB().put('showLastRead', false);
     await tester.binding.setSurfaceSize(const Size(390, 844));
     addTearDown(() => tester.binding.setSurfaceSize(null));

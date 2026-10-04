@@ -1410,6 +1410,7 @@
   "surahProgress": "سورہ پیش رفت",
   "surahsComplete": "{completed} / {total} مکمل سورتیں۔",
   "showLess": "کم دکھائیں۔",
+  "showMore": "مزید دکھائیں",
   "showAllSurahs": "تمام {count} سورتیں دکھائیں۔",
   "quranCompletions": "قرآن کی تکمیل",
   "fullCompletions": "مکمل تکمیلات",

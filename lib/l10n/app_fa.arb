@@ -1130,6 +1130,7 @@
   "surahProgress": "پیشرفت سوره‌ها",
   "surahsComplete": "{completed} از {total} سوره کامل شد",
   "showLess": "نمایش کمتر",
+  "showMore": "نمایش بیشتر",
   "showAllSurahs": "نمایش همه {count} سوره",
   "quranCompletions": "ختم‌های قرآن",
   "fullCompletions": "ختم‌های کامل",

@@ -2494,6 +2494,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get showLess => 'نمایش کمتر';
 
   @override
+  String get showMore => 'نمایش بیشتر';
+
+  @override
   String showAllSurahs(Object count) {
     return 'نمایش همه $count سوره';
   }

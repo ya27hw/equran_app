@@ -2540,6 +2540,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get showLess => 'Weniger anzeigen';
 
   @override
+  String get showMore => 'Mehr anzeigen';
+
+  @override
   String showAllSurahs(Object count) {
     return 'Alle $count Suren anzeigen';
   }

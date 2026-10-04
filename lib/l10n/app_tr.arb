@@ -1410,6 +1410,7 @@
   "surahProgress": "Suresi İlerlemesi",
   "surahsComplete": "{completed} / {total} Sureler tamamlandı",
   "showLess": "Daha az göster",
+  "showMore": "Daha fazla göster",
   "showAllSurahs": "{count} surelerin tümünü göster",
   "quranCompletions": "Kuran Tamamlamaları",
   "fullCompletions": "Tam tamamlamalar",

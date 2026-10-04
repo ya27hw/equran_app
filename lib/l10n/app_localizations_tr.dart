@@ -2503,6 +2503,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get showLess => 'Daha az göster';
 
   @override
+  String get showMore => 'Daha fazla göster';
+
+  @override
   String showAllSurahs(Object count) {
     return '$count surelerin tümünü göster';
   }

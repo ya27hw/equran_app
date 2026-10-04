@@ -1130,6 +1130,7 @@
   "surahProgress": "Sure Fortschritt",
   "surahsComplete": "{completed} / {total} Suren vollständig",
   "showLess": "Weniger anzeigen",
+  "showMore": "Mehr anzeigen",
   "showAllSurahs": "Alle {count} Suren anzeigen",
   "quranCompletions": "Koran-Vervollständigungen",
   "fullCompletions": "Vollständige Fertigstellungen",

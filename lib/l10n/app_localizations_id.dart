@@ -2506,6 +2506,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get showLess => 'Tampilkan lebih sedikit';
 
   @override
+  String get showMore => 'Tampilkan lebih banyak';
+
+  @override
   String showAllSurahs(Object count) {
     return 'Tampilkan semua surah $count';
   }

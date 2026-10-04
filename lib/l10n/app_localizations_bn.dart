@@ -2494,6 +2494,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get showLess => 'কম দেখান';
 
   @override
+  String get showMore => 'আরও দেখুন';
+
+  @override
   String showAllSurahs(Object count) {
     return 'সমস্ত $count সূরা দেখান';
   }

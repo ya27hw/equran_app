@@ -1150,6 +1150,7 @@
   "surahProgress": "Surah Progress",
   "surahsComplete": "{completed} / {total} Surahs complete",
   "showLess": "Show less",
+  "showMore": "Show more",
   "showAllSurahs": "Show all {count} surahs",
   "quranCompletions": "Quran Completions",
   "fullCompletions": "Full completions",

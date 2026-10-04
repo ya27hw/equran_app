@@ -2440,6 +2440,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get showLess => 'عرض أقل';
 
   @override
+  String get showMore => 'عرض المزيد';
+
+  @override
   String showAllSurahs(Object count) {
     return 'عرض كل السور ($count)';
   }
