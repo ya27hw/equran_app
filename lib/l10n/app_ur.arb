@@ -164,7 +164,7 @@
         "type": "int"
       },
       "minutes": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -962,6 +962,7 @@
   "chooseLocationForNextPrayer": "اگلی نماز کا وقت یہاں دکھانے کے لیے جگہ کا انتخاب کریں۔",
   "prayerTimeTitle": "{prayer} وقت",
   "prayerBeginsIn": "{prayer} شروع ہوتا ہے {countdown} میں",
+  "prayerNextIn": "{prayer} {time} میں",
   "minutesShort": "{minutes} منٹ",
   "hoursMinutesShort": "{hours}h {minutes}m",
   "exactAlarmPermissionOff": "عین الارم کی اجازت بند ہے۔ دعا کی یاد دہانیوں میں تاخیر ہو سکتی ہے۔",
@@ -1798,7 +1799,7 @@
         "type": "int"
       },
       "minutes": {
-        "type": "int"
+        "type": "String"
       }
     }
   },

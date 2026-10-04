@@ -200,6 +200,27 @@ void main() {
       await tester.pumpAndSettle();
     },
   );
+  testWidgets('hero says "Asr in 2h 08m" with zero-padded minutes', (
+    tester,
+  ) async {
+    await pump(tester);
+    bool plain(Widget w, RegExp re) =>
+        w is RichText && re.hasMatch(w.text.toPlainText());
+    expect(
+      find.byWidgetPredicate((w) => plain(w, RegExp(r'^Asr in \dh \d\dm$'))),
+      findsOneWidget,
+    );
+    expect(find.textContaining('begins in'), findsNothing);
+    await tester.pumpWidget(const SizedBox());
+    // 02:00 local is before Dhuhr: the hero still reads "<next> in <time>".
+    await pump(tester, now: DateTime.utc(2026, 10, 4, 6, 30));
+    expect(
+      find.byWidgetPredicate(
+        (w) => plain(w, RegExp(r'^Dhuhr in (\dh \d\dm|\d+ min)$')),
+      ),
+      findsOneWidget,
+    );
+  });
   testWidgets('week strip shows one-letter weekday initials', (tester) async {
     await pump(tester); // Sunday 4 October 2026 in the centre: Thu to Wed.
     final initials = [

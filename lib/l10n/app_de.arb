@@ -393,6 +393,7 @@
   "chooseLocationForNextPrayer": "Wählen Sie hier einen Ort aus, an dem die nächste Gebetszeit angezeigt werden soll.",
   "prayerTimeTitle": "{prayer} Zeit",
   "prayerBeginsIn": "{prayer} beginnt in {countdown}",
+  "prayerNextIn": "{prayer} in {time}",
   "@prayerTimeTitle": {
     "placeholders": {
       "prayer": {
@@ -425,7 +426,7 @@
         "type": "int"
       },
       "minutes": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1798,7 +1799,7 @@
         "type": "int"
       },
       "minutes": {
-        "type": "int"
+        "type": "String"
       }
     }
   },

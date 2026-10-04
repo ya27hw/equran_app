@@ -3643,7 +3643,7 @@ String _formatHeroCountdown(Duration duration, AppLocalizations localizations) {
   final int hours = normalized.inHours;
   final int minutes = normalized.inMinutes.remainder(60);
   if (hours <= 0) return localizations.minutesShort(minutes);
-  return localizations.hoursMinutesShort(hours, minutes);
+  return localizations.hoursMinutesShort(hours, twoDigitMinutes(minutes));
 }
 
 String _formatTime(

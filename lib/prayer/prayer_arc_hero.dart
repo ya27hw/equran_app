@@ -3,6 +3,7 @@ import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/prayer/prayer_localizations.dart';
 import 'package:equran/prayer/prayer_models.dart';
 import 'package:equran/theme/equran_colors.dart';
+import 'package:equran/theme/equran_text_styles.dart';
 import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/widgets/redesign/redesign_widgets.dart';
 import 'package:equran/widgets/redesign/page_typography.dart';
@@ -84,17 +85,12 @@ class PrayerArcHero extends StatelessWidget {
     final countdown = nextPrayer.countdown.isNegative
         ? Duration.zero
         : nextPrayer.countdown;
-    final subtitle =
-        subtitleOverride ??
-        l.prayerBeginsIn(
-          localizedPrayerName(l, nextPrayer.entry.kind),
-          countdown.inHours > 0
-              ? l.hoursMinutesShort(
-                  countdown.inHours,
-                  countdown.inMinutes.remainder(60),
-                )
-              : l.minutesShort(countdown.inMinutes),
-        );
+    final countdownText = countdown.inHours > 0
+        ? l.hoursMinutesShort(
+            countdown.inHours,
+            twoDigitMinutes(countdown.inMinutes.remainder(60)),
+          )
+        : l.minutesShort(countdown.inMinutes);
     String time(DateTime value) =>
         prayerDisplayTime(value, day.settings.use24HourFormat, l);
     final ends = periodEndsAt ?? nextPrayer.entry.time;
@@ -182,8 +178,24 @@ class PrayerArcHero extends StatelessWidget {
                                     ),
                                   ),
                                   const SizedBox(height: 8),
-                                  Text(
-                                    subtitle,
+                                  Text.rich(
+                                    subtitleOverride != null
+                                        ? TextSpan(text: subtitleOverride)
+                                        : prayerNextInSpan(
+                                            l,
+                                            prayer: localizedPrayerName(
+                                              l,
+                                              nextPrayer.entry.kind,
+                                            ),
+                                            duration: countdownText,
+                                            numeralStyle:
+                                                EquranTextStyles.displayNumeral(
+                                                  context,
+                                                  size: 19,
+                                                  height: 1,
+                                                  color: Colors.white,
+                                                ),
+                                          ),
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 15,

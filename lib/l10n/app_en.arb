@@ -402,6 +402,18 @@
   "chooseLocationForNextPrayer": "Choose a location to show the next prayer time here.",
   "prayerTimeTitle": "{prayer} Time",
   "prayerBeginsIn": "{prayer} begins in {countdown}",
+  "prayerNextIn": "{prayer} in {time}",
+  "@prayerNextIn": {
+    "description": "Hero subtitle under the current prayer, e.g. 'Asr in 2h 08m'. The time is shown as a larger numeral.",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "@prayerTimeTitle": {
     "placeholders": {
       "prayer": {
@@ -434,7 +446,7 @@
         "type": "int"
       },
       "minutes": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1807,7 +1819,7 @@
         "type": "int"
       },
       "minutes": {
-        "type": "int"
+        "type": "String"
       }
     }
   },

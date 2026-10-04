@@ -164,7 +164,7 @@
         "type": "int"
       },
       "minutes": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -962,6 +962,7 @@
   "chooseLocationForNextPrayer": "এখানে পরবর্তী প্রার্থনার সময় দেখানোর জন্য একটি স্থান চয়ন করুন।",
   "prayerTimeTitle": "{prayer} সময়",
   "prayerBeginsIn": "{prayer} শুরু হয় {countdown} এ",
+  "prayerNextIn": "{prayer} {time} পরে",
   "minutesShort": "{minutes} মিনিট",
   "hoursMinutesShort": "{hours}ঘণ্টা {minutes}মি",
   "exactAlarmPermissionOff": "সঠিক অ্যালার্ম অনুমতি বন্ধ আছে. প্রার্থনা অনুস্মারক বিলম্বিত হতে পারে.",
@@ -1798,7 +1799,7 @@
         "type": "int"
       },
       "minutes": {
-        "type": "int"
+        "type": "String"
       }
     }
   },

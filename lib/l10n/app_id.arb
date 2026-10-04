@@ -164,7 +164,7 @@
         "type": "int"
       },
       "minutes": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -962,6 +962,7 @@
   "chooseLocationForNextPrayer": "Pilih lokasi untuk menampilkan waktu sholat berikutnya di sini.",
   "prayerTimeTitle": "{prayer} Waktu",
   "prayerBeginsIn": "{prayer} dimulai pada {countdown}",
+  "prayerNextIn": "{prayer} dalam {time}",
   "minutesShort": "{minutes} menit",
   "hoursMinutesShort": "{hours}jam {minutes}m",
   "exactAlarmPermissionOff": "Izin alarm sebenarnya tidak aktif. Pengingat doa mungkin tertunda.",
@@ -1798,7 +1799,7 @@
         "type": "int"
       },
       "minutes": {
-        "type": "int"
+        "type": "String"
       }
     }
   },

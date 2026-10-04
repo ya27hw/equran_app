@@ -984,10 +984,7 @@ String? _heroSubtitleOverrideFor({
         .sunsetProhibited => localizations.prohibitedTimeEndsIn(
       _formatHeroCountdown(currentPeriod.endsAt.difference(now), localizations),
     ),
-    PrayerCurrentPeriodType.beforeDhuhr => localizations.prayerBeginsIn(
-      localizedPrayerName(localizations, nextPrayer.entry.kind),
-      _formatHeroCountdown(nextPrayer.countdown, localizations),
-    ),
+    PrayerCurrentPeriodType.beforeDhuhr ||
     PrayerCurrentPeriodType.normalPrayer => null,
   };
 }
@@ -997,7 +994,7 @@ String _formatHeroCountdown(Duration duration, AppLocalizations localizations) {
   final int hours = normalized.inHours;
   final int minutes = normalized.inMinutes.remainder(60);
   if (hours <= 0) return localizations.minutesShort(minutes);
-  return localizations.hoursMinutesShort(hours, minutes);
+  return localizations.hoursMinutesShort(hours, twoDigitMinutes(minutes));
 }
 
 class _NightTimes {
@@ -1632,7 +1629,10 @@ String formatPrayerCountdownLabel(
     final int minutes = totalMinutes.remainder(60);
     return minutes == 0
         ? localizations.countdownInHours(hours)
-        : localizations.countdownInHoursMinutes(hours, minutes);
+        : localizations.countdownInHoursMinutes(
+            hours,
+            twoDigitMinutes(minutes),
+          );
   }
   return localizations.countdownInMinutes(totalMinutes);
 }

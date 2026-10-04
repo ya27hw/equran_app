@@ -265,7 +265,7 @@ class _PrayerTimeRow extends StatelessWidget {
         : duration.inHours > 0
         ? l.countdownInHoursMinutes(
             duration.inHours,
-            duration.inMinutes.remainder(60),
+            twoDigitMinutes(duration.inMinutes.remainder(60)),
           )
         : l.countdownInMinutes(duration.inMinutes);
     return DecoratedBox(

@@ -1722,6 +1722,12 @@ abstract class AppLocalizations {
   /// **'{prayer} begins in {countdown}'**
   String prayerBeginsIn(String prayer, String countdown);
 
+  /// Hero subtitle under the current prayer, e.g. 'Asr in 2h 08m'. The time is shown as a larger numeral.
+  ///
+  /// In en, this message translates to:
+  /// **'{prayer} in {time}'**
+  String prayerNextIn(String prayer, String time);
+
   /// No description provided for @minutesShort.
   ///
   /// In en, this message translates to:
@@ -1732,7 +1738,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{hours}h {minutes}m'**
-  String hoursMinutesShort(int hours, int minutes);
+  String hoursMinutesShort(int hours, String minutes);
 
   /// No description provided for @exactAlarmPermissionOff.
   ///
@@ -6229,7 +6235,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'In {hours}h {minutes}m'**
-  String countdownInHoursMinutes(int hours, int minutes);
+  String countdownInHoursMinutes(int hours, String minutes);
 
   /// No description provided for @countdownInMinutes.
   ///

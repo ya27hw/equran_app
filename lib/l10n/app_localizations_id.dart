@@ -890,12 +890,17 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
+  String prayerNextIn(String prayer, String time) {
+    return '$prayer dalam $time';
+  }
+
+  @override
   String minutesShort(int minutes) {
     return '$minutes menit';
   }
 
   @override
-  String hoursMinutesShort(int hours, int minutes) {
+  String hoursMinutesShort(int hours, String minutes) {
     return '${hours}jam ${minutes}m';
   }
 
@@ -3565,7 +3570,7 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String countdownInHoursMinutes(int hours, int minutes) {
+  String countdownInHoursMinutes(int hours, String minutes) {
     return 'Dalam ${hours}h ${minutes}m';
   }
 
