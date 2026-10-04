@@ -7,11 +7,16 @@ For every item: verify at 390 px in emerald-dark, emerald-light, AMOLED black an
 and compare against `docs/redesign/previews/*.html`. The preview HTML wins over this brief.
 Use `DesignIcon` (`lib/widgets/redesign/design_icon.dart`) for icons, never Material icons, where the design has one.
 
-## Needs a product decision first (ask the owner, do not start)
-1. **Floating dock.** `FloatingDock` exists (`lib/widgets/redesign/floating_dock.dart`) but the app still shows the old solid bottom bar.
-   Ship it (wire into `lib/home/main_page.dart`) or drop it. Dock icons in the design: home, quran, clock, arch, grid.
-2. **Saved note label.** Design says "NOTE", app says "PRIVATE NOTE" (`privateNote`). Keep or match.
-3. **Statistics "Memorized" stat.** Design shows "5 Surahs mastered"; the app shows memorized ayahs (real data, label "Memorized · Ayahs", wraps to two lines). Keep the data or change the metric.
+## Decided by the owner
+1. **Floating dock ships.** `FloatingDock` exists (`lib/widgets/redesign/floating_dock.dart`) but the app still shows the old solid bottom bar.
+   Wire it into `lib/home/main_page.dart` in place of the old bar: 5 items (Home, Quran, Prayer, Duas, More) using `DesignIcon`
+   names `home`, `quran`, `clock`, `arch`, `grid`; keep the existing navigation state and every page reachable. Pages need bottom
+   padding so content clears the dock. Check solid fallback where blur is disabled, RTL order, and all palettes.
+   Spec: 14 px side margin, 72 px high, radius 28, `dock` fill with blur, `hair2` border, active item is an `emWash` capsule.
+2. **Saved note label is "Note"** (matches the design), replacing "Private note" on the verse card and in the editor.
+   Add a `note` string to all 8 ARBs (check for an existing key first) and keep `privateNote` only if still used elsewhere.
+3. **Statistics "Memorized" keeps the real data** (memorized ayahs). No change. Only make the label fit: it wraps to two lines,
+   so shorten it (for example "Memorized ayahs") and keep the three stats aligned.
 
 ## Open work
 4. **Quran header and tabs on all four tabs.** Only Saved has the serif "Quran" header with underline tabs (`SavedQuranHeader`,
