@@ -83,8 +83,9 @@ void main() {
     final StreamController<CompassEvent> controller =
         StreamController<CompassEvent>.broadcast();
     addTearDown(controller.close);
-    await tester.binding.setSurfaceSize(const Size(390, 1000));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
+    tester.view.devicePixelRatio = 3;
+    tester.view.physicalSize = const Size(390 * 3, 900 * 3);
+    addTearDown(tester.view.reset);
     await tester.pumpWidget(
       MaterialApp(
         debugShowCheckedModeBanner: false,

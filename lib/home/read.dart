@@ -64,6 +64,8 @@ import 'package:equran/widgets/library.dart'
         AppSelectionOption,
         ReadQuranCard,
         readQuranCardHorizontalMarginForWidth,
+        ReadPlayerMiniBar,
+        ReadPlayerMiniContent,
         ReadVersePlayerBar;
 import 'package:flutter/foundation.dart'
     show TargetPlatform, debugPrint, defaultTargetPlatform, kDebugMode, kIsWeb;
@@ -6055,8 +6057,6 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
   Widget _buildStaticMinimizedPlayerBar() {
     if (!_playerMounted) return const SizedBox.shrink();
 
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
     final double width = MediaQuery.sizeOf(context).width;
     final double horizontalInset = _viewMode
         ? _readCardHorizontalInset(width)
@@ -6065,129 +6065,17 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
 
     // Guaranteed static minimized mode: no ValueListenableBuilder, Slider,
     // StreamBuilder, progress text, opacity wrapper, or progress subtree.
-    return Padding(
-      padding: EdgeInsets.fromLTRB(horizontalInset, 0, horizontalInset, 13),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: Color.alphaBlend(
-            colorScheme.primary.withAlpha(10),
-            colorScheme.surfaceContainerLow.withAlpha((0.92 * 255).round()),
-          ),
-          borderRadius: BorderRadius.circular(AppRadii.large),
-          border: Border.all(
-            color: colorScheme.outlineVariant.withAlpha((0.52 * 255).round()),
-          ),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-              color: colorScheme.shadow.withAlpha((0.12 * 255).round()),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: SafeArea(
-          top: false,
-          child: SizedBox(
-            height: 65,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              child: Padding(
-                padding: const EdgeInsets.only(top: 0),
-                child: Row(
-                  children: <Widget>[
-                    IconButton(
-                      tooltip: _isVerseLoading
-                          ? 'Reconnecting'
-                          : _isVersePlaying
-                          ? 'Pause'
-                          : 'Play',
-                      onPressed: _isVerseLoading
-                          ? null
-                          : () => unawaited(_toggleBottomPlayer()),
-                      icon: _isVerseLoading
-                          ? SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: colorScheme.primary,
-                              ),
-                            )
-                          : Icon(
-                              _isVersePlaying
-                                  ? Icons.pause_rounded
-                                  : Icons.play_arrow_rounded,
-                            ),
-                      color: colorScheme.primary,
-                      iconSize: 22,
-                      visualDensity: VisualDensity.compact,
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints.tightFor(
-                        width: 34,
-                        height: 34,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(AppRadii.large),
-                        onTap: () => _setPlayerMinimized(false),
-                        child: SizedBox(
-                          height: double.infinity,
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                Flexible(
-                                  child: Text(
-                                    localizedSurahAyahLabel(
-                                      AppLocalizations.of(context)!,
-                                      _currentChapter,
-                                      verse,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      color: colorScheme.onSurface,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                                if (_isVerseDownloaded(
-                                  _currentChapter,
-                                  verse,
-                                )) ...[
-                                  const SizedBox(width: 6),
-                                  Icon(
-                                    Icons.offline_pin_rounded,
-                                    size: 15,
-                                    color: _isVersePlaying
-                                        ? Colors.green
-                                        : colorScheme.onSurfaceVariant
-                                              .withAlpha(140),
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    IconButton(
-                      tooltip: AppLocalizations.of(context)!.dismissPlayer,
-                      onPressed: () => unawaited(_stopBottomPlayer()),
-                      icon: const Icon(Icons.close_rounded),
-                      iconSize: 20,
-                      visualDensity: VisualDensity.compact,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
+    return ReadPlayerMiniBar(
+      horizontalInset: horizontalInset,
+      content: ReadPlayerMiniContent(
+        chapter: _currentChapter,
+        verse: verse,
+        isPlaying: _isVersePlaying,
+        isLoading: _isVerseLoading,
+        isDownloaded: _isVerseDownloaded(_currentChapter, verse),
+        onTogglePlayPause: () => unawaited(_toggleBottomPlayer()),
+        onExpand: () => _setPlayerMinimized(false),
+        onDismiss: () => unawaited(_stopBottomPlayer()),
       ),
     );
   }

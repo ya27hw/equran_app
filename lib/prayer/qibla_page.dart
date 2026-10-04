@@ -745,9 +745,12 @@ class _Stat extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: DisplayNumeral(value, size: 24),
+          SizedBox(
+            height: 30 * MediaQuery.textScalerOf(context).scale(1),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: DisplayNumeral(value, size: 24),
+            ),
           ),
           const SizedBox(height: 8),
           Text(

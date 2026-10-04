@@ -90,7 +90,7 @@ class _QiblaCompassState extends State<QiblaCompass>
     with TickerProviderStateMixin {
   final AngleSmoother _smoother = AngleSmoother(0);
   final ValueNotifier<double> _angle = ValueNotifier<double>(0);
-  late final Ticker _ticker = createTicker(_onTick);
+  late final Ticker _ticker;
   late final AnimationController _entrance = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 1100),
@@ -114,6 +114,7 @@ class _QiblaCompassState extends State<QiblaCompass>
   @override
   void initState() {
     super.initState();
+    _ticker = createTicker(_onTick);
     final double? initial = widget.heading.value;
     if (initial != null) _smoother.jumpTo(initial);
     _angle.value = _smoother.value;
@@ -427,6 +428,7 @@ class _Hub extends StatelessWidget {
               Text(
                 degrees,
                 textDirection: TextDirection.ltr,
+                textScaler: TextScaler.noScaling,
                 maxLines: 1,
                 style: EquranTextStyles.displayNumeral(
                   context,
@@ -438,6 +440,7 @@ class _Hub extends StatelessWidget {
               SizedBox(height: diameter * 0.05),
               Text(
                 (value == null ? l.qibla : l.heading).toUpperCase(),
+                textScaler: TextScaler.noScaling,
                 maxLines: 1,
                 style: TextStyle(
                   fontFamily: 'Inter',
