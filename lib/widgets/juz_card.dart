@@ -1,7 +1,9 @@
 import 'package:equran/home/read.dart';
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/theme/equran_colors.dart';
-import 'package:equran/utils/app_radii.dart';
+import 'package:equran/theme/equran_spacing.dart';
+import 'package:equran/theme/equran_tokens.dart';
+import 'package:equran/widgets/redesign/design_icon.dart';
 import 'package:equran/utils/quran_display.dart';
 import 'package:equran/widgets/common/pressable_scale.dart';
 import 'package:equran/widgets/number_badge.dart';
@@ -28,7 +30,8 @@ class QuranJuzTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final EquranColors colors = context.equranColors;
-    final BorderRadius radius = BorderRadius.circular(AppRadii.medium);
+    final EquranTokens tokens = context.equranTokens;
+    final BorderRadius radius = BorderRadius.circular(EquranRadii.large);
     final AppLocalizations localizations = AppLocalizations.of(context)!;
     final bool arabicMode = isArabicLocalizations(localizations);
 
@@ -58,7 +61,7 @@ class QuranJuzTile extends StatelessWidget {
               decoration: BoxDecoration(
                 color: colors.surface,
                 borderRadius: radius,
-                border: Border.all(color: colors.border),
+                border: Border.all(color: tokens.hair),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               child: Row(
@@ -96,7 +99,7 @@ class QuranJuzTile extends StatelessWidget {
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontFamily:
                                   GoogleFonts.notoNaskhArabic().fontFamily,
-                              color: colors.textSecondary,
+                              color: tokens.emText,
                             ),
                           ),
                         ],
@@ -106,7 +109,7 @@ class QuranJuzTile extends StatelessWidget {
                           runSpacing: 8,
                           children: <Widget>[
                             _JuzMetaChip(
-                              icon: Icons.format_list_numbered_rounded,
+                              icon: 'quran',
                               label: localizations.ayahRange(
                                 startVerse,
                                 endVerse,
@@ -135,37 +138,31 @@ class _JuzMetaChip extends StatelessWidget {
     required this.colors,
   });
 
-  final IconData icon;
+  /// A [DesignIcon] name.
+  final String icon;
   final String label;
   final EquranColors colors;
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
+    final EquranTokens tokens = context.equranTokens;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Color.alphaBlend(
-          colorScheme.secondary.withValues(alpha: 0.10),
-          colorScheme.secondaryContainer.withValues(alpha: 0.78),
-        ),
-        borderRadius: BorderRadius.circular(AppRadii.small),
-        border: Border.all(
-          color: colorScheme.secondary.withValues(alpha: 0.22),
-        ),
+        borderRadius: BorderRadius.circular(EquranRadii.pill),
+        border: Border.all(color: tokens.hair),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Icon(icon, size: 15, color: colorScheme.onSurfaceVariant),
+          DesignIcon(icon, size: 14, color: tokens.text2),
           const SizedBox(width: 6),
           Text(
             label,
-            style: theme.textTheme.labelMedium?.copyWith(
-              color: colorScheme.onSecondaryContainer,
-              fontWeight: FontWeight.w600,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: tokens.text2,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],

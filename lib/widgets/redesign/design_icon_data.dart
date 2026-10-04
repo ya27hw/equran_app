@@ -67,4 +67,23 @@ const Map<String, String> designIconMarkup = {
       '<path d="M6.500 16.500V11a5.500 5.500 0 0 1 11 0v5.500l1.500 1.500H5Z"/><path d="M10 20.500h4"/>',
   'x': '<path d="m6.500 6.500 11 11M17.500 6.500l-11 11"/>',
   'play': '<path d="M8 5.500v13l10.500-6.500Z"/>',
+  'download': '<path d="M12 4.5v10M7.5 11l4.5 4.5 4.5-4.5M5 19.5h14"/>',
+  'gear':
+      '<circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="6.8"/><path d="M12 3.5v2.2M12 18.3v2.2M3.5 12h2.2M18.3 12h2.2M6 6l1.6 1.6M16.4 16.4 18 18M18 6l-1.6 1.6M7.6 16.4 6 18"/>',
+  'share':
+      '<path d="M12 15V4.5M8 8.5l4-4 4 4M6 12.5v6a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-6"/>',
+  'mail':
+      '<rect x="3.5" y="5.5" width="17" height="13" rx="2.2"/><path d="m4 7.5 8 6 8-6"/>',
+  'calc':
+      '<rect x="5.5" y="3.5" width="13" height="17" rx="2.2"/><path d="M8.5 7.5h7M9 12h.1M12 12h.1M15 12h.1M9 16h.1M12 16h.1M15 16h.1"/>',
+  'beads':
+      '<circle cx="12" cy="5.5" r="1.8"/><circle cx="17" cy="9" r="1.8"/><circle cx="17" cy="15" r="1.8"/><circle cx="12" cy="18.5" r="1.8"/><circle cx="7" cy="15" r="1.8"/><circle cx="7" cy="9" r="1.8"/>',
+  'route':
+      '<circle cx="6.5" cy="6.5" r="2"/><circle cx="17.5" cy="17.5" r="2"/><path d="M8.5 6.5H14a3 3 0 0 1 0 6h-4a3 3 0 0 0 0 6h5.5"/>',
+  'headphones':
+      '<path d="M4.5 14v-2a7.5 7.5 0 0 1 15 0v2"/><rect x="4" y="13.5" width="4" height="6" rx="1.6"/><rect x="16" y="13.5" width="4" height="6" rx="1.6"/>',
+  'diamond': '<path d="M12 4 20 10 12 20 4 10Z"/><path d="M4 10h16"/>',
+  'bars': '<path d="M5.5 19.5V12M10 19.5V6M14.5 19.5v-9M19 19.5V8.5"/>',
+  'copy':
+      '<rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 8.5v-2a2 2 0 0 0-2-2h-7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h2"/>',
 };

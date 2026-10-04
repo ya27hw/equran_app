@@ -1386,6 +1386,42 @@ abstract class AppLocalizations {
   /// **'Qibla, downloads, settings, plans, and tools gathered in one quiet place.'**
   String get moreHeroSubtitle;
 
+  /// No description provided for @moreGroupWorship.
+  ///
+  /// In en, this message translates to:
+  /// **'Worship'**
+  String get moreGroupWorship;
+
+  /// No description provided for @moreGroupReadLearn.
+  ///
+  /// In en, this message translates to:
+  /// **'Read and learn'**
+  String get moreGroupReadLearn;
+
+  /// No description provided for @moreGroupTools.
+  ///
+  /// In en, this message translates to:
+  /// **'Tools'**
+  String get moreGroupTools;
+
+  /// No description provided for @moreGroupApp.
+  ///
+  /// In en, this message translates to:
+  /// **'App'**
+  String get moreGroupApp;
+
+  /// No description provided for @moreGroupAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About eQuran'**
+  String get moreGroupAbout;
+
+  /// No description provided for @edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
   /// No description provided for @openRoutine.
   ///
   /// In en, this message translates to:

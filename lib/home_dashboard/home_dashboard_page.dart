@@ -15,13 +15,16 @@ import 'package:equran/prayer/prayer_times_service.dart';
 import 'package:equran/reading_plans/routine_progress.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
+import 'package:equran/theme/equran_tokens.dart';
+import 'package:equran/widgets/redesign/redesign_widgets.dart';
+import 'package:equran/widgets/redesign/page_typography.dart';
+import 'package:equran/home_dashboard/daily_tools_edit_sheet.dart';
+import 'package:intl/intl.dart' show DateFormat;
 import 'package:equran/theme/equran_text_styles.dart';
 import 'package:equran/utils/app_radii.dart';
 import 'package:equran/utils/quran_display.dart';
 import 'package:equran/utils/quran_text.dart';
 import 'package:equran/widgets/common/equran_components.dart';
-import 'package:equran/widgets/common/geometric_pattern.dart';
-import 'package:equran/widgets/common/progress_ring.dart';
 import 'package:equran/widgets/holographic_card.dart';
 import 'package:equran/prayer/hijri_calendar.dart';
 import 'package:equran/widgets/last_read_cards.dart';
@@ -42,10 +45,7 @@ import 'package:equran/duas/asma_ul_husna_page.dart';
 const String _appAssetBase = 'assets/media/images/app';
 const String _quranAsset = '$_appAssetBase/quran.webp';
 const String _lastReadAsset = '$_appAssetBase/last_read.webp';
-const String _duaAsset = '$_appAssetBase/dua.webp';
-const String _designAsset = '$_appAssetBase/design.webp';
 const String _routineAsset = '$_appAssetBase/routine.webp';
-const String _settingsAsset = '$_appAssetBase/settings.webp';
 
 class HomeDashboardPage extends StatefulWidget {
   const HomeDashboardPage({
@@ -61,8 +61,15 @@ class HomeDashboardPage extends StatefulWidget {
     required this.onOpenDownloads,
     required this.onOpenSearch,
     required this.onOpenStats,
+    @visibleForTesting this.clock = DateTime.now,
+    @visibleForTesting this.dailyDuaRepository,
   });
 
+  /// The time source; tests inject a fixed instant.
+  final DateTime Function() clock;
+
+  /// Tests inject a repository whose assets are already loaded.
+  final DailyDuaRepository? dailyDuaRepository;
   final VoidCallback onOpenMore;
   final VoidCallback onOpenQuran;
   final VoidCallback onOpenZakat;
@@ -83,12 +90,13 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
   final PrayerSettingsStore _prayerStore = PrayerSettingsStore();
   final PrayerTimesService _prayerService = const PrayerTimesService();
   Timer? _clockTimer;
-  DateTime _now = DateTime.now();
+  late DateTime _now;
   PrayerExactAlarmPermissionStatus? _exactAlarmPermission;
 
   @override
   void initState() {
     super.initState();
+    _now = widget.clock();
     _scheduleMinuteClock();
     unawaited(_loadExactAlarmStatus());
   }
@@ -106,44 +114,46 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
 
     return Material(
       color: colors.background,
-      child: SafeArea(
-        bottom: false,
-        child: RefreshIndicator(
-          onRefresh: () async {
-            setState(() {
-              _now = DateTime.now();
-            });
-            await _loadExactAlarmStatus();
-          },
-          child: CustomScrollView(
-            physics: const AlwaysScrollableScrollPhysics(
-              parent: BouncingScrollPhysics(),
-            ),
-            slivers: <Widget>[
-              SliverToBoxAdapter(child: _buildHeader(theme)),
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(
-                  EquranSpacing.pagePadding,
-                  8,
-                  EquranSpacing.pagePadding,
-                  112,
-                ),
-                sliver: SliverToBoxAdapter(
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 1040),
-                      child: _DashboardReactiveShell(
-                        now: _now,
-                        exactAlarmPermission: _exactAlarmPermission,
-                        prayerStore: _prayerStore,
-                        prayerService: _prayerService,
-                        actions: widget,
+      child: RedesignPageTypography(
+        child: SafeArea(
+          bottom: false,
+          child: RefreshIndicator(
+            onRefresh: () async {
+              setState(() {
+                _now = DateTime.now();
+              });
+              await _loadExactAlarmStatus();
+            },
+            child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(
+                parent: BouncingScrollPhysics(),
+              ),
+              slivers: <Widget>[
+                SliverToBoxAdapter(child: _buildHeader(theme)),
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(
+                    EquranSpacing.pagePadding,
+                    8,
+                    EquranSpacing.pagePadding,
+                    112,
+                  ),
+                  sliver: SliverToBoxAdapter(
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 1040),
+                        child: _DashboardReactiveShell(
+                          now: _now,
+                          exactAlarmPermission: _exactAlarmPermission,
+                          prayerStore: _prayerStore,
+                          prayerService: _prayerService,
+                          actions: widget,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -151,7 +161,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
   }
 
   Widget _buildHeader(ThemeData theme) {
-    final EquranColors colors = context.equranColors;
+    final EquranTokens tokens = context.equranTokens;
     final PrayerLocation? location = _prayerStore.getLocation();
     final int hijriOffset =
         SettingsDB().get('hijri_offset', defaultValue: 0) as int;
@@ -159,60 +169,31 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
       _now,
       offset: hijriOffset,
     );
+    final String weekday = DateFormat(
+      'EEEE',
+      Localizations.localeOf(context).toString(),
+    ).format(_now);
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         EquranSpacing.pagePadding,
-        14,
+        18,
         EquranSpacing.pagePadding,
-        6,
+        4,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text(
-                  '\u0627\u0644\u0633\u0644\u0627\u0645 \u0639\u0644\u064A\u0643\u0645',
-                  textDirection: TextDirection.rtl,
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    fontFamily: 'UthmanicHafs',
-                    fontSize: 27,
-                    height: 1.35,
-                    color: colors.warning,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  _formatDashboardDate(_now),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    color: colors.textPrimary,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 1),
-                Text(
-                  hijri.toString(),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: colors.warning,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
+            child: RedesignEyebrow(
+              '$weekday \u00B7 ${hijri.toString()}',
+              color: tokens.goldText,
             ),
           ),
           if (location != null) ...<Widget>[
             const SizedBox(width: 12),
             _LocationPill(
-              label: location.displayLabel,
+              label: location.cityLabel,
               onTap: widget.onOpenPrayerTimes,
             ),
           ],
@@ -233,7 +214,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
     _clockTimer = Timer(untilNextMinute, () {
       if (!mounted) return;
       setState(() {
-        _now = DateTime.now();
+        _now = widget.clock();
       });
       _scheduleMinuteClock();
     });
@@ -261,24 +242,25 @@ class _LocationPill extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final EquranColors colors = context.equranColors;
+    final EquranTokens tokens = context.equranTokens;
     final BorderRadius radius = BorderRadius.circular(EquranRadii.pill);
     return Material(
       color: colors.surface,
       shape: RoundedRectangleBorder(
         borderRadius: radius,
-        side: BorderSide(color: colors.border),
+        side: BorderSide(color: tokens.hair),
       ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         borderRadius: radius,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(10, 8, 12, 8),
+          padding: const EdgeInsetsDirectional.fromSTEB(12, 9, 14, 9),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Icon(Icons.location_on_rounded, size: 16, color: colors.primary),
-              const SizedBox(width: 4),
+              DesignIcon('pin', size: 16, color: tokens.emText),
+              const SizedBox(width: 6),
               ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 130),
                 child: Text(
@@ -287,7 +269,7 @@ class _LocationPill extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.labelMedium?.copyWith(
                     color: colors.textPrimary,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -422,6 +404,7 @@ class _DashboardContent extends StatelessWidget {
             _DailyDuaPreview(
               date: summary.todayDate,
               onOpenDuas: actions.onOpenDuas,
+              repository: actions.dailyDuaRepository,
             ),
             // const SizedBox(height: 22),
             // _PersonalLibraryPreview(
@@ -758,14 +741,18 @@ class _PrayerThumbCarousel extends StatelessWidget {
         prayerSummary.currentPeriod?.highlightedKind;
     return LayoutBuilder(
       builder: (context, constraints) {
-        final bool compact = constraints.maxWidth < 380;
         // Let the strip run to the screen edges instead of clipping at the
         // page margin, unless the dashboard is capped on a wide layout.
         final double bleed = constraints.maxWidth >= 1000
             ? 0
             : EquranSpacing.pagePadding;
         return SizedBox(
-          height: compact ? 138 : 144,
+          height:
+              82 +
+              38 *
+                  MediaQuery.textScalerOf(
+                    context,
+                  ).scale(1).clamp(1.0, 1.5).toDouble(),
           child: OverflowBox(
             minWidth: constraints.maxWidth + bleed * 2,
             maxWidth: constraints.maxWidth + bleed * 2,
@@ -781,7 +768,7 @@ class _PrayerThumbCarousel extends StatelessWidget {
                   entry: entry,
                   use24HourFormat: day.settings.use24HourFormat,
                   isActive: entry.kind == activeKind,
-                  width: compact ? 132 : 142,
+                  width: 88,
                   onTap: onOpenPrayerTimes,
                 );
               },
@@ -934,29 +921,22 @@ class _HomePremiumCard extends StatelessWidget {
     this.onTap,
     this.padding = const EdgeInsets.all(16),
     this.baseColor,
-    this.accentColor,
-    this.assetPath,
-    this.assetOpacity = 0.08,
-    this.assetWidth = 160,
-    this.borderColor,
+    this.goldWash = false,
   });
 
   final Widget child;
   final VoidCallback? onTap;
   final EdgeInsetsGeometry padding;
   final Color? baseColor;
-  final Color? accentColor;
-  final String? assetPath;
-  final double assetOpacity;
-  final double assetWidth;
-  final Color? borderColor;
+
+  /// Fades a gold wash in from the top, for the daily ayah.
+  final bool goldWash;
 
   @override
   Widget build(BuildContext context) {
     final EquranColors colors = context.equranColors;
-    final Color base = baseColor ?? colors.surface;
-    final Color accent = accentColor ?? colors.primary;
-    final BorderRadius radius = BorderRadius.circular(EquranRadii.large);
+    final EquranTokens tokens = context.equranTokens;
+    final BorderRadius radius = BorderRadius.circular(EquranRadii.xl);
 
     return Material(
       color: Colors.transparent,
@@ -967,62 +947,90 @@ class _HomePremiumCard extends StatelessWidget {
         borderRadius: radius,
         child: Ink(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: <Color>[
-                Color.alphaBlend(
-                  accent.withAlpha(
-                    Theme.of(context).brightness == Brightness.light ? 42 : 18,
-                  ),
-                  base,
-                ),
-                base,
-                Color.alphaBlend(
-                  colors.primaryStrong.withAlpha(
-                    Theme.of(context).brightness == Brightness.light ? 28 : 12,
-                  ),
-                  base,
-                ),
-              ],
-            ),
+            color: baseColor ?? colors.surface,
+            gradient: goldWash
+                ? LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: <Color>[
+                      Color.alphaBlend(tokens.goldWash, colors.surface),
+                      colors.surface,
+                    ],
+                    stops: const <double>[0, 0.46],
+                  )
+                : null,
             borderRadius: radius,
-            border: Border.all(
-              color: borderColor ?? colors.border.withAlpha(190),
-            ),
-            boxShadow: <BoxShadow>[
-              BoxShadow(
-                color: colors.shadow.withAlpha(
-                  Theme.of(context).brightness == Brightness.light ? 14 : 30,
-                ),
-                blurRadius: 20,
-                offset: const Offset(0, 9),
-              ),
-            ],
+            border: Border.all(color: tokens.hair),
           ),
-          child: Stack(
-            children: <Widget>[
-              if (assetPath != null)
-                Positioned(
-                  right: -30,
-                  top: -18,
-                  bottom: -18,
-                  width: assetWidth,
-                  child: Opacity(
-                    opacity: assetOpacity,
-                    child: EquranAssetImage(
-                      assetPath!,
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) =>
-                          const SizedBox.shrink(),
-                    ),
-                  ),
-                ),
-              Padding(padding: padding, child: child),
-            ],
-          ),
+          child: Padding(padding: padding, child: child),
         ),
       ),
+    );
+  }
+}
+
+/// Serif section title with an optional muted subtitle and text action, as on
+/// the Duas and Statistics pages.
+class _HomeSectionHead extends StatelessWidget {
+  const _HomeSectionHead({
+    required this.title,
+    this.subtitle,
+    this.actionLabel,
+    this.onAction,
+  });
+
+  final String title;
+  final String? subtitle;
+  final String? actionLabel;
+  final VoidCallback? onAction;
+
+  @override
+  Widget build(BuildContext context) {
+    final EquranTokens tokens = context.equranTokens;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: Text(
+                title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: redesignDisplayStyle(
+                  context,
+                  size: 24,
+                  height: 1.15,
+                  color: context.equranColors.textPrimary,
+                ),
+              ),
+            ),
+            if (actionLabel != null)
+              TextButton(
+                onPressed: onAction,
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: const Size(44, 44),
+                ),
+                child: Text(
+                  actionLabel!,
+                  style: TextStyle(
+                    color: tokens.emText,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+          ],
+        ),
+        if (subtitle != null) ...<Widget>[
+          const SizedBox(height: 4),
+          Text(
+            subtitle!,
+            style: TextStyle(fontSize: 13.5, color: tokens.muted),
+          ),
+        ],
+      ],
     );
   }
 }
@@ -1033,83 +1041,83 @@ class _RoutinePlanCta extends StatelessWidget {
   final ReadingPlanEntry? plan;
   final VoidCallback? onOpenReadingPlans;
 
+  Widget _badge(EquranTokens tokens) => Container(
+    width: 52,
+    height: 52,
+    padding: const EdgeInsets.all(3),
+    decoration: BoxDecoration(color: tokens.emWash, shape: BoxShape.circle),
+    child: EquranAssetImage(
+      _routineAsset,
+      fit: BoxFit.contain,
+      errorBuilder: (context, error, stackTrace) =>
+          DesignIcon('route', size: 22, color: tokens.emText),
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final EquranColors colors = context.equranColors;
+    final EquranTokens tokens = context.equranTokens;
     final ReadingPlanEntry? activePlan = plan;
     final localizations = AppLocalizations.of(context)!;
+    final TextStyle titleStyle =
+        theme.textTheme.titleSmall?.copyWith(
+          color: colors.textPrimary,
+          fontSize: 15.5,
+          fontWeight: FontWeight.w600,
+        ) ??
+        const TextStyle();
+    final TextStyle subStyle =
+        theme.textTheme.bodySmall?.copyWith(
+          color: tokens.muted,
+          fontSize: 13,
+        ) ??
+        const TextStyle();
     if (activePlan == null) {
       return _HomePremiumCard(
         onTap: onOpenReadingPlans,
-        padding: const EdgeInsets.fromLTRB(16, 13, 16, 13),
-        baseColor: colors.surface,
-        accentColor: colors.primary,
-        borderColor: colors.border,
-        assetPath: _designAsset,
-        assetOpacity: 0.05,
-        assetWidth: 112,
+        padding: const EdgeInsetsDirectional.fromSTEB(14, 14, 16, 14),
         child: Row(
           children: <Widget>[
-            Container(
-              width: 48,
-              height: 48,
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: colors.mint,
-                borderRadius: BorderRadius.circular(AppRadii.pill),
-              ),
-              child: EquranAssetImage(
-                _routineAsset,
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) {
-                  return Icon(
-                    Icons.auto_stories_rounded,
-                    color: colors.primary,
-                  );
-                },
-              ),
-            ),
-            const SizedBox(width: 11),
+            _badge(tokens),
+            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
                     localizations.startReadingRoutine,
-                    maxLines: 1,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: colors.textPrimary,
-                      fontWeight: FontWeight.w900,
-                    ),
+                    style: titleStyle,
                   ),
                   const SizedBox(height: 2),
                   Text(
                     localizations.buildDailyQuranHabit,
-                    maxLines: 1,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colors.textSecondary,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: subStyle,
                   ),
                 ],
               ),
             ),
+            const SizedBox(width: 10),
             DecoratedBox(
               decoration: BoxDecoration(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(AppRadii.pill),
-                border: Border.all(color: colors.primary),
+                borderRadius: BorderRadius.circular(EquranRadii.pill),
+                border: Border.all(color: tokens.emText),
               ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 6,
+                ),
                 child: Text(
                   localizations.start,
                   style: theme.textTheme.labelLarge?.copyWith(
-                    color: colors.primary,
-                    fontWeight: FontWeight.w900,
+                    color: tokens.emText,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -1125,110 +1133,73 @@ class _RoutinePlanCta extends StatelessWidget {
     );
     final _AyahRef continueRef = _routineContinueRef(activePlan);
 
-    return _HomePremiumCard(
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute<void>(
-          builder: (context) => ReadPage(
-            chapter: continueRef.surah,
-            startVerse: continueRef.verse,
-            mode: ReadPageMode.routine,
-            routineId: activePlan.id,
+    return Semantics(
+      label: localizations.continueRoutine,
+      child: _HomePremiumCard(
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (context) => ReadPage(
+              chapter: continueRef.surah,
+              startVerse: continueRef.verse,
+              mode: ReadPageMode.routine,
+              routineId: activePlan.id,
+            ),
           ),
         ),
-      ),
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 15),
-      baseColor: colors.surface,
-      accentColor: colors.primary,
-      assetPath: _designAsset,
-      assetOpacity: 0.045,
-      assetWidth: 185,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Container(
-                width: 46,
-                height: 46,
-                padding: const EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  color: colors.mint,
-                  borderRadius: BorderRadius.circular(AppRadii.medium),
-                  border: Border.all(color: colors.border.withAlpha(110)),
-                ),
-                child: Transform.scale(
-                  scale: 1.25,
-                  child: EquranAssetImage(
-                    _routineAsset,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Icon(Icons.route_outlined, color: colors.primary);
-                    },
+        padding: const EdgeInsetsDirectional.fromSTEB(14, 14, 16, 14),
+        child: Row(
+          children: <Widget>[
+            _badge(tokens),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    localizations.readingRoutine,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: titleStyle,
                   ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  localizations.readingRoutine,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: colors.textPrimary,
-                    fontWeight: FontWeight.w900,
+                  const SizedBox(height: 2),
+                  Text(
+                    dayProgress.portionLabel,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: subStyle,
                   ),
-                ),
+                  const SizedBox(height: 10),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(EquranRadii.pill),
+                    child: LinearProgressIndicator(
+                      value: dayProgress.fraction,
+                      minHeight: 4,
+                      color: tokens.gold,
+                      backgroundColor: tokens.hair2,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    dayProgress.statusLabel,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: tokens.muted,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Text(
-            dayProgress.portionLabel,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.titleSmall?.copyWith(
-              color: colors.textPrimary,
-              fontWeight: FontWeight.w800,
             ),
-          ),
-          const SizedBox(height: 8),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(EquranRadii.pill),
-            child: LinearProgressIndicator(
-              value: dayProgress.fraction,
-              minHeight: 6,
-              color: colors.primary,
-              backgroundColor: colors.mint,
+            const SizedBox(width: 8),
+            DesignIcon(
+              'chev',
+              size: 18,
+              color: tokens.muted,
+              mirrorInRtl: true,
             ),
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: Text(
-                  dayProgress.statusLabel,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: colors.textSecondary,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ),
-              Text(
-                localizations.localeName == 'ar' ||
-                        localizations.localeName == 'fa' ||
-                        localizations.localeName == 'ur'
-                    ? '<- ${localizations.continueRoutine}'
-                    : '${localizations.continueRoutine} ->',
-                style: theme.textTheme.labelLarge?.copyWith(
-                  color: colors.primary,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -1256,100 +1227,28 @@ class _DailyQuranCompanionSection extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            _CompanionSectionHeader(
-              icon: Icons.auto_stories_outlined,
+            _HomeSectionHead(
               title: localizations.dailyQuranCompanion,
               subtitle: localizations.dailyQuranCompanionSubtitle,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             _ContinueExperience(
               wide: wide,
               latestReading: latestReading,
               onOpenQuran: actions.onOpenQuran,
             ),
-            const SizedBox(height: 16),
-            _CompanionSectionHeader(
-              icon: Icons.grid_view_rounded,
+            const SizedBox(height: 32),
+            _HomeSectionHead(
               title: localizations.dailyTools,
               subtitle: localizations.dailyToolsSubtitle,
-              compact: true,
+              actionLabel: localizations.edit,
+              onAction: () => DailyToolsEditSheet.show(context),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 14),
             _MuslimDailyQuickActions(actions: actions),
           ],
         ),
       ),
-    );
-  }
-}
-
-class _CompanionSectionHeader extends StatelessWidget {
-  const _CompanionSectionHeader({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    this.compact = false,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final bool compact;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        LayoutBuilder(
-          builder: (BuildContext context, BoxConstraints constraints) {
-            // The title keeps priority; the ornament only fills what is left
-            // and drops away when the title needs the full width.
-            const double minOrnament = 64;
-            final double titleMax = math.max(
-              0,
-              constraints.maxWidth - (compact ? 26 : 28) - minOrnament - 12,
-            );
-            return Row(
-              children: <Widget>[
-                Icon(icon, color: colors.primary, size: compact ? 18 : 20),
-                const SizedBox(width: 8),
-                ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: titleMax),
-                  child: Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: colors.textPrimary,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: OrnamentDivider(
-                    color: colors.accentGold.withAlpha(150),
-                    starSize: 9,
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
-        const SizedBox(height: 3),
-        Text(
-          subtitle,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: colors.textSecondary,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
     );
   }
 }
@@ -1405,65 +1304,70 @@ class _MuslimDailyQuickActionsState extends State<_MuslimDailyQuickActions> {
             .getVisibleDailyTools();
 
         final List<_QuickAction> items = visibleTools.map((tool) {
-          return _QuickAction(tool.icon, tool.getTitle(localizations), () {
-            switch (tool) {
-              case DailyToolType.quran:
-                widget.actions.onOpenQuran();
-                break;
-              case DailyToolType.prayer:
-                widget.actions.onOpenPrayerTimes();
-                break;
-              case DailyToolType.qibla:
-                widget.actions.onOpenQibla();
-                break;
-              case DailyToolType.tasbih:
-                widget.actions.onOpenTasbih();
-                break;
-              case DailyToolType.dua:
-                widget.actions.onOpenDuas();
-                break;
-              case DailyToolType.downloads:
-                widget.actions.onOpenDownloads();
-                break;
-              case DailyToolType.search:
-                widget.actions.onOpenSearch();
-                break;
-              case DailyToolType.readingPlans:
-                widget.actions.onOpenReadingPlans();
-                break;
-              case DailyToolType.hifz:
-                Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (context) => const HifzHomePage(),
-                  ),
-                );
-                break;
-              case DailyToolType.asmaUlHusna:
-                Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (context) => const AsmaUlHusnaPage(),
-                  ),
-                );
-                break;
-              case DailyToolType.statistics:
-                widget.actions.onOpenStats();
-                break;
-              case DailyToolType.calendar:
-                Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (context) => const HijriCalendarPage(),
-                  ),
-                );
-                break;
-              case DailyToolType.zakah:
-                Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (context) => const ZakahCalculatorPage(),
-                  ),
-                );
-                break;
-            }
-          }, assetPath: tool.assetPath);
+          return _QuickAction(
+            tool.icon,
+            tool.getTitle(localizations),
+            () {
+              switch (tool) {
+                case DailyToolType.quran:
+                  widget.actions.onOpenQuran();
+                  break;
+                case DailyToolType.prayer:
+                  widget.actions.onOpenPrayerTimes();
+                  break;
+                case DailyToolType.qibla:
+                  widget.actions.onOpenQibla();
+                  break;
+                case DailyToolType.tasbih:
+                  widget.actions.onOpenTasbih();
+                  break;
+                case DailyToolType.dua:
+                  widget.actions.onOpenDuas();
+                  break;
+                case DailyToolType.downloads:
+                  widget.actions.onOpenDownloads();
+                  break;
+                case DailyToolType.search:
+                  widget.actions.onOpenSearch();
+                  break;
+                case DailyToolType.readingPlans:
+                  widget.actions.onOpenReadingPlans();
+                  break;
+                case DailyToolType.hifz:
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (context) => const HifzHomePage(),
+                    ),
+                  );
+                  break;
+                case DailyToolType.asmaUlHusna:
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (context) => const AsmaUlHusnaPage(),
+                    ),
+                  );
+                  break;
+                case DailyToolType.statistics:
+                  widget.actions.onOpenStats();
+                  break;
+                case DailyToolType.calendar:
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (context) => const HijriCalendarPage(),
+                    ),
+                  );
+                  break;
+                case DailyToolType.zakah:
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (context) => const ZakahCalculatorPage(),
+                    ),
+                  );
+                  break;
+              }
+            },
+            designIcon: _dailyToolDesignIcons[tool],
+          );
         }).toList();
 
         final List<List<_QuickAction>> pages = <List<_QuickAction>>[];
@@ -1478,7 +1382,12 @@ class _MuslimDailyQuickActionsState extends State<_MuslimDailyQuickActions> {
         final int maxItemsOnPage = pages.isEmpty
             ? 0
             : pages.map((p) => p.length).reduce((a, b) => a > b ? a : b);
-        final double pageViewHeight = maxItemsOnPage <= 2 ? 78.0 : 166.0;
+        final double textScale = MediaQuery.textScalerOf(
+          context,
+        ).scale(1).clamp(1.0, 1.5).toDouble();
+        final double pageViewHeight = maxItemsOnPage == 0
+            ? 0
+            : 98.0 * textScale;
 
         return Center(
           child: ConstrainedBox(
@@ -1501,27 +1410,21 @@ class _MuslimDailyQuickActionsState extends State<_MuslimDailyQuickActions> {
                           itemBuilder: (context, pageIndex) {
                             final List<_QuickAction> pageItems =
                                 pages[pageIndex];
-                            return GridView.builder(
-                              itemCount: pageItems.length,
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              padding: EdgeInsets.zero,
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    mainAxisExtent: 78,
-                                    mainAxisSpacing: 10,
-                                    crossAxisSpacing: 8,
+                            return Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                for (int i = 0; i < 4; i++)
+                                  Expanded(
+                                    child: i < pageItems.length
+                                        ? _DashboardActionTile(
+                                            icon: pageItems[i].icon,
+                                            designIcon: pageItems[i].designIcon,
+                                            label: pageItems[i].label,
+                                            onTap: pageItems[i].onTap,
+                                          )
+                                        : const SizedBox.shrink(),
                                   ),
-                              itemBuilder: (context, index) {
-                                final _QuickAction item = pageItems[index];
-                                return _DashboardActionTile(
-                                  icon: item.icon,
-                                  label: item.label,
-                                  onTap: item.onTap,
-                                  assetPath: item.assetPath,
-                                );
-                              },
+                              ],
                             );
                           },
                         ),
@@ -1533,7 +1436,7 @@ class _MuslimDailyQuickActionsState extends State<_MuslimDailyQuickActions> {
                     activeIndex: _page,
                   ),
                 ],
-                const SizedBox(height: 9),
+                const SizedBox(height: 14),
                 _ExploreAllFeaturesRow(onTap: widget.actions.onOpenMore),
               ],
             ),
@@ -1549,86 +1452,59 @@ class _DashboardActionTile extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.onTap,
-    this.assetPath,
+    this.designIcon,
   });
 
   final IconData icon;
+  final String? designIcon;
   final String label;
   final VoidCallback onTap;
-  final String? assetPath;
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final EquranColors colors = context.equranColors;
-    final BorderRadius radius = BorderRadius.circular(EquranRadii.medium);
+    final EquranTokens tokens = context.equranTokens;
+    final BorderRadius radius = BorderRadius.circular(22);
 
-    return Material(
-      color: Colors.transparent,
+    return InkWell(
+      onTap: onTap,
       borderRadius: radius,
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: radius,
-        child: Ink(
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: radius,
-            border: Border.all(color: colors.border.withAlpha(170)),
-            boxShadow: <BoxShadow>[
-              BoxShadow(
-                color: colors.shadow.withAlpha(
-                  Theme.of(context).brightness == Brightness.light ? 10 : 26,
-                ),
-                blurRadius: 14,
-                offset: const Offset(0, 6),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: colors.surface,
+                borderRadius: radius,
+                border: Border.all(color: tokens.hair),
               ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            child: Row(
-              children: <Widget>[
-                Container(
-                  width: 52,
-                  height: 52,
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: colors.mint.withAlpha(135),
-                    borderRadius: BorderRadius.circular(AppRadii.medium),
-                    boxShadow: <BoxShadow>[
-                      BoxShadow(
-                        color: colors.primary.withAlpha(22),
-                        blurRadius: 12,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: assetPath == null
-                      ? Icon(icon, color: colors.primary, size: 30)
-                      : EquranAssetImage(
-                          assetPath!,
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Icon(icon, color: colors.primary, size: 30);
-                          },
-                        ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      color: colors.textPrimary,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ),
-              ],
+              alignment: Alignment.center,
+              child: designIcon != null
+                  ? DesignIcon(
+                      designIcon!,
+                      size: 24,
+                      strokeWidth: 1.7,
+                      color: tokens.emText,
+                    )
+                  : Icon(icon, color: tokens.emText, size: 24),
             ),
-          ),
+            const SizedBox(height: 9),
+            Text(
+              label,
+              maxLines: 2,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: tokens.text2,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -1642,69 +1518,43 @@ class _ExploreAllFeaturesRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final EquranColors colors = context.equranColors;
     final ThemeData theme = Theme.of(context);
-    final BorderRadius radius = BorderRadius.circular(EquranRadii.medium);
+    final EquranTokens tokens = context.equranTokens;
+    final BorderRadius radius = BorderRadius.circular(EquranRadii.large);
     final localizations = AppLocalizations.of(context)!;
 
     return Material(
       color: Colors.transparent,
       borderRadius: radius,
-      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         borderRadius: radius,
         child: Ink(
           decoration: BoxDecoration(
-            color: colors.surface.withAlpha(120),
             borderRadius: radius,
-            border: Border.all(color: colors.border.withAlpha(120)),
+            border: Border.all(color: tokens.hair),
           ),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(12, 9, 10, 9),
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
             child: Row(
               children: <Widget>[
-                Container(
-                  width: 38,
-                  height: 38,
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: colors.mint,
-                    borderRadius: BorderRadius.circular(AppRadii.medium),
-                    border: Border.all(color: colors.border.withAlpha(110)),
-                  ),
-                  child: EquranAssetImage(
-                    _settingsAsset,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Icon(
-                        Icons.dashboard_customize_outlined,
-                        color: colors.primary,
-                        size: 21,
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     localizations.exploreAllFeatures,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.labelLarge?.copyWith(
-                      color: colors.textPrimary,
-                      fontWeight: FontWeight.w900,
+                      color: tokens.text2,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
-                Icon(
-                  localizations.localeName == 'ar' ||
-                          localizations.localeName == 'fa' ||
-                          localizations.localeName == 'ur'
-                      ? Icons.arrow_back_rounded
-                      : Icons.arrow_forward_rounded,
-                  color: colors.primary,
-                  size: 18,
+                DesignIcon(
+                  'chev',
+                  size: 17,
+                  strokeWidth: 1.8,
+                  color: tokens.emText,
+                  mirrorInRtl: true,
                 ),
               ],
             ),
@@ -1726,7 +1576,7 @@ class _QuickActionPageDots extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final EquranColors colors = context.equranColors;
+    final EquranTokens tokens = context.equranTokens;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List<Widget>.generate(itemCount, (index) {
@@ -1737,7 +1587,7 @@ class _QuickActionPageDots extends StatelessWidget {
           width: active ? 14 : 5,
           height: 5,
           decoration: BoxDecoration(
-            color: active ? colors.primary : colors.border,
+            color: active ? tokens.emText : tokens.hair2,
             borderRadius: BorderRadius.circular(EquranRadii.pill),
           ),
         );
@@ -1794,61 +1644,28 @@ class _DailyAyahPreviewState extends State<_DailyAyahPreview> {
     final ThemeData theme = Theme.of(context);
     final EquranColors colors = context.equranColors;
     final localizations = AppLocalizations.of(context)!;
-
+    final EquranTokens tokens = context.equranTokens;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        EquranSectionHeader(
-          icon: Icons.local_florist_outlined,
+        _HomeSectionHead(
           title: localizations.dailyAyah,
           actionLabel: localizations.seeAll,
           onAction: onOpenQuran,
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 14),
         _HomePremiumCard(
+          goldWash: true,
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute<void>(
               builder: (context) =>
                   ReadPage(chapter: ayah.surah, startVerse: ayah.verse),
             ),
           ),
-          padding: const EdgeInsets.fromLTRB(18, 15, 18, 17),
-          baseColor: colors.surface,
-          accentColor: colors.primary,
-          assetPath: _designAsset,
-          assetOpacity: 0.055,
-          assetWidth: 170,
+          padding: const EdgeInsets.fromLTRB(20, 22, 20, 18),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Text(
-                      localizations.surahLabel(
-                        localizedSurahName(localizations, ayah.surah),
-                        ayah.verse,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        color: colors.textPrimary,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                  ),
-                  Icon(
-                    localizations.localeName == 'ar' ||
-                            localizations.localeName == 'fa' ||
-                            localizations.localeName == 'ur'
-                        ? Icons.arrow_back_rounded
-                        : Icons.arrow_forward_rounded,
-                    color: colors.primary,
-                    size: 18,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 14),
               Text(
                 quranVerseText(ayah.surah, ayah.verse),
                 textDirection: TextDirection.rtl,
@@ -1870,13 +1687,26 @@ class _DailyAyahPreviewState extends State<_DailyAyahPreview> {
               const SizedBox(height: 12),
               Text(
                 ayah.translation,
-                maxLines: 2,
+                maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colors.textSecondary,
-                  height: 1.45,
-                  fontWeight: FontWeight.w500,
+                style: EquranTextStyles.displayTranslation(
+                  context,
+                  color: tokens.text2,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                localizations.surahLabel(
+                  localizedSurahName(localizations, ayah.surah),
+                  ayah.verse,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: tokens.muted,
+                  fontSize: 12.5,
                 ),
               ),
             ],
@@ -1888,10 +1718,15 @@ class _DailyAyahPreviewState extends State<_DailyAyahPreview> {
 }
 
 class _DailyDuaPreview extends StatefulWidget {
-  const _DailyDuaPreview({required this.date, required this.onOpenDuas});
+  const _DailyDuaPreview({
+    required this.date,
+    required this.onOpenDuas,
+    this.repository,
+  });
 
   final DateTime date;
   final VoidCallback onOpenDuas;
+  final DailyDuaRepository? repository;
 
   @override
   State<_DailyDuaPreview> createState() => _DailyDuaPreviewState();
@@ -1904,7 +1739,7 @@ class _DailyDuaPreviewState extends State<_DailyDuaPreview> {
   @override
   void initState() {
     super.initState();
-    _dailyDuaRepository = DailyDuaRepository();
+    _dailyDuaRepository = widget.repository ?? DailyDuaRepository();
     _dailyDuaFuture = _dailyDuaRepository.getDailyDua(widget.date);
   }
 
@@ -1945,20 +1780,23 @@ class _DailyDuaPreviewState extends State<_DailyDuaPreview> {
         final DailyDuaPayload payload = snapshot.data!;
         final DuaEntry dua = payload.dua;
         final DuaCategoryIndex categoryIndex = payload.categoryIndex;
-        final ThemeData theme = Theme.of(context);
         final EquranColors colors = context.equranColors;
         final AppLocalizations localizations = AppLocalizations.of(context)!;
+
+        final EquranTokens tokens = context.equranTokens;
+        final String? translation = dua.localizedTranslation(
+          localizations.localeName,
+        );
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            EquranSectionHeader(
-              icon: Icons.wb_twilight_rounded,
+            _HomeSectionHead(
               title: localizations.dailyDua,
               actionLabel: localizations.seeAll,
               onAction: widget.onOpenDuas,
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 14),
             _HomePremiumCard(
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(
@@ -1968,38 +1806,18 @@ class _DailyDuaPreviewState extends State<_DailyDuaPreview> {
                   ),
                 ),
               ),
-              padding: const EdgeInsets.fromLTRB(18, 15, 18, 17),
-              baseColor: colors.surface,
-              accentColor: colors.accentGold,
-              assetPath: _duaAsset,
-              assetOpacity: 0.055,
-              assetWidth: 170,
+              padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Text(
-                          categoryIndex.localizedTitle(context),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            color: colors.textPrimary,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                      ),
-                      Icon(
-                        localizations.localeName == 'ar' ||
-                                localizations.localeName == 'fa' ||
-                                localizations.localeName == 'ur'
-                            ? Icons.arrow_back_rounded
-                            : Icons.arrow_forward_rounded,
-                        color: colors.accentGold,
-                        size: 18,
-                      ),
-                    ],
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: PillTag(
+                      categoryIndex.localizedTitle(context),
+                      gold: true,
+                      designIcon: 'arch',
+                      compact: true,
+                    ),
                   ),
                   const SizedBox(height: 14),
                   Text(
@@ -2013,18 +1831,16 @@ class _DailyDuaPreviewState extends State<_DailyDuaPreview> {
                       color: colors.textPrimary,
                     ).copyWith(height: 1.7),
                   ),
-                  if (dua.localizedTranslation(localizations.localeName) !=
-                      null) ...<Widget>[
+                  if (translation != null) ...<Widget>[
                     const SizedBox(height: 12),
                     Text(
-                      dua.localizedTranslation(localizations.localeName)!,
-                      maxLines: 2,
+                      translation,
+                      maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.center,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: colors.textSecondary,
-                        height: 1.45,
-                        fontWeight: FontWeight.w500,
+                      style: EquranTextStyles.displayTranslation(
+                        context,
+                        color: tokens.text2,
                       ),
                     ),
                   ],
@@ -2044,23 +1860,17 @@ class _DailyDuaPreviewState extends State<_DailyDuaPreview> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        EquranSectionHeader(
-          icon: Icons.wb_twilight_rounded,
+        _HomeSectionHead(
           title: localizations.dailyDua,
           actionLabel: localizations.seeAll,
           onAction: widget.onOpenDuas,
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 14),
         _HomePremiumCard(
-          baseColor: colors.surface,
-          accentColor: colors.textSecondary,
-          assetPath: _duaAsset,
-          assetOpacity: 0.045,
-          assetWidth: 150,
           padding: const EdgeInsets.fromLTRB(18, 14, 10, 14),
           child: Row(
             children: <Widget>[
-              Icon(Icons.cloud_off_rounded, color: colors.textMuted, size: 26),
+              DesignIcon('cloud', color: context.equranTokens.muted, size: 26),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -2237,6 +2047,8 @@ class _JourneyPreviewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final EquranColors colors = context.equranColors;
+    final EquranTokens tokens = context.equranTokens;
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
     final QuranStatsSnapshot snapshot =
         stats ?? QuranStatsSnapshot(id: 'summary', updatedAt: DateTime.now());
     final int ayahsRead = activity?.ayahsRead ?? 0;
@@ -2251,30 +2063,22 @@ class _JourneyPreviewCard extends StatelessWidget {
 
     return _HomePremiumCard(
       onTap: onOpenStats,
-      baseColor: colors.paleGreen,
-      accentColor: colors.primary,
-      assetPath: _designAsset,
-      assetOpacity: 0.055,
-      assetWidth: 190,
-      padding: const EdgeInsets.fromLTRB(18, 16, 14, 16),
+      padding: const EdgeInsets.all(18),
       child: Row(
         children: <Widget>[
           ProgressRing(
             value: progress,
-            size: 88,
-            strokeWidth: 9,
-            trackColor: colors.primary.withAlpha(46),
-            color: colors.primary,
-            endColor: colors.accentGold,
-            child: Text(
+            size: 92,
+            strokeWidth: 8,
+            trackColor: tokens.hair2,
+            color: tokens.filled,
+            child: DisplayNumeral(
               '$progressPercent%',
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: colors.textPrimary,
-                fontWeight: FontWeight.w900,
-              ),
+              size: 21,
+              color: colors.textPrimary,
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 18),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -2282,57 +2086,60 @@ class _JourneyPreviewCard extends StatelessWidget {
                 Row(
                   children: <Widget>[
                     Expanded(
-                      child: Text(
-                        AppLocalizations.of(context)!.quranJourney,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          color: colors.textSecondary,
-                          fontWeight: FontWeight.w800,
-                        ),
+                      child: RedesignEyebrow(
+                        localizations.quranJourney,
+                        color: tokens.goldText,
                       ),
                     ),
-                    Icon(
-                      Icons.chevron_right_rounded,
-                      size: 20,
-                      color: colors.textMuted,
+                    DesignIcon(
+                      'chev',
+                      size: 17,
+                      color: tokens.muted,
+                      mirrorInRtl: true,
                     ),
                   ],
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 8),
                 Text.rich(
                   TextSpan(
                     children: <InlineSpan>[
                       TextSpan(
                         text: '$ayahsRead / $dailyGoal',
-                        style: theme.textTheme.headlineSmall?.copyWith(
+                        style: EquranTextStyles.displayNumeral(
+                          context,
+                          size: 28,
                           color: colors.textPrimary,
-                          fontWeight: FontWeight.w900,
                         ),
                       ),
                       TextSpan(
-                        text: ' ${AppLocalizations.of(context)!.ayahsToday}',
+                        text: ' ${localizations.ayahsToday}',
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          color: colors.textSecondary,
-                          fontWeight: FontWeight.w700,
+                          color: tokens.muted,
                         ),
                       ),
                     ],
                   ),
+                  textDirection: TextDirection.ltr,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 10),
-                Row(
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 6,
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: <Widget>[
-                    if (showStreak) ...<Widget>[
-                      _JourneyStreakChip(streak: snapshot.currentStreak),
-                      const SizedBox(width: 8),
-                    ],
-                    _JourneyMetricChip(
-                      label: AppLocalizations.of(
-                        context,
-                      )!.lettersCount(snapshot.estimatedLettersRead),
+                    if (showStreak)
+                      PillTag(
+                        localizations.dayStreakCount(snapshot.currentStreak),
+                        gold: true,
+                        designIcon: 'flame',
+                      ),
+                    Text(
+                      localizations.lettersCount(snapshot.estimatedLettersRead),
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: tokens.muted,
+                      ),
                     ),
                   ],
                 ),
@@ -2395,83 +2202,6 @@ class _HomeMetricPill extends StatelessWidget {
   }
 }
 
-class _JourneyStreakChip extends StatelessWidget {
-  const _JourneyStreakChip({required this.streak});
-
-  final int streak;
-
-  @override
-  Widget build(BuildContext context) {
-    final EquranColors colors = context.equranColors;
-    return Flexible(
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: colors.goldSoft,
-          borderRadius: BorderRadius.circular(AppRadii.pill),
-          border: Border.all(color: colors.accentGold.withAlpha(102)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Icon(
-                Icons.local_fire_department_rounded,
-                color: colors.accentGold,
-                size: 15,
-              ),
-              const SizedBox(width: 4),
-              Flexible(
-                child: Text(
-                  AppLocalizations.of(context)!.dayStreakCount(streak),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: colors.warning,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _JourneyMetricChip extends StatelessWidget {
-  const _JourneyMetricChip({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final EquranColors colors = context.equranColors;
-    final bool isLight = Theme.of(context).brightness == Brightness.light;
-    return Flexible(
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: colors.surfaceAlt.withValues(alpha: isLight ? 0.60 : 0.30),
-          borderRadius: BorderRadius.circular(AppRadii.pill),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-          child: Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: colors.textSecondary,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 // ignore: unused_element
 class _PersonalLibraryPreview extends StatelessWidget {
   const _PersonalLibraryPreview({
@@ -2489,7 +2219,6 @@ class _PersonalLibraryPreview extends StatelessWidget {
     return _HomePremiumCard(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
       baseColor: colors.surface,
-      accentColor: colors.primary,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -3424,13 +3153,32 @@ class _CompactPrayerTimes extends StatelessWidget {
 }
 
 class _QuickAction {
-  const _QuickAction(this.icon, this.label, this.onTap, {this.assetPath});
+  const _QuickAction(this.icon, this.label, this.onTap, {this.designIcon});
 
   final IconData icon;
   final String label;
   final VoidCallback onTap;
-  final String? assetPath;
+
+  /// A [DesignIcon] name; preferred over [icon] on Home.
+  final String? designIcon;
 }
+
+const Map<DailyToolType, String> _dailyToolDesignIcons =
+    <DailyToolType, String>{
+      DailyToolType.quran: 'quran',
+      DailyToolType.prayer: 'clock',
+      DailyToolType.qibla: 'compass',
+      DailyToolType.tasbih: 'beads',
+      DailyToolType.dua: 'arch',
+      DailyToolType.downloads: 'download',
+      DailyToolType.search: 'search',
+      DailyToolType.readingPlans: 'route',
+      DailyToolType.hifz: 'book',
+      DailyToolType.asmaUlHusna: 'diamond',
+      DailyToolType.statistics: 'bars',
+      DailyToolType.calendar: 'calendar',
+      DailyToolType.zakah: 'calc',
+    };
 
 class _QuickActionTile extends StatelessWidget {
   const _QuickActionTile({required this.item});
@@ -3568,33 +3316,6 @@ String _dateKey(DateTime date) {
   return '${date.year.toString().padLeft(4, '0')}-'
       '${date.month.toString().padLeft(2, '0')}-'
       '${date.day.toString().padLeft(2, '0')}';
-}
-
-String _formatDashboardDate(DateTime now) {
-  const List<String> weekdays = <String>[
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-    'Sunday',
-  ];
-  const List<String> months = <String>[
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
-  return '${weekdays[now.weekday - 1]}, ${months[now.month - 1]} ${now.day}';
 }
 
 String? _heroTitleOverrideFor(

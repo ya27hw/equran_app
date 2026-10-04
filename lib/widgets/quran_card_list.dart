@@ -1,6 +1,9 @@
 import 'package:dynamic_height_grid_view/dynamic_height_grid_view.dart';
 import 'package:equran/backend/surah_db.dart';
 import 'package:equran/backend/surah_model.dart';
+import 'package:equran/theme/equran_colors.dart';
+import 'package:equran/theme/equran_spacing.dart';
+import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/widgets/quran_card.dart';
 import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
@@ -95,32 +98,53 @@ class _QuranCardListState extends State<QuranCardList>
 
         Widget childList;
         if (columns == 1) {
+          final EquranTokens tokens = context.equranTokens;
+          const double outer = EquranRadii.xl;
           childList = Scrollbar(
             key: ValueKey<bool>(widget.ascending),
             controller: scrollController,
             thumbVisibility: true,
             interactive: true,
-            child: ListView.builder(
+            child: CustomScrollView(
               controller: scrollController,
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.only(bottom: 30),
-              itemCount: data.length + (hasHeader ? 1 : 0),
-              itemBuilder: (BuildContext context, int index) {
-                if (hasHeader && index == 0) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: widget.header!,
-                  );
-                }
-
-                final int dataIndex = index - (hasHeader ? 1 : 0);
-                return Padding(
-                  padding: EdgeInsets.only(
-                    bottom: dataIndex == data.length - 1 ? 0 : 6,
+              slivers: <Widget>[
+                if (hasHeader)
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: widget.header!,
+                    ),
                   ),
-                  child: QuranCard(surah: data[dataIndex], compact: false),
-                );
-              },
+                SliverPadding(
+                  padding: const EdgeInsets.only(bottom: 30),
+                  sliver: DecoratedSliver(
+                    decoration: BoxDecoration(
+                      color: context.equranColors.surface,
+                      borderRadius: BorderRadius.circular(outer),
+                      border: Border.all(color: tokens.hair),
+                    ),
+                    sliver: SliverList.separated(
+                      itemCount: data.length,
+                      separatorBuilder: (BuildContext context, int index) =>
+                          Divider(height: 1, thickness: 1, color: tokens.hair),
+                      itemBuilder: (BuildContext context, int index) {
+                        return QuranCard(
+                          surah: data[index],
+                          compact: false,
+                          grouped: true,
+                          inkRadius: BorderRadius.vertical(
+                            top: Radius.circular(index == 0 ? outer : 0),
+                            bottom: Radius.circular(
+                              index == data.length - 1 ? outer : 0,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
           );
         } else {

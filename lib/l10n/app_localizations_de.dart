@@ -711,6 +711,24 @@ class AppLocalizationsDe extends AppLocalizations {
       'Qibla, Downloads, Einstellungen, Pläne und Tools an einem ruhigen Ort.';
 
   @override
+  String get moreGroupWorship => 'Andacht';
+
+  @override
+  String get moreGroupReadLearn => 'Lesen und Lernen';
+
+  @override
+  String get moreGroupTools => 'Werkzeuge';
+
+  @override
+  String get moreGroupApp => 'App';
+
+  @override
+  String get moreGroupAbout => 'Über eQuran';
+
+  @override
+  String get edit => 'Bearbeiten';
+
+  @override
   String get openRoutine => 'Offene Routine';
 
   @override

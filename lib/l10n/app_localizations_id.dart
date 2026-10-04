@@ -704,6 +704,24 @@ class AppLocalizationsId extends AppLocalizations {
       'Kiblat, unduhan, pengaturan, rencana, dan alat berkumpul di satu tempat yang tenang.';
 
   @override
+  String get moreGroupWorship => 'Ibadah';
+
+  @override
+  String get moreGroupReadLearn => 'Baca dan belajar';
+
+  @override
+  String get moreGroupTools => 'Alat';
+
+  @override
+  String get moreGroupApp => 'Aplikasi';
+
+  @override
+  String get moreGroupAbout => 'Tentang eQuran';
+
+  @override
+  String get edit => 'Ubah';
+
+  @override
   String get openRoutine => 'Rutinitas terbuka';
 
   @override

@@ -696,6 +696,24 @@ class AppLocalizationsFa extends AppLocalizations {
       'قبله، دانلودها، تنظیمات، برنامه‌ها و ابزارها همه در یک محیط آرام جمع‌آوری شده‌اند.';
 
   @override
+  String get moreGroupWorship => 'عبادت';
+
+  @override
+  String get moreGroupReadLearn => 'خواندن و آموختن';
+
+  @override
+  String get moreGroupTools => 'ابزارها';
+
+  @override
+  String get moreGroupApp => 'برنامه';
+
+  @override
+  String get moreGroupAbout => 'درباره eQuran';
+
+  @override
+  String get edit => 'ویرایش';
+
+  @override
   String get openRoutine => 'باز کردن برنامه';
 
   @override
