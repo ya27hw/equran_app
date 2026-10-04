@@ -694,6 +694,21 @@ class AppLocalizationsAr extends AppLocalizations {
       'القبلة والتنزيلات والإعدادات والخطط والأدوات في مكان هادئ واحد.';
 
   @override
+  String get moreGroupWorship => 'العبادة';
+
+  @override
+  String get moreGroupReadLearn => 'القراءة والتعلّم';
+
+  @override
+  String get moreGroupTools => 'الأدوات';
+
+  @override
+  String get moreGroupApp => 'التطبيق';
+
+  @override
+  String get moreGroupAbout => 'عن eQuran';
+
+  @override
   String get openRoutine => 'فتح الورد';
 
   @override

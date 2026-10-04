@@ -698,6 +698,21 @@ class AppLocalizationsUr extends AppLocalizations {
       'قبلہ، ڈاؤن لوڈ، ترتیبات، منصوبے، اور اوزار ایک پرسکون جگہ پر جمع ہوئے۔';
 
   @override
+  String get moreGroupWorship => 'عبادت';
+
+  @override
+  String get moreGroupReadLearn => 'پڑھیں اور سیکھیں';
+
+  @override
+  String get moreGroupTools => 'ٹولز';
+
+  @override
+  String get moreGroupApp => 'ایپ';
+
+  @override
+  String get moreGroupAbout => 'eQuran کے بارے میں';
+
+  @override
   String get openRoutine => 'روٹین کھولیں۔';
 
   @override

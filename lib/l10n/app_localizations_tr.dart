@@ -699,6 +699,21 @@ class AppLocalizationsTr extends AppLocalizations {
       'Kıble, indirmeler, ayarlar, planlar ve araçlar tek bir sessiz yerde toplandı.';
 
   @override
+  String get moreGroupWorship => 'İbadet';
+
+  @override
+  String get moreGroupReadLearn => 'Oku ve öğren';
+
+  @override
+  String get moreGroupTools => 'Araçlar';
+
+  @override
+  String get moreGroupApp => 'Uygulama';
+
+  @override
+  String get moreGroupAbout => 'eQuran hakkında';
+
+  @override
   String get openRoutine => 'Rutini aç';
 
   @override

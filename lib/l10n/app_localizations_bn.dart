@@ -698,6 +698,21 @@ class AppLocalizationsBn extends AppLocalizations {
       'কিবলা, ডাউনলোড, সেটিংস, প্ল্যান এবং টুলস এক নিরিবিলি জায়গায় জড়ো হয়েছে।';
 
   @override
+  String get moreGroupWorship => 'ইবাদত';
+
+  @override
+  String get moreGroupReadLearn => 'পড়া ও শেখা';
+
+  @override
+  String get moreGroupTools => 'টুলস';
+
+  @override
+  String get moreGroupApp => 'অ্যাপ';
+
+  @override
+  String get moreGroupAbout => 'eQuran সম্পর্কে';
+
+  @override
   String get openRoutine => 'খোলা রুটিন';
 
   @override
