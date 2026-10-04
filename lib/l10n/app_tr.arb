@@ -164,7 +164,7 @@
         "type": "int"
       },
       "minutes": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -962,6 +962,7 @@
   "chooseLocationForNextPrayer": "Bir sonraki namaz vaktinin gösterileceği yeri buradan seçin.",
   "prayerTimeTitle": "{prayer} Zaman",
   "prayerBeginsIn": "{prayer} {countdown} ile başlıyor",
+  "prayerNextIn": "{prayer} {time} içinde",
   "minutesShort": "{minutes} dk.",
   "hoursMinutesShort": "{hours}h {minutes}m",
   "exactAlarmPermissionOff": "Tam alarm izni kapalı. Namaz hatırlatmaları gecikebilir.",
@@ -1409,6 +1410,7 @@
   "surahProgress": "Suresi İlerlemesi",
   "surahsComplete": "{completed} / {total} Sureler tamamlandı",
   "showLess": "Daha az göster",
+  "showMore": "Daha fazla göster",
   "showAllSurahs": "{count} surelerin tümünü göster",
   "quranCompletions": "Kuran Tamamlamaları",
   "fullCompletions": "Tam tamamlamalar",
@@ -1798,7 +1800,7 @@
         "type": "int"
       },
       "minutes": {
-        "type": "int"
+        "type": "String"
       }
     }
   },

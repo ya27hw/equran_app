@@ -1,5 +1,6 @@
 import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/theme/equran_tokens.dart';
+import 'package:equran/widgets/redesign/design_icon.dart';
 import 'package:flutter/material.dart';
 
 /// Non-interactive metadata. Use [ChipButton] for selectable filters.
@@ -10,12 +11,14 @@ class PillTag extends StatelessWidget {
     this.selected = false,
     this.gold = false,
     this.icon,
+    this.designIcon,
     this.compact = false,
   });
   final String label;
   final bool selected;
   final bool gold;
   final IconData? icon;
+  final String? designIcon;
   final bool compact;
 
   @override
@@ -50,8 +53,10 @@ class PillTag extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (icon != null) ...[
-            Icon(icon, size: 14, color: color),
+          if (icon != null || designIcon != null) ...[
+            designIcon != null
+                ? DesignIcon(designIcon!, size: 14, color: color)
+                : Icon(icon, size: 14, color: color),
             const SizedBox(width: 6),
           ],
           Text(

@@ -402,6 +402,18 @@
   "chooseLocationForNextPrayer": "Choose a location to show the next prayer time here.",
   "prayerTimeTitle": "{prayer} Time",
   "prayerBeginsIn": "{prayer} begins in {countdown}",
+  "prayerNextIn": "{prayer} in {time}",
+  "@prayerNextIn": {
+    "description": "Hero subtitle under the current prayer, e.g. 'Asr in 2h 08m'. The time is shown as a larger numeral.",
+    "placeholders": {
+      "prayer": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "@prayerTimeTitle": {
     "placeholders": {
       "prayer": {
@@ -434,7 +446,7 @@
         "type": "int"
       },
       "minutes": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -744,7 +756,7 @@
   "retryAction": "Retry",
   "noDuasFound": "No duas found",
   "offlineHisnAlMuslimEmpty": "The offline Hisn al Muslim file did not contain any duas.",
-  "hisnAlMuslim": "Hisn al Muslim",
+  "hisnAlMuslim": "Hisn al-Muslim",
   "arabicCategoriesDuasOffline": "{categoryCount} Arabic categories - {duaCount} duas offline",
   "@arabicCategoriesDuasOffline": {
     "placeholders": {
@@ -759,7 +771,7 @@
   "favouriteDuas": "Favourite duas",
   "favourite": "Favourite",
   "removeFavourite": "Remove favourite",
-  "saveDuasHere": "Save duas here for quick access",
+  "saveDuasHere": "Saved for quick access",
   "savedDuasCount": "{count} saved {label}",
   "@savedDuasCount": {
     "placeholders": {
@@ -1138,6 +1150,7 @@
   "surahProgress": "Surah Progress",
   "surahsComplete": "{completed} / {total} Surahs complete",
   "showLess": "Show less",
+  "showMore": "Show more",
   "showAllSurahs": "Show all {count} surahs",
   "quranCompletions": "Quran Completions",
   "fullCompletions": "Full completions",
@@ -1807,7 +1820,7 @@
         "type": "int"
       },
       "minutes": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -2427,7 +2440,7 @@
     }
   },
   "backToDuas": "Back to Duas",
-  "loggedToday": "Logged today",
+  "loggedToday": "Counted today",
   "theNight": "The night",
   "prayerPassed": "Passed",
   "prayerBeganAt": "Began {time}",

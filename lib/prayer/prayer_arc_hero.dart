@@ -3,6 +3,7 @@ import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/prayer/prayer_localizations.dart';
 import 'package:equran/prayer/prayer_models.dart';
 import 'package:equran/theme/equran_colors.dart';
+import 'package:equran/theme/equran_text_styles.dart';
 import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/widgets/redesign/redesign_widgets.dart';
 import 'package:equran/widgets/redesign/page_typography.dart';
@@ -84,17 +85,12 @@ class PrayerArcHero extends StatelessWidget {
     final countdown = nextPrayer.countdown.isNegative
         ? Duration.zero
         : nextPrayer.countdown;
-    final subtitle =
-        subtitleOverride ??
-        l.prayerBeginsIn(
-          localizedPrayerName(l, nextPrayer.entry.kind),
-          countdown.inHours > 0
-              ? l.hoursMinutesShort(
-                  countdown.inHours,
-                  countdown.inMinutes.remainder(60),
-                )
-              : l.minutesShort(countdown.inMinutes),
-        );
+    final countdownText = countdown.inHours > 0
+        ? l.hoursMinutesShort(
+            countdown.inHours,
+            twoDigitMinutes(countdown.inMinutes.remainder(60)),
+          )
+        : l.minutesShort(countdown.inMinutes);
     String time(DateTime value) =>
         prayerDisplayTime(value, day.settings.use24HourFormat, l);
     final ends = periodEndsAt ?? nextPrayer.entry.time;
@@ -120,10 +116,14 @@ class PrayerArcHero extends StatelessWidget {
                       final scale = MediaQuery.textScalerOf(context).scale(1);
                       final arcHeight = 176 + (scale - 1).clamp(0.0, 2.0) * 100;
                       return SizedBox(
-                        height: arcHeight,
+                        height: arcHeight + 16,
                         child: Stack(
                           children: [
-                            Positioned.fill(
+                            Positioned(
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              height: arcHeight,
                               child: ExcludeSemantics(
                                 child: CustomPaint(
                                   painter: PrayerArcPainter(
@@ -182,8 +182,24 @@ class PrayerArcHero extends StatelessWidget {
                                     ),
                                   ),
                                   const SizedBox(height: 8),
-                                  Text(
-                                    subtitle,
+                                  Text.rich(
+                                    subtitleOverride != null
+                                        ? TextSpan(text: subtitleOverride)
+                                        : prayerNextInSpan(
+                                            l,
+                                            prayer: localizedPrayerName(
+                                              l,
+                                              nextPrayer.entry.kind,
+                                            ),
+                                            duration: countdownText,
+                                            numeralStyle:
+                                                EquranTextStyles.displayNumeral(
+                                                  context,
+                                                  size: 19,
+                                                  height: 1,
+                                                  color: Colors.white,
+                                                ),
+                                          ),
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 15,
@@ -237,19 +253,17 @@ class PrayerArcHero extends StatelessWidget {
                       runSpacing: 8,
                       children: [
                         if (currentPrayer != null)
-                          Text(
-                            l.prayerBeganAt(time(current.time)),
-                            style: TextStyle(
-                              fontSize: 12.5,
-                              color: tokens.featText2,
-                            ),
-                          ),
-                        Text(
-                          l.prayerEndsAt(time(ends)),
-                          style: TextStyle(
-                            fontSize: 12.5,
+                          _BoldTime(
+                            template: l.prayerBeganAt,
+                            time: time(current.time),
                             color: tokens.featText2,
+                            boldColor: foreground,
                           ),
+                        _BoldTime(
+                          template: l.prayerEndsAt,
+                          time: time(ends),
+                          color: tokens.featText2,
+                          boldColor: foreground,
                         ),
                       ],
                     ),
@@ -296,6 +310,38 @@ class PrayerArcHero extends StatelessWidget {
   }
 }
 
+/// "Began **11:57 AM**": the label dim, the clock bold, in any word order.
+class _BoldTime extends StatelessWidget {
+  const _BoldTime({
+    required this.template,
+    required this.time,
+    required this.color,
+    required this.boldColor,
+  });
+  final String Function(String) template;
+  final String time;
+  final Color color;
+  final Color boldColor;
+  @override
+  Widget build(BuildContext context) {
+    const marker = '\u0001';
+    final parts = template(marker).split(marker);
+    return Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(text: parts.first),
+          TextSpan(
+            text: time,
+            style: TextStyle(fontWeight: FontWeight.w600, color: boldColor),
+          ),
+          if (parts.length > 1) TextSpan(text: parts.sublist(1).join(marker)),
+        ],
+      ),
+      style: TextStyle(fontSize: 12.5, color: color),
+    );
+  }
+}
+
 class _ArcEndpoint extends StatelessWidget {
   const _ArcEndpoint({
     required this.label,
@@ -317,7 +363,7 @@ class _ArcEndpoint extends StatelessWidget {
           fontSize: 11.5,
           height: 1.35,
           fontWeight: FontWeight.w500,
-          color: color,
+          color: EquranColors.dark.textPrimary,
         ),
       ),
     ],

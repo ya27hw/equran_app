@@ -393,6 +393,7 @@
   "chooseLocationForNextPrayer": "یک مکان انتخاب کنید تا زمان نماز بعدی در اینجا نمایش داده شود.",
   "prayerTimeTitle": "زمان نماز {prayer}",
   "prayerBeginsIn": "نماز {prayer} شروع می‌شود در {countdown}",
+  "prayerNextIn": "{prayer} در {time} دیگر",
   "@prayerTimeTitle": {
     "placeholders": {
       "prayer": {
@@ -425,7 +426,7 @@
         "type": "int"
       },
       "minutes": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1129,6 +1130,7 @@
   "surahProgress": "پیشرفت سوره‌ها",
   "surahsComplete": "{completed} از {total} سوره کامل شد",
   "showLess": "نمایش کمتر",
+  "showMore": "نمایش بیشتر",
   "showAllSurahs": "نمایش همه {count} سوره",
   "quranCompletions": "ختم‌های قرآن",
   "fullCompletions": "ختم‌های کامل",
@@ -1798,7 +1800,7 @@
         "type": "int"
       },
       "minutes": {
-        "type": "int"
+        "type": "String"
       }
     }
   },

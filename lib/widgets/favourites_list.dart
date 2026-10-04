@@ -140,30 +140,33 @@ class _FavouritesListState extends State<FavouritesList> {
                                 },
                               ),
                             ),
-                            SliverToBoxAdapter(
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                  top: 24,
-                                  bottom: 12,
-                                ),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: _SavedEyebrow(
-                                        '${AppLocalizations.of(context)!.allSaved} · ${items.length}',
+                            if (allItems.isNotEmpty)
+                              SliverToBoxAdapter(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 24,
+                                    bottom: 12,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: _SavedEyebrow(
+                                          '${AppLocalizations.of(context)!.allSaved} · ${items.length}',
+                                        ),
                                       ),
-                                    ),
-                                    Text(
-                                      AppLocalizations.of(context)!.newestFirst,
-                                      style: TextStyle(
-                                        fontSize: 12.5,
-                                        color: context.equranTokens.muted,
+                                      Text(
+                                        AppLocalizations.of(
+                                          context,
+                                        )!.newestFirst,
+                                        style: TextStyle(
+                                          fontSize: 12.5,
+                                          color: context.equranTokens.muted,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
                             if (showEmpty)
                               SliverToBoxAdapter(
                                 child: _BookmarkEmptyState(
@@ -263,7 +266,7 @@ class SavedQuranHeader extends StatelessWidget {
                   ),
                 ),
                 IconButton44(
-                  icon: Icons.search_rounded,
+                  designIcon: 'search',
                   tooltip: l.searchQuran,
                   onPressed: onSearch,
                 ),
@@ -364,6 +367,7 @@ class _BookmarkLibraryHeader extends StatelessWidget {
       ..sort();
     final tokens = context.equranTokens;
     final noCollection = selectedFolder == null && selectedTag == null;
+    final libraryEmpty = totalSavedCount == 0;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -392,11 +396,12 @@ class _BookmarkLibraryHeader extends StatelessWidget {
                 ],
               ),
             ),
-            IconButton44(
-              icon: Icons.folder_open_outlined,
-              tooltip: l.manageFolders,
-              onPressed: onManageFolders,
-            ),
+            if (!libraryEmpty)
+              IconButton44(
+                designIcon: 'folder',
+                tooltip: l.manageFolders,
+                onPressed: onManageFolders,
+              ),
           ],
         ),
         const SizedBox(height: 18),
@@ -406,14 +411,14 @@ class _BookmarkLibraryHeader extends StatelessWidget {
             children: [
               _CollectionTile(
                 label: l.all,
-                icon: Icons.bookmark_border_rounded,
+                icon: 'bookmark',
                 count: allItems.length,
                 selected: noCollection && selected == _SavedAyahFilter.all,
                 onPressed: () => onSelected(_SavedAyahFilter.all),
               ),
               _CollectionTile(
                 label: l.favourites,
-                icon: Icons.favorite_border_rounded,
+                icon: 'heart',
                 count: allItems.where((e) => e.isFavourite).length,
                 selected:
                     noCollection && selected == _SavedAyahFilter.favourites,
@@ -421,7 +426,7 @@ class _BookmarkLibraryHeader extends StatelessWidget {
               ),
               _CollectionTile(
                 label: l.notes,
-                icon: Icons.edit_note_rounded,
+                icon: 'edit',
                 count: allItems.where((e) => e.note.trim().isNotEmpty).length,
                 selected: noCollection && selected == _SavedAyahFilter.notes,
                 onPressed: () => onSelected(_SavedAyahFilter.notes),
@@ -429,7 +434,7 @@ class _BookmarkLibraryHeader extends StatelessWidget {
               for (final folder in folders)
                 _CollectionTile(
                   label: _folderLabel(context, folder),
-                  icon: Icons.folder_outlined,
+                  icon: 'folder',
                   count: allItems.where((e) => e.folder == folder).length,
                   selected: selectedFolder == folder,
                   onPressed: () => onFolderSelected(
@@ -438,7 +443,7 @@ class _BookmarkLibraryHeader extends StatelessWidget {
                 ),
               _CollectionTile(
                 label: l.addNewFolder,
-                icon: Icons.add_rounded,
+                icon: 'plus',
                 dashed: true,
                 onPressed: onCreateFolder,
               ),
@@ -456,6 +461,8 @@ class _BookmarkLibraryHeader extends StatelessWidget {
                     padding: const EdgeInsetsDirectional.only(end: 8),
                     child: ChipButton(
                       '#$tag',
+                      count:
+                          '${allItems.where((e) => e.tags.contains(tag)).length}',
                       selected: selectedTag == tag,
                       onPressed: () =>
                           onTagSelected(selectedTag == tag ? null : tag),
@@ -465,35 +472,38 @@ class _BookmarkLibraryHeader extends StatelessWidget {
             ),
           ),
         ],
-        const SizedBox(height: 16),
-        TextField(
-          key: const Key('saved-search'),
-          controller: searchController,
-          focusNode: searchFocusNode,
-          onChanged: onSearchChanged,
-          style: TextStyle(
-            fontSize: 15,
-            color: context.equranColors.textPrimary,
-          ),
-          decoration: _savedInputDecoration(context, l.searchHintSaved)
-              .copyWith(
-                prefixIcon: Icon(
-                  Icons.search_rounded,
-                  size: 19,
-                  color: tokens.muted,
+        if (!libraryEmpty) ...[
+          const SizedBox(height: 16),
+          TextField(
+            key: const Key('saved-search'),
+            controller: searchController,
+            focusNode: searchFocusNode,
+            onChanged: onSearchChanged,
+            style: TextStyle(
+              fontSize: 15,
+              color: context.equranColors.textPrimary,
+            ),
+            decoration: _savedInputDecoration(context, l.searchHintSaved)
+                .copyWith(
+                  hintStyle: TextStyle(color: tokens.muted, fontSize: 14),
+                  prefixIconConstraints: const BoxConstraints(minWidth: 46),
+                  prefixIcon: Center(
+                    widthFactor: 1,
+                    child: DesignIcon('search', size: 19, color: tokens.muted),
+                  ),
+                  suffixIcon: searchController.text.isEmpty
+                      ? null
+                      : IconButton44(
+                          designIcon: 'x',
+                          tooltip: l.clearSearch,
+                          onPressed: () {
+                            searchController.clear();
+                            onSearchChanged('');
+                          },
+                        ),
                 ),
-                suffixIcon: searchController.text.isEmpty
-                    ? null
-                    : IconButton44(
-                        icon: Icons.close_rounded,
-                        tooltip: l.clearSearch,
-                        onPressed: () {
-                          searchController.clear();
-                          onSearchChanged('');
-                        },
-                      ),
-              ),
-        ),
+          ),
+        ],
       ],
     );
   }
@@ -509,7 +519,7 @@ class _CollectionTile extends StatelessWidget {
     this.dashed = false,
   });
   final String label;
-  final IconData icon;
+  final String icon;
   final VoidCallback onPressed;
   final int? count;
   final bool selected;
@@ -572,9 +582,10 @@ class _CollectionTile extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Icon(
+                          DesignIcon(
                             icon,
                             size: 20,
+                            strokeWidth: 1.7,
                             color: selected ? tokens.goldText : tokens.emText,
                           ),
                           if (count != null)
@@ -582,7 +593,9 @@ class _CollectionTile extends StatelessWidget {
                               '$count',
                               size: 24,
                               height: 1,
-                              color: tokens.muted,
+                              color: count == 0
+                                  ? tokens.muted
+                                  : colors.textPrimary,
                             ),
                         ],
                       ),
@@ -754,11 +767,11 @@ class _BookmarkRowState extends State<_BookmarkRow> {
                                 height: 44,
                               ),
                               padding: EdgeInsets.zero,
-                              icon: Icon(
-                                entry.isFavourite
-                                    ? Icons.favorite_rounded
-                                    : Icons.favorite_border_rounded,
+                              icon: DesignIcon(
+                                'heart',
                                 size: 21,
+                                strokeWidth: 1.6,
+                                filled: entry.isFavourite,
                                 color: entry.isFavourite
                                     ? tokens.gold
                                     : tokens.muted,
@@ -784,8 +797,9 @@ class _BookmarkRowState extends State<_BookmarkRow> {
                               key: ValueKey('saved-menu-${entry.id}'),
                               tooltip: l.folderTagsAndNote,
                               padding: EdgeInsets.zero,
-                              icon: Icon(
-                                Icons.more_horiz_rounded,
+                              icon: DesignIcon(
+                                'dots',
+                                size: 21,
                                 color: tokens.muted,
                               ),
                               onSelected: (action) async {
@@ -829,28 +843,20 @@ class _BookmarkRowState extends State<_BookmarkRow> {
                         ],
                       ),
                       const SizedBox(height: 6),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          quranVerseText(entry.surah, entry.verse),
-                          textDirection: TextDirection.rtl,
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                            fontFamily: fontFamily,
-                            fontFamilyFallback: const ['UthmanicHafs'],
-                            fontSize: 28,
-                            height: 1.9,
-                            color: colors.textPrimary,
-                          ),
+                      _CollapsibleVerse(
+                        arabic: quranVerseText(entry.surah, entry.verse),
+                        arabicStyle: TextStyle(
+                          fontFamily: fontFamily,
+                          fontFamilyFallback: const ['UthmanicHafs'],
+                          fontSize: 28,
+                          height: 1.9,
+                          color: colors.textPrimary,
+                        ),
+                        translation: translation.trim(),
+                        translationStyle: EquranTextStyles.displayTranslation(
+                          context,
                         ),
                       ),
-                      if (translation.trim().isNotEmpty) ...[
-                        const SizedBox(height: 8),
-                        Text(
-                          translation,
-                          style: EquranTextStyles.displayTranslation(context),
-                        ),
-                      ],
                       if (entry.hasNote) ...[
                         const SizedBox(height: 14),
                         Container(
@@ -894,7 +900,7 @@ class _BookmarkRowState extends State<_BookmarkRow> {
                             PillTag(
                               _folderLabel(context, entry.folder),
                               gold: true,
-                              icon: Icons.folder_outlined,
+                              designIcon: 'folder',
                             ),
                             for (final tag in entry.tags) PillTag('#$tag'),
                             Text(
@@ -1018,7 +1024,7 @@ class _BookmarkEmptyState extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
     final isFiltered = isSearching || hasLibraryItems;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 32),
+      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 32),
       child: Column(
         children: [
           CustomPaint(
@@ -1750,6 +1756,122 @@ class _SavedEyebrow extends StatelessWidget {
       style: EquranTextStyles.eyebrow(
         context,
       ).copyWith(fontFamily: 'NotoNaskhArabic', height: 1.6, letterSpacing: 0),
+    );
+  }
+}
+
+/// The verse and its translation, capped at four and three lines with a
+/// "Show more" toggle so one long ayah (such as 2:282) cannot fill the screen.
+class _CollapsibleVerse extends StatefulWidget {
+  const _CollapsibleVerse({
+    required this.arabic,
+    required this.arabicStyle,
+    required this.translation,
+    required this.translationStyle,
+  });
+  final String arabic;
+  final TextStyle arabicStyle;
+  final String translation;
+  final TextStyle translationStyle;
+
+  @override
+  State<_CollapsibleVerse> createState() => _CollapsibleVerseState();
+}
+
+class _CollapsibleVerseState extends State<_CollapsibleVerse> {
+  static const int _arabicLines = 4;
+  static const int _translationLines = 3;
+  bool _expanded = false;
+
+  bool _exceeds(
+    BuildContext context,
+    String text,
+    TextStyle style,
+    int lines,
+    double width,
+    TextDirection direction,
+  ) {
+    final painter = TextPainter(
+      text: TextSpan(text: text, style: style),
+      textDirection: direction,
+      textScaler: MediaQuery.textScalerOf(context),
+      maxLines: lines,
+    )..layout(maxWidth: width);
+    final exceeded = painter.didExceedMaxLines;
+    painter.dispose();
+    return exceeded;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final tokens = context.equranTokens;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+        final longArabic = _exceeds(
+          context,
+          widget.arabic,
+          widget.arabicStyle,
+          _arabicLines,
+          width,
+          TextDirection.rtl,
+        );
+        final longTranslation =
+            widget.translation.isNotEmpty &&
+            _exceeds(
+              context,
+              widget.translation,
+              widget.translationStyle,
+              _translationLines,
+              width,
+              Directionality.of(context),
+            );
+        final clamp = !_expanded;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                widget.arabic,
+                textDirection: TextDirection.rtl,
+                textAlign: TextAlign.right,
+                maxLines: clamp ? _arabicLines : null,
+                overflow: clamp ? TextOverflow.fade : TextOverflow.clip,
+                style: widget.arabicStyle,
+              ),
+            ),
+            if (widget.translation.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Text(
+                widget.translation,
+                maxLines: clamp ? _translationLines : null,
+                overflow: clamp ? TextOverflow.fade : TextOverflow.clip,
+                style: widget.translationStyle,
+              ),
+            ],
+            if (longArabic || longTranslation)
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: TextButton(
+                  onPressed: () => setState(() => _expanded = !_expanded),
+                  style: TextButton.styleFrom(
+                    foregroundColor: tokens.emText,
+                    minimumSize: const Size(0, 44),
+                    padding: EdgeInsets.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    textStyle: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  child: Text(_expanded ? l.showLess : l.showMore),
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 }

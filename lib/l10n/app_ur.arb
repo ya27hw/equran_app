@@ -164,7 +164,7 @@
         "type": "int"
       },
       "minutes": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -962,6 +962,7 @@
   "chooseLocationForNextPrayer": "اگلی نماز کا وقت یہاں دکھانے کے لیے جگہ کا انتخاب کریں۔",
   "prayerTimeTitle": "{prayer} وقت",
   "prayerBeginsIn": "{prayer} شروع ہوتا ہے {countdown} میں",
+  "prayerNextIn": "{prayer} {time} میں",
   "minutesShort": "{minutes} منٹ",
   "hoursMinutesShort": "{hours}h {minutes}m",
   "exactAlarmPermissionOff": "عین الارم کی اجازت بند ہے۔ دعا کی یاد دہانیوں میں تاخیر ہو سکتی ہے۔",
@@ -1409,6 +1410,7 @@
   "surahProgress": "سورہ پیش رفت",
   "surahsComplete": "{completed} / {total} مکمل سورتیں۔",
   "showLess": "کم دکھائیں۔",
+  "showMore": "مزید دکھائیں",
   "showAllSurahs": "تمام {count} سورتیں دکھائیں۔",
   "quranCompletions": "قرآن کی تکمیل",
   "fullCompletions": "مکمل تکمیلات",
@@ -1798,7 +1800,7 @@
         "type": "int"
       },
       "minutes": {
-        "type": "int"
+        "type": "String"
       }
     }
   },

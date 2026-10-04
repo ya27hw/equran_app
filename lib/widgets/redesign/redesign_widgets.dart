@@ -9,3 +9,4 @@ export 'ornament_divider.dart';
 export 'pill_tag.dart';
 export 'prayer_arch.dart';
 export 'salah_glyph.dart';
+export 'design_icon.dart';

@@ -265,7 +265,7 @@ class _PrayerTimeRow extends StatelessWidget {
         : duration.inHours > 0
         ? l.countdownInHoursMinutes(
             duration.inHours,
-            duration.inMinutes.remainder(60),
+            twoDigitMinutes(duration.inMinutes.remainder(60)),
           )
         : l.countdownInMinutes(duration.inMinutes);
     return DecoratedBox(
@@ -292,9 +292,9 @@ class _PrayerTimeRow extends StatelessWidget {
               children: [
                 SizedBox(
                   width: 36,
-                  child: ExcludeSemantics(
+                  child: Center(
                     child: PrayerArch(
-                      assetName: _prayerThumbAsset(entry.kind),
+                      kind: entry.kind,
                       semanticLabel: localizedPrayerName(l, entry.kind),
                     ),
                   ),

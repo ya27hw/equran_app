@@ -3,6 +3,7 @@ import 'package:equran/services/device_capability_profile.dart';
 import 'package:equran/services/device_capability_service.dart';
 import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/widgets/redesign/redesign_widgets.dart';
+import 'package:equran/prayer/prayer_models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'gallery_test_support.dart';
@@ -239,25 +240,24 @@ void main() {
     },
   );
 
-  testWidgets(
-    'prayer arches reuse every bundled illustration and expose names',
-    (tester) async {
-      await pumpGalleryFixture(
-        tester,
-        builder: (context) => gallerySample(context, 'prayer-arch'),
-      );
-      expect(find.byType(PrayerArch), findsNWidgets(6));
-      for (final image in tester.widgetList<Image>(find.byType(Image))) {
-        final resized = image.image as ResizeImage;
-        expect(
-          (resized.imageProvider as AssetImage).assetName,
-          startsWith('assets/media/images/app/'),
-        );
-        expect(resized.width, 42);
-      }
-      expect(tester.takeException(), isNull);
-    },
-  );
+  testWidgets('prayer arches are drawn per prayer and expose names', (
+    tester,
+  ) async {
+    await pumpGalleryFixture(
+      tester,
+      builder: (context) => gallerySample(context, 'prayer-arch'),
+    );
+    expect(find.byType(PrayerArch), findsNWidgets(6));
+    expect(find.byType(Image), findsNothing);
+    final sizes = {
+      for (final arch in tester.widgetList<PrayerArch>(find.byType(PrayerArch)))
+        arch.kind: tester.getSize(find.byWidget(arch)),
+    };
+    // Design sizes: 34 x 42, Sunrise 30 x 37.
+    expect(sizes[PrayerTimeKind.fajr], const Size(34, 42));
+    expect(sizes[PrayerTimeKind.sunrise], const Size(30, 37));
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('debug gallery controls switch palette, scale and direction', (
     tester,

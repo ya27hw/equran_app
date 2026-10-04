@@ -884,12 +884,17 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
+  String prayerNextIn(String prayer, String time) {
+    return '$prayer $time میں';
+  }
+
+  @override
   String minutesShort(int minutes) {
     return '$minutes منٹ';
   }
 
   @override
-  String hoursMinutesShort(int hours, int minutes) {
+  String hoursMinutesShort(int hours, String minutes) {
     return '${hours}h ${minutes}m';
   }
 
@@ -2488,6 +2493,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get showLess => 'کم دکھائیں۔';
 
   @override
+  String get showMore => 'مزید دکھائیں';
+
+  @override
   String showAllSurahs(Object count) {
     return 'تمام $count سورتیں دکھائیں۔';
   }
@@ -3544,7 +3552,7 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
-  String countdownInHoursMinutes(int hours, int minutes) {
+  String countdownInHoursMinutes(int hours, String minutes) {
     return '${hours}h ${minutes}m میں';
   }
 

@@ -70,7 +70,8 @@ Build these once; every page uses them. Each gets a golden test in emerald-dark,
 | `OrnamentDivider` | hairline, 6 px gold diamond, hairline |
 | `SalahGlyph` | disc + check (on time), half disc (late), ring + bar (missed), dot (not logged), dashed ring (not yet). **Shape carries meaning, never colour alone** |
 | `ProgressRing` | exists in `lib/widgets/common/progress_ring.dart`; extend for two concentric rings |
-| `PrayerArch` | reuse the existing prayer illustration PNGs clipped to the arch shape; do not redraw |
+| `PrayerArch` | vector arch, 44 × 54 grid, drawn in code from the preview's gradients and glyphs (sky gradient + sun or moon per prayer; 34 × 42, Sunrise 30 × 37). Do not use the old photo-style webp images: the preview HTML is the source of truth |
+| `DesignIcon` | the design's own stroke icons (`design_icon_data.dart`, generated from the preview SVGs). Use these, not Material icons, so shapes match |
 
 ## Phases 2 to 5: pages (one change per page)
 

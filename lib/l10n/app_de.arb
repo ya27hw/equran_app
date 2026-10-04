@@ -393,6 +393,7 @@
   "chooseLocationForNextPrayer": "Wählen Sie hier einen Ort aus, an dem die nächste Gebetszeit angezeigt werden soll.",
   "prayerTimeTitle": "{prayer} Zeit",
   "prayerBeginsIn": "{prayer} beginnt in {countdown}",
+  "prayerNextIn": "{prayer} in {time}",
   "@prayerTimeTitle": {
     "placeholders": {
       "prayer": {
@@ -425,7 +426,7 @@
         "type": "int"
       },
       "minutes": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -1129,6 +1130,7 @@
   "surahProgress": "Sure Fortschritt",
   "surahsComplete": "{completed} / {total} Suren vollständig",
   "showLess": "Weniger anzeigen",
+  "showMore": "Mehr anzeigen",
   "showAllSurahs": "Alle {count} Suren anzeigen",
   "quranCompletions": "Koran-Vervollständigungen",
   "fullCompletions": "Vollständige Fertigstellungen",
@@ -1798,7 +1800,7 @@
         "type": "int"
       },
       "minutes": {
-        "type": "int"
+        "type": "String"
       }
     }
   },

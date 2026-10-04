@@ -119,6 +119,16 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                   settings: settings,
                 );
 
+          final PrayerDay followingDay = _service.calculateDay(
+            date: DateTime(
+              selectedDate.year,
+              selectedDate.month,
+              selectedDate.day + 1,
+            ),
+            location: location,
+            settings: settings,
+          );
+
           final _PrayerHeroTiming heroTiming;
           final PrayerTimeKind? highlightedPrayer;
           PrayerTimeEntry? heroCurrentPrayer;
@@ -198,15 +208,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                           now: _now,
                           isViewingToday: isViewingToday,
                           periodEndsAt: periodEndsAt,
-                          followingDay: _service.calculateDay(
-                            date: DateTime(
-                              selectedDate.year,
-                              selectedDate.month,
-                              selectedDate.day + 1,
-                            ),
-                            location: location,
-                            settings: settings,
-                          ),
+                          followingDay: followingDay,
                           day: selectedDay,
                           nextPrayer: NextPrayer(
                             entry: heroTiming.entry,
@@ -224,7 +226,10 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                         const SizedBox(height: 20),
                         _buildPrayerGrid(
                           context,
-                          selectedDay,
+                          selectedDay.displayEntries(
+                            followingDay,
+                            now: isViewingToday ? _now : null,
+                          ),
                           highlightedPrayer,
                           settings,
                           isViewingToday,
@@ -377,12 +382,26 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                   button: true,
                   child: InkWell(
                     onTap: () => _selectPrayerDate(day.date),
-                    child: Text(
-                      '${location.displayLabel} · ${hijri.toLocalizedDateString(l.localeName)}',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: context.equranTokens.muted,
-                      ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        DesignIcon(
+                          'pin',
+                          size: 15,
+                          strokeWidth: 1.7,
+                          color: context.equranTokens.muted,
+                        ),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            '${location.cityLabel} · ${hijri.toLocalizedDateString(l.localeName)}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: context.equranTokens.muted,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -392,13 +411,13 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
         ),
         const SizedBox(width: 12),
         IconButton44(
-          icon: Icons.tune,
+          designIcon: 'sliders',
           tooltip: l.prayerTimesSettings,
           onPressed: _openPrayerSettings,
         ),
         const SizedBox(width: 10),
         IconButton44(
-          icon: Icons.explore_outlined,
+          designIcon: 'compass',
           tooltip: l.qibla,
           onPressed: () => Navigator.of(
             context,
@@ -415,15 +434,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
   ) {
     final l = AppLocalizations.of(context)!;
     final tokens = context.equranTokens;
-    final weekdays = [
-      l.mondayShort,
-      l.tuesdayShort,
-      l.wednesdayShort,
-      l.thursdayShort,
-      l.fridayShort,
-      l.saturdayShort,
-      l.sundayShort,
-    ];
+    final narrowWeekday = DateFormat('ccccc', l.localeName);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -469,7 +480,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                                   FittedBox(
                                     fit: BoxFit.scaleDown,
                                     child: Text(
-                                      weekdays[date.weekday - 1],
+                                      narrowWeekday.format(date),
                                       style: TextStyle(
                                         fontSize: 11,
                                         fontWeight: FontWeight.w500,
@@ -530,7 +541,12 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
         children: [
           Row(
             children: [
-              Icon(Icons.dark_mode_outlined, size: 16, color: tokens.goldText),
+              DesignIcon(
+                'moon',
+                size: 16,
+                strokeWidth: 1.7,
+                color: tokens.goldText,
+              ),
               const SizedBox(width: 8),
               RedesignEyebrow(l.theNight),
             ],
@@ -541,7 +557,6 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
             children: [
               Expanded(
                 child: _NightTimeValue(
-                  icon: Icons.nights_stay_outlined,
                   label: l.middleOfNight,
                   value: _formatTime(night.middle, settings.use24HourFormat, l),
                 ),
@@ -549,7 +564,6 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
               const SizedBox(width: 14),
               Expanded(
                 child: _NightTimeValue(
-                  icon: Icons.dark_mode_outlined,
                   label: l.lastThirdStarts,
                   value: _formatTime(
                     night.lastThirdStart,
@@ -625,7 +639,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
 
   Widget _buildPrayerGrid(
     BuildContext context,
-    PrayerDay day,
+    List<PrayerTimeEntry> entries,
     PrayerTimeKind? highlightedKind,
     PrayerTimeSettings settings,
     bool isViewingToday,
@@ -635,7 +649,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
     child: HairlineCard(
       child: Column(
         children: [
-          for (var i = 0; i < day.entries.length; i++) ...[
+          for (var i = 0; i < entries.length; i++) ...[
             if (i > 0)
               Divider(
                 height: 1,
@@ -643,8 +657,8 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                 color: context.equranTokens.hair,
               ),
             PrayerTimeThumbCard(
-              entry: day.entries[i],
-              isActive: highlightedKind == day.entries[i].kind,
+              entry: entries[i],
+              isActive: highlightedKind == entries[i].kind,
               use24HourFormat: settings.use24HourFormat,
               listRow: true,
               periodEndsAt: periodEndsAt,
@@ -672,11 +686,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
         children: [
           Padding(
             padding: const EdgeInsets.only(top: 1),
-            child: Icon(
-              Icons.info_outline_rounded,
-              color: tokens.muted,
-              size: 16,
-            ),
+            child: DesignIcon('info', color: tokens.muted, size: 16),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -987,10 +997,7 @@ String? _heroSubtitleOverrideFor({
         .sunsetProhibited => localizations.prohibitedTimeEndsIn(
       _formatHeroCountdown(currentPeriod.endsAt.difference(now), localizations),
     ),
-    PrayerCurrentPeriodType.beforeDhuhr => localizations.prayerBeginsIn(
-      localizedPrayerName(localizations, nextPrayer.entry.kind),
-      _formatHeroCountdown(nextPrayer.countdown, localizations),
-    ),
+    PrayerCurrentPeriodType.beforeDhuhr ||
     PrayerCurrentPeriodType.normalPrayer => null,
   };
 }
@@ -1000,7 +1007,7 @@ String _formatHeroCountdown(Duration duration, AppLocalizations localizations) {
   final int hours = normalized.inHours;
   final int minutes = normalized.inMinutes.remainder(60);
   if (hours <= 0) return localizations.minutesShort(minutes);
-  return localizations.hoursMinutesShort(hours, minutes);
+  return localizations.hoursMinutesShort(hours, twoDigitMinutes(minutes));
 }
 
 class _NightTimes {
@@ -1568,12 +1575,10 @@ class _LocationSummaryRow extends StatelessWidget {
 
 class _NightTimeValue extends StatelessWidget {
   const _NightTimeValue({
-    required this.icon,
     required this.label,
     required this.value,
     this.gold = false,
   });
-  final IconData icon;
   final String label;
   final String value;
   final bool gold;
@@ -1635,7 +1640,10 @@ String formatPrayerCountdownLabel(
     final int minutes = totalMinutes.remainder(60);
     return minutes == 0
         ? localizations.countdownInHours(hours)
-        : localizations.countdownInHoursMinutes(hours, minutes);
+        : localizations.countdownInHoursMinutes(
+            hours,
+            twoDigitMinutes(minutes),
+          );
   }
   return localizations.countdownInMinutes(totalMinutes);
 }

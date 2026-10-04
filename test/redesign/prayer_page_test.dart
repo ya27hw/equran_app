@@ -138,6 +138,42 @@ void main() {
     },
   );
   testWidgets(
+    'Maghrib and Isha rows are dated to today, never "Passed" before they begin',
+    (tester) async {
+      // Muscat is UTC+4. 13:12, 18:30 and 02:00 local.
+      for (final (now, passedRows, activeKind) in [
+        (DateTime.utc(2026, 10, 4, 9, 12), 2, PrayerTimeKind.dhuhr),
+        (DateTime.utc(2026, 10, 4, 14, 30), 0, PrayerTimeKind.maghrib),
+        (DateTime.utc(2026, 10, 4, 22), 1, PrayerTimeKind.isha),
+      ]) {
+        await tester.pumpWidget(const SizedBox());
+        await pump(tester, now: now);
+        expect(find.text('Passed'), findsNWidgets(passedRows), reason: '$now');
+        final rows = tester
+            .widgetList<PrayerTimeThumbCard>(find.byType(PrayerTimeThumbCard))
+            .toList();
+        expect(rows.where((r) => r.isActive).single.entry.kind, activeKind);
+        final hero = tester.widget<PrayerArcHero>(find.byType(PrayerArcHero));
+        final fajr = hero.day.entryFor(PrayerTimeKind.fajr).time;
+        for (final kind in [PrayerTimeKind.maghrib, PrayerTimeKind.isha]) {
+          final row = rows.singleWhere((r) => r.entry.kind == kind);
+          // Before Fajr the list keeps the evening that just happened; from
+          // Fajr on it looks ahead to this evening (the hero's own Maghrib).
+          expect(
+            row.entry.time,
+            now.isBefore(fajr)
+                ? hero.day.entryFor(kind).time
+                : hero.followingDay.entryFor(kind).time,
+            reason: '$kind at $now',
+          );
+        }
+      }
+      await tester.pumpWidget(const SizedBox());
+      await pump(tester);
+      expect(find.textContaining(RegExp(r'^In 4h \d\dm$')), findsOneWidget);
+    },
+  );
+  testWidgets(
     'week strip drives existing date state; Today restores live period',
     (tester) async {
       await pump(tester);
@@ -164,6 +200,44 @@ void main() {
       await tester.pumpAndSettle();
     },
   );
+  testWidgets('hero says "Asr in 2h 08m" with zero-padded minutes', (
+    tester,
+  ) async {
+    await pump(tester);
+    bool plain(Widget w, RegExp re) =>
+        w is RichText && re.hasMatch(w.text.toPlainText());
+    expect(
+      find.byWidgetPredicate((w) => plain(w, RegExp(r'^Asr in \dh \d\dm$'))),
+      findsOneWidget,
+    );
+    expect(find.textContaining('begins in'), findsNothing);
+    await tester.pumpWidget(const SizedBox());
+    // 02:00 local is before Dhuhr: the hero still reads "<next> in <time>".
+    await pump(tester, now: DateTime.utc(2026, 10, 4, 6, 30));
+    expect(
+      find.byWidgetPredicate(
+        (w) => plain(w, RegExp(r'^Dhuhr in (\dh \d\dm|\d+ min)$')),
+      ),
+      findsOneWidget,
+    );
+  });
+  testWidgets('week strip shows one-letter weekday initials', (tester) async {
+    await pump(tester); // Sunday 4 October 2026 in the centre: Thu to Wed.
+    final initials = [
+      for (var i = -3; i <= 3; i++)
+        tester
+            .widget<Text>(
+              find
+                  .descendant(
+                    of: find.byKey(ValueKey('prayer-week-$i')),
+                    matching: find.byType(Text),
+                  )
+                  .first,
+            )
+            .data,
+    ];
+    expect(initials, ['T', 'F', 'S', 'S', 'M', 'T', 'W']);
+  });
   testWidgets(
     'header and hero keep settings navigation, Qibla remains reachable',
     (tester) async {

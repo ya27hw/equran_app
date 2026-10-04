@@ -883,12 +883,17 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String prayerNextIn(String prayer, String time) {
+    return '$prayer in $time';
+  }
+
+  @override
   String minutesShort(int minutes) {
     return '$minutes min';
   }
 
   @override
-  String hoursMinutesShort(int hours, int minutes) {
+  String hoursMinutesShort(int hours, String minutes) {
     return '${hours}h ${minutes}m';
   }
 
@@ -1455,7 +1460,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'The offline Hisn al Muslim file did not contain any duas.';
 
   @override
-  String get hisnAlMuslim => 'Hisn al Muslim';
+  String get hisnAlMuslim => 'Hisn al-Muslim';
 
   @override
   String arabicCategoriesDuasOffline(int categoryCount, int duaCount) {
@@ -1472,7 +1477,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get removeFavourite => 'Remove favourite';
 
   @override
-  String get saveDuasHere => 'Save duas here for quick access';
+  String get saveDuasHere => 'Saved for quick access';
 
   @override
   String savedDuasCount(int count, String label) {
@@ -2481,6 +2486,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get showLess => 'Show less';
+
+  @override
+  String get showMore => 'Show more';
 
   @override
   String showAllSurahs(Object count) {
@@ -3535,7 +3543,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String countdownInHoursMinutes(int hours, int minutes) {
+  String countdownInHoursMinutes(int hours, String minutes) {
     return 'In ${hours}h ${minutes}m';
   }
 
@@ -4563,7 +4571,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get backToDuas => 'Back to Duas';
 
   @override
-  String get loggedToday => 'Logged today';
+  String get loggedToday => 'Counted today';
 
   @override
   String get theNight => 'The night';

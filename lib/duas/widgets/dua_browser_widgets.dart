@@ -32,20 +32,21 @@ String duaGroupName(AppLocalizations l, DuaGroup group) => switch (group) {
   DuaGroup.misc => l.duaGroupMisc,
 };
 
-IconData duaGroupIcon(DuaGroup group) => switch (group) {
-  DuaGroup.dailyAthkar => Icons.wb_sunny_outlined,
-  DuaGroup.prayer => Icons.front_hand_outlined,
-  DuaGroup.hajjUmrah => Icons.account_balance_outlined,
-  DuaGroup.travel => Icons.location_on_outlined,
-  DuaGroup.protectionHardship => Icons.shield_outlined,
-  DuaGroup.healthIllness => Icons.favorite_border,
-  DuaGroup.deathFunerals => Icons.local_florist_outlined,
-  DuaGroup.repentance => Icons.refresh,
-  DuaGroup.natureWeather => Icons.cloud_outlined,
-  DuaGroup.marriageFamily => Icons.family_restroom_outlined,
-  DuaGroup.remembrancePraise => Icons.auto_awesome_outlined,
-  DuaGroup.socialEtiquette => Icons.emoji_people_outlined,
-  DuaGroup.misc => Icons.more_horiz,
+/// [DesignIcon] name of each theme, as in the design.
+String duaGroupIcon(DuaGroup group) => switch (group) {
+  DuaGroup.dailyAthkar => 'sun',
+  DuaGroup.prayer => 'arch',
+  DuaGroup.hajjUmrah => 'kaaba',
+  DuaGroup.travel => 'pin',
+  DuaGroup.protectionHardship => 'shield',
+  DuaGroup.healthIllness => 'cross',
+  DuaGroup.deathFunerals => 'moon',
+  DuaGroup.repentance => 'drop',
+  DuaGroup.natureWeather => 'cloud',
+  DuaGroup.marriageFamily => 'family',
+  DuaGroup.remembrancePraise => 'sparkle',
+  DuaGroup.socialEtiquette => 'chat',
+  DuaGroup.misc => 'dotsgrid',
 };
 
 class DuaGroupDisc extends StatelessWidget {
@@ -63,9 +64,10 @@ class DuaGroupDisc extends StatelessWidget {
         shape: BoxShape.circle,
         color: gold ? tokens.goldWash : tokens.emWash,
       ),
-      child: Icon(
+      child: DesignIcon(
         duaGroupIcon(group),
         size: size / 2,
+        strokeWidth: size > 44 ? 1.5 : 1.6,
         color: gold ? tokens.goldText : tokens.emText,
       ),
     );
@@ -176,11 +178,14 @@ class DuaSearchField extends StatelessWidget {
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: TextStyle(color: tokens.muted, fontSize: 15),
-        prefixIcon: Icon(Icons.search, size: 19, color: tokens.muted),
+        prefixIcon: Center(
+          widthFactor: 1,
+          child: DesignIcon('search', size: 19, color: tokens.muted),
+        ),
         suffixIcon: controller.text.isEmpty
             ? null
             : IconButton44(
-                icon: Icons.close,
+                designIcon: 'x',
                 tooltip: AppLocalizations.of(context)!.clearSearch,
                 ghost: true,
                 onPressed: controller.clear,
@@ -464,7 +469,12 @@ class DuaCategoryRow extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(width: 14),
-                  Icon(Icons.chevron_right, size: 18, color: tokens.muted),
+                  DesignIcon(
+                    'chev',
+                    size: 18,
+                    color: tokens.muted,
+                    mirrorInRtl: true,
+                  ),
                 ],
               ),
             ),
@@ -533,7 +543,12 @@ class DuaSuggestionHero extends StatelessWidget {
                 const SizedBox(height: 20),
                 FilledButton.icon(
                   onPressed: onBegin,
-                  icon: const Icon(Icons.play_arrow, size: 16),
+                  icon: const DesignIcon(
+                    'play',
+                    size: 16,
+                    strokeWidth: 1.8,
+                    filled: true,
+                  ),
                   label: Text(l.beginAction),
                   style: FilledButton.styleFrom(
                     backgroundColor: tokens.gold,
