@@ -1844,6 +1844,9 @@ class AppLocalizationsUr extends AppLocalizations {
       'پسندیدہ آیات کو جلدی سے، یا پڑھنے کے اختیارات میں سے فولڈرز، ٹیگز اور نجی نوٹ شامل کریں۔';
 
   @override
+  String get note => 'نوٹ';
+
+  @override
   String get privateNote => 'نجی نوٹ';
 
   @override

@@ -1881,6 +1881,9 @@ class AppLocalizationsDe extends AppLocalizations {
       'Fügen Sie Ayahs schnell zu Ihren Favoriten hinzu oder fügen Sie Ordner, Tags und private Notizen aus den Leseoptionen hinzu.';
 
   @override
+  String get note => 'Notiz';
+
+  @override
   String get privateNote => 'Private Notiz';
 
   @override

@@ -1839,6 +1839,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Favourite ayahs quickly, or add folders, tags, and private notes from the reading options.';
 
   @override
+  String get note => 'Note';
+
+  @override
   String get privateNote => 'Private note';
 
   @override

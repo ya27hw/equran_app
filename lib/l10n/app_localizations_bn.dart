@@ -1843,6 +1843,9 @@ class AppLocalizationsBn extends AppLocalizations {
       'প্রিয় আয়াত দ্রুত, অথবা পড়ার বিকল্প থেকে ফোল্ডার, ট্যাগ এবং ব্যক্তিগত নোট যোগ করুন।';
 
   @override
+  String get note => 'নোট';
+
+  @override
   String get privateNote => 'ব্যক্তিগত নোট';
 
   @override

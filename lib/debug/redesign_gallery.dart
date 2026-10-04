@@ -286,11 +286,11 @@ Widget gallerySample(BuildContext context, String name) {
 }
 
 const galleryDockItems = [
-  FloatingDockItem(icon: Icons.home_outlined, label: 'Home'),
-  FloatingDockItem(icon: Icons.menu_book_outlined, label: 'Quran'),
-  FloatingDockItem(icon: Icons.schedule_outlined, label: 'Prayer'),
-  FloatingDockItem(icon: Icons.mosque_outlined, label: 'Duas'),
-  FloatingDockItem(icon: Icons.grid_view_outlined, label: 'More'),
+  FloatingDockItem(icon: 'home', label: 'Home'),
+  FloatingDockItem(icon: 'quran', label: 'Quran'),
+  FloatingDockItem(icon: 'clock', label: 'Prayer'),
+  FloatingDockItem(icon: 'arch', label: 'Duas'),
+  FloatingDockItem(icon: 'grid', label: 'More'),
 ];
 
 class RedesignWidgetGallery extends StatelessWidget {

@@ -955,6 +955,7 @@
   "noMatchingSavedAyahs": "Keine passenden gespeicherten Ayahs.",
   "saveAyahsNotesHere": "Speichern Sie Ayahs, Notizen und Reflexionen hier.",
   "savedAyahLibraryHint": "Fügen Sie Ayahs schnell zu Ihren Favoriten hinzu oder fügen Sie Ordner, Tags und private Notizen aus den Leseoptionen hinzu.",
+  "note": "Notiz",
   "privateNote": "Private Notiz",
   "writeReflectionHint": "Schreiben Sie eine Reflexion ...",
   "createFolder": "Ordner erstellen",

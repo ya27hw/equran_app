@@ -1843,6 +1843,9 @@ class AppLocalizationsFa extends AppLocalizations {
       'با استفاده از گزینه‌های خواندن، می‌توانید آیه‌ها را به سرعت مورد علاقه قرار دهید یا پوشه، برچسب و یادداشت‌های خصوصی اضافه کنید.';
 
   @override
+  String get note => 'یادداشت';
+
+  @override
   String get privateNote => 'یادداشت خصوصی';
 
   @override

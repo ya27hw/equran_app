@@ -3365,6 +3365,12 @@ abstract class AppLocalizations {
   /// **'Favourite ayahs quickly, or add folders, tags, and private notes from the reading options.'**
   String get savedAyahLibraryHint;
 
+  /// No description provided for @note.
+  ///
+  /// In en, this message translates to:
+  /// **'Note'**
+  String get note;
+
   /// No description provided for @privateNote.
   ///
   /// In en, this message translates to:

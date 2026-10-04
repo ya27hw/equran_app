@@ -872,7 +872,7 @@ class _BookmarkRowState extends State<_BookmarkRow> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _SavedEyebrow(l.privateNote),
+                              _SavedEyebrow(l.note),
                               const SizedBox(height: 7),
                               Text(
                                 entry.note,
@@ -1312,7 +1312,7 @@ class _BookmarkEditorState extends State<_BookmarkEditor> {
                 ),
               ),
               const SizedBox(height: 16),
-              _SavedEyebrow(localizations.privateNote),
+              _SavedEyebrow(localizations.note),
               const SizedBox(height: 9),
               TextField(
                 key: const Key('saved-note-editor'),

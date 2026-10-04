@@ -98,6 +98,54 @@ void main() {
     semantics.dispose();
   });
 
+  for (final count in [4, 5, 6]) {
+    for (final direction in TextDirection.values) {
+      testWidgets('dock fits $count items at 1.3 in ${direction.name}', (
+        tester,
+      ) async {
+        final items = [
+          ...galleryDockItems.take(count == 6 ? 4 : count - 1),
+          if (count == 6)
+            const FloatingDockItem(icon: 'calendar', label: 'Reading routine'),
+          const FloatingDockItem(icon: 'grid', label: 'More'),
+        ];
+        final taps = <int>[];
+        await pumpGalleryFixture(
+          tester,
+          textScale: 1.3,
+          direction: direction,
+          samplePadding: false,
+          builder: (_) => FloatingDock(
+            items: items,
+            selectedIndex: count - 1,
+            onSelected: taps.add,
+          ),
+        );
+        expect(find.byType(DesignIcon), findsNWidgets(count));
+        expect(find.byType(Icon), findsNothing);
+        final targets = find.byType(InkWell);
+        for (var index = 0; index < count; index++) {
+          final target = tester.getRect(targets.at(index));
+          final text = tester.renderObject<RenderBox>(
+            find.descendant(of: targets.at(index), matching: find.byType(Text)),
+          );
+          final bounds = Rect.fromPoints(
+            text.localToGlobal(Offset.zero),
+            text.localToGlobal(text.size.bottomRight(Offset.zero)),
+          );
+          expect(bounds.left, greaterThanOrEqualTo(target.left));
+          expect(bounds.right, lessThanOrEqualTo(target.right));
+          expect(bounds.top, greaterThanOrEqualTo(target.top));
+          expect(bounds.bottom, lessThanOrEqualTo(target.bottom));
+          await tester.tap(targets.at(index));
+        }
+        // Includes reselecting the currently selected item.
+        expect(taps, List.generate(count, (index) => index));
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
+
   testWidgets(
     'dock has solid fallback for lite mode, reduce motion and explicit opt-out',
     (tester) async {

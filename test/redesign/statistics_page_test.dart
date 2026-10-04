@@ -88,6 +88,38 @@ void main() {
     expect(tester.takeException(), isNull);
   }
 
+  testWidgets(
+    'Today keeps memorized ayahs and aligns single-line labels at 1.3',
+    (tester) async {
+      final repo = await pump(tester, scale: 1.3);
+      final today = find.byKey(const ValueKey('statistics-today'));
+      final memorized = await repo.getHifzData();
+      expect(
+        find.descendant(
+          of: today,
+          matching: find.text('${memorized.totalMemorized}'),
+        ),
+        findsOneWidget,
+      );
+      final labels = ['Dhikr', 'Duas viewed', 'Memorized'];
+      final rects = <Rect>[];
+      for (final label in labels) {
+        final finder = find.descendant(of: today, matching: find.text(label));
+        expect(tester.widget<Text>(finder).maxLines, 1);
+        final text = tester.renderObject<RenderBox>(finder);
+        rects.add(
+          Rect.fromPoints(
+            text.localToGlobal(Offset.zero),
+            text.localToGlobal(text.size.bottomRight(Offset.zero)),
+          ),
+        );
+      }
+      expect(rects[0].top, closeTo(rects[1].top, 0.01));
+      expect(rects[0].top, closeTo(rects[2].top, 0.01));
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('Hifz load failure leaves Today and prayer logging available', (
     tester,
   ) async {

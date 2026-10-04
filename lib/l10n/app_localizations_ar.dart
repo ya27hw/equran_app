@@ -1829,6 +1829,9 @@ class AppLocalizationsAr extends AppLocalizations {
       'احفظ الآيات بسرعة، أو أضف مجلدات ووسوماً وملاحظات خاصة من خيارات القراءة.';
 
   @override
+  String get note => 'ملاحظة';
+
+  @override
   String get privateNote => 'ملاحظة خاصة';
 
   @override

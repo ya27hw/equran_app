@@ -1855,6 +1855,9 @@ class AppLocalizationsId extends AppLocalizations {
       'Favorit ayah dengan cepat, atau tambahkan folder, tag, dan catatan pribadi dari opsi membaca.';
 
   @override
+  String get note => 'Catatan';
+
+  @override
   String get privateNote => 'Catatan pribadi';
 
   @override

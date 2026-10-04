@@ -1851,6 +1851,9 @@ class AppLocalizationsTr extends AppLocalizations {
       'Ayetleri hızlı bir şekilde favorilerinize ekleyin veya okuma seçeneklerinden klasörler, etiketler ve özel notlar ekleyin.';
 
   @override
+  String get note => 'Not';
+
+  @override
   String get privateNote => 'Özel not';
 
   @override

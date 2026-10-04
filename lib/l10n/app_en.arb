@@ -975,6 +975,7 @@
   "noMatchingSavedAyahs": "No matching saved ayahs.",
   "saveAyahsNotesHere": "Save ayahs, notes, and reflections here.",
   "savedAyahLibraryHint": "Favourite ayahs quickly, or add folders, tags, and private notes from the reading options.",
+  "note": "Note",
   "privateNote": "Private note",
   "writeReflectionHint": "Write a reflection...",
   "createFolder": "Create folder",

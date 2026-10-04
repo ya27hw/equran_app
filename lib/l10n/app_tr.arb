@@ -1235,6 +1235,7 @@
   "noMatchingSavedAyahs": "Eşleşen kayıtlı ayet yok.",
   "saveAyahsNotesHere": "Ayetleri, notları ve düşünceleri buraya kaydedin.",
   "savedAyahLibraryHint": "Ayetleri hızlı bir şekilde favorilerinize ekleyin veya okuma seçeneklerinden klasörler, etiketler ve özel notlar ekleyin.",
+  "note": "Not",
   "privateNote": "Özel not",
   "writeReflectionHint": "Bir yansıma yazın...",
   "createFolder": "Klasör oluştur",

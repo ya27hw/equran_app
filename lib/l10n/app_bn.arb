@@ -1235,6 +1235,7 @@
   "noMatchingSavedAyahs": "কোন মিল সংরক্ষিত আয়াত.",
   "saveAyahsNotesHere": "এখানে আয়াত, নোট এবং প্রতিফলন সংরক্ষণ করুন।",
   "savedAyahLibraryHint": "প্রিয় আয়াত দ্রুত, অথবা পড়ার বিকল্প থেকে ফোল্ডার, ট্যাগ এবং ব্যক্তিগত নোট যোগ করুন।",
+  "note": "নোট",
   "privateNote": "ব্যক্তিগত নোট",
   "writeReflectionHint": "একটি প্রতিফলন লিখুন...",
   "createFolder": "ফোল্ডার তৈরি করুন",

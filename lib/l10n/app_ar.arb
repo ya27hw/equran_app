@@ -555,6 +555,7 @@
   "noMatchingSavedAyahs": "لا توجد آيات محفوظة مطابقة.",
   "saveAyahsNotesHere": "احفظ الآيات والملاحظات والتأملات هنا.",
   "savedAyahLibraryHint": "احفظ الآيات بسرعة، أو أضف مجلدات ووسوماً وملاحظات خاصة من خيارات القراءة.",
+  "note": "ملاحظة",
   "privateNote": "ملاحظة خاصة",
   "writeReflectionHint": "اكتب تأملاً...",
   "createFolder": "إنشاء مجلد",

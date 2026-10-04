@@ -1235,6 +1235,7 @@
   "noMatchingSavedAyahs": "Tidak ada ayah tersimpan yang cocok.",
   "saveAyahsNotesHere": "Simpan ayah, catatan, dan renungan di sini.",
   "savedAyahLibraryHint": "Favorit ayah dengan cepat, atau tambahkan folder, tag, dan catatan pribadi dari opsi membaca.",
+  "note": "Catatan",
   "privateNote": "Catatan pribadi",
   "writeReflectionHint": "Tulis refleksi...",
   "createFolder": "Buat folder",

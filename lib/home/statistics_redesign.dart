@@ -224,6 +224,7 @@ class _StatisticsToday extends StatelessWidget {
                   '${data.tasbihCount}',
                   l.dhikrLabel,
                   size: 22,
+                  singleLine: true,
                 ),
               ),
               const SizedBox(width: 10),
@@ -232,14 +233,16 @@ class _StatisticsToday extends StatelessWidget {
                   '${data.duasViewed}',
                   l.duasViewed,
                   size: 22,
+                  singleLine: true,
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: _CountLabel(
                   mastered?.toString() ?? '—',
-                  '${l.hifzMemorized} · ${l.ayahsLabel}',
+                  l.hifzMemorized,
                   size: 22,
+                  singleLine: true,
                 ),
               ),
             ],
@@ -301,8 +304,15 @@ class _RingMetric extends StatelessWidget {
 }
 
 class _CountLabel extends StatelessWidget {
-  const _CountLabel(this.value, this.label, {this.size = 28, this.color});
+  const _CountLabel(
+    this.value,
+    this.label, {
+    this.size = 28,
+    this.color,
+    this.singleLine = false,
+  });
   final String value, label;
+  final bool singleLine;
   final double size;
   final Color? color;
   @override
@@ -311,7 +321,26 @@ class _CountLabel extends StatelessWidget {
     children: [
       DisplayNumeral(value, size: size, height: 1, color: color),
       const SizedBox(height: 5),
-      _StatsText(label, size: 12),
+      if (singleLine)
+        SizedBox(
+          width: double.infinity,
+          height: MediaQuery.textScalerOf(context).scale(12) * 1.4,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: AlignmentDirectional.centerStart,
+            child: Text(
+              label,
+              maxLines: 1,
+              style: TextStyle(
+                fontSize: 12,
+                height: 1.4,
+                color: context.equranTokens.text2,
+              ),
+            ),
+          ),
+        )
+      else
+        _StatsText(label, size: 12),
     ],
   );
 }

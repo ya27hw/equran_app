@@ -3,17 +3,18 @@ import 'package:equran/services/device_capability_service.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/theme/equran_tokens.dart';
+import 'package:equran/widgets/redesign/design_icon.dart';
 import 'package:flutter/material.dart';
 
 @immutable
 class FloatingDockItem {
   const FloatingDockItem({required this.icon, required this.label});
-  final IconData icon;
+  final String icon;
   final String label;
 }
 
 /// A navigation presentation; the caller owns index and navigation.
-/// Place above the caller's safe-area inset. No page is wired to it yet.
+/// Place above the caller's safe-area inset.
 class FloatingDock extends StatelessWidget {
   const FloatingDock({
     super.key,
@@ -23,6 +24,9 @@ class FloatingDock extends StatelessWidget {
     this.enableBlur = true,
   }) : assert(items.length > 0),
        assert(selectedIndex >= 0 && selectedIndex < items.length);
+  static const double height = 72;
+  static const double bottomGap = 12;
+
   final List<FloatingDockItem> items;
   final int selectedIndex;
   final ValueChanged<int> onSelected;
@@ -66,26 +70,34 @@ class FloatingDock extends StatelessWidget {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(
+                                DesignIcon(
                                   items[i].icon,
                                   size: 22,
+                                  strokeWidth: 1.7,
                                   color: selectedIndex == i
                                       ? tokens.emText
                                       : tokens.muted,
                                 ),
                                 const SizedBox(height: 4),
-                                Text(
-                                  items[i].label,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontFamily: 'Inter',
-                                    fontSize: 11,
-                                    height: 1.2,
-                                    fontWeight: FontWeight.w500,
-                                    color: selectedIndex == i
-                                        ? tokens.emText
-                                        : tokens.muted,
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 2,
+                                  ),
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      items[i].label,
+                                      maxLines: 1,
+                                      style: TextStyle(
+                                        fontFamily: 'Inter',
+                                        fontSize: 11,
+                                        height: 1.2,
+                                        fontWeight: FontWeight.w500,
+                                        color: selectedIndex == i
+                                            ? tokens.emText
+                                            : tokens.muted,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ],
@@ -111,7 +123,7 @@ class FloatingDock extends StatelessWidget {
         return Padding(
           padding: const EdgeInsetsDirectional.symmetric(horizontal: 14),
           child: Container(
-            height: 72,
+            height: height,
             decoration: BoxDecoration(
               borderRadius: radius,
               boxShadow: [

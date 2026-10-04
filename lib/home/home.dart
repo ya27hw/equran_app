@@ -22,6 +22,7 @@ import 'package:equran/services/frame_rate_policy_manager.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/utils/responsive_nav.dart';
 import 'package:equran/widgets/common/tab_entrance.dart';
+import 'package:equran/widgets/redesign/floating_dock.dart';
 import 'package:equran/zakat/zakat_page.dart';
 import 'package:equran/prayer/islamic_calendar_page.dart';
 import 'package:flutter/material.dart';
@@ -321,6 +322,7 @@ class _HomePageState extends State<HomePage> {
           onPointerCancel: (_) => _handleGlobalPointerReleased(),
           onPointerSignal: (_) => AndroidAudioDisplayMode.notifyUserActivity(),
           child: Scaffold(
+            extendBody: true,
             appBar: (destinations[selectedIdx].destination is MorePage)
                 ? AppBar(
                     toolbarHeight: ResponsiveNav.toolbarHeight(context),
@@ -369,9 +371,23 @@ class _HomePageState extends State<HomePage> {
                     ],
                   )
                 : null,
-            body: TabEntrance(
-              key: ValueKey<int>(selectedIdx),
-              child: destinations[selectedIdx].destination,
+            // Reserve the dock and safe-area space for every active page,
+            // including customized destinations and their floating controls.
+            body: Padding(
+              padding: EdgeInsets.only(
+                bottom:
+                    FloatingDock.height +
+                    FloatingDock.bottomGap * 2 +
+                    MediaQuery.viewPaddingOf(context).bottom,
+              ),
+              child: MediaQuery.removePadding(
+                context: context,
+                removeBottom: true,
+                child: TabEntrance(
+                  key: ValueKey<int>(selectedIdx),
+                  child: destinations[selectedIdx].destination,
+                ),
+              ),
             ),
             bottomNavigationBar: _buildBottomNavigation(state, destinations),
           ),
@@ -384,40 +400,52 @@ class _HomePageState extends State<HomePage> {
     NavigationState state,
     List<Destinations> destinations,
   ) {
-    final EquranColors colors = context.equranColors;
     final int selectedIdx = state.selectedIndex.clamp(
       0,
       destinations.length - 1,
     );
 
-    return ClipRRect(
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
-      child: ColoredBox(
-        color: colors.primary,
-        child: SafeArea(
-          top: false,
-          child: NavigationBar(
-            height: 68,
-            selectedIndex: selectedIdx,
-            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-            onDestinationSelected: (int index) {
-              if (index != selectedIdx) {
-                unawaited(HapticFeedback.selectionClick());
-              }
-              _onItemTapped(index);
-            },
-            destinations: destinations.map((d) {
-              return NavigationDestination(
-                icon: d.icon,
-                selectedIcon: d.selectedIcon,
-                label: d.label,
-              );
-            }).toList(),
-          ),
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: FloatingDock.bottomGap),
+        child: FloatingDock(
+          items: [
+            for (int i = 0; i < state.activeNavbarItems.length; i++)
+              FloatingDockItem(
+                icon: _dockIcon(state.activeNavbarItems[i]),
+                label: destinations[i].label,
+              ),
+          ],
+          selectedIndex: selectedIdx,
+          onSelected: (int index) {
+            if (index != selectedIdx) {
+              unawaited(HapticFeedback.selectionClick());
+            }
+            _onItemTapped(index);
+          },
         ),
       ),
     );
   }
+
+  String _dockIcon(NavItem item) => switch (item) {
+    NavItem.home => 'home',
+    NavItem.quran => 'quran',
+    NavItem.prayer => 'clock',
+    NavItem.duas => 'arch',
+    NavItem.more => 'grid',
+    NavItem.statistics => 'trophy',
+    NavItem.qibla => 'compass',
+    NavItem.downloads => 'folder',
+    NavItem.readingPlans => 'calendar',
+    NavItem.hifz => 'book',
+    NavItem.tasbih => 'dotsgrid',
+    NavItem.asmaUlHusna => 'sparkle',
+    NavItem.settings => 'sliders',
+    NavItem.zakat => 'grid',
+    NavItem.calendar => 'calendar',
+  };
 
   void _handleGlobalPointerDown() {
     FrameRatePolicyManager.instance.setPointerActive(
