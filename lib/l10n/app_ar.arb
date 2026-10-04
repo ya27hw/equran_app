@@ -1745,5 +1745,7 @@
   "less": "أقل",
   "khatmProgress": "تقدم الختمة",
   "notLogged": "لم يُسجّل",
-  "mostReadSurah": "السورة الأكثر قراءة"
+  "mostReadSurah": "السورة الأكثر قراءة",
+  "pureBlackBackground": "خلفية سوداء تمامًا",
+  "pureBlackBackgroundSubtitle": "استخدم خلفية سوداء تمامًا في الوضع الداكن مع أي لوحة ألوان."
 }

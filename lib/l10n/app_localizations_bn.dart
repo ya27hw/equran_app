@@ -4666,4 +4666,11 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get mostReadSurah => 'সবচেয়ে বেশি পঠিত সূরা';
+
+  @override
+  String get pureBlackBackground => 'সম্পূর্ণ কালো পটভূমি';
+
+  @override
+  String get pureBlackBackgroundSubtitle =>
+      'ডার্ক মোডে যেকোনো রঙের থিমের সঙ্গে সম্পূর্ণ কালো পটভূমি ব্যবহার করুন।';
 }

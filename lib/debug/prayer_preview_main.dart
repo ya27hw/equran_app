@@ -38,7 +38,11 @@ Future<void> main() async {
     PrayerPreviewApp(
       colors: switch (params['palette']) {
         'emerald-light' => EquranColors.light,
-        'black-dark' => EquranColors.blackDark,
+        'black-dark' => EquranColors.forScheme(
+          'default',
+          true,
+          pureBlackBackground: true,
+        ),
         'red-dark' => EquranColors.redDark,
         _ => EquranColors.dark,
       },
@@ -71,6 +75,7 @@ class PrayerPreviewApp extends StatelessWidget {
           ? Brightness.dark
           : Brightness.light,
       scaffoldBackgroundColor: colors.background,
+      canvasColor: colors.background,
       colorSchemeSeed: colors.primary,
       fontFamily: 'Inter',
       extensions: [colors, EquranTokens.fromColors(colors)],

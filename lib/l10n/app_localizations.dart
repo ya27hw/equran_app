@@ -8168,6 +8168,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Most-read surah'**
   String get mostReadSurah;
+
+  /// No description provided for @pureBlackBackground.
+  ///
+  /// In en, this message translates to:
+  /// **'Pitch-black background'**
+  String get pureBlackBackground;
+
+  /// No description provided for @pureBlackBackgroundSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a pitch-black background in dark mode with any color palette.'**
+  String get pureBlackBackgroundSubtitle;
 }
 
 class _AppLocalizationsDelegate

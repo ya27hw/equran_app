@@ -57,6 +57,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage>
   Timer? _timer;
   late DateTime _now;
   DateTime? _selectedDate;
+  bool _dateControlsExpanded = false;
   bool _isLocating = false;
   String? _activePrayerSnackBarMessage;
 
@@ -214,12 +215,14 @@ class _PrayerTimesPageState extends State<PrayerTimesPage>
                         children: <Widget>[
                           _buildPrayerHeader(context, selectedDay, location),
                           const SizedBox(height: 20),
-                          _buildPrayerInfoCard(
-                            context,
-                            selectedDay,
-                            isViewingToday,
-                          ),
-                          const SizedBox(height: 20),
+                          if (_dateControlsExpanded) ...<Widget>[
+                            _buildPrayerInfoCard(
+                              context,
+                              selectedDay,
+                              isViewingToday,
+                            ),
+                            const SizedBox(height: 20),
+                          ],
                           PrayerHeroCard(
                             useRedesign: true,
                             now: _now,
@@ -398,28 +401,43 @@ class _PrayerTimesPageState extends State<PrayerTimesPage>
                 message: l.selectPrayerDate,
                 child: Semantics(
                   button: true,
+                  expanded: _dateControlsExpanded,
                   child: InkWell(
-                    onTap: () => _selectPrayerDate(day.date),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        DesignIcon(
-                          'pin',
-                          size: 15,
-                          strokeWidth: 1.7,
-                          color: context.equranTokens.muted,
-                        ),
-                        const SizedBox(width: 6),
-                        Flexible(
-                          child: Text(
-                            '${location.cityLabel} · ${hijri.toLocalizedDateString(l.localeName)}',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: context.equranTokens.muted,
+                    key: const Key('prayer-date-toggle'),
+                    onTap: () => setState(() {
+                      _dateControlsExpanded = !_dateControlsExpanded;
+                    }),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(minHeight: 44),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          DesignIcon(
+                            'pin',
+                            size: 15,
+                            strokeWidth: 1.7,
+                            color: context.equranTokens.muted,
+                          ),
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              '${location.cityLabel} · ${hijri.toLocalizedDateString(l.localeName)}',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: context.equranTokens.muted,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 4),
+                          Icon(
+                            _dateControlsExpanded
+                                ? Icons.expand_less_rounded
+                                : Icons.expand_more_rounded,
+                            size: 18,
+                            color: context.equranTokens.muted,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -454,6 +472,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage>
     final tokens = context.equranTokens;
     final narrowWeekday = DateFormat('ccccc', l.localeName);
     return Column(
+      key: const Key('prayer-date-controls'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Row(
@@ -527,16 +546,25 @@ class _PrayerTimesPageState extends State<PrayerTimesPage>
             ],
           ],
         ),
-        if (!isViewingToday)
-          Align(
-            alignment: AlignmentDirectional.centerEnd,
-            child: TextButton(
-              onPressed: () => setState(() {
-                _selectedDate = null;
-              }),
-              child: Text(l.today),
+        Wrap(
+          alignment: WrapAlignment.spaceBetween,
+          children: [
+            TextButton.icon(
+              key: const Key('prayer-calendar-picker'),
+              onPressed: () => _selectPrayerDate(day.date),
+              icon: const Icon(Icons.calendar_month_rounded, size: 18),
+              label: Text(l.selectPrayerDate),
             ),
-          ),
+            if (!isViewingToday)
+              TextButton(
+                onPressed: () => setState(() {
+                  _selectedDate = null;
+                  _dateControlsExpanded = false;
+                }),
+                child: Text(l.today),
+              ),
+          ],
+        ),
       ],
     );
   }
@@ -860,6 +888,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage>
     );
     if (pickedDate == null || !mounted) return;
     setState(() {
+      _dateControlsExpanded = false;
       _selectedDate = DateTime(
         pickedDate.year,
         pickedDate.month,
@@ -870,6 +899,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage>
 
   void _movePrayerDate(DateTime currentDate, int dayDelta) {
     setState(() {
+      _dateControlsExpanded = false;
       _selectedDate = DateTime(
         currentDate.year,
         currentDate.month,

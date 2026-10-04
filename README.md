@@ -145,6 +145,13 @@ flutter run -d windows
 flutter run -d chrome
 ```
 
+## Appearance
+
+In Settings → Appearance, each accent palette supports a **Pitch-black background**
+toggle for dark mode. Light mode keeps its normal background. Older AMOLED selections
+load as Emerald Green with the toggle enabled; turn it off to restore the palette's
+normal dark background. The preference is included in backups.
+
 ## Build Releases
 
 Android split APKs:

@@ -4745,4 +4745,11 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get mostReadSurah => 'Meistgelesene Sure';
+
+  @override
+  String get pureBlackBackground => 'Tiefschwarzer Hintergrund';
+
+  @override
+  String get pureBlackBackgroundSubtitle =>
+      'Im Dunkelmodus einen tiefschwarzen Hintergrund mit jeder Farbpalette verwenden.';
 }

@@ -73,6 +73,7 @@ class BackupService {
     'enableTranslation',
     'showTransliteration',
     'holographicCardsEnabled',
+    'pureBlackBackground',
   };
   static const Set<String> _allowedSettings = <String>{
     ..._boolSettings,
@@ -907,7 +908,8 @@ class BackupService {
         'viewMode' ||
         'enableTranslation' ||
         'showTransliteration' ||
-        'holographicCardsEnabled' => _requireBool(entry.key, entry.value),
+        'holographicCardsEnabled' ||
+        'pureBlackBackground' => _requireBool(entry.key, entry.value),
         'translation' => _requireIntInRange(
           entry.key,
           entry.value,

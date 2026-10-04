@@ -24,6 +24,7 @@ class EquranTextStyles {
     double size = 22,
     double height = 1.4,
     Color? color,
+    FontWeight fontWeight = FontWeight.w500,
   }) =>
       _display(
         context,
@@ -31,6 +32,7 @@ class EquranTextStyles {
         height: height,
         tracking: -0.01,
         color: color,
+        fontWeight: fontWeight,
       ).copyWith(
         fontFeatures: const [
           FontFeature.liningFigures(),
@@ -38,19 +40,22 @@ class EquranTextStyles {
         ],
       );
 
-  static TextStyle displayTranslation(BuildContext context, {Color? color}) =>
-      TextStyle(
-        fontFamily: 'Newsreader',
-        fontSize: 16,
-        height: 1.5,
-        fontWeight: FontWeight.w400,
-        fontStyle: FontStyle.italic,
-        fontVariations: const [
-          FontVariation('opsz', 16),
-          FontVariation('wght', 400),
-        ],
-        color: color ?? context.equranTokens.text2,
-      );
+  static TextStyle displayTranslation(
+    BuildContext context, {
+    Color? color,
+    double size = 16,
+  }) => TextStyle(
+    fontFamily: 'Newsreader',
+    fontSize: size,
+    height: 1.5,
+    fontWeight: FontWeight.w400,
+    fontStyle: FontStyle.italic,
+    fontVariations: [
+      FontVariation('opsz', size),
+      const FontVariation('wght', 400),
+    ],
+    color: color ?? context.equranTokens.text2,
+  );
 
   /// Callers uppercase the label; TextStyle cannot transform string content.
   static TextStyle eyebrow(BuildContext context) => TextStyle(
@@ -68,16 +73,17 @@ class EquranTextStyles {
     required double height,
     required double tracking,
     Color? color,
+    FontWeight fontWeight = FontWeight.w500,
   }) => TextStyle(
     fontFamily: 'Newsreader',
     fontSize: size,
     height: height,
-    fontWeight: FontWeight.w500,
+    fontWeight: fontWeight,
     letterSpacing: size * tracking,
     fontFeatures: const [FontFeature.liningFigures()],
     fontVariations: [
       FontVariation('opsz', size),
-      const FontVariation('wght', 500),
+      FontVariation('wght', fontWeight.value.toDouble()),
     ],
     color: color ?? context.equranColors.textPrimary,
   );

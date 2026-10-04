@@ -2279,5 +2279,7 @@
   "less": "কম",
   "khatmProgress": "খতমের অগ্রগতি",
   "notLogged": "লিপিবদ্ধ হয়নি",
-  "mostReadSurah": "সবচেয়ে বেশি পঠিত সূরা"
+  "mostReadSurah": "সবচেয়ে বেশি পঠিত সূরা",
+  "pureBlackBackground": "সম্পূর্ণ কালো পটভূমি",
+  "pureBlackBackgroundSubtitle": "ডার্ক মোডে যেকোনো রঙের থিমের সঙ্গে সম্পূর্ণ কালো পটভূমি ব্যবহার করুন।"
 }

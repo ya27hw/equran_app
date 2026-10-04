@@ -84,6 +84,23 @@ void main() {
     temp.deleteSync(recursive: true);
   });
 
+  testWidgets('reader translation uses the Daily Dua display font', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_card());
+    final Text text = tester.widget(find.text('Say, He is Allah, One.'));
+    expect(text.style!.fontFamily, 'Newsreader');
+    expect(text.style!.fontStyle, FontStyle.italic);
+    expect(text.style!.fontSize, 16);
+  });
+
+  testWidgets('share translation retains its existing font', (tester) async {
+    await tester.pumpWidget(_card(shareImageMode: true));
+    final Text text = tester.widget(find.text('Say, He is Allah, One.'));
+    expect(text.style!.fontFamily, isNot('Newsreader'));
+    expect(text.style!.fontStyle, isNot(FontStyle.italic));
+  });
+
   testWidgets('aligned glosses make the ayah words tappable', (tester) async {
     await tester.pumpWidget(
       _card(glosses: _fourGlosses, meta: _meta, script: 'qpc-hafs'),

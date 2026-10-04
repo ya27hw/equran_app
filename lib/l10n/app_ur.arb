@@ -2279,5 +2279,7 @@
   "less": "کم",
   "khatmProgress": "ختم کی پیش رفت",
   "notLogged": "درج نہیں کیا گیا",
-  "mostReadSurah": "سب سے زیادہ پڑھی گئی سورت"
+  "mostReadSurah": "سب سے زیادہ پڑھی گئی سورت",
+  "pureBlackBackground": "بالکل سیاہ پس منظر",
+  "pureBlackBackgroundSubtitle": "ڈارک موڈ میں کسی بھی رنگ کی تھیم کے ساتھ بالکل سیاہ پس منظر استعمال کریں۔"
 }

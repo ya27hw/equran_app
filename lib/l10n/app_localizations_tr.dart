@@ -4676,4 +4676,11 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get mostReadSurah => 'En çok okunan sure';
+
+  @override
+  String get pureBlackBackground => 'Tam siyah arka plan';
+
+  @override
+  String get pureBlackBackgroundSubtitle =>
+      'Karanlık modda her renk paletiyle tam siyah arka plan kullanın.';
 }

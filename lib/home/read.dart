@@ -8328,9 +8328,9 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
                       Text(
                         translation,
                         textAlign: TextAlign.justify,
-                        style: theme.textTheme.bodyLarge?.copyWith(
+                        style: EquranTextStyles.displayTranslation(
+                          context,
                           color: colorScheme.onSurface,
-                          height: 1.55,
                         ),
                       ),
                     ],

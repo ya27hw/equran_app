@@ -89,7 +89,11 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
     return AdaptiveTheme(
       light: AppTheme.buildLightTheme(seedColor, schemeId: themeScheme),
-      dark: AppTheme.buildDarkTheme(seedColor, schemeId: themeScheme),
+      dark: AppTheme.buildDarkTheme(
+        seedColor,
+        schemeId: themeScheme,
+        pureBlackBackground: SettingsDB().pureBlackBackground,
+      ),
       initial: savedThemeMode ?? AdaptiveThemeMode.dark,
       overrideMode: savedThemeMode,
       builder: (theme, darkTheme) => MaterialApp(
@@ -163,7 +167,6 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
       AppTheme.fancyBlueScheme => AppTheme.fancyBlueScheme,
       AppTheme.fancyPurpleScheme => AppTheme.fancyPurpleScheme,
       AppTheme.sepiaScheme => AppTheme.sepiaScheme,
-      AppTheme.blackScheme => AppTheme.blackScheme,
       AppTheme.redScheme => AppTheme.redScheme,
       _ => AppTheme.defaultScheme,
     };

@@ -21,6 +21,13 @@ class SettingsDB extends BaseDB {
     quran.setQuranTextAssetBase('assets/data/quran/text/$activeStyle');
   }
 
+  /// Old AMOLED selections become the default accent with pure black enabled.
+  /// Keep this fallback for older backups as well as existing installations.
+  bool get pureBlackBackground {
+    final dynamic saved = get('pureBlackBackground');
+    return saved is bool ? saved : get('themeScheme') == 'black';
+  }
+
   /// Getter for tracking the script style preference key
   String get quranScriptStyle {
     final dynamic raw = get('quran_script_style', defaultValue: 'qpc-hafs');

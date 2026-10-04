@@ -2512,5 +2512,7 @@
   "mostReadSurah": "Most-read surah",
   "@mostReadSurah": {
     "description": "Statistics label for the surah read most often."
-  }
+  },
+  "pureBlackBackground": "Pitch-black background",
+  "pureBlackBackgroundSubtitle": "Use a pitch-black background in dark mode with any color palette."
 }

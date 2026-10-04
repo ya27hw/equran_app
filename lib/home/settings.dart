@@ -1174,7 +1174,11 @@ class _SettingsPageState extends State<SettingsPage> {
 
     AdaptiveTheme.of(context).setTheme(
       light: AppTheme.buildLightTheme(color, schemeId: themeScheme),
-      dark: AppTheme.buildDarkTheme(color, schemeId: themeScheme),
+      dark: AppTheme.buildDarkTheme(
+        color,
+        schemeId: themeScheme,
+        pureBlackBackground: SettingsDB().pureBlackBackground,
+      ),
     );
     AdaptiveTheme.of(context).setThemeMode(themeMode);
   }
@@ -1185,7 +1189,6 @@ class _SettingsPageState extends State<SettingsPage> {
       AppTheme.fancyBlueScheme => AppTheme.fancyBlueScheme,
       AppTheme.fancyPurpleScheme => AppTheme.fancyPurpleScheme,
       AppTheme.sepiaScheme => AppTheme.sepiaScheme,
-      AppTheme.blackScheme => AppTheme.blackScheme,
       AppTheme.redScheme => AppTheme.redScheme,
       _ => AppTheme.defaultScheme,
     };

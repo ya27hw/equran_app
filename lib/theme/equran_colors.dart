@@ -52,6 +52,34 @@ class EquranColors extends ThemeExtension<EquranColors> {
   final Color warningSurface;
   final Color shadow;
 
+  /// Resolve the accent palette independently of the dark-background preference.
+  /// The former `black` palette remains readable in older settings and backups.
+  static EquranColors forScheme(
+    String? scheme,
+    bool isDark, {
+    bool? pureBlackBackground,
+  }) {
+    final EquranColors colors = isDark
+        ? switch (scheme) {
+            'fancyBlue' => fancyBlueDark,
+            'fancyPurple' => fancyPurpleDark,
+            'sepia' => sepiaDark,
+            'red' => redDark,
+            _ => dark,
+          }
+        : switch (scheme) {
+            'fancyBlue' => fancyBlueLight,
+            'fancyPurple' => fancyPurpleLight,
+            'sepia' => sepiaLight,
+            'red' => redLight,
+            _ => light,
+          };
+    final bool pureBlack = pureBlackBackground ?? scheme == 'black';
+    return isDark && pureBlack
+        ? colors.copyWith(background: Colors.black, surfaceSoft: Colors.black)
+        : colors;
+  }
+
   static const EquranColors light = EquranColors(
     background: Color(0xFFFAFAF7),
     surface: Color(0xFFFFFFFF),

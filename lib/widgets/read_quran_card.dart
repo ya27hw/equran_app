@@ -589,11 +589,17 @@ class ReadQuranCard extends StatelessWidget {
                   child: Text(
                     translation,
                     textAlign: TextAlign.justify,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontSize: fontSizeTranslation,
-                      color: colorScheme.onSurfaceVariant,
-                      height: 1.55,
-                    ),
+                    style: shareImageMode
+                        ? theme.textTheme.bodyLarge?.copyWith(
+                            fontSize: fontSizeTranslation,
+                            color: colorScheme.onSurfaceVariant,
+                            height: 1.55,
+                          )
+                        : EquranTextStyles.displayTranslation(
+                            context,
+                            size: fontSizeTranslation,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
                   ),
                 ),
               ],

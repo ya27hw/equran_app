@@ -4668,4 +4668,11 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get mostReadSurah => 'سب سے زیادہ پڑھی گئی سورت';
+
+  @override
+  String get pureBlackBackground => 'بالکل سیاہ پس منظر';
+
+  @override
+  String get pureBlackBackgroundSubtitle =>
+      'ڈارک موڈ میں کسی بھی رنگ کی تھیم کے ساتھ بالکل سیاہ پس منظر استعمال کریں۔';
 }

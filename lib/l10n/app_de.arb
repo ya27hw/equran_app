@@ -2314,5 +2314,7 @@
   "less": "Weniger",
   "khatmProgress": "Khatm-Fortschritt",
   "notLogged": "Nicht erfasst",
-  "mostReadSurah": "Meistgelesene Sure"
+  "mostReadSurah": "Meistgelesene Sure",
+  "pureBlackBackground": "Tiefschwarzer Hintergrund",
+  "pureBlackBackgroundSubtitle": "Im Dunkelmodus einen tiefschwarzen Hintergrund mit jeder Farbpalette verwenden."
 }

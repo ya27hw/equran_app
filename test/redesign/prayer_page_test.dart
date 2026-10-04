@@ -1,6 +1,7 @@
 import 'package:equran/backend/settings_db.dart';
 import 'package:equran/debug/prayer_preview_main.dart';
 import 'package:equran/prayer/prayer_arc_hero.dart';
+import 'package:equran/prayer/prayer_clock_text.dart';
 import 'package:equran/prayer/prayer_sky_scene.dart';
 import 'package:equran/prayer/prayer_sky_painter.dart';
 import 'package:equran/prayer/prayer_hero_card.dart';
@@ -13,6 +14,7 @@ import 'package:equran/prayer/qibla_page.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/widgets/redesign/redesign_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -158,6 +160,9 @@ void main() {
       final initial = tester
           .widget<PrayerHeroCard>(find.byType(PrayerHeroCard))
           .day!;
+      expect(find.byKey(const Key('prayer-date-controls')), findsNothing);
+      await tester.tap(find.byKey(const Key('prayer-date-toggle')));
+      await tester.pumpAndSettle();
       await tester.tap(find.byKey(const ValueKey('prayer-week-2')));
       await tester.pumpAndSettle();
       var hero = tester.widget<PrayerHeroCard>(find.byType(PrayerHeroCard));
@@ -165,12 +170,16 @@ void main() {
       expect(hero.isViewingToday, isFalse);
       expect(find.textContaining('Began '), findsNothing);
       expect(find.byType(PrayerTimeThumbCard), findsNWidgets(6));
+      expect(find.byKey(const Key('prayer-date-controls')), findsNothing);
+      await tester.tap(find.byKey(const Key('prayer-date-toggle')));
+      await tester.pumpAndSettle();
       await tester.tap(find.widgetWithText(TextButton, 'Today'));
       await tester.pumpAndSettle();
       hero = tester.widget<PrayerHeroCard>(find.byType(PrayerHeroCard));
       expect(hero.isViewingToday, isTrue);
-      final caption = find.byTooltip('Select prayer date').first;
-      await tester.tap(caption);
+      await tester.tap(find.byKey(const Key('prayer-date-toggle')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('prayer-calendar-picker')));
       await tester.pumpAndSettle();
       expect(find.byType(DatePickerDialog), findsOneWidget);
       await tester.tap(find.text('Cancel'));
@@ -200,6 +209,8 @@ void main() {
   });
   testWidgets('week strip shows one-letter weekday initials', (tester) async {
     await pump(tester); // Sunday 4 October 2026 in the centre: Thu to Wed.
+    await tester.tap(find.byKey(const Key('prayer-date-toggle')));
+    await tester.pumpAndSettle();
     final initials = [
       for (var i = -3; i <= 3; i++)
         tester
@@ -214,6 +225,46 @@ void main() {
             .data,
     ];
     expect(initials, ['T', 'F', 'S', 'S', 'M', 'T', 'W']);
+  });
+  testWidgets('prayer clocks and countdown minutes render in bold', (
+    tester,
+  ) async {
+    await pump(tester);
+    final clockDigits = find.descendant(
+      of: find.byType(PrayerClockText),
+      matching: find.byType(DisplayNumeral),
+    );
+    expect(clockDigits, findsWidgets);
+    for (final digits in tester.widgetList<DisplayNumeral>(clockDigits)) {
+      expect(digits.fontWeight, FontWeight.w700);
+    }
+    final countdowns = tester.widgetList<Text>(
+      find.byWidgetPredicate(
+        (w) => w is Text && (w.data?.startsWith('In ') ?? false),
+      ),
+    );
+    expect(countdowns, isNotEmpty);
+    for (final countdown in countdowns) {
+      expect(countdown.style!.fontWeight, FontWeight.w700);
+    }
+    final heroText = tester.widget<RichText>(
+      find.byWidgetPredicate(
+        (w) => w is RichText && w.text.toPlainText().startsWith('Asr in '),
+      ),
+    );
+    var checkedMinutes = false;
+    heroText.text.visitChildren((span) {
+      if (RegExp(r'^\dh \d\dm$').hasMatch(span.toPlainText())) {
+        expect(span.style!.fontWeight, FontWeight.w700);
+        expect(
+          span.style!.fontVariations,
+          contains(const FontVariation('wght', 700)),
+        );
+        checkedMinutes = true;
+      }
+      return true;
+    });
+    expect(checkedMinutes, isTrue);
   });
   testWidgets(
     'header and hero keep settings navigation, Qibla remains reachable',
@@ -331,7 +382,12 @@ void main() {
   for (final (name, colors, scale, locale) in [
     ('emerald-dark', EquranColors.dark, 1.0, const Locale('en')),
     ('emerald-light', EquranColors.light, 1.0, const Locale('en')),
-    ('black-dark', EquranColors.blackDark, 1.0, const Locale('en')),
+    (
+      'black-dark',
+      EquranColors.forScheme('default', true, pureBlackBackground: true),
+      1.0,
+      const Locale('en'),
+    ),
     ('red-dark', EquranColors.redDark, 1.0, const Locale('en')),
     ('scale-1.3', EquranColors.dark, 1.3, const Locale('en')),
     ('arabic', EquranColors.dark, 1.0, const Locale('ar')),
@@ -339,6 +395,18 @@ void main() {
   ]) {
     testWidgets('Prayer page and night details golden $name', (tester) async {
       await pump(tester, colors: colors, scale: scale, locale: locale);
+      final backdrop = tester.renderObject<RenderPhysicalModel>(
+        find
+            .descendant(
+              of: find.byType(PrayerTimesPage),
+              matching: find.byType(PhysicalModel),
+            )
+            .first,
+      );
+      expect(backdrop.color, colors.background);
+      if (name == 'black-dark') {
+        expect(backdrop.color, Colors.black);
+      }
       await expectLater(
         find.byType(MaterialApp),
         matchesGoldenFile('goldens/prayer-page-$name.png'),

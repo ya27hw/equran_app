@@ -4664,4 +4664,11 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get mostReadSurah => 'سوره با بیشترین خواندن';
+
+  @override
+  String get pureBlackBackground => 'پس‌زمینهٔ کاملاً سیاه';
+
+  @override
+  String get pureBlackBackgroundSubtitle =>
+      'در حالت تیره با هر پالت رنگ از پس‌زمینهٔ کاملاً سیاه استفاده کنید.';
 }

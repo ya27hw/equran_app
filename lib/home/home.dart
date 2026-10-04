@@ -81,15 +81,19 @@ class _HomePageState extends State<HomePage> {
         label = localizations.duas;
       } else if (T == DownloadsPage) {
         label = localizations.downloads;
+        showAppBar = false;
       } else if (T == SettingsPage) {
         label = localizations.settings;
+        showAppBar = false;
       } else if (T == StatisticsPage) {
         label = localizations.statistics;
         showAppBar = false;
       } else if (T == ReadingPlansPage) {
         label = localizations.readingRoutine;
+        showAppBar = false;
       } else if (T == TasbihPage) {
         label = localizations.tasbih;
+        showAppBar = false;
       } else if (T == AsmaUlHusnaPage) {
         label = localizations.asmaUlHusna;
       } else if (T == QiblaPage) {
@@ -97,8 +101,10 @@ class _HomePageState extends State<HomePage> {
         showAppBar = false;
       } else if (T == ZakatCalculatorPage) {
         label = 'Zakat';
+        showAppBar = false;
       } else if (T == IslamicCalendarPage) {
         label = 'Calendar';
+        showAppBar = false;
       }
 
       _pushSecondaryPage(

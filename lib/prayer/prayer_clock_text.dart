@@ -27,7 +27,13 @@ class PrayerClockText extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.baseline,
         textBaseline: TextBaseline.alphabetic,
         children: [
-          DisplayNumeral(digits, size: size, height: 1, color: color),
+          DisplayNumeral(
+            digits,
+            size: size,
+            height: 1,
+            color: color,
+            fontWeight: FontWeight.w700,
+          ),
           if (suffix != null) ...[
             const SizedBox(width: 4),
             Text(
@@ -37,7 +43,7 @@ class PrayerClockText extends StatelessWidget {
                 fontFamilyFallback: const ['NotoNaskhArabic'],
                 fontSize: suffixSize,
                 height: 1,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w700,
                 color: context.equranTokens.muted,
               ),
             ),

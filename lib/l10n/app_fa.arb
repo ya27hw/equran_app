@@ -2394,5 +2394,7 @@
   "less": "کمتر",
   "khatmProgress": "پیشرفت ختم",
   "notLogged": "ثبت نشده",
-  "mostReadSurah": "سوره با بیشترین خواندن"
+  "mostReadSurah": "سوره با بیشترین خواندن",
+  "pureBlackBackground": "پس‌زمینهٔ کاملاً سیاه",
+  "pureBlackBackgroundSubtitle": "در حالت تیره با هر پالت رنگ از پس‌زمینهٔ کاملاً سیاه استفاده کنید."
 }

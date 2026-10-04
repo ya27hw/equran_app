@@ -4687,4 +4687,11 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get mostReadSurah => 'Surah yang paling sering dibaca';
+
+  @override
+  String get pureBlackBackground => 'Latar belakang hitam pekat';
+
+  @override
+  String get pureBlackBackgroundSubtitle =>
+      'Gunakan latar belakang hitam pekat dalam mode gelap dengan palet warna apa pun.';
 }

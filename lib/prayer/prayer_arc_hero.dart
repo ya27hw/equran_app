@@ -62,6 +62,7 @@ class PrayerArcHero extends StatelessWidget {
             numeralStyle: EquranTextStyles.displayNumeral(
               context,
               size: 16,
+              fontWeight: FontWeight.w700,
               height: 1,
               color: PrayerSkyScene.foreground,
             ).copyWith(fontFamilyFallback: const ['NotoNaskhArabic']),

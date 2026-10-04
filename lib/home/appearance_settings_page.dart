@@ -50,15 +50,10 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
       color: const Color(0xFFC8475D),
       description: 'Vibrant and modern styling',
     ),
-    _AccentOption(
-      id: AppTheme.blackScheme,
-      name: 'AMOLED',
-      color: const Color(0xFF18A28D),
-      description: 'Ultra dark high-contrast cyan',
-    ),
   ];
 
   String _selectedScheme = AppTheme.defaultScheme;
+  bool _pureBlackBackground = false;
 
   @override
   void initState() {
@@ -73,31 +68,48 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
         AppTheme.fancyBlueScheme => AppTheme.fancyBlueScheme,
         AppTheme.fancyPurpleScheme => AppTheme.fancyPurpleScheme,
         AppTheme.sepiaScheme => AppTheme.sepiaScheme,
-        AppTheme.blackScheme => AppTheme.blackScheme,
         AppTheme.redScheme => AppTheme.redScheme,
         _ => AppTheme.defaultScheme,
       };
+      _pureBlackBackground = SettingsDB().pureBlackBackground;
     });
   }
 
   Future<void> _changeScheme(String schemeId) async {
+    // Save the legacy AMOLED preference before replacing its old palette ID.
+    await SettingsDB().put('pureBlackBackground', _pureBlackBackground);
     await SettingsDB().put("themeScheme", schemeId);
+    if (!mounted) return;
     QpcV4FontService.instance.clearCache();
     setState(() {
       _selectedScheme = schemeId;
     });
 
-    if (mounted) {
-      AdaptiveTheme.of(context).setTheme(
-        light: AppTheme.buildLightTheme(Colors.cyan, schemeId: schemeId),
-        dark: AppTheme.buildDarkTheme(Colors.cyan, schemeId: schemeId),
-      );
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          unawaited(PrayerWidgetService.refreshWidget(context: context));
-        }
-      });
-    }
+    _applyTheme();
+  }
+
+  Future<void> _changePureBlackBackground(bool enabled) async {
+    await SettingsDB().put('pureBlackBackground', enabled);
+    await SettingsDB().put('themeScheme', _selectedScheme);
+    if (!mounted) return;
+    setState(() => _pureBlackBackground = enabled);
+    _applyTheme();
+  }
+
+  void _applyTheme() {
+    AdaptiveTheme.of(context).setTheme(
+      light: AppTheme.buildLightTheme(Colors.cyan, schemeId: _selectedScheme),
+      dark: AppTheme.buildDarkTheme(
+        Colors.cyan,
+        schemeId: _selectedScheme,
+        pureBlackBackground: _pureBlackBackground,
+      ),
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        unawaited(PrayerWidgetService.refreshWidget(context: context));
+      }
+    });
   }
 
   String _themeModeSettingValue(AdaptiveThemeMode themeMode) {
@@ -167,6 +179,17 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 16),
+          Card(
+            margin: EdgeInsets.zero,
+            child: SwitchListTile.adaptive(
+              key: const Key('pure-black-background-toggle'),
+              title: Text(localizations.pureBlackBackground),
+              subtitle: Text(localizations.pureBlackBackgroundSubtitle),
+              value: _pureBlackBackground,
+              onChanged: _changePureBlackBackground,
+            ),
           ),
           const SizedBox(height: 32),
 

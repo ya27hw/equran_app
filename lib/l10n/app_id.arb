@@ -2279,5 +2279,7 @@
   "less": "Lebih sedikit",
   "khatmProgress": "Kemajuan khatam",
   "notLogged": "Belum dicatat",
-  "mostReadSurah": "Surah yang paling sering dibaca"
+  "mostReadSurah": "Surah yang paling sering dibaca",
+  "pureBlackBackground": "Latar belakang hitam pekat",
+  "pureBlackBackgroundSubtitle": "Gunakan latar belakang hitam pekat dalam mode gelap dengan palet warna apa pun."
 }

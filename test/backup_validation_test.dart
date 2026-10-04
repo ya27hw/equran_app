@@ -2,6 +2,23 @@ import 'package:equran/backend/backup_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('pure black setting survives backup validation and must be boolean', () {
+    final settings = BackupService.validateSettingsForTesting({
+      'themeScheme': 'fancyPurple',
+      'pureBlackBackground': true,
+    });
+    expect(settings['themeScheme'], 'fancyPurple');
+    expect(settings['pureBlackBackground'], isTrue);
+    expect(
+      () => BackupService.validateSettingsForTesting({
+        'pureBlackBackground': 'true',
+      }),
+      throwsA(isA<AppBackupException>()),
+    );
+    expect(BackupService.validateSettingsForTesting({'themeScheme': 'black'}), {
+      'themeScheme': 'black',
+    });
+  });
   test('backup validation preserves safe unknown optional settings', () {
     final Map<String, dynamic> validated =
         BackupService.validateSettingsForTesting(<String, dynamic>{

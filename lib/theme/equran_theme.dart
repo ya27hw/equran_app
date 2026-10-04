@@ -42,6 +42,10 @@ class EquranTheme {
   static ThemeData redDark() => _build(EquranColors.redDark, Brightness.dark);
 
   static ThemeData _build(EquranColors tokens, Brightness brightness) {
+    return fromColors(tokens, brightness);
+  }
+
+  static ThemeData fromColors(EquranColors tokens, Brightness brightness) {
     final bool isDark = brightness == Brightness.dark;
     final ColorScheme colorScheme = ColorScheme(
       brightness: brightness,

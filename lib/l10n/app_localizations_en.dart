@@ -4656,4 +4656,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mostReadSurah => 'Most-read surah';
+
+  @override
+  String get pureBlackBackground => 'Pitch-black background';
+
+  @override
+  String get pureBlackBackgroundSubtitle =>
+      'Use a pitch-black background in dark mode with any color palette.';
 }

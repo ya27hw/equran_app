@@ -246,6 +246,9 @@ class _PrayerTimeRow extends StatelessWidget {
                           status,
                           style: TextStyle(
                             fontSize: 13,
+                            fontWeight: passed
+                                ? FontWeight.w400
+                                : FontWeight.w700,
                             color: isActive ? tokens.emText : tokens.muted,
                           ),
                         ),

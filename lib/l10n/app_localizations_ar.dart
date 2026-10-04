@@ -4589,4 +4589,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get mostReadSurah => 'السورة الأكثر قراءة';
+
+  @override
+  String get pureBlackBackground => 'خلفية سوداء تمامًا';
+
+  @override
+  String get pureBlackBackgroundSubtitle =>
+      'استخدم خلفية سوداء تمامًا في الوضع الداكن مع أي لوحة ألوان.';
 }
