@@ -45,6 +45,9 @@ class DuaCard extends StatelessWidget {
     return ValueListenableBuilder<Box<dynamic>>(
       valueListenable: SettingsDB().listener,
       builder: (BuildContext context, Box<dynamic> settingsBox, Widget? child) {
+        final double translationFontSize =
+            (settingsBox.get('fontSizeTranslation', defaultValue: 12.0) as num)
+                .toDouble();
         final bool showTranslation =
             settingsBox.get('duaShowTranslation', defaultValue: true) as bool;
         final bool showTransliteration =
@@ -138,6 +141,9 @@ class DuaCard extends StatelessWidget {
                             dua.transliteration!,
                             textAlign: TextAlign.justify,
                             style: theme.textTheme.bodyMedium?.copyWith(
+                              fontSize: (translationFontSize - 2)
+                                  .clamp(12.0, 18.0)
+                                  .toDouble(),
                               color: colors.onSurfaceVariant.withAlpha(190),
                               height: 1.45,
                               fontStyle: FontStyle.italic,
@@ -157,6 +163,7 @@ class DuaCard extends StatelessWidget {
                             dua.localizedTranslation(translationLang)!,
                             textAlign: TextAlign.justify,
                             style: theme.textTheme.bodyLarge?.copyWith(
+                              fontSize: translationFontSize,
                               color: colors.onSurfaceVariant,
                               height: 1.55,
                             ),

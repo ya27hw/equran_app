@@ -8,5 +8,6 @@ export 'icon_button44.dart';
 export 'ornament_divider.dart';
 export 'pill_tag.dart';
 export 'prayer_arch.dart';
+export 'redesign_subpage.dart';
 export 'salah_glyph.dart';
 export 'design_icon.dart';

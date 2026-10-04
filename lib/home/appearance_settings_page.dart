@@ -6,6 +6,8 @@ import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/utils/app_radii.dart';
 import 'package:equran/utils/app_theme.dart';
 import 'package:equran/widgets/prayer_widget_service.dart';
+import 'package:equran/widgets/redesign/redesign_widgets.dart'
+    show RedesignSubpage;
 import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
 
@@ -111,10 +113,10 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
     final EquranColors colors = context.equranColors;
     final AdaptiveThemeMode currentMode = AdaptiveTheme.of(context).mode;
 
-    return Scaffold(
-      appBar: AppBar(title: Text(localizations.appearance), centerTitle: true),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    return RedesignSubpage(
+      title: localizations.appearance,
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
         children: <Widget>[
           // Section: Theme Mode
           Text(

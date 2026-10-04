@@ -4,6 +4,7 @@ import 'package:equran/utils/app_radii.dart';
 import 'package:equran/widgets/common/equran_components.dart';
 import 'package:equran/prayer/hijri_calendar.dart';
 import 'package:equran/prayer/prayer_notification_service.dart';
+import 'package:equran/widgets/redesign/redesign_subpage.dart';
 import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
@@ -319,10 +320,10 @@ class _IslamicCalendarPageState extends State<IslamicCalendarPage> {
       ).format(DateTime(2026, 6, 8 + index));
     });
 
-    return Scaffold(
-      backgroundColor: colors.background,
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    return RedesignSubpage(
+      title: localizations.islamicCalendar,
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
         physics: const BouncingScrollPhysics(),
         children: <Widget>[
           // ==================== DATE WIDGET (Header) at the very top ====================

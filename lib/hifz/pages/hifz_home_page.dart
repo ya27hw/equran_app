@@ -1,5 +1,7 @@
 import 'dart:math' as math;
 
+import 'package:equran/widgets/redesign/redesign_widgets.dart'
+    show IconButton44, RedesignSubpage;
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:quran/quran.dart' as quran;
@@ -167,28 +169,16 @@ class _HifzHomePageState extends State<HifzHomePage> {
     final colors = context.equranColors;
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      backgroundColor: colors.background,
-      appBar: AppBar(
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        backgroundColor: Colors.transparent,
-        title: Text(
-          l10n.hifzTitle,
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: colors.textPrimary,
-            fontWeight: FontWeight.w600,
-          ),
+    return RedesignSubpage(
+      title: l10n.hifzTitle,
+      actions: [
+        IconButton44(
+          icon: Icons.settings_outlined,
+          tooltip: l10n.hifzTitle,
+          onPressed: _showSettingsSheet,
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            color: colors.textSecondary,
-            onPressed: _showSettingsSheet,
-          ),
-        ],
-      ),
-      body: SafeArea(
+      ],
+      child: SafeArea(
         child: ValueListenableBuilder<Box<HifzEntry>>(
           valueListenable: HifzDB.entriesListenable,
           builder: (context, box, _) {

@@ -31,7 +31,9 @@ import 'package:equran/backend/qpc_v4_font_service.dart';
 import 'package:equran/backend/backup_service.dart';
 import 'package:equran/prayer/prayer_times_settings_page.dart';
 import 'package:equran/utils/app_theme.dart';
-import 'package:equran/utils/app_radii.dart';
+import 'package:equran/theme/equran_spacing.dart';
+import 'package:equran/widgets/redesign/redesign_widgets.dart';
+import 'package:equran/widgets/redesign/settings_group_card.dart';
 import 'package:equran/utils/library.dart';
 import 'package:equran/utils/quran_display.dart';
 import 'package:equran/widgets/library.dart'
@@ -76,10 +78,16 @@ class _SettingsPageState extends State<SettingsPage> {
     final bool showTranslationControls = cardViewEnabled && translationEnabled;
     final localizations = AppLocalizations.of(context)!;
 
-    return Material(
+    return RedesignSubpage(
+      title: localizations.settings,
       child: ListView(
         physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(0, 8, 0, 24),
+        padding: const EdgeInsets.fromLTRB(
+          EquranSpacing.pagePadding,
+          4,
+          EquranSpacing.pagePadding,
+          32,
+        ),
         children: <Widget>[
           _buildSettingsGroup(
             context: context,
@@ -229,33 +237,13 @@ class _SettingsPageState extends State<SettingsPage> {
     required IconData icon,
     required List<Widget> children,
     bool initiallyExpanded = false,
-  }) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
-    final BorderRadius radius = BorderRadius.circular(AppRadii.medium);
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: colorScheme.surfaceContainerLow,
-          borderRadius: radius,
-          border: Border.all(color: colorScheme.outlineVariant),
-        ),
-        child: ClipRRect(
-          borderRadius: radius,
-          child: ExpansionTile(
-            initiallyExpanded: initiallyExpanded,
-            shape: const Border(),
-            collapsedShape: const Border(),
-            leading: Icon(icon),
-            title: Text(title),
-            subtitle: Text(subtitle),
-            children: children,
-          ),
-        ),
-      ),
-    );
-  }
+  }) => SettingsGroupCard(
+    title: title,
+    subtitle: subtitle,
+    icon: icon,
+    initiallyExpanded: initiallyExpanded,
+    children: children,
+  );
 
   Widget _buildScriptStyleTile(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;

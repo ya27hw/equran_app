@@ -5,8 +5,8 @@ import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/prayer/manual_prayer_location_page.dart';
 import 'package:equran/prayer/prayer_location_service.dart';
 import 'package:equran/prayer/prayer_models.dart';
-import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/utils/app_radii.dart';
+import 'package:equran/widgets/redesign/redesign_subpage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -262,7 +262,6 @@ class _PrayerMapLocationPageState extends State<PrayerMapLocationPage> {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final ColorScheme colors = theme.colorScheme;
-    final EquranColors equranColors = context.equranColors;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
 
     final String locationLabel = widget.isPicker
@@ -278,23 +277,9 @@ class _PrayerMapLocationPageState extends State<PrayerMapLocationPage> {
               widget.initialLocation?.longitude ??
               0.0);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.isPicker ? localizations.chooseOnMap : localizations.qibla,
-        ),
-        backgroundColor: equranColors.background,
-        foregroundColor: equranColors.textPrimary,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        titleTextStyle: theme.textTheme.titleLarge?.copyWith(
-          color: equranColors.textPrimary,
-          fontWeight: FontWeight.w600,
-        ),
-        iconTheme: IconThemeData(color: equranColors.textSecondary),
-        actionsIconTheme: IconThemeData(color: equranColors.textSecondary),
-      ),
-      body: Stack(
+    return RedesignSubpage(
+      title: widget.isPicker ? localizations.chooseOnMap : localizations.qibla,
+      child: Stack(
         children: <Widget>[
           FlutterMap(
             mapController: _mapController,

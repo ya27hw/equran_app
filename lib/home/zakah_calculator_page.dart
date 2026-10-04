@@ -1,3 +1,4 @@
+import 'package:equran/widgets/redesign/redesign_subpage.dart';
 import 'package:flutter/material.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/l10n/app_localizations.dart';
@@ -240,21 +241,9 @@ class _ZakahCalculatorPageState extends State<ZakahCalculatorPage> {
     final bool nisabMet = netWealth >= _nisab;
     final double zakahDue = nisabMet ? netWealth * 0.025 : 0.0;
 
-    return Scaffold(
-      backgroundColor: colors.background,
-      appBar: AppBar(
-        title: Text(_tTitle(lang)),
-        backgroundColor: colors.background,
-        foregroundColor: colors.textPrimary,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        titleTextStyle: theme.textTheme.titleLarge?.copyWith(
-          color: colors.textPrimary,
-          fontWeight: FontWeight.w600,
-        ),
-        iconTheme: IconThemeData(color: colors.textSecondary),
-      ),
-      body: SafeArea(
+    return RedesignSubpage(
+      title: _tTitle(lang),
+      child: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.all(16),

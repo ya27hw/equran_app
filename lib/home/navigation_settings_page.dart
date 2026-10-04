@@ -1,3 +1,5 @@
+import 'package:equran/widgets/redesign/redesign_widgets.dart'
+    show RedesignSubpage;
 import 'package:flutter/material.dart';
 import 'package:equran/backend/library.dart';
 import 'package:equran/theme/equran_colors.dart';
@@ -73,13 +75,13 @@ class NavigationSettingsPage extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final EquranColors colors = context.equranColors;
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.customizeNavigation), centerTitle: true),
-      body: ValueListenableBuilder<NavigationState>(
+    return RedesignSubpage(
+      title: l10n.customizeNavigation,
+      child: ValueListenableBuilder<NavigationState>(
         valueListenable: NavigationBloc.instance,
         builder: (context, state, child) {
           return ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
             physics: const BouncingScrollPhysics(),
             children: <Widget>[
               // Header Card Info

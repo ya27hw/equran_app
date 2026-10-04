@@ -42,26 +42,9 @@ class _DuasCategoryPageState extends State<DuasCategoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    final EquranColors colors = context.equranColors;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.categoryIndex.localizedTitle(context),
-          textDirection: Directionality.of(context),
-          overflow: TextOverflow.ellipsis,
-        ),
-        backgroundColor: colors.background,
-        foregroundColor: colors.textPrimary,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-          color: colors.textPrimary,
-          fontWeight: FontWeight.w600,
-        ),
-        iconTheme: IconThemeData(color: colors.textSecondary),
-        actionsIconTheme: IconThemeData(color: colors.textSecondary),
-      ),
-      body: FutureBuilder<DuaCategory>(
+    return RedesignSubpage(
+      title: widget.categoryIndex.localizedTitle(context),
+      child: FutureBuilder<DuaCategory>(
         future: _categoryFuture,
         builder: (BuildContext context, AsyncSnapshot<DuaCategory> snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
@@ -365,7 +348,7 @@ class _DuasThemePageState extends State<DuasThemePage> {
             categories: widget.categoryIndex,
             now: widget.now,
             builder: (context, suggestion) => ListView(
-              padding: const EdgeInsets.fromLTRB(20, 64, 20, 28),
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
               children: [
                 Center(
                   child: ConstrainedBox(

@@ -8,6 +8,8 @@ import 'package:equran/utils/app_radii.dart';
 import 'package:equran/widgets/common/equran_components.dart';
 import 'package:equran/zakat/zakat_db.dart';
 import 'package:equran/zakat/metal_price_service.dart';
+import 'package:equran/theme/equran_tokens.dart';
+import 'package:equran/widgets/redesign/redesign_subpage.dart';
 import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
@@ -486,73 +488,38 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
     final EquranColors colors = context.equranColors;
     final ThemeData theme = Theme.of(context);
     final localizations = AppLocalizations.of(context)!;
-    final bool showAppBar = widget.showAppBar;
-
-    return Scaffold(
-      backgroundColor: colors.background,
-      appBar: showAppBar
-          ? AppBar(
-              title: Text(localizations.zakatCalculator),
-              centerTitle: true,
-              bottom: TabBar(
-                controller: _tabController,
-                indicatorColor: colors.primary,
-                labelColor: colors.primary,
-                unselectedLabelColor: colors.textMuted,
-                tabs: <Tab>[
-                  Tab(
-                    icon: const Icon(Icons.calculate_outlined),
-                    text: localizations.calculatorTab,
-                  ),
-                  Tab(
-                    icon: const Icon(Icons.history_toggle_off_rounded),
-                    text: localizations.historyTab,
-                  ),
-                ],
+    return RedesignSubpage(
+      title: localizations.zakatCalculator,
+      child: Column(
+        children: <Widget>[
+          TabBar(
+            controller: _tabController,
+            indicatorColor: context.equranTokens.emText,
+            labelColor: context.equranTokens.emText,
+            unselectedLabelColor: context.equranTokens.muted,
+            dividerColor: context.equranTokens.hair,
+            tabs: <Tab>[
+              Tab(
+                icon: const Icon(Icons.calculate_outlined),
+                text: localizations.calculatorTab,
               ),
-            )
-          : null,
-      body: showAppBar
-          ? TabBarView(
+              Tab(
+                icon: const Icon(Icons.history_toggle_off_rounded),
+                text: localizations.historyTab,
+              ),
+            ],
+          ),
+          Expanded(
+            child: TabBarView(
               controller: _tabController,
               children: <Widget>[
                 _buildCalculatorTab(theme, colors),
                 _buildHistoryTab(theme, colors),
               ],
-            )
-          : SafeArea(
-              top: true,
-              bottom: false,
-              child: Column(
-                children: <Widget>[
-                  TabBar(
-                    controller: _tabController,
-                    indicatorColor: colors.primary,
-                    labelColor: colors.primary,
-                    unselectedLabelColor: colors.textMuted,
-                    tabs: <Tab>[
-                      Tab(
-                        icon: const Icon(Icons.calculate_outlined),
-                        text: localizations.calculatorTab,
-                      ),
-                      Tab(
-                        icon: const Icon(Icons.history_toggle_off_rounded),
-                        text: localizations.historyTab,
-                      ),
-                    ],
-                  ),
-                  Expanded(
-                    child: TabBarView(
-                      controller: _tabController,
-                      children: <Widget>[
-                        _buildCalculatorTab(theme, colors),
-                        _buildHistoryTab(theme, colors),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
             ),
+          ),
+        ],
+      ),
     );
   }
 

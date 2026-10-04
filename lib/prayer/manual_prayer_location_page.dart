@@ -1,7 +1,7 @@
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/prayer/prayer_models.dart';
-import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/utils/app_radii.dart';
+import 'package:equran/widgets/redesign/redesign_subpage.dart';
 import 'package:flutter/material.dart';
 
 String? validatePrayerCoordinate(
@@ -78,28 +78,15 @@ class _ManualPrayerLocationPageState extends State<ManualPrayerLocationPage> {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final ColorScheme colors = theme.colorScheme;
-    final EquranColors equranColors = context.equranColors;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(localizations.chooseLocationManually),
-        backgroundColor: equranColors.background,
-        foregroundColor: equranColors.textPrimary,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        titleTextStyle: theme.textTheme.titleLarge?.copyWith(
-          color: equranColors.textPrimary,
-          fontWeight: FontWeight.w600,
-        ),
-        iconTheme: IconThemeData(color: equranColors.textSecondary),
-        actionsIconTheme: IconThemeData(color: equranColors.textSecondary),
-      ),
-      body: Form(
+    return RedesignSubpage(
+      title: localizations.chooseLocationManually,
+      child: Form(
         key: _formKey,
         child: ListView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
+          padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
           children: <Widget>[
             Center(
               child: ConstrainedBox(

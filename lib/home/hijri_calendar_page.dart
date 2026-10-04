@@ -1,3 +1,5 @@
+import 'package:equran/widgets/redesign/redesign_widgets.dart'
+    show IconButton44, RedesignSubpage;
 import 'package:flutter/material.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/l10n/app_localizations.dart';
@@ -342,33 +344,21 @@ class _HijriCalendarPageState extends State<HijriCalendarPage> {
     final String gregRange =
         '${rangeFormat.format(firstDayGregorian)} - ${rangeFormat.format(lastDayGregorian)}';
 
-    return Scaffold(
-      backgroundColor: colors.background,
-      appBar: AppBar(
-        title: Text(_translateTitle(lang)),
-        backgroundColor: colors.background,
-        foregroundColor: colors.textPrimary,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        titleTextStyle: theme.textTheme.titleLarge?.copyWith(
-          color: colors.textPrimary,
-          fontWeight: FontWeight.w600,
+    return RedesignSubpage(
+      title: _translateTitle(lang),
+      actions: [
+        IconButton44(
+          icon: Icons.today_rounded,
+          tooltip: _translateToday(lang),
+          onPressed: () {
+            setState(() {
+              _viewingYear = _todayHijri.year;
+              _viewingMonth = _todayHijri.month;
+            });
+          },
         ),
-        iconTheme: IconThemeData(color: colors.textSecondary),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.today_rounded),
-            tooltip: _translateToday(lang),
-            onPressed: () {
-              setState(() {
-                _viewingYear = _todayHijri.year;
-                _viewingMonth = _todayHijri.month;
-              });
-            },
-          ),
-        ],
-      ),
-      body: SafeArea(
+      ],
+      child: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.all(16),

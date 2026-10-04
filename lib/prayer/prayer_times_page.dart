@@ -200,65 +200,68 @@ class _PrayerTimesPageState extends State<PrayerTimesPage>
           }
 
           return RedesignPageTypography(
-            child: ListView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(20, 64, 20, 28),
-              children: <Widget>[
-                Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 820),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        _buildPrayerHeader(context, selectedDay, location),
-                        const SizedBox(height: 20),
-                        _buildPrayerInfoCard(
-                          context,
-                          selectedDay,
-                          isViewingToday,
-                        ),
-                        const SizedBox(height: 20),
-                        PrayerHeroCard(
-                          useRedesign: true,
-                          now: _now,
-                          isViewingToday: isViewingToday,
-                          periodEndsAt: periodEndsAt,
-                          followingDay: followingDay,
-                          day: selectedDay,
-                          nextPrayer: NextPrayer(
-                            entry: heroTiming.entry,
-                            countdown: heroTiming.countdown,
+            child: SafeArea(
+              bottom: false,
+              child: ListView(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
+                children: <Widget>[
+                  Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 820),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          _buildPrayerHeader(context, selectedDay, location),
+                          const SizedBox(height: 20),
+                          _buildPrayerInfoCard(
+                            context,
+                            selectedDay,
+                            isViewingToday,
                           ),
-                          currentPrayer: heroCurrentPrayer,
-                          titleOverride: heroTitleOverride,
-                          subtitleOverride:
-                              heroSubtitleOverride ??
-                              (isViewingToday
-                                  ? null
-                                  : _formatDate(selectedDate, localizations)),
-                          onTap: _openPrayerSettings,
-                        ),
-                        const SizedBox(height: 20),
-                        _buildPrayerGrid(
-                          context,
-                          selectedDay.displayEntries(
-                            followingDay,
-                            now: isViewingToday ? _now : null,
+                          const SizedBox(height: 20),
+                          PrayerHeroCard(
+                            useRedesign: true,
+                            now: _now,
+                            isViewingToday: isViewingToday,
+                            periodEndsAt: periodEndsAt,
+                            followingDay: followingDay,
+                            day: selectedDay,
+                            nextPrayer: NextPrayer(
+                              entry: heroTiming.entry,
+                              countdown: heroTiming.countdown,
+                            ),
+                            currentPrayer: heroCurrentPrayer,
+                            titleOverride: heroTitleOverride,
+                            subtitleOverride:
+                                heroSubtitleOverride ??
+                                (isViewingToday
+                                    ? null
+                                    : _formatDate(selectedDate, localizations)),
+                            onTap: _openPrayerSettings,
                           ),
-                          highlightedPrayer,
-                          settings,
-                          isViewingToday,
-                          periodEndsAt,
-                        ),
-                        const SizedBox(height: 20),
-                        _buildNightTimesCard(context, selectedDay, settings),
-                        const SizedBox(height: 20),
-                        _buildDisclaimer(context),
-                      ],
+                          const SizedBox(height: 20),
+                          _buildPrayerGrid(
+                            context,
+                            selectedDay.displayEntries(
+                              followingDay,
+                              now: isViewingToday ? _now : null,
+                            ),
+                            highlightedPrayer,
+                            settings,
+                            isViewingToday,
+                            periodEndsAt,
+                          ),
+                          const SizedBox(height: 20),
+                          _buildNightTimesCard(context, selectedDay, settings),
+                          const SizedBox(height: 20),
+                          _buildDisclaimer(context),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },

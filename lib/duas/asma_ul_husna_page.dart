@@ -4,6 +4,8 @@ import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/utils/app_radii.dart';
 import 'package:equran/utils/quran_display.dart';
+import 'package:equran/widgets/redesign/page_typography.dart'
+    show redesignDisplayStyle;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -192,10 +194,20 @@ class _AsmaUlHusnaPageState extends State<AsmaUlHusnaPage> {
               child: SafeArea(
                 bottom: false,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-                  child: _NavSearchField(
-                    controller: _searchController,
-                    focusNode: _searchFocusNode,
+                  padding: const EdgeInsets.fromLTRB(20, 14, 20, 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      Text(
+                        localizations.asmaUlHusna,
+                        style: redesignDisplayStyle(context, size: 32),
+                      ),
+                      const SizedBox(height: 14),
+                      _NavSearchField(
+                        controller: _searchController,
+                        focusNode: _searchFocusNode,
+                      ),
+                    ],
                   ),
                 ),
               ),

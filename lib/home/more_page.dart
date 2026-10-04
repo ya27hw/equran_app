@@ -67,153 +67,162 @@ class MorePage extends StatelessWidget {
     return ColoredBox(
       color: colors.background,
       child: RedesignPageTypography(
-        child: ListView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(
-            EquranSpacing.pagePadding,
-            16,
-            EquranSpacing.pagePadding,
-            32,
-          ),
-          children: <Widget>[
-            Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 860),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    _MoreHero(onOpenReadingPlans: onOpenReadingPlans),
-                    const SizedBox(height: 18),
-                    _MoreGroup(
-                      title: localizations.moreGroupWorship,
-                      items: <_MoreAction>[
-                        _MoreAction(
-                          icon: 'compass',
-                          title: localizations.qibla,
-                          subtitle: localizations.compassAndDirection,
-                          onTap: onOpenQibla,
-                        ),
-                        _MoreAction(
-                          icon: 'beads',
-                          title: localizations.tasbih,
-                          subtitle: localizations.calmDhikrCounter,
-                          onTap: onOpenTasbih,
-                        ),
-                        _MoreAction(
-                          icon: 'diamond',
-                          title: localizations.asmaUlHusna,
-                          subtitle: localizations.the99BeautifulNames,
-                          onTap: onOpenAsmaUlHusna,
-                        ),
-                        _MoreAction(
-                          icon: 'book',
-                          title: localizations.hifz,
-                          subtitle: localizations.hifzSubtitle,
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute<void>(
-                                builder: (BuildContext context) =>
-                                    const HifzHomePage(),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                    _MoreGroup(
-                      title: localizations.moreGroupReadLearn,
-                      items: <_MoreAction>[
-                        _MoreAction(
-                          icon: 'route',
-                          title: localizations.readingRoutine,
-                          subtitle: localizations.plansGoalsProgress,
-                          onTap: onOpenReadingPlans,
-                        ),
-                        _MoreAction(
-                          icon: 'search',
-                          title: localizations.quranSearch,
-                          subtitle: localizations.searchArabicAndTranslation,
-                          onTap: onOpenSearch,
-                        ),
-                        _MoreAction(
-                          icon: 'bars',
-                          title: localizations.statistics,
-                          subtitle: localizations.worshipTrendsAndStreaks,
-                          onTap: onOpenStats,
-                        ),
-                        _MoreAction(
-                          icon: 'download',
-                          title: localizations.downloads,
-                          subtitle: localizations.offlineAudioAndCleanup,
-                          onTap: onOpenDownloads,
-                        ),
-                      ],
-                    ),
-                    _MoreGroup(
-                      title: localizations.moreGroupTools,
-                      items: <_MoreAction>[
-                        _MoreAction(
-                          icon: 'calc',
-                          title: localizations.zakatCalculator,
-                          subtitle: localizations.zakatCalculatorSubtitle,
-                          onTap: onOpenZakat,
-                        ),
-                        _MoreAction(
-                          icon: 'calendar',
-                          title: localizations.islamicCalendar,
-                          subtitle: localizations.islamicCalendarSubtitle,
-                          onTap: onOpenCalendar,
-                        ),
-                      ],
-                    ),
-                    _MoreGroup(
-                      title: localizations.moreGroupApp,
-                      items: <_MoreAction>[
-                        _MoreAction(
-                          icon: 'gear',
-                          title: localizations.settings,
-                          subtitle: localizations.fontsReciterAppBehavior,
-                          onTap: onOpenSettings,
-                        ),
-                        _MoreAction(
-                          icon: Theme.of(context).brightness == Brightness.dark
-                              ? 'moon'
-                              : 'sun',
-                          title: localizations.theme,
-                          subtitle: localizations.switchLightOrNightMode,
-                          onTap: onToggleTheme,
-                          showChevron: false,
-                        ),
-                      ],
-                    ),
-                    _MoreGroup(
-                      title: localizations.moreGroupAbout,
-                      items: <_MoreAction>[
-                        _MoreAction(
-                          icon: 'info',
-                          title: localizations.aboutThisApp,
-                          subtitle: localizations.appDetailsAndVersion,
-                          onTap: () => _showAboutApp(context),
-                        ),
-                        _MoreAction(
-                          icon: 'share',
-                          title: localizations.shareApp,
-                          subtitle: localizations.shareAppSubtitle,
-                          onTap: () => _shareApp(context),
-                        ),
-                        _MoreAction(
-                          icon: 'mail',
-                          title: localizations.feedbackContact,
-                          subtitle: localizations.feedbackContactSubtitle,
-                          onTap: () => _openFeedbackContactPage(context),
-                        ),
-                      ],
-                    ),
-                  ],
+        child: SafeArea(
+          bottom: false,
+          child: ListView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(
+              EquranSpacing.pagePadding,
+              16,
+              EquranSpacing.pagePadding,
+              32,
+            ),
+            children: <Widget>[
+              Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 860),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      Text(
+                        localizations.more,
+                        style: redesignDisplayStyle(context),
+                      ),
+                      const SizedBox(height: 20),
+                      _MoreHero(onOpenReadingPlans: onOpenReadingPlans),
+                      const SizedBox(height: 18),
+                      _MoreGroup(
+                        title: localizations.moreGroupWorship,
+                        items: <_MoreAction>[
+                          _MoreAction(
+                            icon: 'compass',
+                            title: localizations.qibla,
+                            subtitle: localizations.compassAndDirection,
+                            onTap: onOpenQibla,
+                          ),
+                          _MoreAction(
+                            icon: 'beads',
+                            title: localizations.tasbih,
+                            subtitle: localizations.calmDhikrCounter,
+                            onTap: onOpenTasbih,
+                          ),
+                          _MoreAction(
+                            icon: 'diamond',
+                            title: localizations.asmaUlHusna,
+                            subtitle: localizations.the99BeautifulNames,
+                            onTap: onOpenAsmaUlHusna,
+                          ),
+                          _MoreAction(
+                            icon: 'book',
+                            title: localizations.hifz,
+                            subtitle: localizations.hifzSubtitle,
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (BuildContext context) =>
+                                      const HifzHomePage(),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                      _MoreGroup(
+                        title: localizations.moreGroupReadLearn,
+                        items: <_MoreAction>[
+                          _MoreAction(
+                            icon: 'route',
+                            title: localizations.readingRoutine,
+                            subtitle: localizations.plansGoalsProgress,
+                            onTap: onOpenReadingPlans,
+                          ),
+                          _MoreAction(
+                            icon: 'search',
+                            title: localizations.quranSearch,
+                            subtitle: localizations.searchArabicAndTranslation,
+                            onTap: onOpenSearch,
+                          ),
+                          _MoreAction(
+                            icon: 'bars',
+                            title: localizations.statistics,
+                            subtitle: localizations.worshipTrendsAndStreaks,
+                            onTap: onOpenStats,
+                          ),
+                          _MoreAction(
+                            icon: 'download',
+                            title: localizations.downloads,
+                            subtitle: localizations.offlineAudioAndCleanup,
+                            onTap: onOpenDownloads,
+                          ),
+                        ],
+                      ),
+                      _MoreGroup(
+                        title: localizations.moreGroupTools,
+                        items: <_MoreAction>[
+                          _MoreAction(
+                            icon: 'calc',
+                            title: localizations.zakatCalculator,
+                            subtitle: localizations.zakatCalculatorSubtitle,
+                            onTap: onOpenZakat,
+                          ),
+                          _MoreAction(
+                            icon: 'calendar',
+                            title: localizations.islamicCalendar,
+                            subtitle: localizations.islamicCalendarSubtitle,
+                            onTap: onOpenCalendar,
+                          ),
+                        ],
+                      ),
+                      _MoreGroup(
+                        title: localizations.moreGroupApp,
+                        items: <_MoreAction>[
+                          _MoreAction(
+                            icon: 'gear',
+                            title: localizations.settings,
+                            subtitle: localizations.fontsReciterAppBehavior,
+                            onTap: onOpenSettings,
+                          ),
+                          _MoreAction(
+                            icon:
+                                Theme.of(context).brightness == Brightness.dark
+                                ? 'moon'
+                                : 'sun',
+                            title: localizations.theme,
+                            subtitle: localizations.switchLightOrNightMode,
+                            onTap: onToggleTheme,
+                            showChevron: false,
+                          ),
+                        ],
+                      ),
+                      _MoreGroup(
+                        title: localizations.moreGroupAbout,
+                        items: <_MoreAction>[
+                          _MoreAction(
+                            icon: 'info',
+                            title: localizations.aboutThisApp,
+                            subtitle: localizations.appDetailsAndVersion,
+                            onTap: () => _showAboutApp(context),
+                          ),
+                          _MoreAction(
+                            icon: 'share',
+                            title: localizations.shareApp,
+                            subtitle: localizations.shareAppSubtitle,
+                            onTap: () => _shareApp(context),
+                          ),
+                          _MoreAction(
+                            icon: 'mail',
+                            title: localizations.feedbackContact,
+                            subtitle: localizations.feedbackContactSubtitle,
+                            onTap: () => _openFeedbackContactPage(context),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -532,23 +541,10 @@ class _FeedbackContactPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
     final localizations = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(localizations.feedbackContact),
-        backgroundColor: colors.background,
-        foregroundColor: colors.textPrimary,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        titleTextStyle: theme.textTheme.titleLarge?.copyWith(
-          color: colors.textPrimary,
-          fontWeight: FontWeight.w600,
-        ),
-        iconTheme: IconThemeData(color: colors.textSecondary),
-        actionsIconTheme: IconThemeData(color: colors.textSecondary),
-      ),
-      body: ListView(
+    return RedesignSubpage(
+      title: localizations.feedbackContact,
+      child: ListView(
         physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.symmetric(vertical: 8),
         children: <Widget>[

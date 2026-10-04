@@ -162,153 +162,160 @@ class _DuasContent extends StatelessWidget {
         .toList();
     final total = categoryIndex.fold<int>(0, (sum, c) => sum + c.duaCount);
     final groups = DuaCategoryGroupMapper.orderedGroups;
-    return ListView(
-      controller: scrollController,
-      padding: const EdgeInsets.fromLTRB(20, 64, 20, 28),
-      children: [
-        Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 820),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(l.duas, style: duaDisplayStyle(context)),
-                const SizedBox(height: 8),
-                Text(
-                  '${l.hisnAlMuslim} · ${l.duasCount(total)}, ${l.availableOffline.toLowerCase()}',
-                  style: TextStyle(fontSize: 14, color: tokens.muted),
-                ),
-                const SizedBox(height: 20),
-                DuaSearchField(
-                  key: const Key('duas-search'),
-                  controller: searchController,
-                  hint: l.searchCategoryCount(categoryIndex.length),
-                ),
-                if (query.isNotEmpty) ...[
+    return SafeArea(
+      bottom: false,
+      child: ListView(
+        controller: scrollController,
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
+        children: [
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 820),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(l.duas, style: duaDisplayStyle(context)),
+                  const SizedBox(height: 8),
+                  Text(
+                    '${l.hisnAlMuslim} · ${l.duasCount(total)}, ${l.availableOffline.toLowerCase()}',
+                    style: TextStyle(fontSize: 14, color: tokens.muted),
+                  ),
                   const SizedBox(height: 20),
-                  if (visible.isEmpty)
-                    _DuasMessageState(
-                      icon: Icons.search_off,
-                      title: l.noMatchingCategories,
-                      message: l.trySearchingArabicWord,
-                    ),
-                  for (final category in visible)
-                    DuaCategoryRow(
-                      key: ValueKey('dua-search-${category.id}'),
-                      category: category,
-                      position: category.index + 1,
-                      suggestion: suggestion,
-                      onTap: () => _openCategory(context, category),
-                    ),
-                ] else ...[
-                  if (suggestion != null) ...[
+                  DuaSearchField(
+                    key: const Key('duas-search'),
+                    controller: searchController,
+                    hint: l.searchCategoryCount(categoryIndex.length),
+                  ),
+                  if (query.isNotEmpty) ...[
                     const SizedBox(height: 20),
-                    DuaSuggestionHero(
-                      suggestion: suggestion!,
-                      onBegin: () =>
-                          _openCategory(context, suggestion!.category),
-                    ),
-                  ],
-                  const SizedBox(height: 14),
-                  IntrinsicHeight(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(
-                          child: ValueListenableBuilder<Box<dynamic>>(
-                            valueListenable: DuaFavouritesDB().listener,
-                            builder: (context, box, _) => _QuickTile(
-                              key: const Key('duas-favourites'),
-                              label: l.favouriteDuas,
-                              subtitle: l.saveDuasHere,
-                              count: box.length,
-                              icon: 'heart',
-                              filledIcon: true,
-                              gold: true,
-                              onTap: () => Navigator.of(context).push(
-                                MaterialPageRoute<void>(
-                                  builder: (_) => DuasFavouritesPage(
-                                    categoryIndex: categoryIndex,
-                                    repository: repository,
+                    if (visible.isEmpty)
+                      _DuasMessageState(
+                        icon: Icons.search_off,
+                        title: l.noMatchingCategories,
+                        message: l.trySearchingArabicWord,
+                      ),
+                    for (final category in visible)
+                      DuaCategoryRow(
+                        key: ValueKey('dua-search-${category.id}'),
+                        category: category,
+                        position: category.index + 1,
+                        suggestion: suggestion,
+                        onTap: () => _openCategory(context, category),
+                      ),
+                  ] else ...[
+                    if (suggestion != null) ...[
+                      const SizedBox(height: 20),
+                      DuaSuggestionHero(
+                        suggestion: suggestion!,
+                        onBegin: () =>
+                            _openCategory(context, suggestion!.category),
+                      ),
+                    ],
+                    const SizedBox(height: 14),
+                    IntrinsicHeight(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            child: ValueListenableBuilder<Box<dynamic>>(
+                              valueListenable: DuaFavouritesDB().listener,
+                              builder: (context, box, _) => _QuickTile(
+                                key: const Key('duas-favourites'),
+                                label: l.favouriteDuas,
+                                subtitle: l.saveDuasHere,
+                                count: box.length,
+                                icon: 'heart',
+                                filledIcon: true,
+                                gold: true,
+                                onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute<void>(
+                                    builder: (_) => DuasFavouritesPage(
+                                      categoryIndex: categoryIndex,
+                                      repository: repository,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: ValueListenableBuilder<Box<dynamic>>(
-                            valueListenable: DhikrSessionsDB().listener,
-                            builder: (context, box, _) {
-                              final today = now?.call() ?? DateTime.now();
-                              final count = box.values
-                                  .whereType<DhikrSessionEntry>()
-                                  .where(
-                                    (s) =>
-                                        s.startedAt.year == today.year &&
-                                        s.startedAt.month == today.month &&
-                                        s.startedAt.day == today.day,
-                                  )
-                                  .fold<int>(0, (sum, s) => sum + s.count);
-                              return _QuickTile(
-                                key: const Key('duas-tasbih'),
-                                label: l.tasbihAndDhikr,
-                                subtitle: l.loggedToday,
-                                count: count,
-                                icon: 'sparkle',
-                                onTap: () => Navigator.of(context).push(
-                                  MaterialPageRoute<void>(
-                                    builder: (_) =>
-                                        const TasbihPage(showAppBar: true),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: ValueListenableBuilder<Box<dynamic>>(
+                              valueListenable: DhikrSessionsDB().listener,
+                              builder: (context, box, _) {
+                                final today = now?.call() ?? DateTime.now();
+                                final count = box.values
+                                    .whereType<DhikrSessionEntry>()
+                                    .where(
+                                      (s) =>
+                                          s.startedAt.year == today.year &&
+                                          s.startedAt.month == today.month &&
+                                          s.startedAt.day == today.day,
+                                    )
+                                    .fold<int>(0, (sum, s) => sum + s.count);
+                                return _QuickTile(
+                                  key: const Key('duas-tasbih'),
+                                  label: l.tasbihAndDhikr,
+                                  subtitle: l.loggedToday,
+                                  count: count,
+                                  icon: 'sparkle',
+                                  onTap: () => Navigator.of(context).push(
+                                    MaterialPageRoute<void>(
+                                      builder: (_) =>
+                                          const TasbihPage(showAppBar: true),
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
+                                );
+                              },
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 36),
-                  Wrap(
-                    alignment: WrapAlignment.spaceBetween,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      Text(
-                        l.browseByTheme,
-                        style: duaDisplayStyle(context, size: 24, height: 1.15),
-                      ),
-                      Text(
-                        l.themesCount(groups.length),
-                        style: TextStyle(fontSize: 13, color: tokens.muted),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 14),
-                  for (var i = 0; i < groups.length; i += 2) ...[
-                    IntrinsicHeight(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(child: _theme(context, groups[i])),
-                          if (i + 1 < groups.length) ...[
-                            const SizedBox(width: 12),
-                            Expanded(child: _theme(context, groups[i + 1])),
-                          ],
                         ],
                       ),
                     ),
-                    if (i + 2 < groups.length) const SizedBox(height: 12),
+                    const SizedBox(height: 36),
+                    Wrap(
+                      alignment: WrapAlignment.spaceBetween,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        Text(
+                          l.browseByTheme,
+                          style: duaDisplayStyle(
+                            context,
+                            size: 24,
+                            height: 1.15,
+                          ),
+                        ),
+                        Text(
+                          l.themesCount(groups.length),
+                          style: TextStyle(fontSize: 13, color: tokens.muted),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    for (var i = 0; i < groups.length; i += 2) ...[
+                      IntrinsicHeight(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(child: _theme(context, groups[i])),
+                            if (i + 1 < groups.length) ...[
+                              const SizedBox(width: 12),
+                              Expanded(child: _theme(context, groups[i + 1])),
+                            ],
+                          ],
+                        ),
+                      ),
+                      if (i + 2 < groups.length) const SizedBox(height: 12),
+                    ],
                   ],
                 ],
-              ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

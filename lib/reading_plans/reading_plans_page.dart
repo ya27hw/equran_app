@@ -6,6 +6,7 @@ import 'package:equran/reading_plans/routine_progress.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/widgets/common/equran_components.dart';
+import 'package:equran/widgets/redesign/redesign_subpage.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
@@ -20,28 +21,11 @@ class ReadingPlansPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final EquranColors colors = context.equranColors;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      backgroundColor: colors.background,
-      appBar: showAppBar
-          ? AppBar(
-              title: Text(localizations.readingRoutine),
-              centerTitle: true,
-              backgroundColor: colors.background,
-              foregroundColor: colors.textPrimary,
-              elevation: 0,
-              scrolledUnderElevation: 0,
-              titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: colors.textPrimary,
-                fontWeight: FontWeight.w600,
-              ),
-              iconTheme: IconThemeData(color: colors.textSecondary),
-              actionsIconTheme: IconThemeData(color: colors.textSecondary),
-            )
-          : null,
-      body: ValueListenableBuilder<Box<dynamic>>(
+    return RedesignSubpage(
+      title: localizations.readingRoutine,
+      child: ValueListenableBuilder<Box<dynamic>>(
         valueListenable: ReadingPlansDB().listener,
         builder: (BuildContext context, Box<dynamic> box, Widget? child) {
           final List<ReadingPlanEntry> plans =

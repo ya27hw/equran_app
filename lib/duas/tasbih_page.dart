@@ -6,6 +6,8 @@ import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/theme/equran_text_styles.dart';
 import 'package:equran/utils/quran_display.dart';
+import 'package:equran/widgets/redesign/redesign_widgets.dart'
+    show IconButton44, RedesignSubpage;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:equran/l10n/app_localizations.dart';
@@ -64,35 +66,16 @@ class _TasbihPageState extends State<TasbihPage> {
 
   @override
   Widget build(BuildContext context) {
-    final EquranColors colors = context.equranColors;
-
-    final bool showAppBar = widget.showAppBar;
-    return Scaffold(
-      backgroundColor: colors.background,
-      appBar: showAppBar
-          ? AppBar(
-              title: Text(AppLocalizations.of(context)!.tasbih),
-              centerTitle: true,
-              backgroundColor: colors.background.withAlpha(0),
-              foregroundColor: colors.textPrimary,
-              elevation: 0,
-              scrolledUnderElevation: 0,
-              titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: colors.textPrimary,
-                fontWeight: FontWeight.w600,
-              ),
-              iconTheme: IconThemeData(color: colors.textSecondary),
-              actionsIconTheme: IconThemeData(color: colors.textSecondary),
-              actions: <Widget>[
-                IconButton(
-                  tooltip: AppLocalizations.of(context)!.resetCounter,
-                  onPressed: _completionInputLocked ? null : _reset,
-                  icon: const Icon(Icons.refresh_rounded),
-                ),
-              ],
-            )
-          : null,
-      body: ValueListenableBuilder<Box<dynamic>>(
+    return RedesignSubpage(
+      title: AppLocalizations.of(context)!.tasbih,
+      actions: <Widget>[
+        IconButton44(
+          icon: Icons.refresh_rounded,
+          tooltip: AppLocalizations.of(context)!.resetCounter,
+          onPressed: _completionInputLocked ? null : _reset,
+        ),
+      ],
+      child: ValueListenableBuilder<Box<dynamic>>(
         valueListenable: DhikrSessionsDB().listener,
         builder: (context, box, child) {
           final List<DhikrSessionEntry> sessions =
@@ -152,18 +135,6 @@ class _TasbihPageState extends State<TasbihPage> {
                         onHapticsChanged: _setHapticsEnabled,
                       ),
                       const SizedBox(height: 22),
-                      if (!showAppBar)
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton.icon(
-                            onPressed: _completionInputLocked ? null : _reset,
-                            icon: const Icon(Icons.refresh_rounded, size: 18),
-                            label: Text(
-                              AppLocalizations.of(context)!.resetCounter,
-                            ),
-                          ),
-                        ),
-                      if (!showAppBar) const SizedBox(height: 8),
                       TextButton(
                         onPressed: () => _showRecentSessionsSheet(sessions),
                         child: Text(

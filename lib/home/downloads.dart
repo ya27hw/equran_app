@@ -9,6 +9,7 @@ import 'package:equran/utils/app_radii.dart';
 import 'package:equran/utils/downloads_grouping.dart';
 import 'package:equran/utils/quran_display.dart';
 import 'package:equran/widgets/common/equran_components.dart';
+import 'package:equran/widgets/redesign/redesign_subpage.dart';
 import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/backend/playback_cache_service.dart';
@@ -192,156 +193,159 @@ class _DownloadsPageState extends State<DownloadsPage> {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    return FutureBuilder<AudioDownloadsSummary>(
-      future: _summaryFuture,
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
-        }
+    return RedesignSubpage(
+      title: AppLocalizations.of(context)!.downloads,
+      child: FutureBuilder<AudioDownloadsSummary>(
+        future: _summaryFuture,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-        final AudioDownloadsSummary summary = snapshot.data!;
-        final List<ReciterDownloadsGroup> reciterGroups =
-            groupDownloadsByReciter(summary);
+          final AudioDownloadsSummary summary = snapshot.data!;
+          final List<ReciterDownloadsGroup> reciterGroups =
+              groupDownloadsByReciter(summary);
 
-        final List<ReciterDownloadsGroup> filteredGroups = reciterGroups
-            .map((group) {
-              if (_selectedReciterFilter != 'all' &&
-                  group.reciterCode != _selectedReciterFilter) {
-                return null;
-              }
+          final List<ReciterDownloadsGroup> filteredGroups = reciterGroups
+              .map((group) {
+                if (_selectedReciterFilter != 'all' &&
+                    group.reciterCode != _selectedReciterFilter) {
+                  return null;
+                }
 
-              // Filter by category (place of revelation)
-              var filteredSurahs = group.surahs.where((surah) {
-                if (_selectedCategoryFilter == 'all') return true;
-                final place = quran
-                    .getPlaceOfRevelation(surah.surah)
-                    .toLowerCase();
-                final target = _selectedCategoryFilter.toLowerCase();
-                return place == target ||
-                    (place == 'makkah' && target == 'makki') ||
-                    (place == 'madinah' && target == 'madani');
-              }).toList();
+                // Filter by category (place of revelation)
+                var filteredSurahs = group.surahs.where((surah) {
+                  if (_selectedCategoryFilter == 'all') return true;
+                  final place = quran
+                      .getPlaceOfRevelation(surah.surah)
+                      .toLowerCase();
+                  final target = _selectedCategoryFilter.toLowerCase();
+                  return place == target ||
+                      (place == 'makkah' && target == 'makki') ||
+                      (place == 'madinah' && target == 'madani');
+                }).toList();
 
-              var filteredAyahs = group.ayahs.where((ayah) {
-                if (_selectedCategoryFilter == 'all') return true;
-                final place = quran
-                    .getPlaceOfRevelation(ayah.surah)
-                    .toLowerCase();
-                final target = _selectedCategoryFilter.toLowerCase();
-                return place == target ||
-                    (place == 'makkah' && target == 'makki') ||
-                    (place == 'madinah' && target == 'madani');
-              }).toList();
+                var filteredAyahs = group.ayahs.where((ayah) {
+                  if (_selectedCategoryFilter == 'all') return true;
+                  final place = quran
+                      .getPlaceOfRevelation(ayah.surah)
+                      .toLowerCase();
+                  final target = _selectedCategoryFilter.toLowerCase();
+                  return place == target ||
+                      (place == 'makkah' && target == 'makki') ||
+                      (place == 'madinah' && target == 'madani');
+                }).toList();
 
-              // Filter by surah
-              if (_selectedSurahFilter != null) {
-                filteredSurahs = filteredSurahs
-                    .where((s) => s.surah == _selectedSurahFilter)
-                    .toList();
-                filteredAyahs = filteredAyahs
-                    .where((a) => a.surah == _selectedSurahFilter)
-                    .toList();
-              }
+                // Filter by surah
+                if (_selectedSurahFilter != null) {
+                  filteredSurahs = filteredSurahs
+                      .where((s) => s.surah == _selectedSurahFilter)
+                      .toList();
+                  filteredAyahs = filteredAyahs
+                      .where((a) => a.surah == _selectedSurahFilter)
+                      .toList();
+                }
 
-              // Filter by type (surahs only / ayahs only)
-              if (_selectedTypeFilter == 'surahs') {
-                filteredAyahs = [];
-              } else if (_selectedTypeFilter == 'ayahs') {
-                filteredSurahs = [];
-              }
+                // Filter by type (surahs only / ayahs only)
+                if (_selectedTypeFilter == 'surahs') {
+                  filteredAyahs = [];
+                } else if (_selectedTypeFilter == 'ayahs') {
+                  filteredSurahs = [];
+                }
 
-              // Apply search
-              if (_searchQuery.isNotEmpty) {
-                final query = _searchQuery.toLowerCase();
-                filteredSurahs = filteredSurahs
-                    .where((s) => s.title.toLowerCase().contains(query))
-                    .toList();
-                filteredAyahs = filteredAyahs
-                    .where((a) => a.title.toLowerCase().contains(query))
-                    .toList();
-              }
+                // Apply search
+                if (_searchQuery.isNotEmpty) {
+                  final query = _searchQuery.toLowerCase();
+                  filteredSurahs = filteredSurahs
+                      .where((s) => s.title.toLowerCase().contains(query))
+                      .toList();
+                  filteredAyahs = filteredAyahs
+                      .where((a) => a.title.toLowerCase().contains(query))
+                      .toList();
+                }
 
-              if (filteredSurahs.isEmpty && filteredAyahs.isEmpty) {
-                return null;
-              }
+                if (filteredSurahs.isEmpty && filteredAyahs.isEmpty) {
+                  return null;
+                }
 
-              return ReciterDownloadsGroup(
-                reciterCode: group.reciterCode,
-                entries: <AudioDownloadEntry>[
-                  ...filteredSurahs,
-                  ...filteredAyahs,
-                ],
-              );
-            })
-            .whereType<ReciterDownloadsGroup>()
-            .toList();
-
-        // Apply group-level sorting
-        if (_sortBy == 'reciterAsc') {
-          filteredGroups.sort(
-            (a, b) => reciterDisplayName(
-              a.reciterCode,
-            ).compareTo(reciterDisplayName(b.reciterCode)),
-          );
-        } else if (_sortBy == 'reciterDesc') {
-          filteredGroups.sort(
-            (a, b) => reciterDisplayName(
-              b.reciterCode,
-            ).compareTo(reciterDisplayName(a.reciterCode)),
-          );
-        } else if (_sortBy == 'sizeDesc') {
-          filteredGroups.sort((a, b) => b.sizeBytes.compareTo(a.sizeBytes));
-        } else if (_sortBy == 'sizeAsc') {
-          filteredGroups.sort((a, b) => a.sizeBytes.compareTo(b.sizeBytes));
-        }
-
-        // Validate active filters to prevent assertions when content is deleted
-        final List<String> availableReciters = reciterGroups
-            .map((g) => g.reciterCode)
-            .toList();
-        if (_selectedReciterFilter != 'all' &&
-            !availableReciters.contains(_selectedReciterFilter)) {
-          _selectedReciterFilter = 'all';
-        }
-
-        final List<int> downloadedSurahs =
-            summary.allDownloads.map((e) => e.surah).toSet().toList()..sort();
-        if (_selectedSurahFilter != null &&
-            !downloadedSurahs.contains(_selectedSurahFilter)) {
-          _selectedSurahFilter = null;
-        }
-
-        return RefreshIndicator(
-          onRefresh: () async => _refresh(),
-          child: ListView(
-            physics: const AlwaysScrollableScrollPhysics(
-              parent: BouncingScrollPhysics(),
-            ),
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
-            children: <Widget>[
-              _buildSummaryCard(theme, summary),
-              const SizedBox(height: 16),
-              _buildCleanupPreviewCard(theme, summary),
-              const SizedBox(height: 16),
-              if (reciterGroups.isNotEmpty) ...<Widget>[
-                _buildFilterButton(summary, reciterGroups),
-                const SizedBox(height: 16),
-              ],
-              if (filteredGroups.isEmpty)
-                _buildEmptyDownloadsCard()
-              else if (_groupBy == 'reciter')
-                ...filteredGroups.expand(
-                  (group) => <Widget>[
-                    _buildReciterSection(group),
-                    const SizedBox(height: 16),
+                return ReciterDownloadsGroup(
+                  reciterCode: group.reciterCode,
+                  entries: <AudioDownloadEntry>[
+                    ...filteredSurahs,
+                    ...filteredAyahs,
                   ],
-                )
-              else
-                ..._buildSurahGroupedList(filteredGroups),
-            ],
-          ),
-        );
-      },
+                );
+              })
+              .whereType<ReciterDownloadsGroup>()
+              .toList();
+
+          // Apply group-level sorting
+          if (_sortBy == 'reciterAsc') {
+            filteredGroups.sort(
+              (a, b) => reciterDisplayName(
+                a.reciterCode,
+              ).compareTo(reciterDisplayName(b.reciterCode)),
+            );
+          } else if (_sortBy == 'reciterDesc') {
+            filteredGroups.sort(
+              (a, b) => reciterDisplayName(
+                b.reciterCode,
+              ).compareTo(reciterDisplayName(a.reciterCode)),
+            );
+          } else if (_sortBy == 'sizeDesc') {
+            filteredGroups.sort((a, b) => b.sizeBytes.compareTo(a.sizeBytes));
+          } else if (_sortBy == 'sizeAsc') {
+            filteredGroups.sort((a, b) => a.sizeBytes.compareTo(b.sizeBytes));
+          }
+
+          // Validate active filters to prevent assertions when content is deleted
+          final List<String> availableReciters = reciterGroups
+              .map((g) => g.reciterCode)
+              .toList();
+          if (_selectedReciterFilter != 'all' &&
+              !availableReciters.contains(_selectedReciterFilter)) {
+            _selectedReciterFilter = 'all';
+          }
+
+          final List<int> downloadedSurahs =
+              summary.allDownloads.map((e) => e.surah).toSet().toList()..sort();
+          if (_selectedSurahFilter != null &&
+              !downloadedSurahs.contains(_selectedSurahFilter)) {
+            _selectedSurahFilter = null;
+          }
+
+          return RefreshIndicator(
+            onRefresh: () async => _refresh(),
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(
+                parent: BouncingScrollPhysics(),
+              ),
+              padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
+              children: <Widget>[
+                _buildSummaryCard(theme, summary),
+                const SizedBox(height: 16),
+                _buildCleanupPreviewCard(theme, summary),
+                const SizedBox(height: 16),
+                if (reciterGroups.isNotEmpty) ...<Widget>[
+                  _buildFilterButton(summary, reciterGroups),
+                  const SizedBox(height: 16),
+                ],
+                if (filteredGroups.isEmpty)
+                  _buildEmptyDownloadsCard()
+                else if (_groupBy == 'reciter')
+                  ...filteredGroups.expand(
+                    (group) => <Widget>[
+                      _buildReciterSection(group),
+                      const SizedBox(height: 16),
+                    ],
+                  )
+                else
+                  ..._buildSurahGroupedList(filteredGroups),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 

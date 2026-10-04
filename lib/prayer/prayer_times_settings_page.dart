@@ -13,6 +13,8 @@ import 'package:equran/utils/app_radii.dart';
 import 'package:equran/widgets/app_selection_dialog.dart';
 import 'package:equran/widgets/prayer_widget_service.dart';
 import 'package:flutter/foundation.dart';
+import 'package:equran/widgets/redesign/redesign_subpage.dart';
+import 'package:equran/widgets/redesign/settings_group_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -74,25 +76,12 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
   Widget build(BuildContext context) {
     final AppLocalizations localizations = AppLocalizations.of(context)!;
     final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(localizations.prayerTimesSettings),
-        backgroundColor: colors.background,
-        foregroundColor: colors.textPrimary,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        titleTextStyle: theme.textTheme.titleLarge?.copyWith(
-          color: colors.textPrimary,
-          fontWeight: FontWeight.w600,
-        ),
-        iconTheme: IconThemeData(color: colors.textSecondary),
-        actionsIconTheme: IconThemeData(color: colors.textSecondary),
-      ),
-      body: ListView(
+    return RedesignSubpage(
+      title: localizations.prayerTimesSettings,
+      child: ListView(
         physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(12, 8, 12, 28),
+        padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
         children: <Widget>[
           _buildSettingsGroup(
             context: context,
@@ -198,31 +187,13 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
     required String subtitle,
     required IconData icon,
     required List<Widget> children,
-  }) {
-    final ColorScheme colors = Theme.of(context).colorScheme;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: colors.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(AppRadii.medium),
-          border: Border.all(color: colors.outlineVariant),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(AppRadii.medium),
-          child: ExpansionTile(
-            initiallyExpanded: true,
-            shape: const Border(),
-            collapsedShape: const Border(),
-            leading: Icon(icon),
-            title: Text(title),
-            subtitle: Text(subtitle),
-            children: children,
-          ),
-        ),
-      ),
-    );
-  }
+  }) => SettingsGroupCard(
+    title: title,
+    subtitle: subtitle,
+    icon: icon,
+    initiallyExpanded: true,
+    children: children,
+  );
 
   Widget _buildProhibitedTimesSection(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;

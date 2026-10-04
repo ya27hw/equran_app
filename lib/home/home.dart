@@ -15,7 +15,6 @@ import 'package:equran/home/settings.dart';
 import 'package:equran/home_dashboard/home_dashboard_page.dart';
 import 'package:equran/hifz/hifz.dart';
 import 'package:equran/prayer/prayer_times_page.dart';
-import 'package:equran/prayer/prayer_times_settings_page.dart';
 import 'package:equran/prayer/qibla_page.dart';
 import 'package:equran/reading_plans/reading_plans_page.dart';
 import 'package:equran/services/frame_rate_policy_manager.dart';
@@ -300,9 +299,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final double navIconSize = ResponsiveNav.iconSize(context);
-    final EquranColors equranColors = context.equranColors;
-
     return ValueListenableBuilder<NavigationState>(
       valueListenable: NavigationBloc.instance,
       builder: (context, state, child) {
@@ -323,54 +319,6 @@ class _HomePageState extends State<HomePage> {
           onPointerSignal: (_) => AndroidAudioDisplayMode.notifyUserActivity(),
           child: Scaffold(
             extendBody: true,
-            appBar: (destinations[selectedIdx].destination is MorePage)
-                ? AppBar(
-                    toolbarHeight: ResponsiveNav.toolbarHeight(context),
-                    title: Text(destinations[selectedIdx].label),
-                    centerTitle: true,
-                    backgroundColor:
-                        destinations[selectedIdx].destination is PrayerTimesPage
-                        ? Colors.transparent
-                        : equranColors.background,
-                    foregroundColor: equranColors.textPrimary,
-                    elevation: 0,
-                    scrolledUnderElevation: 0,
-                    surfaceTintColor: Colors.transparent,
-                    titleTextStyle: Theme.of(context).textTheme.titleLarge
-                        ?.copyWith(
-                          color: equranColors.textPrimary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                    iconTheme: IconThemeData(
-                      color: equranColors.textSecondary,
-                      size: navIconSize,
-                    ),
-                    actionsIconTheme: IconThemeData(
-                      color: equranColors.textSecondary,
-                      size: navIconSize,
-                    ),
-                    actions: <Widget>[
-                      if (destinations[selectedIdx].destination
-                          is PrayerTimesPage) ...<Widget>[
-                        IconButton(
-                          tooltip: AppLocalizations.of(
-                            context,
-                          )!.prayerTimesSettings,
-                          onPressed: _openPrayerSettingsPage,
-                          icon: const Icon(Icons.settings_outlined),
-                        ),
-                        Padding(
-                          padding: const EdgeInsetsDirectional.only(end: 6),
-                          child: IconButton(
-                            tooltip: AppLocalizations.of(context)!.qibla,
-                            onPressed: _openQiblaPage,
-                            icon: const Icon(Icons.explore_outlined),
-                          ),
-                        ),
-                      ],
-                    ],
-                  )
-                : null,
             // Reserve the dock and safe-area space for every active page,
             // including customized destinations and their floating controls.
             body: Padding(
@@ -652,25 +600,6 @@ class _HomePageState extends State<HomePage> {
     _selectTabByWidgetType<IslamicCalendarPage>(
       () => const IslamicCalendarPage(),
     );
-  }
-
-  void _openPrayerSettingsPage() {
-    FrameRatePolicyManager.instance.setRouteTransitionActive(
-      true,
-      reason: 'prayer_settings_route_opening',
-    );
-    Navigator.of(context)
-        .push(
-          MaterialPageRoute<void>(
-            builder: (BuildContext context) => const PrayerTimesSettingsPage(),
-          ),
-        )
-        .whenComplete(() {
-          FrameRatePolicyManager.instance.setRouteTransitionActive(
-            false,
-            reason: 'prayer_settings_route_closed',
-          );
-        });
   }
 
   Future<void> _toggleQuickTheme() async {
