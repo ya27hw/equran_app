@@ -87,7 +87,6 @@ import 'package:flutter/rendering.dart'
         ScrollDirection,
         ViewConfiguration;
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart' as ja;
 import 'package:just_audio_background/just_audio_background.dart';
@@ -7398,8 +7397,8 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
                         maxLines: 1,
                         textDirection: TextDirection.rtl,
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.amiri(
-                          textStyle: theme.textTheme.displaySmall,
+                        style: theme.textTheme.displaySmall?.copyWith(
+                          fontFamily: 'NotoNaskhArabic',
                           color: colors.onPrimary,
                           fontSize: 44,
                           fontWeight: FontWeight.bold,

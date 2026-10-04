@@ -6,7 +6,6 @@ import 'package:equran/utils/app_radii.dart';
 import 'package:equran/utils/quran_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 const String _asmaUlHusnaAssetPath = 'assets/data/dua/asma_al_husna.json';
 
@@ -410,8 +409,8 @@ class _AsmaHeaderCard extends StatelessWidget {
                     'أَسْمَاءُ اللَّهِ الْحُسْنَى',
                     textDirection: TextDirection.rtl,
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.amiri(
-                      textStyle: theme.textTheme.displaySmall,
+                    style: theme.textTheme.displaySmall?.copyWith(
+                      fontFamily: 'NotoNaskhArabic',
                       color: colors.onPrimary,
                       fontSize: titleSize,
                       fontWeight: FontWeight.w700,
@@ -441,8 +440,8 @@ class _AsmaHeaderCard extends StatelessWidget {
                     'وَلِلَّهِ الْأَسْمَاءُ الْحُسْنَىٰ',
                     textDirection: TextDirection.rtl,
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.amiri(
-                      textStyle: theme.textTheme.headlineMedium,
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      fontFamily: 'NotoNaskhArabic',
                       color: referenceColor,
                       fontSize: ayahSize,
                       fontWeight: FontWeight.w700,
@@ -510,13 +509,14 @@ class _NameCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final EquranColors colors = context.equranColors;
-    final TextStyle arabicStyle = GoogleFonts.amiri(
-      textStyle: theme.textTheme.headlineLarge,
-      color: colors.textPrimary,
-      fontSize: 32,
-      fontWeight: FontWeight.w700,
-      height: 1.45,
-    );
+    final TextStyle arabicStyle =
+        (theme.textTheme.headlineLarge ?? const TextStyle()).copyWith(
+          fontFamily: 'NotoNaskhArabic',
+          color: colors.textPrimary,
+          fontSize: 32,
+          fontWeight: FontWeight.w700,
+          height: 1.45,
+        );
 
     return Material(
       color: colors.surface,
@@ -688,7 +688,8 @@ Future<void> _showNameSheet(BuildContext context, AsmaUlHusnaName name) async {
                 name.name,
                 textDirection: TextDirection.rtl,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.amiri(
+                style: TextStyle(
+                  fontFamily: 'NotoNaskhArabic',
                   fontSize: 52,
                   color: colors.textPrimary,
                   fontWeight: FontWeight.w700,

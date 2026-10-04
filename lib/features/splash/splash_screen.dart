@@ -283,10 +283,15 @@ class _SplashScreenState extends State<SplashScreen>
                         // App Title
                         Text(
                           "eQuran",
-                          style: GoogleFonts.outfit(
+                          style: TextStyle(
+                            fontFamily: 'Newsreader',
                             fontSize: 34,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 1.5,
+                            fontWeight: FontWeight.w500,
+                            fontVariations: const <FontVariation>[
+                              FontVariation('opsz', 34),
+                              FontVariation('wght', 500),
+                            ],
+                            letterSpacing: 1,
                             color: isDark ? Colors.white : colors.textPrimary,
                           ),
                         ),
