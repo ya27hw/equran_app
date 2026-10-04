@@ -2,6 +2,7 @@ import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_text_styles.dart';
 import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/widgets/redesign/redesign_widgets.dart';
+import 'package:equran/prayer/prayer_models.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -275,18 +276,8 @@ Widget gallerySample(BuildContext context, String name) {
       return Wrap(
         spacing: 22,
         children: [
-          for (final prayer in [
-            'fajr',
-            'sunrise',
-            'dhuhr',
-            'asr',
-            'maghrib',
-            'isha',
-          ])
-            PrayerArch(
-              assetName: 'assets/media/images/app/$prayer.webp',
-              semanticLabel: prayer,
-            ),
+          for (final kind in PrayerTimeKind.values)
+            PrayerArch(kind: kind, semanticLabel: kind.name),
         ],
       );
     default:
