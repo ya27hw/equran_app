@@ -21,6 +21,12 @@ class _Observer extends NavigatorObserver {
   }
 }
 
+class _UnavailableHifzRepository extends StatisticsPreviewRepository {
+  @override
+  Future<HifzSectionData> getHifzData() async =>
+      throw StateError('Hifz unavailable');
+}
+
 void main() {
   setUpAll(() async {
     GoogleFonts.config.allowRuntimeFetching = false;
@@ -53,10 +59,11 @@ void main() {
     double scale = 1,
     Locale locale = const Locale('en'),
     List<NavigatorObserver> observers = const [],
+    StatisticsPreviewRepository? fixture,
   }) async {
     await tester.binding.setSurfaceSize(const Size(390, 844));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final repository = StatisticsPreviewRepository();
+    final repository = fixture ?? StatisticsPreviewRepository();
     await tester.pumpWidget(
       StatisticsPreviewApp(
         repository: repository,
@@ -81,6 +88,17 @@ void main() {
     expect(tester.takeException(), isNull);
   }
 
+  testWidgets('Hifz load failure leaves Today and prayer logging available', (
+    tester,
+  ) async {
+    await pump(tester, fixture: _UnavailableHifzRepository());
+    expect(find.byKey(const ValueKey('statistics-today')), findsOneWidget);
+    expect(find.text('—'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('statistics-log-asr')));
+    await tester.pumpAndSettle();
+    expect(find.text("Today's Prayers"), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
   testWidgets(
     'range filters load the existing enum; section headers scroll with content',
     (tester) async {

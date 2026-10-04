@@ -270,17 +270,24 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   topPadding: 22,
                   child:
                       _DataSection<
-                        ({OverviewStats overview, HifzSectionData hifz})
+                        ({OverviewStats overview, HifzSectionData? hifz})
                       >(
                         refreshToken: refreshToken,
                         placeholderHeight: 340,
-                        load: () async => (
-                          overview: await _repository.overview(l),
-                          hifz: await _repository.getHifzData(),
-                        ),
+                        load: () async {
+                          final overview = await _repository.overview(l);
+                          HifzSectionData? hifz;
+                          try {
+                            hifz = await _repository.getHifzData();
+                          } catch (_) {
+                            // Keep overview/logging available when this separate
+                            // section fails; an unknown count is not zero.
+                          }
+                          return (overview: overview, hifz: hifz);
+                        },
                         builder: (context, data) => _StatisticsToday(
                           data: data.overview,
-                          mastered: data.hifz.totalMemorized,
+                          mastered: data.hifz?.totalMemorized,
                           now: widget.previewNow,
                           onLogSaved: _handleDataChanged,
                         ),

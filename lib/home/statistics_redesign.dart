@@ -117,7 +117,7 @@ class _StatisticsToday extends StatelessWidget {
     this.now,
   });
   final OverviewStats data;
-  final int mastered;
+  final int? mastered;
   final VoidCallback onLogSaved;
   final DateTime? now;
   @override
@@ -233,7 +233,7 @@ class _StatisticsToday extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: _CountLabel(
-                  '$mastered',
+                  mastered?.toString() ?? '—',
                   '${l.hifzMemorized} · ${l.ayahsLabel}',
                   size: 22,
                 ),
