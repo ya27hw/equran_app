@@ -4599,4 +4599,25 @@ class AppLocalizationsBn extends AppLocalizations {
   String prayerEndsAt(String time) {
     return 'শেষ $time';
   }
+
+  @override
+  String get tasbihAndDuas => 'তাসবিহ ও দোয়া';
+
+  @override
+  String get surahMap => 'সূরার মানচিত্র';
+
+  @override
+  String get tapCellToOpen => 'খুলতে ঘরে চাপ দিন';
+
+  @override
+  String get less => 'কম';
+
+  @override
+  String get khatmProgress => 'খতমের অগ্রগতি';
+
+  @override
+  String get notLogged => 'লিপিবদ্ধ হয়নি';
+
+  @override
+  String get mostReadSurah => 'সবচেয়ে বেশি পঠিত সূরা';
 }

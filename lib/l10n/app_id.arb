@@ -2260,5 +2260,12 @@
   "theNight": "Malam",
   "prayerPassed": "Berlalu",
   "prayerBeganAt": "Dimulai {time}",
-  "prayerEndsAt": "Berakhir {time}"
+  "prayerEndsAt": "Berakhir {time}",
+  "tasbihAndDuas": "Tasbih dan doa",
+  "surahMap": "Peta surah",
+  "tapCellToOpen": "Ketuk sel untuk membuka",
+  "less": "Lebih sedikit",
+  "khatmProgress": "Kemajuan khatam",
+  "notLogged": "Belum dicatat",
+  "mostReadSurah": "Surah yang paling sering dibaca"
 }

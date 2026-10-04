@@ -2458,5 +2458,33 @@
         "type": "String"
       }
     }
+  },
+  "tasbihAndDuas": "Tasbih and duas",
+  "@tasbihAndDuas": {
+    "description": "Statistics redesign interface label."
+  },
+  "surahMap": "Surah map",
+  "@surahMap": {
+    "description": "Statistics redesign interface label."
+  },
+  "tapCellToOpen": "Tap a cell to open",
+  "@tapCellToOpen": {
+    "description": "Statistics redesign interface label."
+  },
+  "less": "Less",
+  "@less": {
+    "description": "Statistics redesign interface label."
+  },
+  "khatmProgress": "Khatm progress",
+  "@khatmProgress": {
+    "description": "Statistics redesign interface label."
+  },
+  "notLogged": "Not logged",
+  "@notLogged": {
+    "description": "Statistics redesign interface label."
+  },
+  "mostReadSurah": "Most-read surah",
+  "@mostReadSurah": {
+    "description": "Statistics label for the surah read most often."
   }
 }

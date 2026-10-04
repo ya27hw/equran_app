@@ -2375,5 +2375,12 @@
   "theNight": "شب",
   "prayerPassed": "گذشته",
   "prayerBeganAt": "شروع {time}",
-  "prayerEndsAt": "پایان {time}"
+  "prayerEndsAt": "پایان {time}",
+  "tasbihAndDuas": "تسبیح و دعاها",
+  "surahMap": "نقشه سوره‌ها",
+  "tapCellToOpen": "برای باز کردن روی خانه بزنید",
+  "less": "کمتر",
+  "khatmProgress": "پیشرفت ختم",
+  "notLogged": "ثبت نشده",
+  "mostReadSurah": "سوره با بیشترین خواندن"
 }

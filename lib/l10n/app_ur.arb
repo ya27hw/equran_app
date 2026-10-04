@@ -2260,5 +2260,12 @@
   "theNight": "رات",
   "prayerPassed": "گزر گیا",
   "prayerBeganAt": "آغاز {time}",
-  "prayerEndsAt": "اختتام {time}"
+  "prayerEndsAt": "اختتام {time}",
+  "tasbihAndDuas": "تسبیح اور دعائیں",
+  "surahMap": "سورتوں کا نقشہ",
+  "tapCellToOpen": "کھولنے کے لیے خانے پر دبائیں",
+  "less": "کم",
+  "khatmProgress": "ختم کی پیش رفت",
+  "notLogged": "درج نہیں کیا گیا",
+  "mostReadSurah": "سب سے زیادہ پڑھی گئی سورت"
 }
