@@ -1,6 +1,8 @@
 import 'package:equran/backend/settings_db.dart';
 import 'package:equran/debug/prayer_preview_main.dart';
 import 'package:equran/prayer/prayer_arc_hero.dart';
+import 'package:equran/prayer/prayer_sky_scene.dart';
+import 'package:equran/prayer/prayer_sky_painter.dart';
 import 'package:equran/prayer/prayer_hero_card.dart';
 import 'package:equran/prayer/prayer_models.dart';
 import 'package:equran/prayer/prayer_settings_store.dart';
@@ -42,35 +44,6 @@ void main() {
   });
   setUp(seedPrayerPreview);
   tearDownAll(Hive.close);
-  test(
-    'sun arc endpoints, midpoint, RTL and clamping match design geometry',
-    () {
-      final start = DateTime.utc(2026, 10, 4, 2);
-      final end = start.add(const Duration(hours: 12));
-      expect(prayerArcFraction(start, start, end), 0);
-      expect(prayerArcFraction(end, start, end), 1);
-      expect(
-        prayerArcFraction(start.add(const Duration(hours: 6)), start, end),
-        .5,
-      );
-      expect(
-        prayerArcFraction(start.subtract(const Duration(hours: 1)), start, end),
-        0,
-      );
-      expect(
-        prayerArcFraction(end.add(const Duration(hours: 1)), start, end),
-        1,
-      );
-      expect(prayerArcFraction(end, end, start), 0);
-      expect(prayerArcPoint(0).dx, closeTo(31, .001));
-      expect(prayerArcPoint(0).dy, closeTo(150, .001));
-      expect(prayerArcPoint(.5).dx, closeTo(171, .001));
-      expect(prayerArcPoint(.5).dy, closeTo(10, .001));
-      expect(prayerArcPoint(1), const Offset(311, 150));
-      expect(prayerArcPoint(0, rtl: true).dx, closeTo(311, .001));
-      expect(prayerArcPoint(0, rtl: true).dy, closeTo(150, .001));
-    },
-  );
   Future<void> pump(
     WidgetTester tester, {
     EquranColors colors = EquranColors.dark,
@@ -124,13 +97,17 @@ void main() {
       final painter = tester
           .widgetList<CustomPaint>(find.byType(CustomPaint))
           .map((w) => w.painter)
-          .whereType<PrayerArcPainter>()
+          .whereType<PrayerSkyPainter>()
           .single;
       expect(
-        painter.fraction,
-        closeTo(prayerArcFraction(hero.now, sunrise, maghrib), .0001),
+        painter.scene,
+        PrayerSkyScene.forInstant(
+          day: hero.day,
+          followingDay: hero.followingDay,
+          now: hero.now,
+        ),
       );
-      expect(painter.fraction, inExclusiveRange(.5, .7));
+      expect(painter.scene.sunProgress, inExclusiveRange(.5, .7));
       expect(
         hero.day.entryFor(PrayerTimeKind.maghrib).time.isBefore(hero.now),
         isTrue,
@@ -282,15 +259,16 @@ void main() {
     expect(hero.titleOverride, 'Morning');
     expect(hero.currentPrayer, isNull);
     expect(find.textContaining('Began '), findsNothing);
-    expect(find.textContaining('Ends '), findsOneWidget);
+    expect(find.textContaining('Ends '), findsNothing);
   });
   testWidgets(
-    'moon arc advances across midnight and stays complete from Fajr to sunrise',
+    'sky continues across midnight and transitions through dawn to sunrise',
     (tester) async {
       for (final now in [
         DateTime.utc(2026, 10, 4, 17),
         DateTime.utc(2026, 10, 4, 23),
         DateTime.utc(2026, 10, 5, 1),
+        DateTime.utc(2026, 10, 5, 2),
       ]) {
         await tester.pumpWidget(const SizedBox());
         await pump(tester, now: now);
@@ -298,30 +276,58 @@ void main() {
         final painter = tester
             .widgetList<CustomPaint>(find.byType(CustomPaint))
             .map((w) => w.painter)
-            .whereType<PrayerArcPainter>()
+            .whereType<PrayerSkyPainter>()
             .single;
-        final maghrib = hero.day.entryFor(PrayerTimeKind.maghrib).time;
-        final fajr = hero.day.entryFor(PrayerTimeKind.fajr).time;
-        expect(painter.night, isTrue);
-        expect(painter.markers, isEmpty);
         expect(
-          painter.fraction,
-          closeTo(prayerArcFraction(now, maghrib, fajr), .0001),
+          painter.scene,
+          PrayerSkyScene.forInstant(
+            day: hero.day,
+            followingDay: hero.followingDay,
+            now: now,
+          ),
         );
-        if (!now.isBefore(fajr)) expect(painter.fraction, 1);
+        final sunrise = hero.day.entryFor(PrayerTimeKind.sunrise).time;
+        expect(painter.scene.sunVisibility, now.isBefore(sunrise) ? 0 : 1);
         expect(hero.nextPrayer.countdown.isNegative, isFalse);
+        expect(
+          find.descendant(
+            of: find.byType(PrayerArcHero),
+            matching: find.byType(Icon),
+          ),
+          findsNothing,
+        );
       }
-      await tester.pumpWidget(const SizedBox());
-      await pump(tester, now: DateTime.utc(2026, 10, 5, 2));
-      final painter = tester
-          .widgetList<CustomPaint>(find.byType(CustomPaint))
-          .map((w) => w.painter)
-          .whereType<PrayerArcPainter>()
-          .single;
-      expect(painter.night, isFalse);
-      expect(painter.fraction, greaterThan(0));
     },
   );
+  testWidgets('live sky pauses while inactive and catches up on resume', (
+    tester,
+  ) async {
+    await pump(tester);
+    final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
+    final initial = prayerPreviewNow();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: app.theme,
+        localizationsDelegates: app.localizationsDelegates,
+        supportedLocales: app.supportedLocales,
+        home: PrayerTimesPage(initialNow: initial),
+      ),
+    );
+    await tester.pumpAndSettle();
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    await tester.pump(const Duration(minutes: 2));
+    expect(
+      tester.widget<PrayerArcHero>(find.byType(PrayerArcHero)).now,
+      initial,
+    );
+    final before = DateTime.now();
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pumpAndSettle();
+    final now = tester.widget<PrayerArcHero>(find.byType(PrayerArcHero)).now;
+    expect(now.isBefore(before), isFalse);
+    expect(now.isAfter(DateTime.now()), isFalse);
+    await tester.pumpWidget(const SizedBox());
+  });
   for (final (name, colors, scale, locale) in [
     ('emerald-dark', EquranColors.dark, 1.0, const Locale('en')),
     ('emerald-light', EquranColors.light, 1.0, const Locale('en')),

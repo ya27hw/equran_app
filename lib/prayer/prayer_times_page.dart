@@ -46,7 +46,8 @@ class PrayerTimesPage extends StatefulWidget {
   State<PrayerTimesPage> createState() => _PrayerTimesPageState();
 }
 
-class _PrayerTimesPageState extends State<PrayerTimesPage> {
+class _PrayerTimesPageState extends State<PrayerTimesPage>
+    with WidgetsBindingObserver {
   static const Duration _prayerSnackBarDuration = Duration(seconds: 3);
 
   final PrayerTimesService _service = const PrayerTimesService();
@@ -62,6 +63,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _locationService = widget.locationService ?? const PrayerLocationService();
     _notificationService =
         widget.notificationService ?? PrayerNotificationService();
@@ -79,8 +81,21 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _timer?.cancel();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (!widget.enableLiveCountdown) return;
+    _timer?.cancel();
+    if (state == AppLifecycleState.resumed && mounted) {
+      setState(() {
+        _now = DateTime.now();
+      });
+      _scheduleNextRefresh();
+    }
   }
 
   @override

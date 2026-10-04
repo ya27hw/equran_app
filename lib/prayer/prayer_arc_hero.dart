@@ -1,467 +1,216 @@
-import 'dart:math' as math;
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/prayer/prayer_localizations.dart';
 import 'package:equran/prayer/prayer_models.dart';
-import 'package:equran/theme/equran_colors.dart';
+import 'package:equran/prayer/prayer_sky_painter.dart';
+import 'package:equran/prayer/prayer_sky_scene.dart';
+import 'package:equran/services/device_capability_service.dart';
+import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/theme/equran_text_styles.dart';
-import 'package:equran/theme/equran_tokens.dart';
-import 'package:equran/widgets/redesign/redesign_widgets.dart';
 import 'package:equran/widgets/redesign/page_typography.dart';
+import 'package:equran/widgets/common/pressable_scale.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show listEquals;
 
-String prayerDisplayTime(DateTime time, bool use24Hour, AppLocalizations l) {
-  if (use24Hour) {
-    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
-  }
-  final hour = time.hour % 12 == 0 ? 12 : time.hour % 12;
-  final suffix = l.localeName.startsWith('ar')
-      ? (time.hour >= 12 ? 'م' : 'ص')
-      : (time.hour >= 12 ? 'PM' : 'AM');
-  return '$hour:${time.minute.toString().padLeft(2, '0')} $suffix';
-}
-
-/// Geometry from the design SVG, independent of the prayer calculation service.
-double prayerArcFraction(DateTime now, DateTime start, DateTime end) {
-  final span = end.difference(start).inMicroseconds;
-  if (span <= 0) return 0;
-  return (now.difference(start).inMicroseconds / span).clamp(0.0, 1.0);
-}
-
-Offset prayerArcPoint(double fraction, {bool rtl = false}) {
-  final t = fraction.clamp(0.0, 1.0);
-  final angle = math.pi * (1 - t);
-  final x = 171 + 140 * math.cos(angle);
-  return Offset(rtl ? 342 - x : x, 150 - 140 * math.sin(angle));
-}
-
+/// Prayer-page-only sky hero. Home retains its existing hero and setup state.
 class PrayerArcHero extends StatelessWidget {
   const PrayerArcHero({
     super.key,
     required this.day,
-    required this.nextPrayer,
-    required this.now,
-    required this.onTap,
     required this.followingDay,
+    required this.now,
+    required this.nextPrayer,
+    required this.onTap,
     this.currentPrayer,
+    this.periodEndsAt,
     this.titleOverride,
     this.subtitleOverride,
-    this.periodEndsAt,
     this.isViewingToday = true,
   });
+
   final PrayerDay day;
-  final NextPrayer nextPrayer;
   final PrayerDay followingDay;
   final DateTime now;
+  final NextPrayer nextPrayer;
   final VoidCallback onTap;
   final PrayerTimeEntry? currentPrayer;
   final DateTime? periodEndsAt;
   final String? titleOverride;
   final String? subtitleOverride;
   final bool isViewingToday;
+
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    final tokens = context.equranTokens;
-    final foreground = EquranColors.dark.textPrimary;
-    final gold = EquranTokens.ensure(
-      tokens.gold,
-      against: [tokens.featA, tokens.featB],
-      target: 4.5,
-      toward: foreground,
-    );
-    final sunrise = day.entryFor(PrayerTimeKind.sunrise).time;
-    // PrayerDay begins at the previous evening's Maghrib. Daylight ends
-    // at the following Islamic day's Maghrib on this sunrise's civil date.
-    final maghrib = followingDay.entryFor(PrayerTimeKind.maghrib).time;
-    final night = isViewingToday && now.isBefore(sunrise);
-    final arcStart = night
-        ? day.entryFor(PrayerTimeKind.maghrib).time
-        : sunrise;
-    final arcEnd = night ? day.entryFor(PrayerTimeKind.fajr).time : maghrib;
-    final fraction = prayerArcFraction(now, arcStart, arcEnd);
-    final current = currentPrayer ?? nextPrayer.entry;
-    final title = titleOverride ?? localizedPrayerName(l, current.kind);
-    final countdown = nextPrayer.countdown.isNegative
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
+    final ThemeData theme = Theme.of(context);
+    final String title =
+        titleOverride ??
+        localizedPrayerName(l10n, (currentPrayer ?? nextPrayer.entry).kind);
+    final Duration remaining = nextPrayer.countdown.isNegative
         ? Duration.zero
         : nextPrayer.countdown;
-    final countdownText = countdown.inHours > 0
-        ? l.hoursMinutesShort(
-            countdown.inHours,
-            twoDigitMinutes(countdown.inMinutes.remainder(60)),
-          )
-        : l.minutesShort(countdown.inMinutes);
-    String time(DateTime value) =>
-        prayerDisplayTime(value, day.settings.use24HourFormat, l);
-    final ends = periodEndsAt ?? nextPrayer.entry.time;
-    final periodFraction = isViewingToday
-        ? prayerArcFraction(now, current.time, ends)
-        : 0.0;
-    return Semantics(
-      button: true,
-      child: HeroPanel(
-        child: Material(
-          type: MaterialType.transparency,
-          child: InkWell(
-            key: const Key('prayer-arc-hero'),
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(28),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      final scale = MediaQuery.textScalerOf(context).scale(1);
-                      final arcHeight = 176 + (scale - 1).clamp(0.0, 2.0) * 100;
-                      return SizedBox(
-                        height: arcHeight + 16,
-                        child: Stack(
-                          children: [
-                            Positioned(
-                              top: 0,
-                              left: 0,
-                              right: 0,
-                              height: arcHeight,
-                              child: ExcludeSemantics(
-                                child: CustomPaint(
-                                  painter: PrayerArcPainter(
-                                    fraction: fraction,
-                                    night: night,
-                                    gold: tokens.gold,
-                                    background: tokens.featB,
-                                    markers: night
-                                        ? const []
-                                        : [
-                                            prayerArcFraction(
-                                              day
-                                                  .entryFor(
-                                                    PrayerTimeKind.dhuhr,
-                                                  )
-                                                  .time,
-                                              sunrise,
-                                              maghrib,
-                                            ),
-                                            prayerArcFraction(
-                                              day
-                                                  .entryFor(PrayerTimeKind.asr)
-                                                  .time,
-                                              sunrise,
-                                              maghrib,
-                                            ),
-                                          ],
-                                    showProgress: isViewingToday,
-                                    rtl:
-                                        Directionality.of(context) ==
-                                        TextDirection.rtl,
-                                  ),
-                                ),
-                              ),
+    final String countdown = remaining.inHours == 0
+        ? l10n.minutesShort(remaining.inMinutes)
+        : l10n.hoursMinutesShort(
+            remaining.inHours,
+            twoDigitMinutes(remaining.inMinutes.remainder(60)),
+          );
+    final InlineSpan subtitle = subtitleOverride != null
+        ? TextSpan(text: subtitleOverride)
+        : prayerNextInSpan(
+            l10n,
+            prayer: localizedPrayerName(l10n, nextPrayer.entry.kind),
+            duration: countdown,
+            numeralStyle: EquranTextStyles.displayNumeral(
+              context,
+              size: 16,
+              height: 1,
+              color: PrayerSkyScene.foreground,
+            ).copyWith(fontFamilyFallback: const ['NotoNaskhArabic']),
+          );
+    final PrayerSkyScene scene = PrayerSkyScene.forInstant(
+      day: day,
+      followingDay: followingDay,
+      now: isViewingToday ? now : day.entryFor(PrayerTimeKind.dhuhr).time,
+    );
+    return ValueListenableBuilder(
+      valueListenable: DeviceCapabilityService.instance,
+      builder: (context, profile, _) {
+        final bool animate =
+            isViewingToday &&
+            profile.allowsDecorativeEffects &&
+            !MediaQuery.disableAnimationsOf(context) &&
+            TickerMode.valuesOf(context).enabled;
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final double scale =
+                MediaQuery.textScalerOf(context).scale(14) / 14;
+            final double height =
+                (constraints.maxWidth < 390 ? 176.0 : 200.0) +
+                (scale - 1).clamp(0.0, 2.0) * 100;
+            return PressableScale(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(EquranRadii.xxl),
+                child: SizedBox(
+                  height: height,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: <Widget>[
+                      Positioned.fill(
+                        child: ExcludeSemantics(
+                          child: RepaintBoundary(
+                            child: _AnimatedPrayerSky(
+                              scene: scene,
+                              animate: animate,
+                              decorativeEffects:
+                                  profile.allowsDecorativeEffects,
                             ),
-                            Positioned(
-                              top: 38,
-                              left: 0,
-                              right: 0,
-                              child: Column(
-                                children: [
+                          ),
+                        ),
+                      ),
+                      Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          key: const Key('prayer-arc-hero'),
+                          onTap: onTap,
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 48, 20, 20),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                if (isViewingToday) ...<Widget>[
                                   RedesignEyebrow(
-                                    isViewingToday
-                                        ? l.countdownNow
-                                        : l.prayerTimes,
-                                    color: gold,
+                                    l10n.countdownNow,
+                                    color: PrayerSkyScene.foreground,
                                   ),
-                                  const SizedBox(height: 8),
-                                  Text(
+                                  const SizedBox(height: 5),
+                                ],
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
                                     title,
-                                    textAlign: TextAlign.center,
                                     style: redesignDisplayStyle(
                                       context,
-                                      size: 46,
-                                      color: foreground,
+                                      size: 36,
+                                      height: 1.15,
+                                      color: PrayerSkyScene.foreground,
                                     ),
                                   ),
-                                  const SizedBox(height: 8),
-                                  Text.rich(
-                                    subtitleOverride != null
-                                        ? TextSpan(text: subtitleOverride)
-                                        : prayerNextInSpan(
-                                            l,
-                                            prayer: localizedPrayerName(
-                                              l,
-                                              nextPrayer.entry.kind,
-                                            ),
-                                            duration: countdownText,
-                                            numeralStyle:
-                                                EquranTextStyles.displayNumeral(
-                                                  context,
-                                                  size: 19,
-                                                  height: 1,
-                                                  color: Colors.white,
-                                                ),
-                                          ),
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      color: tokens.featText2,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 0,
-                              left: 0,
-                              right: 0,
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  _ArcEndpoint(
-                                    label: night
-                                        ? l.prayerNameMaghrib
-                                        : l.prayerNameSunrise,
-                                    time: time(arcStart),
-                                    color: tokens.featText2,
-                                  ),
-                                  _ArcEndpoint(
-                                    label: night
-                                        ? l.prayerNameFajr
-                                        : l.prayerNameMaghrib,
-                                    time: time(arcEnd),
-                                    color: tokens.featText2,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                  if (isViewingToday) ...[
-                    const SizedBox(height: 20),
-                    Divider(
-                      height: 1,
-                      color: tokens.gold.withValues(alpha: .22),
-                    ),
-                    const SizedBox(height: 16),
-                    Wrap(
-                      alignment: WrapAlignment.spaceBetween,
-                      spacing: 20,
-                      runSpacing: 8,
-                      children: [
-                        if (currentPrayer != null)
-                          _BoldTime(
-                            template: l.prayerBeganAt,
-                            time: time(current.time),
-                            color: tokens.featText2,
-                            boldColor: foreground,
-                          ),
-                        _BoldTime(
-                          template: l.prayerEndsAt,
-                          time: time(ends),
-                          color: tokens.featText2,
-                          boldColor: foreground,
-                        ),
-                      ],
-                    ),
-                    if (currentPrayer != null) ...[
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        height: 5,
-                        child: LayoutBuilder(
-                          builder: (context, constraints) => Stack(
-                            children: [
-                              Positioned.fill(
-                                child: DecoratedBox(
-                                  decoration: BoxDecoration(
-                                    color: foreground.withValues(alpha: .14),
-                                    borderRadius: BorderRadius.circular(5),
+                                ),
+                                const SizedBox(height: 6),
+                                Text.rich(
+                                  subtitle,
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: PrayerSkyScene.foreground,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                    height: 1.3,
                                   ),
                                 ),
-                              ),
-                              PositionedDirectional(
-                                start: 0,
-                                top: 0,
-                                bottom: 0,
-                                width: constraints.maxWidth * periodFraction,
-                                child: DecoratedBox(
-                                  decoration: BoxDecoration(
-                                    color: tokens.gold,
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ],
-                  ],
-                ],
+                  ),
+                ),
               ),
-            ),
-          ),
-        ),
-      ),
+            );
+          },
+        );
+      },
     );
   }
 }
 
-/// "Began **11:57 AM**": the label dim, the clock bold, in any word order.
-class _BoldTime extends StatelessWidget {
-  const _BoldTime({
-    required this.template,
-    required this.time,
-    required this.color,
-    required this.boldColor,
-  });
-  final String Function(String) template;
-  final String time;
-  final Color color;
-  final Color boldColor;
+class _AnimatedPrayerSky extends ImplicitlyAnimatedWidget {
+  const _AnimatedPrayerSky({
+    required this.scene,
+    required bool animate,
+    required this.decorativeEffects,
+  }) : super(
+         duration: animate ? const Duration(milliseconds: 350) : Duration.zero,
+         curve: Curves.easeOutCubic,
+       );
+
+  final PrayerSkyScene scene;
+  final bool decorativeEffects;
+
   @override
-  Widget build(BuildContext context) {
-    const marker = '\u0001';
-    final parts = template(marker).split(marker);
-    return Text.rich(
-      TextSpan(
-        children: [
-          TextSpan(text: parts.first),
-          TextSpan(
-            text: time,
-            style: TextStyle(fontWeight: FontWeight.w600, color: boldColor),
-          ),
-          if (parts.length > 1) TextSpan(text: parts.sublist(1).join(marker)),
-        ],
-      ),
-      style: TextStyle(fontSize: 12.5, color: color),
-    );
-  }
+  AnimatedWidgetBaseState<_AnimatedPrayerSky> createState() =>
+      _AnimatedPrayerSkyState();
 }
 
-class _ArcEndpoint extends StatelessWidget {
-  const _ArcEndpoint({
-    required this.label,
-    required this.time,
-    required this.color,
-  });
-  final String label;
-  final String time;
-  final Color color;
+class _AnimatedPrayerSkyState
+    extends AnimatedWidgetBaseState<_AnimatedPrayerSky> {
+  _SkyTween? _scene;
+
   @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(label, style: TextStyle(fontSize: 11.5, height: 1.35, color: color)),
-      Text(
-        time,
-        textDirection: TextDirection.ltr,
-        style: TextStyle(
-          fontSize: 11.5,
-          height: 1.35,
-          fontWeight: FontWeight.w500,
-          color: EquranColors.dark.textPrimary,
-        ),
-      ),
-    ],
+  void forEachTween(TweenVisitor<dynamic> visitor) {
+    _scene =
+        visitor(
+              _scene,
+              widget.scene,
+              (dynamic value) => _SkyTween(begin: value as PrayerSkyScene),
+            )
+            as _SkyTween?;
+  }
+
+  @override
+  Widget build(BuildContext context) => CustomPaint(
+    painter: PrayerSkyPainter(
+      scene: _scene!.evaluate(animation),
+      textDirection: Directionality.of(context),
+      decorativeEffects: widget.decorativeEffects,
+    ),
   );
 }
 
-class PrayerArcPainter extends CustomPainter {
-  const PrayerArcPainter({
-    required this.fraction,
-    required this.gold,
-    required this.background,
-    required this.markers,
-    this.rtl = false,
-    this.showProgress = true,
-    this.night = false,
-  });
-  final bool night;
-  final double fraction;
-  final Color gold;
-  final Color background;
-  final List<double> markers;
-  final bool rtl;
-  final bool showProgress;
-  @override
-  void paint(Canvas canvas, Size size) {
-    canvas.save();
-    canvas.scale(size.width / 342, size.height / 176);
-    if (rtl) {
-      canvas.translate(342, 0);
-      canvas.scale(-1, 1);
-    }
-    final paint = Paint()
-      ..color = gold.withValues(alpha: .3)
-      ..strokeWidth = 1
-      ..style = PaintingStyle.stroke;
-    canvas.drawLine(const Offset(31, 150), const Offset(311, 150), paint);
-    final circle = Rect.fromCircle(center: const Offset(171, 150), radius: 140);
-    paint
-      ..color = gold.withValues(alpha: .28)
-      ..strokeWidth = 1.6
-      ..strokeCap = StrokeCap.round;
-    for (var t = 0.0; t < math.pi; t += 8 / 140) {
-      canvas.drawArc(
-        circle,
-        math.pi + t,
-        math.min(2 / 140, math.pi - t),
-        false,
-        paint,
-      );
-    }
-    if (showProgress) {
-      paint
-        ..color = gold
-        ..strokeWidth = 2.4;
-      canvas.drawArc(circle, math.pi, math.pi * fraction, false, paint);
-    }
-    for (final marker in markers) {
-      final point = prayerArcPoint(marker);
-      paint
-        ..style = PaintingStyle.fill
-        ..color = marker <= fraction && showProgress ? gold : background;
-      canvas.drawCircle(point, 3.2, paint);
-      paint
-        ..style = PaintingStyle.stroke
-        ..color = gold.withValues(alpha: .7)
-        ..strokeWidth = 1.4;
-      canvas.drawCircle(point, 3.2, paint);
-    }
-    if (showProgress) {
-      final point = prayerArcPoint(fraction);
-      paint
-        ..style = PaintingStyle.fill
-        ..color = gold.withValues(alpha: .16);
-      canvas.drawCircle(point, 19, paint);
-      paint.color = EquranTokens.mix(gold, EquranColors.dark.textPrimary, .2);
-      if (night) {
-        final moon = Path.combine(
-          PathOperation.difference,
-          Path()..addOval(Rect.fromCircle(center: point, radius: 10)),
-          Path()..addOval(
-            Rect.fromCircle(center: point + const Offset(5, -4), radius: 9),
-          ),
-        );
-        canvas.drawPath(moon, paint);
-      } else {
-        canvas.drawCircle(point, 10, paint);
-      }
-    }
-    canvas.restore();
-  }
+class _SkyTween extends Tween<PrayerSkyScene> {
+  _SkyTween({required super.begin});
 
   @override
-  bool shouldRepaint(PrayerArcPainter old) =>
-      old.fraction != fraction ||
-      old.night != night ||
-      old.gold != gold ||
-      old.background != background ||
-      old.rtl != rtl ||
-      old.showProgress != showProgress ||
-      !listEquals(old.markers, markers);
+  PrayerSkyScene lerp(double t) => PrayerSkyScene.lerp(begin!, end!, t);
 }
