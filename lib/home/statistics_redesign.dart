@@ -7,16 +7,19 @@ class _StatsText extends StatelessWidget {
     this.color,
     this.weight = FontWeight.w400,
     this.align,
+    this.direction,
   });
   final String text;
   final double size;
   final Color? color;
   final FontWeight weight;
   final TextAlign? align;
+  final TextDirection? direction;
   @override
   Widget build(BuildContext context) => Text(
     text,
     textAlign: align,
+    textDirection: direction,
     style: TextStyle(
       fontSize: size,
       height: 1.4,
@@ -285,7 +288,7 @@ class _RingMetric extends StatelessWidget {
         spacing: 5,
         children: [
           DisplayNumeral('$count', size: 28, height: 1),
-          _StatsText('/ $denominator', size: 13),
+          _StatsText('/ $denominator', size: 13, direction: TextDirection.ltr),
         ],
       ),
     ],

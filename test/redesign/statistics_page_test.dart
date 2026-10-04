@@ -262,6 +262,10 @@ void main() {
   ) async {
     await pump(tester, locale: const Locale('ar'), scale: 1.3);
     expect(
+      tester.widget<Text>(find.text('/ 20')).textDirection,
+      TextDirection.ltr,
+    );
+    expect(
       tester
           .getCenter(
             find.byWidgetPredicate(

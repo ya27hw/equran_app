@@ -11,7 +11,7 @@ The StatisticsRepository, all persisted models and all retained calculations are
 ## Verification
 
 - Required 390×844 captures: emerald-dark, emerald-light, AMOLED black, red-dark, text scale 1.3 and Arabic RTL, plus Arabic RTL at 1.3. There are 56 full-resolution goldens: Today, Prayer, Quran, Quran map, Hifz, Tasbih/Duas, history and streaks for each of seven variants.
-- Fourteen Statistics tests cover all range values, absence of sticky headers, saving prayer status and reactive overview refresh, opt-in/dismiss/re-enable, surah expansion and reading navigation, next-review navigation, month buttons/swipes/day details, Arabic enlarged-text logging, and the seven visual variants.
+- Fourteen Statistics tests cover all range values, absence of sticky headers, saving prayer status and reactive overview refresh, opt-in/dismiss/re-enable, surah expansion and reading navigation, next-review navigation, month buttons/swipes/day details, Arabic enlarged-text logging with left-to-right count fractions, and the seven visual variants.
 - Full test suite: 214 passing tests. Static analysis: zero findings. Dependency policy and localization completeness checks pass. Formatting changes no files. Token and contrast tests cover all 11 palettes.
 - The installed formatter still reports the existing unresolved `very_good_analysis` include in excluded `third_party/foil` packages. No vendor changes were made; application analysis is clean.
 - The actual Flutter web preview was checked at 390 px, alongside inspection of all captured variants. The reference HTML's inline CSS was read for dimensions/type/colors; the earlier browser restriction on rendering local HTML remains, so a browser-rendered pixel comparison with the reference is unverified.
