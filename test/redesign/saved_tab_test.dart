@@ -344,7 +344,12 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Browse surahs'));
     await tester.pumpAndSettle();
-    expect(find.byType(SavedQuranHeader), findsNothing);
+    expect(
+      tester
+          .widget<SavedQuranHeader>(find.byType(SavedQuranHeader))
+          .selectedIndex,
+      0,
+    );
     expect(
       tester.widget<QuranCardList>(find.byType(QuranCardList)).searchQuery,
       '',

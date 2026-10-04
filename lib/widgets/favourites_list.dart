@@ -230,17 +230,23 @@ class _FavouritesListState extends State<FavouritesList> {
   }
 }
 
-/// The Saved page's chrome is scoped to this tab; other Quran tabs keep theirs.
+/// The Quran page header shared by Surahs, Juz, Pages and Saved: serif title,
+/// search button and gold-underline tabs. [searchField] replaces the title row
+/// while a search is open.
 class SavedQuranHeader extends StatelessWidget {
   const SavedQuranHeader({
     super.key,
     required this.onSelectSection,
     required this.onSearch,
     this.onTitleTap,
+    this.selectedIndex = 3,
+    this.searchField,
   });
   final ValueChanged<int> onSelectSection;
   final VoidCallback onSearch;
   final VoidCallback? onTitleTap;
+  final int selectedIndex;
+  final Widget? searchField;
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
@@ -251,27 +257,31 @@ class SavedQuranHeader extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: onTitleTap,
-                    child: Text(
-                      l.quran,
-                      style: EquranTextStyles.displayPageTitle(
-                        context,
-                      ).copyWith(fontFamilyFallback: const ['NotoNaskhArabic']),
+            if (searchField != null)
+              SizedBox(height: 44, child: searchField)
+            else
+              Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: onTitleTap,
+                      child: Text(
+                        l.quran,
+                        style: EquranTextStyles.displayPageTitle(context)
+                            .copyWith(
+                              fontFamilyFallback: const ['NotoNaskhArabic'],
+                            ),
+                      ),
                     ),
                   ),
-                ),
-                IconButton44(
-                  designIcon: 'search',
-                  tooltip: l.searchQuran,
-                  onPressed: onSearch,
-                ),
-              ],
-            ),
+                  IconButton44(
+                    designIcon: 'search',
+                    tooltip: l.searchQuran,
+                    onPressed: onSearch,
+                  ),
+                ],
+              ),
             const SizedBox(height: 18),
             Row(
               children: [
@@ -283,7 +293,7 @@ class SavedQuranHeader extends StatelessWidget {
                 ].indexed)
                   Expanded(
                     child: Semantics(
-                      selected: index == 3,
+                      selected: index == selectedIndex,
                       child: InkWell(
                         onTap: () => onSelectSection(index),
                         child: Container(
@@ -301,7 +311,7 @@ class SavedQuranHeader extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
-                                  color: index == 3
+                                  color: index == selectedIndex
                                       ? context.equranColors.textPrimary
                                       : tokens.muted,
                                 ),
@@ -310,7 +320,7 @@ class SavedQuranHeader extends StatelessWidget {
                               Container(
                                 width: 32,
                                 height: 2,
-                                color: index == 3
+                                color: index == selectedIndex
                                     ? tokens.gold
                                     : Colors.transparent,
                               ),

@@ -1,6 +1,7 @@
 import 'package:equran/theme/equran_colors.dart';
+import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/theme/equran_text_styles.dart';
-import 'package:equran/utils/app_radii.dart';
+import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/utils/juz_search.dart';
 import 'package:equran/utils/quran_display.dart';
 import 'package:flutter/material.dart';
@@ -137,37 +138,29 @@ class _JuzSectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final EquranColors colors = context.equranColors;
+    final EquranTokens tokens = context.equranTokens;
     final localizations = AppLocalizations.of(context)!;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
       decoration: BoxDecoration(
         color: colors.surface,
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: <Color>[
-            Color.alphaBlend(colors.primary.withAlpha(18), colors.surface),
-            colors.surface,
-          ],
-        ),
-        borderRadius: BorderRadius.circular(AppRadii.medium),
-        border: Border.all(color: colors.border),
+        borderRadius: BorderRadius.circular(EquranRadii.large),
+        border: Border.all(color: tokens.hair),
       ),
       child: Row(
         children: <Widget>[
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
             decoration: BoxDecoration(
-              color: colors.mint,
-              borderRadius: BorderRadius.circular(AppRadii.pill),
-              border: Border.all(color: colors.border),
+              color: tokens.emWash,
+              borderRadius: BorderRadius.circular(EquranRadii.pill),
             ),
             child: Text(
               localizedJuzLabel(localizations, juzNumber),
               style: theme.textTheme.labelLarge?.copyWith(
                 fontWeight: FontWeight.w900,
-                color: colors.primary,
+                color: tokens.emText,
                 letterSpacing: 0,
               ),
             ),
@@ -186,7 +179,7 @@ class _JuzSectionHeader extends StatelessWidget {
                   fontFamilyFallback: const <String>['UthmanicHafs'],
                   height: 1.18,
                   fontWeight: FontWeight.w700,
-                  color: colors.textPrimary,
+                  color: tokens.emText,
                 ),
               ),
             ),
@@ -195,8 +188,8 @@ class _JuzSectionHeader extends StatelessWidget {
           Text(
             _surahCountLabel(surahCount, localizations),
             style: theme.textTheme.labelLarge?.copyWith(
-              color: colors.textSecondary,
-              fontWeight: FontWeight.w700,
+              color: tokens.muted,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
