@@ -1,16 +1,13 @@
 import 'package:equran/prayer/prayer_clock_text.dart';
-import 'package:equran/widgets/common/equran_asset_image.dart';
 import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/widgets/redesign/redesign_widgets.dart';
 import 'package:equran/prayer/prayer_models.dart';
 import 'package:equran/prayer/prayer_localizations.dart';
 import 'package:equran/theme/equran_colors.dart';
-import 'package:equran/utils/app_radii.dart';
+import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/utils/quran_display.dart';
 import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
-
-const String _appAssetBase = 'assets/media/images/app';
 
 class PrayerTimeThumbCard extends StatelessWidget {
   const PrayerTimeThumbCard({
@@ -51,160 +48,78 @@ class PrayerTimeThumbCard extends StatelessWidget {
     }
     final ThemeData theme = Theme.of(context);
     final EquranColors colors = context.equranColors;
+    final EquranTokens tokens = context.equranTokens;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final bool isLight = theme.brightness == Brightness.light;
-    final BorderRadius radius = BorderRadius.circular(AppRadii.large);
+    final BorderRadius radius = BorderRadius.circular(EquranRadii.xl - 4);
+    final String time = _formatPrayerTime(
+      entry.time,
+      use24HourFormat,
+      localizations,
+    );
 
-    return Material(
-      color: Colors.transparent,
-      borderRadius: radius,
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
+    return Semantics(
+      button: onTap != null,
+      selected: isActive,
+      child: Material(
+        color: Colors.transparent,
         borderRadius: radius,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 220),
-          curve: Curves.easeOutCubic,
-          width: width,
-          decoration: BoxDecoration(
-            color: isActive ? colors.surfaceAlt : colors.surface,
-            gradient: isActive
-                ? LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: <Color>[
-                      Color.alphaBlend(
-                        colors.primary.withAlpha(isLight ? 34 : 42),
-                        colors.surfaceAlt,
-                      ),
-                      colors.surfaceAlt,
-                    ],
-                  )
-                : null,
-            borderRadius: radius,
-            border: Border.all(
-              color: isActive ? colors.primary.withAlpha(190) : colors.border,
-            ),
-            boxShadow: <BoxShadow>[
-              BoxShadow(
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: radius,
+          child: Container(
+            width: width,
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+            decoration: BoxDecoration(
+              color: isActive ? tokens.goldWash : colors.surface,
+              borderRadius: radius,
+              border: Border.all(
                 color: isActive
-                    ? colors.primaryStrong.withAlpha(isLight ? 38 : 58)
-                    : colors.shadow.withAlpha(isLight ? 12 : 26),
-                blurRadius: isActive ? 20 : 14,
-                offset: Offset(0, isActive ? 9 : 5),
+                    ? tokens.gold.withValues(alpha: 0.55)
+                    : tokens.hair,
               ),
-            ],
-          ),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final double imageWidth = (constraints.maxWidth * 0.74)
-                  .clamp(88.0, 132.0)
-                  .toDouble();
-              final double imageHeight = (constraints.maxHeight * 0.52)
-                  .clamp(58.0, 90.0)
-                  .toDouble();
-              final Color primaryText = isActive
-                  ? colors.primarySoft
-                  : colors.textPrimary;
-
-              return Padding(
-                padding: const EdgeInsets.fromLTRB(12, 11, 12, 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: Text(
-                            localizedPrayerName(localizations, entry.kind),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.start,
-                            style: theme.textTheme.labelLarge?.copyWith(
-                              color: primaryText,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                        ),
-                        if (isActive)
-                          Container(
-                            width: 7,
-                            height: 7,
-                            decoration: BoxDecoration(
-                              color: colors.primary,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                      ],
-                    ),
-                    Expanded(
-                      child: Center(
-                        child: EquranAssetImage(
-                          _prayerThumbAsset(entry.kind),
-                          fit: BoxFit.contain,
-                          width: imageWidth,
-                          height: imageHeight,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Icon(
-                              _iconFor(entry.kind),
-                              color: colors.primary,
-                              size: imageHeight * 0.78,
-                            );
-                          },
-                        ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                SizedBox(
+                  height: 42,
+                  child: Center(
+                    child: PrayerArch(
+                      kind: entry.kind,
+                      semanticLabel: localizedPrayerName(
+                        localizations,
+                        entry.kind,
                       ),
+                      width: entry.kind == PrayerTimeKind.sunrise ? 26 : 30,
                     ),
-                    Align(
-                      alignment: AlignmentDirectional.centerStart,
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: AlignmentDirectional.centerStart,
-                        child: Text(
-                          _formatPrayerTime(
-                            entry.time,
-                            use24HourFormat,
-                            AppLocalizations.of(context)!,
-                          ),
-                          maxLines: 1,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            color: primaryText,
-                            fontWeight: FontWeight.w900,
-                            height: 1.0,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              );
-            },
+                const SizedBox(height: 8),
+                Text(
+                  localizedPrayerName(localizations, entry.kind),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: isActive ? tokens.goldText : tokens.muted,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: DisplayNumeral(
+                    time,
+                    size: 16,
+                    color: colors.textPrimary,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
-}
-
-IconData _iconFor(PrayerTimeKind kind) {
-  return switch (kind) {
-    PrayerTimeKind.fajr => Icons.nights_stay_rounded,
-    PrayerTimeKind.sunrise => Icons.wb_twilight_rounded,
-    PrayerTimeKind.dhuhr => Icons.wb_sunny_outlined,
-    PrayerTimeKind.asr => Icons.light_mode_outlined,
-    PrayerTimeKind.maghrib => Icons.wb_twilight_outlined,
-    PrayerTimeKind.isha => Icons.dark_mode_outlined,
-  };
-}
-
-String _prayerThumbAsset(PrayerTimeKind kind) {
-  return switch (kind) {
-    PrayerTimeKind.fajr => '$_appAssetBase/fajr.webp',
-    PrayerTimeKind.sunrise => '$_appAssetBase/sunrise.webp',
-    PrayerTimeKind.dhuhr => '$_appAssetBase/dhuhr.webp',
-    PrayerTimeKind.asr => '$_appAssetBase/asr.webp',
-    PrayerTimeKind.maghrib => '$_appAssetBase/maghrib.webp',
-    PrayerTimeKind.isha => '$_appAssetBase/isha.webp',
-  };
 }
 
 String _formatPrayerTime(

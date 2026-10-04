@@ -713,6 +713,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get moreGroupAbout => 'eQuran সম্পর্কে';
 
   @override
+  String get edit => 'সম্পাদনা';
+
+  @override
   String get openRoutine => 'খোলা রুটিন';
 
   @override

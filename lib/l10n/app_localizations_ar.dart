@@ -709,6 +709,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get moreGroupAbout => 'عن eQuran';
 
   @override
+  String get edit => 'تعديل';
+
+  @override
   String get openRoutine => 'فتح الورد';
 
   @override

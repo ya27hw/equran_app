@@ -713,6 +713,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get moreGroupAbout => 'eQuran کے بارے میں';
 
   @override
+  String get edit => 'ترمیم';
+
+  @override
   String get openRoutine => 'روٹین کھولیں۔';
 
   @override

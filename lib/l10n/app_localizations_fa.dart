@@ -711,6 +711,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get moreGroupAbout => 'درباره eQuran';
 
   @override
+  String get edit => 'ویرایش';
+
+  @override
   String get openRoutine => 'باز کردن برنامه';
 
   @override

@@ -1416,6 +1416,12 @@ abstract class AppLocalizations {
   /// **'About eQuran'**
   String get moreGroupAbout;
 
+  /// No description provided for @edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
   /// No description provided for @openRoutine.
   ///
   /// In en, this message translates to:

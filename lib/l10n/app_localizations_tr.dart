@@ -714,6 +714,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get moreGroupAbout => 'eQuran hakkında';
 
   @override
+  String get edit => 'Düzenle';
+
+  @override
   String get openRoutine => 'Rutini aç';
 
   @override

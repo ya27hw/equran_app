@@ -726,6 +726,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get moreGroupAbout => 'Über eQuran';
 
   @override
+  String get edit => 'Bearbeiten';
+
+  @override
   String get openRoutine => 'Offene Routine';
 
   @override

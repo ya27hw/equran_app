@@ -719,6 +719,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get moreGroupAbout => 'Tentang eQuran';
 
   @override
+  String get edit => 'Ubah';
+
+  @override
   String get openRoutine => 'Rutinitas terbuka';
 
   @override
