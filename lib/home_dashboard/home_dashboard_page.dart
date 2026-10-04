@@ -1008,6 +1008,10 @@ class _HomeSectionHead extends StatelessWidget {
             if (actionLabel != null)
               TextButton(
                 onPressed: onAction,
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: const Size(44, 44),
+                ),
                 child: Text(
                   actionLabel!,
                   style: TextStyle(
