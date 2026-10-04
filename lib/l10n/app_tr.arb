@@ -1257,6 +1257,7 @@
   "lettersCount": "{count} harfler",
   "dayStreakCount": "{count, plural, =1{1 gün serisi} other{{count} gün serisi}}",
   "ayahsCount": "{count, plural, =1{1 ayet} other{{count} ayet}}",
+  "prayersCount": "{count, plural, other{{count} namaz}}",
   "daysCount": "{count, plural, =1{1 gün} other{{count} gün}}",
   "todaysPortionComplete": "Bugünkü bölüm tamamlandı",
   "catchUpAyahsIncluded": "{count} özet ayeti içerir",

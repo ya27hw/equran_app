@@ -977,6 +977,7 @@
   "lettersCount": "{count}-Buchstaben",
   "dayStreakCount": "{count, plural, =1{1-Tage-Serie} other{{count}-Tage-Serie}}",
   "ayahsCount": "{count, plural, =1{1 Ayah} other{{count} Ayahs}}",
+  "prayersCount": "{count, plural, =1{1 Gebet} other{{count} Gebete}}",
   "daysCount": "{count, plural, =1{1 Tag} other{{count} Tage}}",
   "todaysPortionComplete": "Der heutige Teil ist abgeschlossen",
   "catchUpAyahsIncluded": "Enthält {count}-Nachhol-Ayahs",

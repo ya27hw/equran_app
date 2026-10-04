@@ -1934,6 +1934,16 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
+  String prayersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count نماز',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String daysCount(num count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

@@ -977,6 +977,7 @@
   "lettersCount": "{count} حرف",
   "dayStreakCount": "{count, plural, =1{۱ روز استمرار} other{{count} روز استمرار}}",
   "ayahsCount": "{count, plural, =1{۱ آیه} other{{count} آیه}}",
+  "prayersCount": "{count, plural, other{{count} نماز}}",
   "daysCount": "{count, plural, =1{۱ روز} other{{count} روز}}",
   "todaysPortionComplete": "بخش امروز کامل شد",
   "catchUpAyahsIncluded": "شامل {count} آیه جبرانی",

@@ -1640,7 +1640,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get assalamuAlaikum => 'Assalamu Alaikum';
 
   @override
-  String get continueYourJourneyToday => 'Continue your journey today';
+  String get continueYourJourneyToday => 'Keep going today';
 
   @override
   String onStreakDay(int streak) {
@@ -1912,8 +1912,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count day streak',
-      one: '1 day streak',
+      other: '$count-day streak',
+      one: '1-day streak',
     );
     return '$_temp0';
   }
@@ -1925,6 +1925,17 @@ class AppLocalizationsEn extends AppLocalizations {
       locale: localeName,
       other: '$count ayahs',
       one: '1 ayah',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String prayersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count prayers',
+      one: '1 prayer',
     );
     return '$_temp0';
   }

@@ -156,7 +156,7 @@ class _StatisticsToday extends StatelessWidget {
               PillTag(
                 l.dayStreakCount(data.highestStreak),
                 gold: true,
-                icon: Icons.local_fire_department_outlined,
+                designIcon: 'flame',
               ),
             ],
           ),
@@ -187,14 +187,14 @@ class _StatisticsToday extends StatelessWidget {
                   _RingMetric(
                     label: l.quranLabel,
                     count: data.quranAyahs,
-                    denominator: _dailyGoal(),
+                    unit: l.ayahsCount(_dailyGoal()),
                     color: t.gold,
                   ),
                   const SizedBox(height: 14),
                   _RingMetric(
                     label: l.salah,
                     count: data.salahPrayersToday,
-                    denominator: 5,
+                    unit: l.prayersCount(5),
                     color: t.emText,
                   ),
                 ],
@@ -228,7 +228,11 @@ class _StatisticsToday extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: _CountLabel('${data.duasViewed}', l.duas, size: 22),
+                child: _CountLabel(
+                  '${data.duasViewed}',
+                  l.duasViewed,
+                  size: 22,
+                ),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -260,11 +264,12 @@ class _RingMetric extends StatelessWidget {
   const _RingMetric({
     required this.label,
     required this.count,
-    required this.denominator,
+    required this.unit,
     required this.color,
   });
+  final String unit;
   final String label;
-  final int count, denominator;
+  final int count;
   final Color color;
   @override
   Widget build(BuildContext context) => Column(
@@ -288,7 +293,7 @@ class _RingMetric extends StatelessWidget {
         spacing: 5,
         children: [
           DisplayNumeral('$count', size: 28, height: 1),
-          _StatsText('/ $denominator', size: 13, direction: TextDirection.ltr),
+          _StatsText('/ $unit', size: 13, direction: TextDirection.ltr),
         ],
       ),
     ],

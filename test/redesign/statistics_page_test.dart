@@ -280,7 +280,7 @@ void main() {
   ) async {
     await pump(tester, locale: const Locale('ar'), scale: 1.3);
     expect(
-      tester.widget<Text>(find.text('/ 20')).textDirection,
+      tester.widget<Text>(find.textContaining('/ 20')).textDirection,
       TextDirection.ltr,
     );
     expect(
@@ -291,7 +291,7 @@ void main() {
             ),
           )
           .dx,
-      lessThan(tester.getCenter(find.text('/ 20')).dx),
+      lessThan(tester.getCenter(find.textContaining('/ 20')).dx),
     );
     await tester.ensureVisible(
       find.byKey(const ValueKey('statistics-log-asr')),
