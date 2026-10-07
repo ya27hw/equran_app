@@ -9,6 +9,7 @@ import 'package:equran/widgets/reader_sheet_chrome.dart';
 import 'package:equran/widgets/redesign/design_icon.dart';
 import 'package:equran/widgets/redesign/hairline_card.dart';
 import 'package:equran/widgets/redesign/hero_panel.dart';
+import 'package:equran/widgets/redesign/hero_parts.dart';
 import 'package:equran/widgets/redesign/icon_button44.dart';
 import 'package:equran/widgets/redesign/page_typography.dart';
 import 'package:equran/widgets/redesign/pill_tag.dart';
@@ -172,25 +173,6 @@ class _SectionHeading extends StatelessWidget {
   );
 }
 
-/// A rounded bar for a [HeroPanel]: a gold fill on a faint track.
-class _HeroProgressBar extends StatelessWidget {
-  const _HeroProgressBar({required this.value, required this.color});
-
-  final double value;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) => ClipRRect(
-    borderRadius: BorderRadius.circular(EquranRadii.pill),
-    child: LinearProgressIndicator(
-      minHeight: 8,
-      value: value,
-      color: color,
-      backgroundColor: EquranColors.dark.textPrimary.withValues(alpha: 0.16),
-    ),
-  );
-}
-
 class _RoutineHero extends StatelessWidget {
   const _RoutineHero({required this.plan, required this.now});
 
@@ -250,7 +232,7 @@ class _RoutineHero extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 18),
-          _HeroProgressBar(value: progress?.fraction ?? 0, color: gold),
+          HeroProgressBar(value: progress?.fraction ?? 0, color: gold),
           const SizedBox(height: 10),
           Text(
             plan == null

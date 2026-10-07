@@ -1,70 +1,18 @@
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/theme/equran_tokens.dart';
-import 'package:equran/utils/text_direction.dart';
 import 'package:equran/widgets/reader_sheet_chrome.dart';
 import 'package:equran/widgets/redesign/design_icon.dart';
 import 'package:equran/widgets/redesign/display_numeral.dart';
 import 'package:equran/widgets/redesign/hairline_card.dart';
 import 'package:equran/widgets/redesign/hero_panel.dart';
+import 'package:equran/widgets/redesign/hero_parts.dart';
 import 'package:equran/widgets/redesign/icon_button44.dart';
 import 'package:equran/widgets/redesign/page_typography.dart';
 import 'package:flutter/material.dart';
 
 /// Presentational pieces of the Zakat calculator. They only draw; the page
 /// keeps every figure, the nisab choice, prices and history storage.
-
-/// A pill on a [HeroPanel]. The panel is dark in every palette, so the colours
-/// come from the panel's own ink, not the page's.
-class ZakatHeroPill extends StatelessWidget {
-  const ZakatHeroPill(this.label, {super.key, this.icon, this.strong = false});
-
-  final String label;
-  final Widget? icon;
-
-  /// A brighter fill, for the state that matters (eligible).
-  final bool strong;
-
-  @override
-  Widget build(BuildContext context) {
-    final Color ink = EquranColors.dark.textPrimary;
-    return Container(
-      padding: const EdgeInsetsDirectional.symmetric(
-        horizontal: 11,
-        vertical: 5,
-      ),
-      decoration: BoxDecoration(
-        color: ink.withValues(alpha: strong ? 0.18 : 0.10),
-        borderRadius: BorderRadius.circular(EquranRadii.pill),
-        border: Border.all(color: ink.withValues(alpha: strong ? 0.34 : 0.18)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          if (icon != null) ...<Widget>[
-            IconTheme.merge(
-              data: IconThemeData(color: ink, size: 14),
-              child: icon!,
-            ),
-            const SizedBox(width: 6),
-          ],
-          Flexible(
-            child: Text(
-              label,
-              textDirection: scriptDirectionIn(context, label),
-              style: TextStyle(
-                fontSize: 12,
-                height: 1.25,
-                fontWeight: FontWeight.w600,
-                color: ink,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 /// The page's opening card: what Zakat al-Mal is and the flat rate.
 class ZakatIntroHero extends StatelessWidget {
@@ -96,7 +44,7 @@ class ZakatIntroHero extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(child: RedesignEyebrow(title, color: gold)),
               const SizedBox(width: 10),
-              ZakatHeroPill(rateLabel),
+              HeroPill(rateLabel),
             ],
           ),
           const SizedBox(height: 14),
@@ -501,7 +449,7 @@ class ZakatResultHero extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              ZakatHeroPill(
+              HeroPill(
                 statusLabel,
                 strong: eligible,
                 icon: eligible
