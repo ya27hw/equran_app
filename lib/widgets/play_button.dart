@@ -9,6 +9,9 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:equran/l10n/app_localizations.dart';
+import 'package:equran/widgets/reader_sheet_chrome.dart'
+    show ReaderConfirmDialog, showReaderDialog;
+import 'package:equran/widgets/redesign/design_icon.dart';
 import 'package:http/http.dart' as http;
 
 class PlayButton extends StatefulWidget {
@@ -298,27 +301,18 @@ class _PlayButtonState extends State<PlayButton> {
   }
 
   Future<void> _confirmDeleteDownload() async {
-    final bool? confirm = await showDialog<bool>(
+    final bool? confirm = await showReaderDialog<bool>(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          icon: const Icon(Icons.warning_amber_rounded),
-          title: Text(localizations.deleteDownloadedAyah),
-          content: Text(
-            localizations.removeSurahFromOffline(
-              'ayah ${widget.surah}:${widget.ayah}',
-            ),
+        return ReaderConfirmDialog(
+          icon: const DesignIcon('trash'),
+          title: localizations.deleteDownloadedAyah,
+          body: localizations.removeSurahFromOffline(
+            'ayah ${widget.surah}:${widget.ayah}',
           ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: Text(localizations.cancel),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: Text(localizations.delete),
-            ),
-          ],
+          cancelLabel: localizations.cancel,
+          confirmLabel: localizations.delete,
+          destructive: true,
         );
       },
     );

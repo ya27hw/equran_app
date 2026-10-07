@@ -4,6 +4,7 @@ import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/widgets/app_selection_dialog.dart';
 import 'package:equran/widgets/reader_sheet_chrome.dart';
 import 'package:equran/widgets/reader_sheets.dart';
+import 'package:equran/widgets/redesign/design_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -38,8 +39,8 @@ void main() {
     bool asSheet = true,
     bool fixedHeight = false,
   }) async {
-    tester.view.devicePixelRatio = 3;
-    tester.view.physicalSize = Size(390 * 3, height * 3);
+    tester.view.devicePixelRatio = 2;
+    tester.view.physicalSize = Size(390 * 2, height * 2);
     addTearDown(tester.view.reset);
     await tester.pumpWidget(
       MaterialApp(
@@ -82,7 +83,16 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    // A running download shows a spinner that never settles.
+    try {
+      await tester.pumpAndSettle(
+        const Duration(milliseconds: 100),
+        EnginePhase.sendSemanticsUpdate,
+        const Duration(seconds: 1),
+      );
+    } on FlutterError {
+      await tester.pump();
+    }
     expect(tester.takeException(), isNull);
   }
 
@@ -296,6 +306,177 @@ void main() {
           ),
         ],
       );
+
+  Widget interval(List<String> log, {String? error, int startAyah = 142}) =>
+      ReaderIntervalSheet(
+        groups: <Widget>[
+          ReaderSheetGroup(
+            title: 'Start',
+            bottomPadding: 12,
+            children: <Widget>[
+              ReaderStepperRow(
+                label: 'Surah',
+                value: 2,
+                min: 1,
+                max: 114,
+                helper: 'Al-Baqarah',
+                onTap: () => log.add('pickStartSurah'),
+                onChanged: (v) => log.add('startSurah:$v'),
+              ),
+              ReaderStepperRow(
+                label: 'Ayah',
+                value: startAyah,
+                min: 1,
+                max: 286,
+                helper: '1-286',
+                onTap: () => log.add('pickStartAyah'),
+                onChanged: (v) => log.add('startAyah:$v'),
+              ),
+            ],
+          ),
+          ReaderSheetGroup(
+            title: 'End',
+            bottomPadding: 12,
+            children: <Widget>[
+              ReaderStepperRow(
+                label: 'Surah',
+                value: 2,
+                min: 1,
+                max: 114,
+                helper: 'Al-Baqarah',
+                onTap: () {},
+                onChanged: (v) => log.add('endSurah:$v'),
+              ),
+              ReaderStepperRow(
+                label: 'Ayah',
+                value: 286,
+                min: 1,
+                max: 286,
+                helper: '1-286',
+                onTap: () {},
+                onChanged: (v) => log.add('endAyah:$v'),
+              ),
+            ],
+          ),
+        ],
+        summary: 'Al-Baqarah 142 to Al-Baqarah 286',
+        errorText: error,
+        onCancel: () => log.add('cancel'),
+        onApply: () => log.add('apply'),
+      );
+
+  Widget details() => AyahDetailsSheet(
+    scrollController: ScrollController(),
+    title: 'Al-Baqarah 142',
+    languageTooltip: 'Translation language',
+    onLanguage: () {},
+    arabic: const Text(
+      'سَيَقُولُ السُّفَهَاءُ مِنَ النَّاسِ مَا وَلَّاهُمْ عَن قِبْلَتِهِمُ',
+      textDirection: TextDirection.rtl,
+      textAlign: TextAlign.justify,
+      style: TextStyle(
+        fontFamily: 'NotoNaskhArabic',
+        fontSize: 26,
+        height: 1.7,
+      ),
+    ),
+    transliteration: 'Sayaqoolu alssufahao mina alnnasi ma wallahum',
+    translation:
+        'The foolish among the people will say, what has turned them away '
+        'from the direction they used to face in prayer?',
+  );
+
+  Widget tafsir(List<String> log) => ReaderSheetFrame(
+    title: 'Al-Baqarah 142',
+    scrollController: ScrollController(),
+    children: <Widget>[
+      const ReaderTafsirCard(
+        name: 'Tafsir Ibn Kathir',
+        text:
+            'Allah informs that some of the foolish would object to the change '
+            'of the qiblah, and tells His Prophet how to answer them.',
+      ),
+      const SizedBox(height: 12),
+      ReaderTafsirCard(
+        name: 'Tafsir al-Jalalayn',
+        text: '',
+        needsDownloadText: 'Needs a download of 4.2 MB.',
+        cancelLabel: 'Cancel',
+        onCancel: () => log.add('cancel'),
+        downloadLabel: 'Download',
+        onDownload: () => log.add('download'),
+      ),
+      const SizedBox(height: 12),
+      const ReaderTafsirCard(
+        name: 'Tafsir al-Sa\'di',
+        text: '',
+        needsDownloadText: 'Needs a download of 2 MB.',
+        cancelLabel: 'Cancel',
+        downloadLabel: 'Downloading',
+        downloading: true,
+      ),
+      const SizedBox(height: 12),
+      ReaderNotice(
+        icon: const DesignIcon('quran'),
+        title: 'No tafsir sources selected',
+        subtitle: 'Choose sources first',
+        actionLabel: 'Choose',
+        onAction: () => log.add('choose'),
+      ),
+    ],
+  );
+
+  Widget sources(List<String> log) => ReaderSheetFrame(
+    title: 'Tafsir Sources',
+    scrollController: ScrollController(),
+    children: <Widget>[
+      ReaderSheetGroup(
+        bottomPadding: 0,
+        children: <Widget>[
+          ReaderSourceRow(
+            title: 'Tafsir Ibn Kathir',
+            subtitle: 'EN • Installed • 14 MB',
+            selected: true,
+            installed: true,
+            downloading: false,
+            downloadTooltip: 'Download',
+            onDownload: () => log.add('download:kathir'),
+            onToggle: () => log.add('toggle:kathir'),
+          ),
+          ReaderSourceRow(
+            title: 'Tafsir al-Jalalayn',
+            subtitle: 'EN • Not installed • 4 MB',
+            selected: false,
+            installed: false,
+            downloading: false,
+            downloadTooltip: 'Download',
+            onDownload: () => log.add('download:jalalayn'),
+            onToggle: () => log.add('toggle:jalalayn'),
+          ),
+          ReaderSourceRow(
+            title: 'Tafsir al-Sa\'di',
+            subtitle: 'AR • Downloading • 2 MB',
+            selected: true,
+            installed: false,
+            downloading: true,
+            downloadTooltip: 'Downloading',
+            onDownload: () => log.add('download:sadi'),
+            onToggle: () => log.add('toggle:sadi'),
+          ),
+        ],
+      ),
+    ],
+  );
+
+  Widget noteDialog(List<String> log) => ReaderNoteDialog(
+    controller: TextEditingController(text: 'Revisit this one'),
+    title: 'Saved ayah',
+    hint: 'Optional note',
+    maxLength: 280,
+    cancelLabel: 'Cancel',
+    saveLabel: 'Save',
+    onSave: () => log.add('save'),
+  );
 
   group('behaviour', () {
     testWidgets('reading options reach their callbacks', (tester) async {
@@ -639,6 +820,83 @@ void main() {
       // The only route cannot pop; the tap must simply not throw.
       expect(tester.takeException(), isNull);
     });
+    testWidgets('interval steppers clamp and report', (tester) async {
+      final log = <String>[];
+      await pump(tester, (_) => interval(log), height: 1100);
+      final l = l10n(tester);
+      Future<void> tap(Finder f) async {
+        await tester.ensureVisible(f);
+        await tester.tap(f);
+      }
+
+      await tap(find.byTooltip(l.decreaseLabel('Ayah')).first);
+      await tap(find.byTooltip(l.increaseLabel('Ayah')).first);
+      await tap(find.byTooltip(l.increaseLabel('Surah')).first);
+      await tap(find.text('Al-Baqarah').first);
+      await tap(find.text(l.apply));
+      await tap(find.text(l.cancel));
+      // End ayah is already at its maximum, so plus is disabled.
+      await tap(find.byTooltip(l.increaseLabel('Ayah')).last);
+      expect(log, <String>[
+        'startAyah:141',
+        'startAyah:143',
+        'startSurah:3',
+        'pickStartSurah',
+        'apply',
+        'cancel',
+      ]);
+    });
+
+    testWidgets('interval sheet shows the error instead of the summary', (
+      tester,
+    ) async {
+      await pump(tester, (_) => interval([], error: 'End is before start'));
+      expect(find.text('End is before start'), findsOneWidget);
+      expect(find.text('Al-Baqarah 142 to Al-Baqarah 286'), findsNothing);
+    });
+
+    testWidgets('tafsir cards report download and cancel', (tester) async {
+      final log = <String>[];
+      await pump(tester, (_) => tafsir(log), height: 1400, fixedHeight: true);
+      await tester.tap(find.text('Download'));
+      await tester.tap(find.text('Cancel').first);
+      await tester.tap(find.text('Choose'));
+      expect(log, <String>['download', 'cancel', 'choose']);
+      expect(find.textContaining('qiblah'), findsOneWidget);
+    });
+
+    testWidgets('tafsir sources toggle and download', (tester) async {
+      final log = <String>[];
+      await pump(tester, (_) => sources(log), height: 900);
+      await tester.tap(find.text('Tafsir Ibn Kathir'));
+      await tester.tap(find.text('Tafsir al-Jalalayn'));
+      await tester.tap(find.byTooltip('Download'));
+      expect(log, <String>[
+        'toggle:kathir',
+        'toggle:jalalayn',
+        'download:jalalayn',
+      ]);
+      // An installed source has no download button; a running one shows a
+      // spinner, not a button.
+      expect(find.byTooltip('Download'), findsOneWidget);
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    });
+
+    testWidgets('note dialog saves and cancels', (tester) async {
+      final log = <String>[];
+      await pump(tester, (_) => noteDialog(log), asSheet: false);
+      await tester.tap(find.text('Save'));
+      await tester.tap(find.text('Cancel'));
+      expect(log, <String>['save']);
+      expect(tester.widget<TextField>(find.byType(TextField)).maxLength, 280);
+    });
+
+    testWidgets('ayah details shows all three texts', (tester) async {
+      await pump(tester, (_) => details(), height: 900);
+      expect(find.textContaining('Sayaqoolu'), findsOneWidget);
+      expect(find.textContaining('foolish'), findsOneWidget);
+      expect(find.byTooltip('Translation language'), findsOneWidget);
+    });
   });
 
   // Goldens. Every widget is captured in emerald dark; the four busiest are
@@ -659,7 +917,7 @@ void main() {
   ];
 
   for (final (name, colors, scale, locale) in variants) {
-    final tall = scale > 1 ? 1500.0 : 1100.0;
+    final tall = scale > 1 ? 1250.0 : 900.0;
     testWidgets('golden reading options $name', (tester) async {
       await pump(
         tester,
@@ -709,55 +967,51 @@ void main() {
     });
   }
 
-  testWidgets('golden go to ayah', (tester) async {
-    await pump(tester, (_) => goTo(), height: 500);
-    await shot(tester, 'go-to-ayah-emerald-dark');
-  });
-  testWidgets('golden go to ayah error', (tester) async {
-    await pump(
-      tester,
-      (_) => goTo(error: 'Enter a number from 1 to 286'),
-      height: 500,
-    );
-    await shot(tester, 'go-to-ayah-error');
-  });
-  testWidgets('golden sleep timer', (tester) async {
-    await pump(tester, (_) => sleep(), height: 700);
-    await shot(tester, 'sleep-timer-emerald-dark');
-  });
-  testWidgets('golden sleep timer active, end of surah', (tester) async {
-    await pump(
-      tester,
-      (_) => sleep(endOfSurah: true, active: true),
-      height: 700,
-      colors: EquranColors.light,
-    );
-    await shot(tester, 'sleep-timer-active-emerald-light');
-  });
-  testWidgets('golden share formats', (tester) async {
-    await pump(tester, (_) => shareFormats([]), height: 600);
-    await shot(tester, 'share-formats-emerald-dark');
-  });
-  testWidgets('golden ayah actions', (tester) async {
-    await pump(tester, (_) => ayahActions([]), height: 700);
-    await shot(tester, 'ayah-actions-emerald-dark');
-  });
-  testWidgets('golden reciter grouped', (tester) async {
-    await pump(
-      tester,
-      (_) => reciters([], grouped: true),
-      height: 800,
-      asSheet: false,
-    );
-    await shot(tester, 'reciter-grouped');
-  });
-  testWidgets('golden confirm dialogs', (tester) async {
-    await pump(
-      tester,
-      (_) => const Column(
+  // Every other sheet and dialog, in emerald dark, emerald light, text scale
+  // 1.3 and Arabic (RTL). AMOLED black and red are covered by the busiest
+  // widgets above, which share the same chrome.
+  final cases = <(String, Widget Function(), double, bool)>[
+    ('go-to-ayah', () => goTo(), 520, true),
+    (
+      'go-to-ayah-error',
+      () => goTo(error: 'Enter a number from 1 to 286'),
+      520,
+      true,
+    ),
+    ('sleep-timer', () => sleep(), 760, true),
+    (
+      'sleep-timer-active',
+      () => sleep(endOfSurah: true, active: true),
+      760,
+      true,
+    ),
+    ('share-formats', () => shareFormats([]), 640, true),
+    ('ayah-actions', () => ayahActions([]), 760, true),
+    ('interval', () => interval([]), 1000, true),
+    (
+      'interval-error',
+      () => interval([], error: 'End is before start'),
+      1000,
+      true,
+    ),
+    ('ayah-details', () => details(), 900, true),
+    ('tafsir', () => tafsir([]), 1300, true),
+    ('tafsir-sources', () => sources([]), 760, true),
+    ('reciter-grouped', () => reciters([], grouped: true), 800, false),
+    (
+      'folder-dialog',
+      () => ReaderFolderNameDialog(controller: TextEditingController()),
+      500,
+      false,
+    ),
+    ('note-dialog', () => noteDialog([]), 560, false),
+    (
+      'confirm-dialogs',
+      () => const Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           ReaderConfirmDialog(
+            icon: DesignIcon('trash'),
             title: 'Delete downloaded ayah?',
             body: 'This removes ayah 2:142 from offline storage.',
             cancelLabel: 'Cancel',
@@ -765,6 +1019,7 @@ void main() {
             destructive: true,
           ),
           ReaderConfirmDialog(
+            icon: DesignIcon('download'),
             title: 'Download all ayahs?',
             body: 'Download every ayah of Al-Baqarah for offline listening.',
             cancelLabel: 'Cancel',
@@ -772,24 +1027,12 @@ void main() {
           ),
         ],
       ),
-      height: 800,
-      asSheet: false,
-    );
-    await shot(tester, 'confirm-dialogs-emerald-dark');
-  });
-  testWidgets('golden folder dialog', (tester) async {
-    await pump(
-      tester,
-      (_) => ReaderFolderNameDialog(controller: TextEditingController()),
-      height: 500,
-      asSheet: false,
-    );
-    await shot(tester, 'folder-dialog-emerald-dark');
-  });
-  testWidgets('golden choice dialog', (tester) async {
-    await pump(
-      tester,
-      (_) => const ReaderChoiceDialog<int>(
+      900,
+      false,
+    ),
+    (
+      'choice-dialog',
+      () => const ReaderChoiceDialog<int>(
         title: 'Repeat each ayah',
         icon: Icon(Icons.repeat_one_rounded),
         selectedValue: 2,
@@ -800,9 +1043,32 @@ void main() {
           AppSelectionOption<int>(value: 4, title: 'Infinite'),
         ],
       ),
-      height: 700,
-      asSheet: false,
-    );
-    await shot(tester, 'choice-dialog-emerald-dark');
-  });
+      700,
+      false,
+    ),
+  ];
+  final caseVariants = <(String, EquranColors, double, Locale)>[
+    variants[0],
+    variants[1],
+    variants[4],
+    variants[5],
+  ];
+  for (final (id, build, height, sheet) in cases) {
+    for (final (name, colors, scale, locale) in caseVariants) {
+      testWidgets('golden $id $name', (tester) async {
+        await pump(
+          tester,
+          (_) => build(),
+          colors: colors,
+          scale: scale,
+          locale: locale,
+          height: scale > 1 ? height * 1.35 : height,
+          asSheet: sheet,
+          fixedHeight:
+              id == 'tafsir' || id == 'tafsir-sources' || id == 'ayah-details',
+        );
+        await shot(tester, '$id-$name');
+      });
+    }
+  }
 }

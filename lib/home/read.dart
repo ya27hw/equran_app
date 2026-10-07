@@ -51,6 +51,7 @@ import 'package:equran/widgets/playback_options_sheet.dart';
 import 'package:equran/widgets/reader_sheet_chrome.dart';
 import 'package:equran/widgets/reader_sheets.dart';
 import 'package:equran/widgets/redesign/design_icon.dart';
+import 'package:equran/widgets/redesign/pill_tag.dart' show PillTag;
 import 'package:equran/theme/equran_text_styles.dart';
 import 'package:equran/reading_plans/routine_progress.dart';
 import 'package:equran/utils/app_radii.dart';
@@ -4257,11 +4258,8 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     String? errorText;
 
     final PlaybackInterval? selected = await _withLowFpsSuppressed(() {
-      return showModalBottomSheet<PlaybackInterval>(
+      return showReaderSheet<PlaybackInterval>(
         context: context,
-        showDragHandle: true,
-        isScrollControlled: true,
-        useSafeArea: true,
         builder: (context) {
           final AppLocalizations localizations = AppLocalizations.of(context)!;
           return StatefulBuilder(
@@ -4300,143 +4298,61 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
                 onPointerMove: (_) => _notifyAudioUserActivity(),
                 onPointerSignal: (_) => _notifyAudioUserActivity(),
                 child: SafeArea(
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.fromLTRB(
-                      20,
-                      8,
-                      20,
-                      MediaQuery.viewInsetsOf(context).bottom + 24,
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: Text(
-                                localizations.intervalRange,
-                                style: Theme.of(context).textTheme.titleMedium
-                                    ?.copyWith(fontWeight: FontWeight.w800),
-                              ),
-                            ),
-                            IconButton(
-                              tooltip: localizations.close,
-                              onPressed: () => Navigator.of(context).pop(),
-                              icon: const Icon(Icons.close_rounded),
-                            ),
-                          ],
-                        ),
-                        Text(
-                          localizations.intervalRangeHint,
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
-                              ),
-                        ),
-                        const SizedBox(height: 14),
-                        _buildIntervalPickerRow(
-                          context: context,
-                          label: localizations.start,
-                          surah: startSurah,
-                          ayah: startAyah,
-                          onSurahChanged: (value) {
-                            _notifyAudioUserActivity();
-                            setSheetState(() {
-                              startSurah = value;
-                              startAyah = startAyah
-                                  .clamp(1, quran.getVerseCount(startSurah))
-                                  .toInt();
-                              errorText = null;
-                            });
-                          },
-                          onAyahChanged: (value) {
-                            _notifyAudioUserActivity();
-                            setSheetState(() {
-                              startAyah = value;
-                              errorText = null;
-                            });
-                          },
-                        ),
-                        const SizedBox(height: 10),
-                        _buildIntervalPickerRow(
-                          context: context,
-                          label: localizations.end,
-                          surah: endSurah,
-                          ayah: endAyah,
-                          onSurahChanged: (value) {
-                            _notifyAudioUserActivity();
-                            setSheetState(() {
-                              endSurah = value;
-                              endAyah = endAyah
-                                  .clamp(1, quran.getVerseCount(endSurah))
-                                  .toInt();
-                              errorText = null;
-                            });
-                          },
-                          onAyahChanged: (value) {
-                            _notifyAudioUserActivity();
-                            setSheetState(() {
-                              endAyah = value;
-                              errorText = null;
-                            });
-                          },
-                        ),
-                        const SizedBox(height: 12),
-                        AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 160),
-                          child: errorText == null
-                              ? Align(
-                                  alignment: AlignmentDirectional.centerStart,
-                                  child: Text(
-                                    _formatIntervalSummary(currentSelection()),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.primary,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                  ),
-                                )
-                              : Align(
-                                  alignment: AlignmentDirectional.centerStart,
-                                  child: Text(
-                                    errorText!,
-                                    style: Theme.of(context).textTheme.bodySmall
-                                        ?.copyWith(
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.error,
-                                          height: 1.35,
-                                        ),
-                                  ),
-                                ),
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: OutlinedButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                child: Text(localizations.cancel),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: FilledButton(
-                                onPressed: applySelection,
-                                child: Text(localizations.apply),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                  top: false,
+                  child: ReaderIntervalSheet(
+                    bottomInset: MediaQuery.viewInsetsOf(context).bottom,
+                    groups: <Widget>[
+                      _buildIntervalPickerRow(
+                        context: context,
+                        label: localizations.start,
+                        surah: startSurah,
+                        ayah: startAyah,
+                        onSurahChanged: (value) {
+                          _notifyAudioUserActivity();
+                          setSheetState(() {
+                            startSurah = value;
+                            startAyah = startAyah
+                                .clamp(1, quran.getVerseCount(startSurah))
+                                .toInt();
+                            errorText = null;
+                          });
+                        },
+                        onAyahChanged: (value) {
+                          _notifyAudioUserActivity();
+                          setSheetState(() {
+                            startAyah = value;
+                            errorText = null;
+                          });
+                        },
+                      ),
+                      _buildIntervalPickerRow(
+                        context: context,
+                        label: localizations.end,
+                        surah: endSurah,
+                        ayah: endAyah,
+                        onSurahChanged: (value) {
+                          _notifyAudioUserActivity();
+                          setSheetState(() {
+                            endSurah = value;
+                            endAyah = endAyah
+                                .clamp(1, quran.getVerseCount(endSurah))
+                                .toInt();
+                            errorText = null;
+                          });
+                        },
+                        onAyahChanged: (value) {
+                          _notifyAudioUserActivity();
+                          setSheetState(() {
+                            endAyah = value;
+                            errorText = null;
+                          });
+                        },
+                      ),
+                    ],
+                    summary: _formatIntervalSummary(currentSelection()),
+                    errorText: errorText,
+                    onCancel: () => Navigator.of(context).pop(),
+                    onApply: applySelection,
                   ),
                 ),
               );
@@ -4521,8 +4437,6 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     required ValueChanged<int> onSurahChanged,
     required ValueChanged<int> onAyahChanged,
   }) {
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
     final int maxAyah = quran.getVerseCount(surah);
 
@@ -4561,54 +4475,28 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
       onAyahChanged(selected);
     }
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppRadii.medium),
-        border: Border.all(color: colorScheme.outlineVariant),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              label,
-              style: theme.textTheme.labelLarge?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: _NumberStepperTile(
-                    label: localizations.surahOption,
-                    value: surah,
-                    min: 1,
-                    max: 114,
-                    helper: localizedSurahName(localizations, surah),
-                    onTap: pickSurah,
-                    onChanged: onSurahChanged,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: _NumberStepperTile(
-                    label: localizations.ayahsLabel,
-                    value: ayah.clamp(1, maxAyah).toInt(),
-                    min: 1,
-                    max: maxAyah,
-                    helper: '1-$maxAyah',
-                    onTap: pickAyah,
-                    onChanged: onAyahChanged,
-                  ),
-                ),
-              ],
-            ),
-          ],
+    return ReaderSheetGroup(
+      title: label,
+      children: <Widget>[
+        ReaderStepperRow(
+          label: localizations.surahOption,
+          value: surah,
+          min: 1,
+          max: 114,
+          helper: localizedSurahName(localizations, surah),
+          onTap: pickSurah,
+          onChanged: onSurahChanged,
         ),
-      ),
+        ReaderStepperRow(
+          label: localizations.ayahsLabel,
+          value: ayah.clamp(1, maxAyah).toInt(),
+          min: 1,
+          max: maxAyah,
+          helper: '1-$maxAyah',
+          onTap: pickAyah,
+          onChanged: onAyahChanged,
+        ),
+      ],
     );
   }
 
@@ -5105,7 +4993,7 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
       return _buildRoutineProgressBar(marginValue);
     }
 
-    final EquranColors colors = context.equranColors;
+    final EquranTokens tokens = context.equranTokens;
     final double progress = _totalVerses <= 0
         ? 0
         : (_currentVerse / _totalVerses).clamp(0.0, 1.0).toDouble();
@@ -5138,7 +5026,7 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
                           children: <Widget>[
                             DecoratedBox(
                               decoration: BoxDecoration(
-                                color: colors.border,
+                                color: tokens.hair2,
                                 borderRadius: radius,
                               ),
                             ),
@@ -5157,7 +5045,7 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
                               },
                               child: DecoratedBox(
                                 decoration: BoxDecoration(
-                                  color: colors.primary,
+                                  color: tokens.filled,
                                   borderRadius: radius,
                                 ),
                               ),
@@ -5178,7 +5066,7 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
 
   Widget _buildRoutineProgressBar(double marginValue) {
     final EquranColors colors = context.equranColors;
-    final ThemeData theme = Theme.of(context);
+    final EquranTokens tokens = context.equranTokens;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
     final ReadingPlanEntry? plan = _routinePlanForPage();
     if (plan == null) {
@@ -5200,12 +5088,12 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
       padding: EdgeInsets.fromLTRB(marginValue, 10, marginValue, 8),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: colors.surface.withAlpha(230),
-          borderRadius: BorderRadius.circular(AppRadii.medium),
-          border: Border.all(color: colors.border.withAlpha(150)),
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(EquranRadii.large),
+          border: Border.all(color: tokens.hair),
         ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(10, 8, 10, 9),
+          padding: const EdgeInsets.fromLTRB(14, 12, 14, 13),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
@@ -5217,9 +5105,10 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
                 children: <Widget>[
                   Text(
                     localizations.readingRoutine,
-                    style: theme.textTheme.labelLarge?.copyWith(
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
                       color: colors.textPrimary,
-                      fontWeight: FontWeight.w900,
                     ),
                   ),
                   Text(
@@ -5227,36 +5116,21 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
                       completedToday,
                       todayQuota,
                     ),
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: colors.textSecondary,
-                      fontWeight: FontWeight.w800,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: tokens.text2,
                     ),
                   ),
                   if (progress.catchUpAyahs > 0)
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: colors.mint,
-                        borderRadius: BorderRadius.circular(AppRadii.pill),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 3,
-                        ),
-                        child: Text(
-                          localizations.includesCatchUpAyahs(
-                            progress.catchUpAyahs,
-                          ),
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: colors.primary,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                      ),
+                    PillTag(
+                      localizations.includesCatchUpAyahs(progress.catchUpAyahs),
+                      selected: true,
+                      compact: true,
                     ),
                 ],
               ),
-              const SizedBox(height: 7),
+              const SizedBox(height: 10),
               ClipRRect(
                 borderRadius: radius,
                 child: SizedBox(
@@ -5266,7 +5140,7 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
                     children: <Widget>[
                       DecoratedBox(
                         decoration: BoxDecoration(
-                          color: colors.border,
+                          color: tokens.hair2,
                           borderRadius: radius,
                         ),
                       ),
@@ -5283,7 +5157,7 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
                         },
                         child: DecoratedBox(
                           decoration: BoxDecoration(
-                            color: colors.primary,
+                            color: tokens.filled,
                             borderRadius: radius,
                           ),
                         ),
@@ -7576,17 +7450,12 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
   }
 
   Future<void> _showAyahDetailsSheet(int verse) async {
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
     final String transliteration = _transliterationForVerse(verse).trim();
     int selectedTranslationIndex = _selectedTranslationIndex();
 
     await _withLowFpsSuppressed(() {
-      return showModalBottomSheet<void>(
+      return showReaderSheet<void>(
         context: context,
-        isScrollControlled: true,
-        useSafeArea: true,
-        showDragHandle: true,
         builder: (context) {
           final AppLocalizations localizations = AppLocalizations.of(context)!;
           return StatefulBuilder(
@@ -7613,39 +7482,24 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
                 if (mounted) setState(() {});
               }
 
-              return DraggableScrollableSheet(
-                expand: false,
-                initialChildSize: 0.52,
-                minChildSize: 0.36,
-                maxChildSize: 0.86,
-                builder: (context, controller) {
-                  return ListView(
-                    controller: controller,
-                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: Text(
-                              localizedSurahAyahLabel(
-                                localizations,
-                                _currentChapter,
-                                verse,
-                              ),
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                          IconButton(
-                            tooltip: localizations.translationLanguage,
-                            onPressed: switchLanguage,
-                            icon: const Icon(Icons.language_rounded),
-                          ),
-                        ],
+              return SafeArea(
+                top: false,
+                child: DraggableScrollableSheet(
+                  expand: false,
+                  initialChildSize: 0.52,
+                  minChildSize: 0.36,
+                  maxChildSize: 0.86,
+                  builder: (context, controller) {
+                    return AyahDetailsSheet(
+                      scrollController: controller,
+                      title: localizedSurahAyahLabel(
+                        localizations,
+                        _currentChapter,
+                        verse,
                       ),
-                      const SizedBox(height: 18),
-                      Text(
+                      languageTooltip: localizations.translationLanguage,
+                      onLanguage: switchLanguage,
+                      arabic: Text(
                         quranVerseText(_currentChapter, verse),
                         textDirection: TextDirection.rtl,
                         textAlign: TextAlign.justify,
@@ -7654,32 +7508,14 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
                           fontFamilyFallback: const <String>['UthmanicHafs'],
                           fontSize: _ayahDetailsArabicFontSize,
                           height: 1.7,
-                          color: colorScheme.onSurface,
+                          color: context.equranColors.textPrimary,
                         ),
                       ),
-                      if (transliteration.isNotEmpty) ...<Widget>[
-                        const SizedBox(height: 18),
-                        Text(
-                          transliteration,
-                          textAlign: TextAlign.justify,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                      const SizedBox(height: 18),
-                      Text(
-                        translation,
-                        textAlign: TextAlign.justify,
-                        style: EquranTextStyles.displayTranslation(
-                          context,
-                          color: colorScheme.onSurface,
-                        ),
-                      ),
-                    ],
-                  );
-                },
+                      transliteration: transliteration,
+                      translation: translation,
+                    );
+                  },
+                ),
               );
             },
           );
@@ -7760,32 +7596,20 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     if (ResourceInstallStore.instance.isInstalled(resource)) return true;
     if (!mounted) return false;
 
-    final bool? download = await showDialog<bool>(
+    final bool? download = await showReaderDialog<bool>(
       context: context,
       builder: (context) {
         final AppLocalizations localizations = AppLocalizations.of(context)!;
-        return AlertDialog(
-          title: Text(
-            localizations.downloadTranslationQuestion(
-              translationDisplayName(translation),
-            ),
+        return ReaderConfirmDialog(
+          icon: const DesignIcon('download'),
+          title: localizations.downloadTranslationQuestion(
+            translationDisplayName(translation),
           ),
-          content: Text(
-            localizations.translationNotInstalled(
-              prettyBytes(getResourceSize(resource)),
-            ),
+          body: localizations.translationNotInstalled(
+            prettyBytes(getResourceSize(resource)),
           ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: Text(localizations.cancel),
-            ),
-            FilledButton.icon(
-              onPressed: () => Navigator.of(context).pop(true),
-              icon: const Icon(Icons.download_rounded),
-              label: Text(localizations.download),
-            ),
-          ],
+          cancelLabel: localizations.cancel,
+          confirmLabel: localizations.download,
         );
       },
     );
@@ -7817,12 +7641,8 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     Future<List<TafsirVerseResult>> tafsirFuture = loadTafsirs();
 
     await _withLowFpsSuppressed(() {
-      return showModalBottomSheet<void>(
+      return showReaderSheet<void>(
         context: context,
-        isScrollControlled: true,
-        useSafeArea: true,
-        showDragHandle: true,
-        constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width),
         builder: (context) {
           return StatefulBuilder(
             builder: (context, setSheetState) {
@@ -7840,68 +7660,66 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
                           tafsirSnapshot.connectionState !=
                           ConnectionState.done;
 
-                      return DraggableScrollableSheet(
-                        expand: false,
-                        initialChildSize: 0.62,
-                        minChildSize: 0.32,
-                        maxChildSize: 0.92,
-                        builder: (context, scrollController) {
-                          final ThemeData theme = Theme.of(context);
-                          final AppLocalizations localizations =
-                              AppLocalizations.of(context)!;
-                          return ListView(
-                            controller: scrollController,
-                            physics: const BouncingScrollPhysics(),
-                            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-                            children: <Widget>[
-                              Text(
-                                localizedSurahAyahLabel(
-                                  localizations,
-                                  _currentChapter,
-                                  verse,
-                                ),
-                                style: theme.textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                ),
+                      return SafeArea(
+                        top: false,
+                        child: DraggableScrollableSheet(
+                          expand: false,
+                          initialChildSize: 0.62,
+                          minChildSize: 0.32,
+                          maxChildSize: 0.92,
+                          builder: (context, scrollController) {
+                            final AppLocalizations localizations =
+                                AppLocalizations.of(context)!;
+                            return ReaderSheetFrame(
+                              scrollController: scrollController,
+                              title: localizedSurahAyahLabel(
+                                localizations,
+                                _currentChapter,
+                                verse,
                               ),
-                              const SizedBox(height: 12),
-                              if (loading)
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 36),
-                                  child: Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                )
-                              else if (results.isEmpty)
-                                _buildNoTafsirSourcesMessage(context)
-                              else
-                                for (final TafsirVerseResult result
-                                    in results) ...<Widget>[
-                                  _buildTafsirResultCard(
-                                    context: context,
-                                    result: result,
-                                    progress: downloads[result.resource.id],
-                                    onCancel: () =>
-                                        Navigator.of(context).maybePop(),
-                                    onDownload: () async {
-                                      final bool installed =
-                                          await _downloadDownloadableResource(
-                                            result.resource,
-                                          );
-                                      if (!installed || !context.mounted) {
-                                        return;
-                                      }
-                                      TafsirService.instance.clearCache();
-                                      setSheetState(() {
-                                        tafsirFuture = loadTafsirs();
-                                      });
-                                    },
-                                  ),
-                                  const SizedBox(height: 12),
-                                ],
-                            ],
-                          );
-                        },
+                              children: <Widget>[
+                                if (loading)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 36,
+                                    ),
+                                    child: Center(
+                                      child: CircularProgressIndicator(
+                                        color: context.equranTokens.emText,
+                                      ),
+                                    ),
+                                  )
+                                else if (results.isEmpty)
+                                  _buildNoTafsirSourcesMessage(context)
+                                else
+                                  for (final TafsirVerseResult result
+                                      in results) ...<Widget>[
+                                    _buildTafsirResultCard(
+                                      context: context,
+                                      result: result,
+                                      progress: downloads[result.resource.id],
+                                      onCancel: () =>
+                                          Navigator.of(context).maybePop(),
+                                      onDownload: () async {
+                                        final bool installed =
+                                            await _downloadDownloadableResource(
+                                              result.resource,
+                                            );
+                                        if (!installed || !context.mounted) {
+                                          return;
+                                        }
+                                        TafsirService.instance.clearCache();
+                                        setSheetState(() {
+                                          tafsirFuture = loadTafsirs();
+                                        });
+                                      },
+                                    ),
+                                    const SizedBox(height: 12),
+                                  ],
+                              ],
+                            );
+                          },
+                        ),
                       );
                     },
                   );
@@ -7916,18 +7734,15 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
 
   Widget _buildNoTafsirSourcesMessage(BuildContext context) {
     final AppLocalizations localizations = AppLocalizations.of(context)!;
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: const Icon(Icons.auto_stories_outlined),
-      title: Text(localizations.noTafsirSourcesSelected),
-      subtitle: Text(localizations.chooseTafsirSourcesFirst),
-      trailing: TextButton(
-        onPressed: () async {
-          await Navigator.of(context).maybePop();
-          await _showTafsirSourceSelectorSheet();
-        },
-        child: Text(localizations.choose),
-      ),
+    return ReaderNotice(
+      icon: const DesignIcon('quran'),
+      title: localizations.noTafsirSourcesSelected,
+      subtitle: localizations.chooseTafsirSourcesFirst,
+      actionLabel: localizations.choose,
+      onAction: () async {
+        await Navigator.of(context).maybePop();
+        await _showTafsirSourceSelectorSheet();
+      },
     );
   }
 
@@ -7938,8 +7753,6 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     required VoidCallback onCancel,
     required Future<void> Function() onDownload,
   }) {
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
     final ResourceInstallState state = _resourceStateFor(
       result.resource,
@@ -7947,77 +7760,25 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     );
     final bool downloading = state == ResourceInstallState.downloading;
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppRadii.medium),
-        border: Border.all(color: colorScheme.outlineVariant),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              result.resource.name,
-              style: theme.textTheme.labelLarge?.copyWith(
-                color: colorScheme.primary,
-                fontWeight: FontWeight.w800,
-              ),
+    return ReaderTafsirCard(
+      name: result.resource.name,
+      text:
+          result.error ??
+          (result.text.isEmpty
+              ? localizations.noTafsirTextForAyah
+              : result.text),
+      needsDownloadText: result.installed
+          ? null
+          : localizations.tafsirNeedsDownload(
+              prettyBytes(getResourceSize(result.resource)),
             ),
-            const SizedBox(height: 10),
-            if (!result.installed)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    localizations.tafsirNeedsDownload(
-                      prettyBytes(getResourceSize(result.resource)),
-                    ),
-                    style: theme.textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: <Widget>[
-                      TextButton(
-                        onPressed: onCancel,
-                        child: Text(localizations.cancel),
-                      ),
-                      const SizedBox(width: 8),
-                      FilledButton.icon(
-                        onPressed: downloading ? null : onDownload,
-                        icon: downloading
-                            ? const SizedBox.square(
-                                dimension: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Icon(Icons.download_rounded),
-                        label: Text(
-                          downloading
-                              ? progress?.phase.label ??
-                                    localizations.downloading
-                              : localizations.download,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              )
-            else if (result.error != null)
-              Text(result.error!, style: theme.textTheme.bodyLarge)
-            else
-              Text(
-                result.text.isEmpty
-                    ? localizations.noTafsirTextForAyah
-                    : result.text,
-                textAlign: TextAlign.start,
-                style: theme.textTheme.bodyLarge?.copyWith(height: 1.6),
-              ),
-          ],
-        ),
-      ),
+      cancelLabel: localizations.cancel,
+      onCancel: onCancel,
+      downloading: downloading,
+      downloadLabel: downloading
+          ? progress?.phase.label ?? localizations.downloading
+          : localizations.download,
+      onDownload: () => unawaited(onDownload()),
     );
   }
 
@@ -8029,66 +7790,65 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     );
 
     await _withLowFpsSuppressed(() {
-      return showModalBottomSheet<void>(
+      return showReaderSheet<void>(
         context: context,
-        isScrollControlled: true,
-        useSafeArea: true,
-        showDragHandle: true,
-        constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width),
         builder: (context) {
-          return DraggableScrollableSheet(
-            expand: false,
-            initialChildSize: 0.62,
-            minChildSize: 0.32,
-            maxChildSize: 0.88,
-            builder: (context, scrollController) {
-              return ValueListenableBuilder<int>(
-                valueListenable: ResourceInstallStore.instance.changes,
-                builder: (context, _, _) {
-                  return ValueListenableBuilder<
-                    Map<String, ResourceDownloadProgress>
-                  >(
-                    valueListenable: ResourceDownloadService.instance.downloads,
-                    builder: (context, downloads, _) {
-                      final AppLocalizations localizations =
-                          AppLocalizations.of(context)!;
-                      final Set<String> selectedIds = ResourceInstallStore
-                          .instance
-                          .selectedTafsirResourceIds(manifest)
-                          .toSet();
-                      return ListView(
-                        controller: scrollController,
-                        padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-                        children: <Widget>[
-                          Text(
-                            localizations.tafsirSources,
-                            style: Theme.of(context).textTheme.titleLarge
-                                ?.copyWith(fontWeight: FontWeight.w800),
-                          ),
-                          const SizedBox(height: 12),
-                          if (tafsirResources.isEmpty)
-                            ListTile(
-                              leading: const Icon(Icons.error_outline_rounded),
-                              title: Text(
-                                localizations.noTafsirResourcesAvailable,
+          return SafeArea(
+            top: false,
+            child: DraggableScrollableSheet(
+              expand: false,
+              initialChildSize: 0.62,
+              minChildSize: 0.32,
+              maxChildSize: 0.88,
+              builder: (context, scrollController) {
+                return ValueListenableBuilder<int>(
+                  valueListenable: ResourceInstallStore.instance.changes,
+                  builder: (context, _, _) {
+                    return ValueListenableBuilder<
+                      Map<String, ResourceDownloadProgress>
+                    >(
+                      valueListenable:
+                          ResourceDownloadService.instance.downloads,
+                      builder: (context, downloads, _) {
+                        final AppLocalizations localizations =
+                            AppLocalizations.of(context)!;
+                        final Set<String> selectedIds = ResourceInstallStore
+                            .instance
+                            .selectedTafsirResourceIds(manifest)
+                            .toSet();
+                        return ReaderSheetFrame(
+                          scrollController: scrollController,
+                          title: localizations.tafsirSources,
+                          children: <Widget>[
+                            if (tafsirResources.isEmpty)
+                              ReaderNotice(
+                                icon: const DesignIcon('info'),
+                                title: localizations.noTafsirResourcesAvailable,
+                              )
+                            else
+                              ReaderSheetGroup(
+                                bottomPadding: 0,
+                                children: <Widget>[
+                                  for (final DownloadableResource resource
+                                      in tafsirResources)
+                                    _buildTafsirSourceRow(
+                                      manifest: manifest,
+                                      resource: resource,
+                                      selected: selectedIds.contains(
+                                        resource.id,
+                                      ),
+                                      progress: downloads[resource.id],
+                                    ),
+                                ],
                               ),
-                            )
-                          else
-                            for (final DownloadableResource resource
-                                in tafsirResources)
-                              _buildTafsirSourceRow(
-                                manifest: manifest,
-                                resource: resource,
-                                selected: selectedIds.contains(resource.id),
-                                progress: downloads[resource.id],
-                              ),
-                        ],
-                      );
-                    },
-                  );
-                },
-              );
-            },
+                          ],
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            ),
           );
         },
       );
@@ -8104,37 +7864,18 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     final ResourceInstallState state = _resourceStateFor(resource, progress);
     final bool downloading = state == ResourceInstallState.downloading;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: Checkbox(
-        value: selected,
-        onChanged: (value) => _setTafsirSourceSelected(
-          manifest: manifest,
-          resource: resource,
-          selected: value == true,
-        ),
-      ),
-      title: Text(resource.name),
-      subtitle: Text(
-        '${resource.language?.toUpperCase() ?? resource.typeLabel} • ${state.label} • ${prettyBytes(getResourceSize(resource))}',
-      ),
-      trailing: state == ResourceInstallState.installed
-          ? const Icon(Icons.check_circle_rounded)
-          : IconButton(
-              tooltip: downloading
-                  ? progress?.phase.label
-                  : localizations.download,
-              onPressed: downloading
-                  ? null
-                  : () => _downloadDownloadableResource(resource),
-              icon: downloading
-                  ? const SizedBox.square(
-                      dimension: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.download_rounded),
-            ),
-      onTap: () => _setTafsirSourceSelected(
+    return ReaderSourceRow(
+      title: resource.name,
+      subtitle:
+          '${resource.language?.toUpperCase() ?? resource.typeLabel} • ${state.label} • ${prettyBytes(getResourceSize(resource))}',
+      selected: selected,
+      installed: state == ResourceInstallState.installed,
+      downloading: downloading,
+      downloadTooltip: downloading
+          ? progress?.phase.label ?? localizations.downloading
+          : localizations.download,
+      onDownload: () => _downloadDownloadableResource(resource),
+      onToggle: () => _setTafsirSourceSelected(
         manifest: manifest,
         resource: resource,
         selected: !selected,
@@ -8372,93 +8113,6 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     }
     unawaited(
       const QuranBookmarkService().saveFavourite(_currentChapter, verse),
-    );
-  }
-}
-
-class _NumberStepperTile extends StatelessWidget {
-  const _NumberStepperTile({
-    required this.label,
-    required this.value,
-    required this.min,
-    required this.max,
-    required this.helper,
-    required this.onTap,
-    required this.onChanged,
-  });
-
-  final String label;
-  final int value;
-  final int min;
-  final int max;
-  final String helper;
-  final VoidCallback onTap;
-  final ValueChanged<int> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
-    final bool canDecrease = value > min;
-    final bool canIncrease = value < max;
-    final localizations = AppLocalizations.of(context)!;
-    return Material(
-      color: colorScheme.surfaceContainer,
-      borderRadius: BorderRadius.circular(AppRadii.small),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(8, 8, 8, 10),
-          child: Column(
-            children: <Widget>[
-              Text(
-                label,
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  IconButton(
-                    tooltip: localizations.decreaseLabel(label),
-                    onPressed: canDecrease ? () => onChanged(value - 1) : null,
-                    icon: const Icon(Icons.remove_rounded),
-                    visualDensity: VisualDensity.compact,
-                  ),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(minWidth: 38),
-                    child: Text(
-                      '$value',
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    tooltip: localizations.increaseLabel(label),
-                    onPressed: canIncrease ? () => onChanged(value + 1) : null,
-                    icon: const Icon(Icons.add_rounded),
-                    visualDensity: VisualDensity.compact,
-                  ),
-                ],
-              ),
-              Text(
-                helper,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

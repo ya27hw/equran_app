@@ -6,6 +6,10 @@ import 'package:equran/backend/library.dart'
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
+import 'package:equran/theme/equran_tokens.dart';
+import 'package:equran/widgets/reader_sheet_chrome.dart' show showReaderDialog;
+import 'package:equran/widgets/reader_sheets.dart' show ReaderNoteDialog;
+import 'package:equran/widgets/redesign/design_icon.dart';
 import 'package:equran/theme/equran_text_styles.dart' show EquranTextStyles;
 import 'package:equran/utils/app_radii.dart';
 import 'package:equran/utils/quran_display.dart';
@@ -148,45 +152,30 @@ class ReadQuranCard extends StatelessWidget {
     onVisualOverlayChanged?.call(true);
     unawaited(AndroidAudioDisplayMode.setLowFpsSuppressed(true));
     try {
-      await showDialog<void>(
+      await showReaderDialog<void>(
         context: context,
         builder: (context) {
-          return AlertDialog(
-            title: Text(localizations.savedAyah),
-            content: TextField(
-              maxLength: _favouriteNoteMaxLength,
-              maxLines: null,
-              controller: textController,
-              decoration: InputDecoration(hintText: localizations.optionalNote),
-            ),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text(localizations.cancel),
-              ),
-              FilledButton(
-                onPressed: () async {
-                  final NavigatorState navigator = Navigator.of(context);
-                  try {
-                    await const QuranBookmarkService().saveFavourite(
-                      currentChapter,
-                      currentVerse,
-                      note: textController.text,
-                    );
-                    saved = true;
-                  } catch (_) {
-                    saved = false;
-                  }
-                  navigator.pop();
-                },
-                style: FilledButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                child: Text(localizations.save),
-              ),
-            ],
+          return ReaderNoteDialog(
+            controller: textController,
+            title: localizations.savedAyah,
+            hint: localizations.optionalNote,
+            maxLength: _favouriteNoteMaxLength,
+            cancelLabel: localizations.cancel,
+            saveLabel: localizations.save,
+            onSave: () async {
+              final NavigatorState navigator = Navigator.of(context);
+              try {
+                await const QuranBookmarkService().saveFavourite(
+                  currentChapter,
+                  currentVerse,
+                  note: textController.text,
+                );
+                saved = true;
+              } catch (_) {
+                saved = false;
+              }
+              navigator.pop();
+            },
           );
         },
       );
@@ -301,13 +290,12 @@ class ReadQuranCard extends StatelessWidget {
     required VoidCallback? onPressed,
     bool isPrimary = false,
   }) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final bool wideActions = MediaQuery.sizeOf(context).width >= 700;
     final double actionSize = wideActions ? 38 : 34;
     final BorderRadius radius = BorderRadius.circular(10);
 
     return Material(
-      color: isPrimary ? colorScheme.primary.withAlpha(10) : Colors.transparent,
+      color: isPrimary ? context.equranTokens.emWash : Colors.transparent,
       borderRadius: radius,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -329,7 +317,6 @@ class ReadQuranCard extends StatelessWidget {
     return ValueListenableBuilder(
       valueListenable: FavouritesDB().listener,
       builder: (context, favouritesBox, child) {
-        final ColorScheme colorScheme = Theme.of(context).colorScheme;
         final AppLocalizations localizations = AppLocalizations.of(context)!;
         final bool isFavourite = const QuranBookmarkService().isFavourite(
           currentChapter,
@@ -351,7 +338,7 @@ class ReadQuranCard extends StatelessWidget {
               child: Icon(
                 isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
                 size: playIconSize,
-                color: colorScheme.primary,
+                color: context.equranTokens.emText,
               ),
             ),
             if (onTafsir != null) ...<Widget>[
@@ -360,10 +347,10 @@ class ReadQuranCard extends StatelessWidget {
                 context: context,
                 tooltip: localizations.tafsir,
                 onPressed: onTafsir,
-                child: Icon(
-                  Icons.chrome_reader_mode_rounded,
-                  size: actionIconSize,
-                  color: colorScheme.onSurface.withAlpha(168),
+                child: DesignIcon(
+                  'quran',
+                  size: actionIconSize + 2,
+                  color: context.equranTokens.text2,
                 ),
               ),
             ],
@@ -379,7 +366,6 @@ class ReadQuranCard extends StatelessWidget {
     BuildContext context, {
     required bool isFavourite,
   }) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
     final bool wideActions = MediaQuery.sizeOf(context).width >= 700;
     final double buttonSize = wideActions ? 38 : 34;
@@ -395,20 +381,21 @@ class ReadQuranCard extends StatelessWidget {
             size: iconSize,
             isLiked: isFavourite,
             circleColor: CircleColor(
-              start: colorScheme.primary.withAlpha(180),
-              end: colorScheme.primary,
+              start: context.equranTokens.filled.withAlpha(180),
+              end: context.equranTokens.filled,
             ),
             bubblesColor: BubblesColor(
-              dotPrimaryColor: colorScheme.primary,
-              dotSecondaryColor: colorScheme.secondary,
+              dotPrimaryColor: context.equranTokens.filled,
+              dotSecondaryColor: context.equranTokens.gold,
             ),
             likeBuilder: (bool liked) {
-              return Icon(
-                liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+              return DesignIcon(
+                'heart',
+                filled: liked,
                 color: liked
-                    ? colorScheme.primary
-                    : colorScheme.onSurface.withAlpha(168),
-                size: iconSize,
+                    ? context.equranTokens.emText
+                    : context.equranTokens.text2,
+                size: iconSize + 1,
               );
             },
             onTap: (bool liked) async {

@@ -446,6 +446,8 @@ ButtonStyle readerFilledButtonStyle(BuildContext context) =>
     FilledButton.styleFrom(
       backgroundColor: context.equranTokens.filled,
       foregroundColor: Colors.white,
+      disabledBackgroundColor: context.equranTokens.emWash,
+      disabledForegroundColor: context.equranTokens.emText,
       minimumSize: const Size(0, 48),
       padding: const EdgeInsets.symmetric(horizontal: 22),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),

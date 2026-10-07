@@ -850,3 +850,609 @@ class ReaderFolderNameDialog extends StatelessWidget {
     );
   }
 }
+
+/// A numeric row with a tappable value and minus/plus buttons, used for the
+/// surah and ayah pickers of an interval boundary.
+class ReaderStepperRow extends StatelessWidget {
+  const ReaderStepperRow({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.min,
+    required this.max,
+    required this.helper,
+    required this.onTap,
+    required this.onChanged,
+  });
+
+  final String label;
+  final int value;
+  final int min;
+  final int max;
+  final String helper;
+  final VoidCallback onTap;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context)!;
+    final EquranTokens tokens = context.equranTokens;
+    final EquranColors colors = context.equranColors;
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 64),
+      child: Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 8, 8),
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: InkWell(
+                onTap: onTap,
+                borderRadius: BorderRadius.circular(EquranRadii.medium),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        label,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: colors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        helper,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 12.5, color: tokens.muted),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            IconButton44(
+              icon: Icons.remove_rounded,
+              tooltip: l.decreaseLabel(label),
+              ghost: true,
+              onPressed: value > min ? () => onChanged(value - 1) : null,
+            ),
+            InkWell(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(EquranRadii.medium),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minWidth: 48, minHeight: 44),
+                child: Center(
+                  child: Text(
+                    '$value',
+                    style: EquranTextStyles.displayNumeral(
+                      context,
+                      size: 24,
+                      color: tokens.emText,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            IconButton44(
+              designIcon: 'plus',
+              tooltip: l.increaseLabel(label),
+              ghost: true,
+              onPressed: value < max ? () => onChanged(value + 1) : null,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Repeat interval: two boundary groups (start and end), a summary or an
+/// error, then Cancel and Apply.
+class ReaderIntervalSheet extends StatelessWidget {
+  const ReaderIntervalSheet({
+    super.key,
+    required this.groups,
+    required this.summary,
+    required this.errorText,
+    required this.onCancel,
+    required this.onApply,
+    this.bottomInset = 0,
+  });
+
+  /// The start and end groups, built with [ReaderSheetGroup] and
+  /// [ReaderStepperRow].
+  final List<Widget> groups;
+  final String summary;
+  final String? errorText;
+  final VoidCallback onCancel;
+  final VoidCallback onApply;
+  final double bottomInset;
+
+  @override
+  Widget build(BuildContext context) {
+    final AppLocalizations l = AppLocalizations.of(context)!;
+    final EquranTokens tokens = context.equranTokens;
+    final bool reduceMotion = MediaQuery.disableAnimationsOf(context);
+    return ReaderSheetFrame(
+      title: l.intervalRange,
+      subtitle: l.intervalRangeHint,
+      bottomInset: bottomInset,
+      trailing: IconButton44(
+        designIcon: 'x',
+        tooltip: l.close,
+        ghost: true,
+        onPressed: onCancel,
+      ),
+      children: <Widget>[
+        ...groups,
+        AnimatedSwitcher(
+          duration: reduceMotion
+              ? Duration.zero
+              : const Duration(milliseconds: 160),
+          child: Align(
+            key: ValueKey<String>(errorText ?? summary),
+            alignment: AlignmentDirectional.centerStart,
+            child: Text(
+              errorText ?? summary,
+              style: errorText == null
+                  ? TextStyle(
+                      fontSize: 14.5,
+                      fontWeight: FontWeight.w600,
+                      color: tokens.emText,
+                    )
+                  : TextStyle(fontSize: 13, height: 1.35, color: tokens.danger),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: OutlinedButton(
+                style: readerOutlinedButtonStyle(context),
+                onPressed: onCancel,
+                child: Text(l.cancel),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: FilledButton(
+                style: readerFilledButtonStyle(context),
+                onPressed: onApply,
+                child: Text(l.apply),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/// The ayah details sheet: the ayah, its transliteration and its translation.
+class AyahDetailsSheet extends StatelessWidget {
+  const AyahDetailsSheet({
+    super.key,
+    required this.scrollController,
+    required this.title,
+    required this.languageTooltip,
+    required this.onLanguage,
+    required this.arabic,
+    required this.transliteration,
+    required this.translation,
+  });
+
+  final ScrollController scrollController;
+  final String title;
+  final String languageTooltip;
+  final VoidCallback onLanguage;
+
+  /// The ayah text, already styled for the active script by the page.
+  final Widget arabic;
+  final String transliteration;
+  final String translation;
+
+  @override
+  Widget build(BuildContext context) {
+    final EquranTokens tokens = context.equranTokens;
+    final EquranColors colors = context.equranColors;
+    return ReaderSheetFrame(
+      scrollController: scrollController,
+      title: title,
+      trailing: IconButton44(
+        icon: Icons.language_rounded,
+        tooltip: languageTooltip,
+        onPressed: onLanguage,
+      ),
+      children: <Widget>[
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: BorderRadius.circular(EquranRadii.xl),
+            border: Border.all(color: tokens.hair),
+          ),
+          child: arabic,
+        ),
+        if (transliteration.isNotEmpty) ...<Widget>[
+          const SizedBox(height: 18),
+          Text(
+            transliteration,
+            textAlign: TextAlign.justify,
+            style: TextStyle(fontSize: 14.5, height: 1.55, color: tokens.muted),
+          ),
+        ],
+        const SizedBox(height: 18),
+        Text(
+          translation,
+          textAlign: TextAlign.justify,
+          style: EquranTextStyles.displayTranslation(
+            context,
+            color: colors.textPrimary,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// One tafsir source on the ayah's tafsir sheet: its name, then either the
+/// text, an error, or a download prompt.
+class ReaderTafsirCard extends StatelessWidget {
+  const ReaderTafsirCard({
+    super.key,
+    required this.name,
+    required this.text,
+    this.needsDownloadText,
+    this.cancelLabel = '',
+    this.onCancel,
+    this.downloadLabel = '',
+    this.downloading = false,
+    this.onDownload,
+  });
+
+  final String name;
+
+  /// The tafsir text, or the error message.
+  final String text;
+
+  /// Set when the source is not installed; shows a prompt instead of [text].
+  final String? needsDownloadText;
+  final String cancelLabel;
+  final VoidCallback? onCancel;
+  final String downloadLabel;
+  final bool downloading;
+  final VoidCallback? onDownload;
+
+  @override
+  Widget build(BuildContext context) {
+    final EquranTokens tokens = context.equranTokens;
+    final EquranColors colors = context.equranColors;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(EquranRadii.xl),
+        border: Border.all(color: tokens.hair),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            name,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: tokens.emText,
+            ),
+          ),
+          const SizedBox(height: 10),
+          if (needsDownloadText != null) ...<Widget>[
+            Text(
+              needsDownloadText!,
+              style: TextStyle(
+                fontSize: 14.5,
+                height: 1.45,
+                color: tokens.text2,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: <Widget>[
+                TextButton(
+                  style: readerTextButtonStyle(context),
+                  onPressed: onCancel,
+                  child: Text(cancelLabel),
+                ),
+                FilledButton.icon(
+                  style: readerFilledButtonStyle(context),
+                  onPressed: downloading ? null : onDownload,
+                  icon: downloading
+                      ? SizedBox.square(
+                          dimension: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: tokens.emText,
+                          ),
+                        )
+                      : const DesignIcon('download', size: 18),
+                  label: Text(downloadLabel),
+                ),
+              ],
+            ),
+          ] else
+            Text(
+              text,
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                fontSize: 16,
+                height: 1.65,
+                color: colors.textPrimary,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// An icon, a message and an optional action on a hairline card.
+class ReaderNotice extends StatelessWidget {
+  const ReaderNotice({
+    super.key,
+    required this.icon,
+    required this.title,
+    this.subtitle,
+    this.actionLabel,
+    this.onAction,
+  });
+
+  final Widget icon;
+  final String title;
+  final String? subtitle;
+  final String? actionLabel;
+  final VoidCallback? onAction;
+
+  @override
+  Widget build(BuildContext context) {
+    final EquranTokens tokens = context.equranTokens;
+    final EquranColors colors = context.equranColors;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(EquranRadii.xl),
+        border: Border.all(color: tokens.hair),
+      ),
+      child: Row(
+        children: <Widget>[
+          ReaderIconWell(icon: icon),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: colors.textPrimary,
+                  ),
+                ),
+                if (subtitle != null) ...<Widget>[
+                  const SizedBox(height: 3),
+                  Text(
+                    subtitle!,
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      height: 1.3,
+                      color: tokens.muted,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          if (actionLabel != null)
+            TextButton(
+              style: readerTextButtonStyle(context, color: tokens.emText),
+              onPressed: onAction,
+              child: Text(actionLabel!),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// A selectable tafsir source with its install state.
+class ReaderSourceRow extends StatelessWidget {
+  const ReaderSourceRow({
+    super.key,
+    required this.title,
+    required this.subtitle,
+    required this.selected,
+    required this.onToggle,
+    required this.installed,
+    required this.downloading,
+    required this.downloadTooltip,
+    required this.onDownload,
+  });
+
+  final String title;
+  final String subtitle;
+  final bool selected;
+  final VoidCallback onToggle;
+  final bool installed;
+  final bool downloading;
+  final String downloadTooltip;
+  final VoidCallback onDownload;
+
+  @override
+  Widget build(BuildContext context) {
+    final EquranTokens tokens = context.equranTokens;
+    final EquranColors colors = context.equranColors;
+    return Semantics(
+      container: true,
+      checked: selected,
+      child: InkWell(
+        onTap: onToggle,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 64),
+          child: Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 8, 8),
+            child: Row(
+              children: <Widget>[
+                Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: selected ? tokens.filled : Colors.transparent,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: selected ? tokens.filled : tokens.muted,
+                      width: 1.5,
+                    ),
+                  ),
+                  alignment: Alignment.center,
+                  child: selected
+                      ? const DesignIcon(
+                          'check',
+                          size: 16,
+                          strokeWidth: 2.2,
+                          color: Colors.white,
+                        )
+                      : null,
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: colors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          fontSize: 12.5,
+                          height: 1.3,
+                          color: tokens.muted,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (installed)
+                  SizedBox.square(
+                    dimension: 44,
+                    child: Center(
+                      child: DesignIcon(
+                        'check',
+                        size: 20,
+                        color: tokens.emText,
+                      ),
+                    ),
+                  )
+                else if (downloading)
+                  SizedBox.square(
+                    dimension: 44,
+                    child: Center(
+                      child: Tooltip(
+                        message: downloadTooltip,
+                        child: SizedBox.square(
+                          dimension: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: tokens.emText,
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                else
+                  IconButton44(
+                    designIcon: 'download',
+                    tooltip: downloadTooltip,
+                    ghost: true,
+                    onPressed: onDownload,
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The favourite note prompt shown from the ayah card's heart.
+class ReaderNoteDialog extends StatelessWidget {
+  const ReaderNoteDialog({
+    super.key,
+    required this.controller,
+    required this.title,
+    required this.hint,
+    required this.maxLength,
+    required this.cancelLabel,
+    required this.saveLabel,
+    required this.onSave,
+  });
+
+  final TextEditingController controller;
+  final String title;
+  final String hint;
+  final int maxLength;
+  final String cancelLabel;
+  final String saveLabel;
+  final VoidCallback onSave;
+
+  @override
+  Widget build(BuildContext context) {
+    return ReaderDialog(
+      title: title,
+      icon: const DesignIcon('heart'),
+      content: Padding(
+        padding: const EdgeInsets.only(top: 4, bottom: 4),
+        child: TextField(
+          controller: controller,
+          maxLength: maxLength,
+          maxLines: null,
+          style: TextStyle(
+            fontSize: 15,
+            height: 1.45,
+            color: context.equranColors.textPrimary,
+          ),
+          decoration: readerInputDecoration(context, hint: hint),
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          style: readerTextButtonStyle(context),
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(cancelLabel),
+        ),
+        FilledButton(
+          style: readerFilledButtonStyle(context),
+          onPressed: onSave,
+          child: Text(saveLabel),
+        ),
+      ],
+    );
+  }
+}
