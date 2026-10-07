@@ -1,3 +1,7 @@
+> **Superseded.** This file describes the first polish pass. The current state of the work, the open items and the owner
+> decisions are in [`docs/redesign/CODEX_FOLLOWUP.md`](redesign/CODEX_FOLLOWUP.md). The body below is kept unchanged for its
+> design language, guardrails and verification workflow.
+
 # UI polish roadmap and handoff
 
 Read this first when asked to continue the UI/UX polish work ("do the next
