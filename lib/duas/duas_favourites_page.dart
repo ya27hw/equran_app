@@ -5,7 +5,12 @@ import 'package:equran/duas/hisn_category_translations.dart';
 import 'package:equran/duas/hisn_al_muslim_repository.dart';
 import 'package:equran/duas/widgets/dua_card.dart';
 import 'package:equran/l10n/app_localizations.dart';
-import 'package:equran/utils/app_radii.dart';
+import 'package:equran/theme/equran_spacing.dart';
+import 'package:equran/theme/equran_tokens.dart';
+import 'package:equran/widgets/redesign/design_icon.dart';
+import 'package:equran/widgets/redesign/message_state.dart';
+import 'package:equran/widgets/redesign/page_typography.dart';
+import 'package:equran/widgets/redesign/pill_tag.dart';
 import 'package:equran/widgets/redesign/redesign_subpage.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -33,17 +38,20 @@ class DuasFavouritesPage extends StatelessWidget {
             builder:
                 (BuildContext context, AsyncSnapshot<List<DuaEntry>> snapshot) {
                   if (snapshot.connectionState != ConnectionState.done) {
-                    return const Center(
+                    return Center(
                       child: SizedBox.square(
                         dimension: 28,
-                        child: CircularProgressIndicator(strokeWidth: 2.4),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.4,
+                          color: context.equranTokens.emText,
+                        ),
                       ),
                     );
                   }
 
                   if (snapshot.hasError) {
-                    return _FavouritesMessageState(
-                      icon: Icons.error_outline_rounded,
+                    return RedesignMessageState(
+                      icon: const DesignIcon('info'),
                       title: localizations.favouritesUnavailable,
                       message: localizations.savedDuasNotLoaded,
                     );
@@ -53,12 +61,21 @@ class DuasFavouritesPage extends StatelessWidget {
                       snapshot.data ?? const <DuaEntry>[];
 
                   if (favourites.isEmpty) {
-                    return const _FavouritesEmptyState();
+                    return RedesignMessageState(
+                      icon: const DesignIcon('heart'),
+                      title: localizations.noFavouriteDuasYet,
+                      message: localizations.tapHeartToSave,
+                    );
                   }
 
                   return ListView(
                     physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.fromLTRB(14, 12, 14, 28),
+                    padding: const EdgeInsets.fromLTRB(
+                      EquranSpacing.pagePadding,
+                      8,
+                      EquranSpacing.pagePadding,
+                      32,
+                    ),
                     children: <Widget>[
                       Center(
                         child: ConstrainedBox(
@@ -69,7 +86,6 @@ class DuasFavouritesPage extends StatelessWidget {
                               for (final _FavouriteDuaGroup group
                                   in _groupByCategory(favourites)) ...<Widget>[
                                 _FavouriteCategoryHeader(group: group),
-                                const SizedBox(height: 10),
                                 for (final DuaEntry dua in group.duas)
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 12),
@@ -198,106 +214,27 @@ class _FavouriteCategoryHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colors = theme.colorScheme;
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppRadii.medium),
-        border: Border.all(color: colors.outlineVariant),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-        child: Row(
-          children: <Widget>[
-            Icon(Icons.folder_special_rounded, color: colors.primary),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                getLocalizedCategoryTitle(
-                  context,
-                  group.categoryId,
-                  group.title,
-                ),
-                textDirection: Directionality.of(context),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w900,
-                  height: 1.35,
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Text(
-              '${group.duas.length}',
-              style: theme.textTheme.labelLarge?.copyWith(
-                color: colors.primary,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-          ],
-        ),
-      ),
+    final String title = getLocalizedCategoryTitle(
+      context,
+      group.categoryId,
+      group.title,
     );
-  }
-}
-
-class _FavouritesEmptyState extends StatelessWidget {
-  const _FavouritesEmptyState();
-
-  @override
-  Widget build(BuildContext context) {
-    return const _FavouritesMessageState(
-      icon: Icons.favorite_border_rounded,
-      title: 'No favourite duas yet.',
-      message: 'Tap the heart on any dua card to save it here.',
-    );
-  }
-}
-
-class _FavouritesMessageState extends StatelessWidget {
-  const _FavouritesMessageState({
-    required this.icon,
-    required this.title,
-    required this.message,
-  });
-
-  final IconData icon;
-  final String title;
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colors = theme.colorScheme;
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 28),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Icon(icon, size: 42, color: colors.onSurfaceVariant),
-            const SizedBox(height: 12),
-            Text(
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(4, 14, 4, 12),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Text(
               title,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
+              textDirection: Directionality.of(context),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: redesignDisplayStyle(context, size: 22, height: 1.2),
             ),
-            const SizedBox(height: 8),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: colors.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(width: 12),
+          PillTag('${group.duas.length}', selected: true),
+        ],
       ),
     );
   }
