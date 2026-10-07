@@ -661,8 +661,8 @@ class ReaderConfirmDialog extends StatelessWidget {
   }
 }
 
-/// A single-choice list in a dialog. Same data as [AppSelectionDialog], in the
-/// reader's style.
+/// A single-choice list in a dialog, in the reader's style. Options are
+/// [AppSelectionOption]s.
 class ReaderChoiceDialog<T> extends StatelessWidget {
   const ReaderChoiceDialog({
     super.key,
