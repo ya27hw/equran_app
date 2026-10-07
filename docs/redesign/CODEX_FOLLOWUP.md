@@ -45,7 +45,7 @@ Use `DesignIcon` (`lib/widgets/redesign/design_icon.dart`) for icons, never Mate
       `prayerLocation`). Fixed; the Home fresh goldens now show it. With no location Home now shows `PrayerArcSetupHero`: the
       sky card held at the peak of sunrise (`PrayerSkyScene.sunrisePeak`) with the default "Prayer Times" / "Choose a location..." / "Set up
       location" copy. The Prayer page's full setup screen (`_buildSetupState`) is still the old design.
-    - Saved edit sheet against `saved-sheet.dark.html`: wording differs ("Folders"/"Manage" vs "Folder"/"Manage folders", "Favourites" vs
+    - ~~Saved edit sheet against `saved-sheet.dark.html`~~ (aligned in `80e43d2`; the list below is the original diff): wording differs ("Folders"/"Manage" vs "Folder"/"Manage folders", "Favourites" vs
       "Favourite"), the "New folder" chip should have a dashed border, the tags row should be one inline field with a placeholder instead
       of chips plus a second text field, and Save has a check icon the design lacks. Not checked in every palette.
 11. **Translations.** `prayerNextIn`, `showMore`, `prayersCount`, `note` are machine-drafted in ar, bn, de, fa, id, tr, ur.
@@ -58,10 +58,12 @@ The Home, Quran and More PR left every hero card as it was. Status after the app
 Home hero update (2026-10-04):
 - ~~Home continue-reading card, Quran last-read card, Prayer hero on Home.~~ Done: Home uses `QuranReadingHero` and the redesigned
   `PrayerArcHero`.
-- `EquranResumeImageCard` (`lib/widgets/last_read_cards.dart`) and the default branch of `LastReadCard` are now dead code (the fresh
-  install overflow at 1.3 is gone with the new hero). Delete them in a cleanup.
-- **More hero** (`_MoreHero`): still the old one; needs an approved design.
+- ~~`EquranResumeImageCard` (`lib/widgets/last_read_cards.dart`) and the default branch of `LastReadCard`.~~ Deleted in the cleanup
+  commit (`LastReadCard.cardBuilder` is now required). `AppSelectionDialog` went with them; `AppSelectionOption` stays because
+  Settings, Prayer settings and the reader still use it. `lib/widgets/holographic_card.dart` is now unreferenced (see Open items).
+- **More hero** (`_MoreHero`): still the old one; needs an approved design. (Owner-blocked, see Open items.)
 - **Prayer page no-location setup screen** (`_buildSetupState`): still the old design (the Home/Prayer hero card is done, see item 10).
+  (Owner-blocked, see Open items.)
 - Token change for brighter heroes (`featA`/`featB`, `onFeat`, `featGold`, `featRule`, `onGold`, `onFeatGold`, stronger `glow`):
   still not in code; it re-renders every hero golden.
 - ~~More title in the AppBar~~ Done in `d8ffc80`.
@@ -69,34 +71,75 @@ Home hero update (2026-10-04):
   *order* (1 to 114), so the label and any new strings need a decision first.
 - **Juz and Pages rows** are restyled cards, not the single grouped card in the design; no spec in the repo.
 
-## Pages not yet redesigned (2026-10-04)
-Roughly in the order worth doing. "Frame only" means `RedesignSubpage` (`d8ffc80`) is applied but the content, icons and cards are the old
-design and there are no goldens.
+## Pages not yet redesigned (2026-10-04), status after the polish branches
+The stack of `polish/*` branches restyled almost everything that was listed here. Each line is struck through only where a commit
+in `git log 9f00137..HEAD` shows the work. Goldens live under `test/redesign/goldens/` and the per-screen test folders.
 
-**Untouched (old look)**
-- Reader page body (`lib/home/read.dart`, 23 sheets and dialogs, stock AppBar, about 55 Material icons). Only the player bar and playback options
-  sheet are redesigned. Chrome only: verse layout, fonts, audio and `ReadQuranCard` / share image stay as they are.
-- Hifz session (`lib/hifz/pages/hifz_session_page.dart`) and Hifz complete (`hifz_complete_screen.dart`).
-- Quran text search results (`lib/search/quran_text_search_results.dart`).
-- Splash screen (fonts only were fixed).
-- Reader bottom sheets and dialogs in `read.dart`, `read_quran_card.dart` (share/options) and `play_button.dart`.
-- Daily tools edit sheet (`lib/home_dashboard/daily_tools_edit_sheet.dart`).
-- Word by word: the download card in Settings and the word sheet (`lib/word_by_word/word_by_word_text.dart`).
+**Done**
+- ~~Reader chrome in `lib/home/read.dart`: top bar, nav pills, reading options hub, go to ayah, sleep timer, share format chooser,
+  ayah actions, reciter picker, note editor, new-folder, choice and confirm dialogs.~~ `0a07dfe`.
+- ~~Reader interval, ayah details, tafsir and tafsir sources sheets, translation download dialog, favourite note dialog, play button
+  delete confirm, ayah card header icons.~~ `d059bb0`. (Verse layout, fonts, audio, `ReadQuranCard` and the share image were not
+  touched.)
+- ~~Saved edit sheet aligned with `saved-sheet.dark.html` (item 10).~~ `80e43d2`.
+- ~~Hifz session and Hifz complete.~~ `ee8933c`; Scaffold kept on the session and only the tag x removes a tag, `a9fe823`.
+- ~~Quran text search results, recents and empty states.~~ `8cb1bc1`.
+- ~~Daily tools edit sheet.~~ `9a36a56`.
+- ~~Word by word: Settings download card and the word meaning sheet.~~ `934311d`.
+- ~~Splash colours and subtitle font on the redesign tokens.~~ `9d6264c` (the looping splash animations stay, see Open items).
+- ~~Settings landing rows, sliders and its dialogs.~~ `f6edd94`.
+- ~~Appearance and Navigation settings.~~ `3654cb8`.
+- ~~Downloads page, filter sheet and confirmations.~~ `107e75e`.
+- ~~Prayer settings rows, banners and dialogs.~~ `dfc8efb`.
+- ~~Manual and map location pickers.~~ `397917d`.
+- ~~Zakat calculator and history.~~ `d4e5a4a` (leftovers under Open items).
+- ~~Reading plans.~~ `93fd6d1`.
+- ~~Islamic calendar.~~ `aab058e`. ~~Hijri calendar page.~~ `3d10ed2`.
+- ~~Asma ul-Husna.~~ `3cbe1ab`. ~~Favourite duas and the shared dua card.~~ `73c9fb7`.
+- ~~Tasbih counter and sessions sheet.~~ `0aa52eb`.
+- ~~Hifz home.~~ `7895541`.
+- ~~Dead-code cleanup (`EquranResumeImageCard`, `LastReadCard` default branch, `AppSelectionDialog`).~~ `b7833e0`.
+
+**Still untouched**
 - Memory map (`lib/hifz/memory_map.dart`, behind a feature flag, not reachable).
+- `read_quran_card.dart` share and options branch stays off limits.
 
-**Frame only**
-- Zakat (`lib/zakat/zakat_page.dart`, the richer calculator: live metal prices, history, livestock, categories). The simpler
-  `lib/home/zakah_calculator_page.dart` was deleted and the Home Zakah tool now opens `ZakatCalculatorPage`. Still needs the redesign;
-  `docs/zakat_calculator_redesign_plan.md` exists.
-- Reading plans (`lib/reading_plans/reading_plans_page.dart`).
-- Islamic calendar (`lib/prayer/islamic_calendar_page.dart`) and Hijri calendar (`lib/home/hijri_calendar_page.dart`).
-- Downloads (`lib/home/downloads.dart`, 7 sheets and dialogs).
-- Prayer settings (`lib/prayer/prayer_times_settings_page.dart`, 7 sheets and dialogs) and both location pickers (manual and map).
-- Appearance and Navigation settings, Settings (`lib/home/settings.dart`, 13 dialogs).
-- Tasbih, Asma ul-Husna, Duas favourites, Hifz home: closer to done, not checked in detail.
-
-**Done, with goldens:** Home, Quran tabs (Surahs, Juz, Pages, Saved), Prayer, Qibla, Duas home and category, More, Statistics,
+**Done earlier, with goldens:** Home, Quran tabs (Surahs, Juz, Pages, Saved), Prayer, Qibla, Duas home and category, More, Statistics,
 Settings landing, floating dock, player bar, playback options sheet.
+
+## Open items after the polish stack
+
+### Blocked on the owner
+- **More hero** (`_MoreHero`): needs an approved design.
+- **Prayer page full setup screen** (`_buildSetupState`, no location): still the old design; no spec.
+- **Surah list sort chip label:** the control reverses surah order (1 to 114), so the design's "A to Z" label does not fit; needs a
+  decision on the label and any new strings.
+- **Juz and Pages grouped card:** rows are restyled cards, not the single grouped card in the design; no spec in the repo.
+- **Bright hero tokens** (`featA`/`featB`, `onFeat`, `featGold`, `featRule`, `onGold`, `onFeatGold`, stronger `glow`): not in code; it
+  re-renders every hero golden.
+- **Native review of machine-drafted translations:** `prayerNextIn`, `showMore`, `prayersCount`, `note`, `saveDuasHere`, and in the
+  polish stack `savedFolderLabel` and `savedManageFolders` (plus any other keys those branches added in ar, bn, de, fa, id, tr, ur).
+
+### New findings
+- **(a) Wrong Hijri dates.** `HijriCalendar.fromGregorian` in `lib/home/hijri_calendar_page.dart` computes wrong dates (for example
+  7 Oct 2026 shows year 1470). The correct algorithm is `lib/prayer/hijri_calendar.dart`. The Hijri calendar golden encodes the wrong
+  figures, so fixing the code means regenerating that golden.
+- **(b) Home header Hijri date** still uses the English-only `HijriCalendar.toString()`.
+- **(c) Looping animations kept on purpose:** splash pulse and particles, and the map marker pulse.
+- **(d) Pre-existing failures on `beta`:** 6 `home_page_test.dart` "Home rich" goldens fail.
+- **(e) Zakat leftovers:** `$Infinity` in the below-nisab message when there are no rates; demo livestock constants; hard-coded USD
+  wording in `enterPaidAmountUsd`; no confirmation before deleting a history entry; hard-coded "tola".
+- **(f) Reader card header action buttons are 34 px,** below the 44 px target. The Material play/pause icons remain because the design
+  has no matching icon.
+- **(g) Legacy English-only strings:** share-format labels, reciter tooltips, Hifz Fail/Pass, Navigation settings hints, Downloads
+  filter sheet.
+- **(h) Arabic test goldens** show tofu for `ChipButton` text in places (test font fallback).
+  Three Arabic goldens also fail on a clean checkout of the stack on the machine this round ran on (`reader_chrome_test` note editor
+  `arabic-rtl`; `saved_tab_test` `arabic-rtl` and `arabic-text-1.3`), identical with and without the cleanup commit; likely the same font
+  fallback, unconfirmed.
+- **(i) Inter `opsz` (item 6)** remains open; it is being handled separately.
+- **(j) Unreferenced after the cleanup:** `lib/widgets/holographic_card.dart` (`HolographicCardWrapper`) has no remaining users. It was
+  left in place; delete it in a later cleanup if no one needs it.
 
 ## Design file
 The Prayer hero in the canvas still has the Sunrise/Maghrib labels touching the arc end (fixed in the app, not in the design).
