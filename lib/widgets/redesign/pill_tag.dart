@@ -67,6 +67,7 @@ class PillTag extends StatelessWidget {
             textDirection: scriptDirectionIn(context, label),
             style: TextStyle(
               fontFamily: 'Inter',
+              fontFamilyFallback: const ['NotoNaskhArabic'],
               fontSize: compact ? 10.5 : 12,
               letterSpacing: compact ? .84 : null,
               height: 1.25,
@@ -126,6 +127,7 @@ class ChipButton extends StatelessWidget {
         ),
         textStyle: const TextStyle(
           fontFamily: 'Inter',
+          fontFamilyFallback: ['NotoNaskhArabic'],
           fontSize: 13,
           height: 1.2,
           fontWeight: FontWeight.w500,
