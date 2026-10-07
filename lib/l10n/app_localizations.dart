@@ -8186,6 +8186,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Use a pitch-black background in dark mode with any color palette.'**
   String get pureBlackBackgroundSubtitle;
+
+  /// No description provided for @savedFolderLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Folder'**
+  String get savedFolderLabel;
+
+  /// No description provided for @savedManageFolders.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage folders'**
+  String get savedManageFolders;
 }
 
 class _AppLocalizationsDelegate

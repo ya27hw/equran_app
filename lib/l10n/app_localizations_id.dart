@@ -4698,4 +4698,10 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get pureBlackBackgroundSubtitle =>
       'Gunakan latar belakang hitam pekat dalam mode gelap dengan palet warna apa pun.';
+
+  @override
+  String get savedFolderLabel => 'Folder';
+
+  @override
+  String get savedManageFolders => 'Kelola folder';
 }

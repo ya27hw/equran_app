@@ -4675,4 +4675,10 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get pureBlackBackgroundSubtitle =>
       'در حالت تیره با هر پالت رنگ از پس‌زمینهٔ کاملاً سیاه استفاده کنید.';
+
+  @override
+  String get savedFolderLabel => 'پوشه';
+
+  @override
+  String get savedManageFolders => 'مدیریت پوشه‌ها';
 }

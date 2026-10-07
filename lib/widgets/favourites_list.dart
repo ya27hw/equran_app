@@ -11,6 +11,7 @@ import 'package:equran/utils/quran_text.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:equran/l10n/app_localizations.dart';
+import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/widgets/redesign/redesign_widgets.dart';
 import 'package:intl/intl.dart' show DateFormat;
@@ -1206,9 +1207,8 @@ class _BookmarkEditorState extends State<_BookmarkEditor> {
   late final folderController = TextEditingController(
     text: widget.entry.folder,
   );
-  late final tagsController = TextEditingController(
-    text: widget.entry.tags.join(', '),
-  );
+  final tagInputController = TextEditingController();
+  late List<String> tags = _parseTags(widget.entry.tags.join(','));
   late bool isFavourite = widget.entry.isFavourite;
   late String selectedFolder = widget.entry.folder;
   @override
@@ -1229,8 +1229,30 @@ class _BookmarkEditorState extends State<_BookmarkEditor> {
   void dispose() {
     noteController.dispose();
     folderController.dispose();
-    tagsController.dispose();
+    tagInputController.dispose();
     super.dispose();
+  }
+
+  /// Moves every complete `tag,` typed into the inline field into [tags]. The
+  /// text after the last comma stays in the field until it is submitted.
+  void _onTagInput(String value) {
+    if (!value.contains(',')) return;
+    final parts = value.split(',');
+    final rest = parts.removeLast();
+    setState(() {
+      tags = _parseTags([...tags, ...parts].join(','));
+    });
+    tagInputController.value = TextEditingValue(
+      text: rest.trimLeft(),
+      selection: TextSelection.collapsed(offset: rest.trimLeft().length),
+    );
+  }
+
+  void _commitTagInput() {
+    final pending = tagInputController.text;
+    if (pending.trim().isEmpty) return;
+    setState(() => tags = _parseTags([...tags, pending].join(',')));
+    tagInputController.clear();
   }
 
   @override
@@ -1272,7 +1294,7 @@ class _BookmarkEditorState extends State<_BookmarkEditor> {
                 children: [
                   _AyahHeading(entry: entry),
                   IconButton44(
-                    icon: Icons.close_rounded,
+                    designIcon: 'x',
                     tooltip: localizations.close,
                     ghost: true,
                     onPressed: () => Navigator.of(context).pop(),
@@ -1312,18 +1334,23 @@ class _BookmarkEditorState extends State<_BookmarkEditor> {
                 child: Material(
                   color: Colors.transparent,
                   child: SwitchListTile.adaptive(
-                    secondary: Icon(
-                      Icons.favorite_rounded,
-                      color: tokens.gold,
+                    secondary: DesignIcon(
+                      'heart',
                       size: 21,
+                      color: tokens.gold,
+                      filled: true,
                     ),
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 4,
                     ),
                     title: Text(
-                      localizations.favourites,
-                      style: TextStyle(fontSize: 15, color: colors.textPrimary),
+                      localizations.favourite,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                        color: colors.textPrimary,
+                      ),
                     ),
                     activeTrackColor: tokens.filled,
                     thumbColor: WidgetStateProperty.all(Colors.white),
@@ -1362,11 +1389,13 @@ class _BookmarkEditorState extends State<_BookmarkEditor> {
               const SizedBox(height: 16),
               Row(
                 children: [
-                  Expanded(child: _SavedEyebrow(localizations.folders)),
+                  Expanded(
+                    child: _SavedEyebrow(localizations.savedFolderLabel),
+                  ),
                   TextButton(
                     onPressed: () => _showFolderManager(context),
                     style: TextButton.styleFrom(foregroundColor: tokens.emText),
-                    child: Text(localizations.manageFolders),
+                    child: Text(localizations.savedManageFolders),
                   ),
                 ],
               ),
@@ -1379,17 +1408,16 @@ class _BookmarkEditorState extends State<_BookmarkEditor> {
                     ChipButton(
                       _folderLabel(context, folder),
                       selected: selectedFolder == folder,
-                      icon: selectedFolder == folder
-                          ? Icons.check_rounded
-                          : null,
+                      designIcon: selectedFolder == folder ? 'check' : null,
                       onPressed: () => setState(() {
                         selectedFolder = folder;
                         folderController.text = folder;
                       }),
                     ),
                   ChipButton(
-                    localizations.addNewFolder,
-                    icon: Icons.add_rounded,
+                    localizations.newFolder,
+                    designIcon: 'plus',
+                    dashed: true,
                     onPressed: () async {
                       final folder = await _showFolderNameDialog(context);
                       if (folder == null) return;
@@ -1408,6 +1436,8 @@ class _BookmarkEditorState extends State<_BookmarkEditor> {
               _SavedEyebrow(localizations.tags),
               const SizedBox(height: 9),
               Container(
+                width: double.infinity,
+                constraints: const BoxConstraints(minHeight: 50),
                 padding: const EdgeInsets.symmetric(
                   horizontal: 12,
                   vertical: 8,
@@ -1417,48 +1447,43 @@ class _BookmarkEditorState extends State<_BookmarkEditor> {
                   border: Border.all(color: tokens.hair2),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    if (_parseTags(tagsController.text).isNotEmpty)
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          for (final tag in _parseTags(tagsController.text))
-                            Chip(
-                              shape: const StadiumBorder(),
-                              deleteIcon: const Icon(
-                                Icons.close_rounded,
-                                size: 12,
-                              ),
-                              deleteIconColor: tokens.emText,
-                              deleteButtonTooltipMessage:
-                                  '${localizations.remove} #$tag',
-                              label: Text('#$tag'),
-                              onDeleted: () => setState(() {
-                                tagsController.text = _parseTags(
-                                  tagsController.text,
-                                ).where((value) => value != tag).join(', ');
-                              }),
-                              backgroundColor: tokens.emWash,
-                              side: BorderSide(color: tokens.hair),
-                              labelStyle: TextStyle(
-                                fontSize: 12,
-                                color: tokens.emText,
-                              ),
-                            ),
-                        ],
+                    for (final tag in tags)
+                      _RemovableTag(
+                        label: '#$tag',
+                        tooltip: '${localizations.remove} #$tag',
+                        onRemove: () => setState(
+                          () => tags = [
+                            for (final value in tags)
+                              if (value != tag) value,
+                          ],
+                        ),
                       ),
-                    TextField(
-                      key: const Key('saved-tags-editor'),
-                      controller: tagsController,
-                      onChanged: (_) => setState(() {}),
-                      style: TextStyle(fontSize: 14, color: colors.textPrimary),
-                      decoration: InputDecoration(
-                        hintText: localizations.tagsHint,
-                        hintStyle: TextStyle(color: tokens.muted),
-                        border: InputBorder.none,
+                    SizedBox(
+                      width: 120,
+                      child: TextField(
+                        key: const Key('saved-tags-editor'),
+                        controller: tagInputController,
+                        onChanged: _onTagInput,
+                        onSubmitted: (_) => _commitTagInput(),
+                        textInputAction: TextInputAction.done,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: colors.textPrimary,
+                        ),
+                        decoration: InputDecoration(
+                          isDense: true,
+                          hintText: localizations.tagsHint,
+                          hintStyle: TextStyle(color: tokens.muted),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsetsDirectional.symmetric(
+                            vertical: 8,
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -1476,11 +1501,11 @@ class _BookmarkEditorState extends State<_BookmarkEditor> {
                       );
                       Navigator.of(context).pop();
                     },
-                    icon: const Icon(Icons.delete_outline_rounded),
+                    icon: DesignIcon('trash', size: 19, color: tokens.danger),
                     label: Text(localizations.delete),
                   ),
                   const Spacer(),
-                  FilledButton.icon(
+                  FilledButton(
                     style: FilledButton.styleFrom(
                       backgroundColor: tokens.filled,
                       foregroundColor: Colors.white,
@@ -1490,21 +1515,67 @@ class _BookmarkEditorState extends State<_BookmarkEditor> {
                       ),
                     ),
                     onPressed: () {
+                      _commitTagInput();
                       const QuranBookmarkService().saveBookmarkDetails(
                         entry.surah,
                         entry.verse,
                         isFavourite: isFavourite,
                         note: noteController.text,
                         folder: selectedFolder,
-                        tags: _parseTags(tagsController.text),
+                        tags: tags,
                       );
                       Navigator.of(context).pop();
                     },
-                    icon: const Icon(Icons.check_rounded),
-                    label: Text(localizations.save),
+                    child: Text(localizations.save),
                   ),
                 ],
               ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RemovableTag extends StatelessWidget {
+  const _RemovableTag({
+    required this.label,
+    required this.tooltip,
+    required this.onRemove,
+  });
+  final String label;
+  final String tooltip;
+  final VoidCallback onRemove;
+  @override
+  Widget build(BuildContext context) {
+    final tokens = context.equranTokens;
+    return Tooltip(
+      message: tooltip,
+      child: InkWell(
+        onTap: onRemove,
+        borderRadius: BorderRadius.circular(EquranRadii.pill),
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 28),
+          padding: const EdgeInsetsDirectional.symmetric(horizontal: 11),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(EquranRadii.pill),
+            border: Border.all(color: tokens.hair),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                label,
+                textDirection: scriptDirectionIn(context, label),
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: tokens.text2,
+                ),
+              ),
+              const SizedBox(width: 6),
+              DesignIcon('x', size: 12, strokeWidth: 2, color: tokens.text2),
             ],
           ),
         ),

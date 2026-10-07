@@ -4679,4 +4679,10 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get pureBlackBackgroundSubtitle =>
       'ڈارک موڈ میں کسی بھی رنگ کی تھیم کے ساتھ بالکل سیاہ پس منظر استعمال کریں۔';
+
+  @override
+  String get savedFolderLabel => 'فولڈر';
+
+  @override
+  String get savedManageFolders => 'فولڈرز کا انتظام';
 }

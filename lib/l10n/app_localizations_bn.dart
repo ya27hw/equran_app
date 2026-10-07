@@ -4677,4 +4677,10 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get pureBlackBackgroundSubtitle =>
       'ডার্ক মোডে যেকোনো রঙের থিমের সঙ্গে সম্পূর্ণ কালো পটভূমি ব্যবহার করুন।';
+
+  @override
+  String get savedFolderLabel => 'ফোল্ডার';
+
+  @override
+  String get savedManageFolders => 'ফোল্ডার পরিচালনা';
 }

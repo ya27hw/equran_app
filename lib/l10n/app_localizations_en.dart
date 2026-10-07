@@ -4667,4 +4667,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get pureBlackBackgroundSubtitle =>
       'Use a pitch-black background in dark mode with any color palette.';
+
+  @override
+  String get savedFolderLabel => 'Folder';
+
+  @override
+  String get savedManageFolders => 'Manage folders';
 }

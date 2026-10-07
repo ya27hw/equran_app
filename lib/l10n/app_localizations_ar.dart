@@ -4600,4 +4600,10 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get pureBlackBackgroundSubtitle =>
       'استخدم خلفية سوداء تمامًا في الوضع الداكن مع أي لوحة ألوان.';
+
+  @override
+  String get savedFolderLabel => 'المجلد';
+
+  @override
+  String get savedManageFolders => 'إدارة المجلدات';
 }

@@ -4687,4 +4687,10 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get pureBlackBackgroundSubtitle =>
       'Karanlık modda her renk paletiyle tam siyah arka plan kullanın.';
+
+  @override
+  String get savedFolderLabel => 'Klasör';
+
+  @override
+  String get savedManageFolders => 'Klasörleri yönet';
 }

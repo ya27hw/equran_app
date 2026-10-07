@@ -2516,5 +2516,7 @@
     "description": "Statistics label for the surah read most often."
   },
   "pureBlackBackground": "Pitch-black background",
-  "pureBlackBackgroundSubtitle": "Use a pitch-black background in dark mode with any color palette."
+  "pureBlackBackgroundSubtitle": "Use a pitch-black background in dark mode with any color palette.",
+  "savedFolderLabel": "Folder",
+  "savedManageFolders": "Manage folders"
 }

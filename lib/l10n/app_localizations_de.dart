@@ -4755,4 +4755,10 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get pureBlackBackgroundSubtitle =>
       'Im Dunkelmodus einen tiefschwarzen Hintergrund mit jeder Farbpalette verwenden.';
+
+  @override
+  String get savedFolderLabel => 'Ordner';
+
+  @override
+  String get savedManageFolders => 'Ordner verwalten';
 }
