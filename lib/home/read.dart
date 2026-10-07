@@ -46,7 +46,11 @@ import 'package:equran/backend/library.dart'
 import 'package:equran/backend/qpc_v4_font_service.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
+import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/widgets/playback_options_sheet.dart';
+import 'package:equran/widgets/reader_sheet_chrome.dart';
+import 'package:equran/widgets/reader_sheets.dart';
+import 'package:equran/widgets/redesign/design_icon.dart';
 import 'package:equran/theme/equran_text_styles.dart';
 import 'package:equran/reading_plans/routine_progress.dart';
 import 'package:equran/utils/app_radii.dart';
@@ -61,7 +65,6 @@ import 'package:equran/utils/translation_display.dart';
 import 'package:equran/services/frame_rate_policy_manager.dart';
 import 'package:equran/widgets/library.dart'
     show
-        AppSelectionDialog,
         AppSelectionOption,
         ReadQuranCard,
         readQuranCardHorizontalMarginForWidth,
@@ -1859,7 +1862,6 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     _ensureFontsLoadedForCurrentState();
     Size screenSize = MediaQuery.of(context).size;
-    final EquranColors colors = context.equranColors;
 
     // Define margin values for different screen sizes
     double marginValue;
@@ -1908,58 +1910,19 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
             return KeyEventResult.ignored;
           },
           child: Scaffold(
-            appBar: AppBar(
+            appBar: ReaderAppBar(
               toolbarHeight: ResponsiveNav.toolbarHeight(context),
-              backgroundColor: colors.background,
-              foregroundColor: colors.textPrimary,
-              elevation: 0,
-              scrolledUnderElevation: 0,
-              surfaceTintColor: Colors.transparent,
-              titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: colors.textPrimary,
-                fontWeight: FontWeight.w600,
+              title: localizedSurahName(
+                AppLocalizations.of(context)!,
+                _currentChapter,
               ),
-              iconTheme: IconThemeData(
-                color: colors.textSecondary,
-                size: ResponsiveNav.iconSize(context),
-              ),
-              actionsIconTheme: IconThemeData(
-                color: colors.textSecondary,
-                size: ResponsiveNav.iconSize(context),
-              ),
-              leading: const BackButton(),
-              title: Text(
-                localizedSurahName(
-                  AppLocalizations.of(context)!,
-                  _currentChapter,
-                ),
-              ),
-              centerTitle: true,
-              actions: <Widget>[
-                if (!_viewMode)
-                  IconButton(
-                    tooltip: _isVersePlaying && _playingVerse == _currentVerse
-                        ? AppLocalizations.of(context)!.pause
-                        : AppLocalizations.of(context)!.playThisAyah,
-                    onPressed: _togglePageViewPlayback,
-                    icon: Icon(
-                      _isVersePlaying && _playingVerse == _currentVerse
-                          ? Icons.pause_circle_rounded
-                          : Icons.play_circle_rounded,
-                      size: 24,
-                    ),
-                    visualDensity: VisualDensity.compact,
-                    splashRadius: 20,
-                  ),
-                IconButton(
-                  tooltip: AppLocalizations.of(context)!.readingOptions,
-                  onPressed: _showReadingOptionsSheet,
-                  icon: const Icon(Icons.more_horiz_rounded, size: 24),
-                  visualDensity: VisualDensity.compact,
-                  splashRadius: 20,
-                ),
-                const SizedBox(width: 10),
-              ],
+              showPlayButton: !_viewMode,
+              isPlaying: _isVersePlaying && _playingVerse == _currentVerse,
+              playTooltip: AppLocalizations.of(context)!.playThisAyah,
+              pauseTooltip: AppLocalizations.of(context)!.pause,
+              onPlayPause: _togglePageViewPlayback,
+              optionsTooltip: AppLocalizations.of(context)!.readingOptions,
+              onOptions: _showReadingOptionsSheet,
             ),
             body: _viewMode
                 ? cardView(marginValue: marginValue)
@@ -1976,24 +1939,9 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     final String surahName = localizedSurahName(localizations, _currentChapter);
 
     final _ReadingOptionsAction? action = await _withLowFpsSuppressed(() {
-      return showModalBottomSheet<_ReadingOptionsAction>(
+      return showReaderSheet<_ReadingOptionsAction>(
         context: context,
-        showDragHandle: true,
-        isScrollControlled: true,
-        useSafeArea: true,
-        backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(AppRadii.large),
-          ),
-        ),
         builder: (sheetContext) {
-          final ThemeData theme = Theme.of(sheetContext);
-          final ColorScheme colorScheme = theme.colorScheme;
-          final AppLocalizations localizations = AppLocalizations.of(
-            sheetContext,
-          )!;
-
           return SafeArea(
             top: false,
             child: DraggableScrollableSheet(
@@ -2020,190 +1968,45 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
                         SettingsDB().get("viewMode", defaultValue: true) ==
                         true;
 
-                    return ListView(
-                      controller: scrollController,
-                      padding: const EdgeInsets.fromLTRB(20, 6, 20, 24),
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Container(
-                              width: 42,
-                              height: 42,
-                              decoration: BoxDecoration(
-                                color: colorScheme.primary.withAlpha(18),
-                                borderRadius: BorderRadius.circular(
-                                  AppRadii.medium,
-                                ),
-                              ),
-                              child: Icon(
-                                Icons.tune_rounded,
-                                color: colorScheme.primary,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    localizations.readingOptions,
-                                    style: theme.textTheme.titleLarge?.copyWith(
-                                      fontWeight: FontWeight.w800,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    localizations.surahLabel(
-                                      surahName,
-                                      _currentVerse,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: colorScheme.onSurfaceVariant,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 18),
-                        _ReadingOptionsSection(
-                          title: localizations.navigation,
-                          children: <Widget>[
-                            _ReadingOptionTile(
-                              icon: Icons.double_arrow_outlined,
-                              title: localizations.goToAyah,
-                              subtitle: localizations.jumpToAyahIn(surahName),
-                              onTap: () => Navigator.of(
-                                sheetContext,
-                              ).pop(_ReadingOptionsAction.goToAyah),
-                            ),
-                          ],
-                        ),
-                        _ReadingOptionsSection(
-                          title: localizations.displayAndSharing,
-                          children: <Widget>[
-                            SwitchListTile(
-                              secondary: Container(
-                                width: 38,
-                                height: 38,
-                                decoration: BoxDecoration(
-                                  color: colorScheme.primary.withAlpha(18),
-                                  borderRadius: BorderRadius.circular(
-                                    AppRadii.small,
-                                  ),
-                                ),
-                                child: Icon(
-                                  Icons.translate_rounded,
-                                  color: colorScheme.primary,
-                                  size: 21,
-                                ),
-                              ),
-                              title: Text(localizations.translation),
-                              subtitle: Text(localizations.showAyahTranslation),
-                              value: translationEnabled,
-                              onChanged: (value) async {
-                                await SettingsDB().put(
-                                  "enableTranslation",
-                                  value,
-                                );
-                                if (!mounted) return;
-                                setState(() {});
-                                setSheetState(() {});
-                              },
-                            ),
-                            SwitchListTile(
-                              secondary: Container(
-                                width: 38,
-                                height: 38,
-                                decoration: BoxDecoration(
-                                  color: colorScheme.primary.withAlpha(18),
-                                  borderRadius: BorderRadius.circular(
-                                    AppRadii.small,
-                                  ),
-                                ),
-                                child: Icon(
-                                  Icons.text_fields_rounded,
-                                  color: colorScheme.primary,
-                                  size: 21,
-                                ),
-                              ),
-                              title: Text(localizations.transliterationOption),
-                              subtitle: Text(
-                                localizations.showLatinTransliteration,
-                              ),
-                              value: transliterationEnabled,
-                              onChanged: (value) async {
-                                await SettingsDB().put(
-                                  "showTransliteration",
-                                  value,
-                                );
-                                if (!mounted) return;
-                                setState(() {});
-                                setSheetState(() {});
-                              },
-                            ),
-                            SwitchListTile(
-                              secondary: Container(
-                                width: 38,
-                                height: 38,
-                                decoration: BoxDecoration(
-                                  color: colorScheme.primary.withAlpha(18),
-                                  borderRadius: BorderRadius.circular(
-                                    AppRadii.small,
-                                  ),
-                                ),
-                                child: Icon(
-                                  Icons.view_agenda_outlined,
-                                  color: colorScheme.primary,
-                                  size: 21,
-                                ),
-                              ),
-                              title: Text(localizations.cardViewOption),
-                              subtitle: Text(localizations.readOneAyahPerCard),
-                              value: cardViewEnabled,
-                              onChanged: (value) async {
-                                await SettingsDB().put("viewMode", value);
-                                if (!mounted) return;
-                                setState(() {
-                                  _viewMode = value;
-                                });
-                                setSheetState(() {});
-                              },
-                            ),
-                            if (translationEnabled)
-                              _ReadingOptionTile(
-                                icon: Icons.language_rounded,
-                                title: localizations.translationLanguage,
-                                subtitle:
-                                    localizations.chooseTranslationShownOnCards,
-                                onTap: () => Navigator.of(sheetContext).pop(
-                                  _ReadingOptionsAction.translationLanguage,
-                                ),
-                              ),
-                            _ReadingOptionTile(
-                              icon: Icons.auto_stories_outlined,
-                              title: localizations.tafsirSources,
-                              subtitle:
-                                  localizations.chooseDownloadedExplanations,
-                              onTap: () => Navigator.of(
-                                sheetContext,
-                              ).pop(_ReadingOptionsAction.tafsirSources),
-                            ),
-                            _ReadingOptionTile(
-                              icon: Icons.ios_share_outlined,
-                              title: localizations.shareCurrentAyah,
-                              subtitle: localizations.createImageForThisAyah,
-                              onTap: () => Navigator.of(
-                                sheetContext,
-                              ).pop(_ReadingOptionsAction.shareCurrentAyah),
-                            ),
-                          ],
-                        ),
-                      ],
+                    return ReadingOptionsSheet(
+                      scrollController: scrollController,
+                      surahName: surahName,
+                      verse: _currentVerse,
+                      translationEnabled: translationEnabled,
+                      transliterationEnabled: transliterationEnabled,
+                      cardViewEnabled: cardViewEnabled,
+                      onTranslationChanged: (value) async {
+                        await SettingsDB().put("enableTranslation", value);
+                        if (!mounted) return;
+                        setState(() {});
+                        setSheetState(() {});
+                      },
+                      onTransliterationChanged: (value) async {
+                        await SettingsDB().put("showTransliteration", value);
+                        if (!mounted) return;
+                        setState(() {});
+                        setSheetState(() {});
+                      },
+                      onCardViewChanged: (value) async {
+                        await SettingsDB().put("viewMode", value);
+                        if (!mounted) return;
+                        setState(() {
+                          _viewMode = value;
+                        });
+                        setSheetState(() {});
+                      },
+                      onGoToAyah: () => Navigator.of(
+                        sheetContext,
+                      ).pop(_ReadingOptionsAction.goToAyah),
+                      onTranslationLanguage: () => Navigator.of(
+                        sheetContext,
+                      ).pop(_ReadingOptionsAction.translationLanguage),
+                      onTafsirSources: () => Navigator.of(
+                        sheetContext,
+                      ).pop(_ReadingOptionsAction.tafsirSources),
+                      onShare: () => Navigator.of(
+                        sheetContext,
+                      ).pop(_ReadingOptionsAction.shareCurrentAyah),
                     );
                   },
                 );
@@ -2739,15 +2542,10 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     int? selectedVerse;
 
     try {
-      selectedVerse = await showModalBottomSheet<int>(
+      selectedVerse = await showReaderSheet<int>(
         context: context,
-        useSafeArea: true,
-        isScrollControlled: true,
-        showDragHandle: true,
         requestFocus: false,
         builder: (sheetContext) {
-          final ThemeData theme = Theme.of(sheetContext);
-          final ColorScheme colorScheme = theme.colorScheme;
           final AppLocalizations localizations = AppLocalizations.of(
             sheetContext,
           )!;
@@ -2785,74 +2583,21 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
 
           return StatefulBuilder(
             builder: (context, setSheetState) {
-              return SingleChildScrollView(
-                padding: EdgeInsets.fromLTRB(
-                  20,
-                  8,
-                  20,
-                  MediaQuery.of(sheetContext).viewInsets.bottom + 20,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Text(
-                      localizations.goToAyah,
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      localizations.enterAyahRange(_totalVerses),
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: controller,
-                      focusNode: focusNode,
-                      keyboardType: TextInputType.number,
-                      textInputAction: TextInputAction.go,
-                      textAlign: TextAlign.center,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
-                      decoration: InputDecoration(
-                        hintText: localizations.ayahNumberHint,
-                        errorText: errorText,
-                        filled: true,
-                        isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 16,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      onChanged: (_) {
-                        if (errorText != null) {
-                          setSheetState(() {
-                            errorText = null;
-                          });
-                        }
-                      },
-                      onSubmitted: (_) => submit(setSheetState),
-                    ),
-                    const SizedBox(height: 16),
-                    FilledButton(
-                      onPressed: () => submit(setSheetState),
-                      child: Text(localizations.go),
-                    ),
-                    const SizedBox(height: 4),
-                    TextButton(
-                      onPressed: () => Navigator.of(sheetContext).pop(),
-                      child: Text(localizations.cancel),
-                    ),
-                  ],
-                ),
+              return GoToAyahSheet(
+                controller: controller,
+                focusNode: focusNode,
+                totalVerses: _totalVerses,
+                errorText: errorText,
+                bottomInset: MediaQuery.of(sheetContext).viewInsets.bottom,
+                onChanged: (_) {
+                  if (errorText != null) {
+                    setSheetState(() {
+                      errorText = null;
+                    });
+                  }
+                },
+                onSubmit: () => submit(setSheetState),
+                onCancel: () => Navigator.of(sheetContext).pop(),
               );
             },
           );
@@ -4148,26 +3893,17 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
   Future<void> _confirmDeleteCurrentAyahDownload() async {
     final AppLocalizations localizations = AppLocalizations.of(context)!;
     final bool? confirm = await _withLowFpsSuppressed(() {
-      return showDialog<bool>(
+      return showReaderDialog<bool>(
         context: context,
-        builder: (context) => AlertDialog(
-          icon: const Icon(Icons.warning_amber_rounded),
-          title: Text(localizations.deleteDownloadedAyah),
-          content: Text(
-            localizations.removeSurahFromOffline(
-              'ayah $_currentChapter:$_currentVerse',
-            ),
+        builder: (context) => ReaderConfirmDialog(
+          icon: const DesignIcon('trash'),
+          title: localizations.deleteDownloadedAyah,
+          body: localizations.removeSurahFromOffline(
+            'ayah $_currentChapter:$_currentVerse',
           ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: Text(localizations.cancel),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: Text(localizations.delete),
-            ),
-          ],
+          cancelLabel: localizations.cancel,
+          confirmLabel: localizations.delete,
+          destructive: true,
         ),
       );
     });
@@ -4308,9 +4044,6 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
 
   Future<void> _showUpgradedSleepTimerSheet() async {
     final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
-    final EquranColors colors = context.equranColors;
 
     int minutes = 15;
     if (_sleepTimerEndsAt != null) {
@@ -4325,17 +4058,8 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
       text: '$minutes',
     );
 
-    await showModalBottomSheet<void>(
+    await showReaderSheet<void>(
       context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      showDragHandle: true,
-      backgroundColor: colorScheme.surfaceContainer,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AppRadii.large),
-        ),
-      ),
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setSheetState) {
@@ -4348,209 +4072,47 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
               });
             }
 
-            return Padding(
-              padding: EdgeInsets.fromLTRB(
-                20,
-                8,
-                20,
-                MediaQuery.of(context).viewInsets.bottom + 28,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Container(
-                        width: 42,
-                        height: 42,
-                        decoration: BoxDecoration(
-                          color: colorScheme.primary.withAlpha(18),
-                          borderRadius: BorderRadius.circular(AppRadii.medium),
-                        ),
-                        child: Icon(
-                          Icons.bedtime_outlined,
-                          color: colorScheme.primary,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          localizations.sleepTimerSettings,
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Numeric Minute Picker Container
-                  Card(
-                    color: colorScheme.surfaceContainerLow,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppRadii.medium),
-                      side: BorderSide(color: colorScheme.outlineVariant),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            localizations.numericMinutesDuration,
-                            style: const TextStyle(fontWeight: FontWeight.w800),
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            children: <Widget>[
-                              // Minus Button
-                              IconButton(
-                                onPressed: endOfSurah
-                                    ? null
-                                    : () => increment(-5),
-                                icon: const Icon(
-                                  Icons.remove_circle_outline_rounded,
-                                ),
-                                color: colorScheme.primary,
-                                iconSize: 28,
-                              ),
-                              // Text Field Input
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                  ),
-                                  child: TextField(
-                                    controller: textController,
-                                    keyboardType: TextInputType.number,
-                                    textAlign: TextAlign.center,
-                                    enabled: !endOfSurah,
-                                    style: theme.textTheme.headlineMedium
-                                        ?.copyWith(
-                                          fontWeight: FontWeight.w800,
-                                          color: endOfSurah
-                                              ? colorScheme.onSurfaceVariant
-                                                    .withAlpha(128)
-                                              : colorScheme.onSurface,
-                                        ),
-                                    decoration: InputDecoration(
-                                      suffixText: localizations
-                                          .minutesShort(0)
-                                          .replaceAll('0', '')
-                                          .trim(),
-                                      border: InputBorder.none,
-                                      enabledBorder: InputBorder.none,
-                                      focusedBorder: InputBorder.none,
-                                      contentPadding: EdgeInsets.zero,
-                                    ),
-                                    onChanged: (val) {
-                                      final int? parsed = int.tryParse(val);
-                                      if (parsed != null) {
-                                        minutes = parsed.clamp(1, 240);
-                                      }
-                                    },
-                                  ),
-                                ),
-                              ),
-                              // Plus Button
-                              IconButton(
-                                onPressed: endOfSurah
-                                    ? null
-                                    : () => increment(5),
-                                icon: const Icon(
-                                  Icons.add_circle_outline_rounded,
-                                ),
-                                color: colorScheme.primary,
-                                iconSize: 28,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // End of Surah Toggle Card
-                  Card(
-                    color: colorScheme.surfaceContainerLow,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppRadii.medium),
-                      side: BorderSide(color: colorScheme.outlineVariant),
-                    ),
-                    child: SwitchListTile(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(AppRadii.medium),
-                      ),
-                      secondary: Icon(
-                        Icons.queue_music_rounded,
-                        color: endOfSurah
-                            ? colorScheme.primary
-                            : colors.textSecondary,
-                      ),
-                      title: Text(
-                        localizations.endOfSurah,
-                        style: const TextStyle(fontWeight: FontWeight.w800),
-                      ),
-                      subtitle: Text(localizations.endOfSurahSubtitle),
-                      value: endOfSurah,
-                      onChanged: (val) {
-                        setSheetState(() {
-                          endOfSurah = val;
-                        });
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Apply / Stop Buttons
-                  Row(
-                    children: <Widget>[
-                      if (_sleepTimerEndsAt != null ||
-                          _sleepTimerMode != null) ...<Widget>[
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: () {
-                              _cancelSleepTimer();
-                              Navigator.of(context).pop();
-                            },
-                            child: Text(localizations.turnOff),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                      ],
-                      Expanded(
-                        child: FilledButton(
-                          onPressed: () async {
-                            if (endOfSurah) {
-                              await _applySleepTimerSelection(
-                                _sleepTimerEndSurahMode,
-                              );
-                            } else {
-                              final int val =
-                                  int.tryParse(textController.text) ?? minutes;
-                              await _setSleepTimer(
-                                Duration(minutes: val),
-                                localizations.minutesShort(val),
-                                mode: _sleepTimerDurationMode,
-                              );
-                            }
-                            if (context.mounted) {
-                              Navigator.of(context).pop();
-                            }
-                          },
-                          child: Text(localizations.setTimer),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+            return SleepTimerSheet(
+              minutesController: textController,
+              unitLabel: localizations
+                  .minutesShort(0)
+                  .replaceAll('0', '')
+                  .trim(),
+              endOfSurah: endOfSurah,
+              hasActiveTimer:
+                  _sleepTimerEndsAt != null || _sleepTimerMode != null,
+              bottomInset: MediaQuery.of(context).viewInsets.bottom,
+              onStep: increment,
+              onMinutesChanged: (val) {
+                final int? parsed = int.tryParse(val);
+                if (parsed != null) {
+                  minutes = parsed.clamp(1, 240);
+                }
+              },
+              onEndOfSurahChanged: (val) {
+                setSheetState(() {
+                  endOfSurah = val;
+                });
+              },
+              onTurnOff: () {
+                _cancelSleepTimer();
+                Navigator.of(context).pop();
+              },
+              onSet: () async {
+                if (endOfSurah) {
+                  await _applySleepTimerSelection(_sleepTimerEndSurahMode);
+                } else {
+                  final int val = int.tryParse(textController.text) ?? minutes;
+                  await _setSleepTimer(
+                    Duration(minutes: val),
+                    localizations.minutesShort(val),
+                    mode: _sleepTimerDurationMode,
+                  );
+                }
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                }
+              },
             );
           },
         );
@@ -6272,24 +5834,14 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
                   _currentChapter,
                 );
                 final bool? confirm = await _withLowFpsSuppressed(() {
-                  return showDialog<bool>(
+                  return showReaderDialog<bool>(
                     context: context,
-                    builder: (context) => AlertDialog(
-                      icon: const Icon(Icons.download_for_offline_rounded),
-                      title: Text(localizations.downloadAllAyahs),
-                      content: Text(
-                        localizations.downloadAllAyahsForSurah(surahName),
-                      ),
-                      actions: <Widget>[
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(false),
-                          child: Text(localizations.cancel),
-                        ),
-                        FilledButton(
-                          onPressed: () => Navigator.of(context).pop(true),
-                          child: Text(localizations.download),
-                        ),
-                      ],
+                    builder: (context) => ReaderConfirmDialog(
+                      icon: const DesignIcon('download'),
+                      title: localizations.downloadAllAyahs,
+                      body: localizations.downloadAllAyahsForSurah(surahName),
+                      cancelLabel: localizations.cancel,
+                      confirmLabel: localizations.download,
                     ),
                   );
                 });
@@ -6430,7 +5982,6 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
   }
 
   Widget _buildNavigationButtons({bool fixed = false}) {
-    final EquranColors colors = context.equranColors;
     final double width = MediaQuery.sizeOf(context).width;
     final double horizontalInset = _viewMode
         ? _readCardHorizontalInset(width)
@@ -6444,41 +5995,15 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            FilledButton.tonal(
+            ReaderNavButton(
+              designIcon: 'back',
+              tooltip: AppLocalizations.of(context)!.previous,
               onPressed: () => _decrease(),
-              style: FilledButton.styleFrom(
-                backgroundColor: colors.surface,
-                foregroundColor: colors.primary,
-                side: BorderSide(color: colors.border),
-                shape: const StadiumBorder(),
-                padding: const EdgeInsets.symmetric(
-                  vertical: 8,
-                  horizontal: 16,
-                ),
-                minimumSize: const Size(58, 44),
-              ),
-              child: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 2),
-                child: Icon(Icons.arrow_back_rounded, size: 22),
-              ),
             ),
-            FilledButton.tonal(
+            ReaderNavButton(
+              designIcon: 'chev',
+              tooltip: AppLocalizations.of(context)!.next,
               onPressed: () => _increase(),
-              style: FilledButton.styleFrom(
-                backgroundColor: colors.surface,
-                foregroundColor: colors.primary,
-                side: BorderSide(color: colors.border),
-                shape: const StadiumBorder(),
-                padding: const EdgeInsets.symmetric(
-                  vertical: 8,
-                  horizontal: 16,
-                ),
-                minimumSize: const Size(58, 44),
-              ),
-              child: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 2),
-                child: Icon(Icons.arrow_forward_rounded, size: 22),
-              ),
             ),
           ],
         ),
@@ -6585,62 +6110,30 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
   }
 
   Future<_ShareImageMode?> _chooseShareImageMode() {
-    return showModalBottomSheet<_ShareImageMode>(
+    return showReaderSheet<_ShareImageMode>(
       context: context,
-      showDragHandle: true,
       builder: (BuildContext context) {
-        final ThemeData theme = Theme.of(context);
-        final EquranColors colors = context.equranColors;
-
         return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(18, 4, 18, 18),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                Text(
-                  'Share image format',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    color: colors.textPrimary,
-                    fontWeight: FontWeight.w900,
+          top: false,
+          child: ReaderChoiceSheet(
+            title: 'Share image format',
+            items: <ReaderChoiceItem>[
+              for (final _ShareImageMode mode in _ShareImageMode.values)
+                ReaderChoiceItem(
+                  selected: mode == _shareImageMode,
+                  leading: Icon(
+                    mode == _ShareImageMode.story
+                        ? Icons.stay_current_portrait_rounded
+                        : mode == _ShareImageMode.square
+                        ? Icons.crop_square_rounded
+                        : Icons.image_outlined,
                   ),
+                  title: mode.label,
+                  subtitle:
+                      '${mode.size.width.toInt()} x ${mode.size.height.toInt()}',
+                  onTap: () => Navigator.of(context).pop(mode),
                 ),
-                const SizedBox(height: 12),
-                for (final _ShareImageMode mode in _ShareImageMode.values)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: ListTile(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(AppRadii.medium),
-                        side: BorderSide(color: colors.border),
-                      ),
-                      tileColor: mode == _shareImageMode
-                          ? colors.mint
-                          : colors.surface,
-                      leading: Icon(
-                        mode == _ShareImageMode.story
-                            ? Icons.stay_current_portrait_rounded
-                            : mode == _ShareImageMode.square
-                            ? Icons.crop_square_rounded
-                            : Icons.image_outlined,
-                        color: colors.primary,
-                      ),
-                      title: Text(
-                        mode.label,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          color: colors.textPrimary,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      subtitle: Text(
-                        '${mode.size.width.toInt()} x ${mode.size.height.toInt()}',
-                      ),
-                      onTap: () => Navigator.of(context).pop(mode),
-                    ),
-                  ),
-              ],
-            ),
+            ],
           ),
         );
       },
@@ -7689,12 +7182,8 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
           child: DecoratedBox(
             decoration: BoxDecoration(
               color: pageCardColor,
-              borderRadius: BorderRadius.circular(AppRadii.large),
-              border: Border.all(
-                color: colorScheme.outlineVariant.withAlpha(
-                  (0.45 * 255).round(),
-                ),
-              ),
+              borderRadius: BorderRadius.circular(EquranRadii.xl),
+              border: Border.all(color: context.equranTokens.hair),
             ),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -7832,11 +7321,11 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     _updateDB();
 
     await _withLowFpsSuppressed(() {
-      return showModalBottomSheet<void>(
+      return showReaderSheet<void>(
         context: context,
-        showDragHandle: true,
         builder: (context) {
           final AppLocalizations localizations = AppLocalizations.of(context)!;
+          final EquranTokens tokens = context.equranTokens;
           bool isFavourite = const QuranBookmarkService().isFavourite(
             _currentChapter,
             verse,
@@ -7844,113 +7333,91 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
           return StatefulBuilder(
             builder: (context, setSheetState) {
               return SafeArea(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    ListTile(
-                      title: Text(
-                        localizedSurahAyahLabel(
-                          localizations,
-                          _currentChapter,
-                          verse,
-                        ),
-                      ),
-                      subtitle: Text(localizations.chooseAnAction),
-                      trailing: SizedBox(
-                        width: 48,
-                        height: 48,
-                        child: Center(
-                          child: LikeButton(
-                            size: 28,
-                            isLiked: isFavourite,
-                            circleColor: CircleColor(
-                              start: Theme.of(
-                                context,
-                              ).colorScheme.primary.withAlpha(180),
-                              end: Theme.of(context).colorScheme.primary,
-                            ),
-                            bubblesColor: BubblesColor(
-                              dotPrimaryColor: Theme.of(
-                                context,
-                              ).colorScheme.primary,
-                              dotSecondaryColor: Theme.of(
-                                context,
-                              ).colorScheme.secondary,
-                            ),
-                            likeBuilder: (bool liked) {
-                              return Icon(
-                                liked
-                                    ? Icons.favorite_rounded
-                                    : Icons.favorite_border_rounded,
-                                color: liked
-                                    ? Theme.of(context).colorScheme.primary
-                                    : Theme.of(
-                                        context,
-                                      ).colorScheme.onSurfaceVariant,
-                                size: 28,
-                              );
-                            },
-                            onTap: (bool liked) async {
-                              if (liked) {
-                                _toggleFavourite(verse, isFavourite: true);
-                                if (!mounted) return false;
-
-                                setSheetState(() {
-                                  isFavourite = false;
-                                });
-
-                                return false;
-                              }
-
-                              await _showFavouriteNotePrompt(verse);
-                              if (!mounted) return liked;
-
-                              setSheetState(() {
-                                isFavourite = true;
-                              });
-
-                              return true;
-                            },
-                          ),
-                        ),
-                      ),
+                top: false,
+                child: AyahActionsSheet(
+                  title: localizedSurahAyahLabel(
+                    localizations,
+                    _currentChapter,
+                    verse,
+                  ),
+                  favourite: LikeButton(
+                    size: 28,
+                    isLiked: isFavourite,
+                    circleColor: CircleColor(
+                      start: tokens.filled.withAlpha(180),
+                      end: tokens.filled,
                     ),
-                    ListTile(
-                      leading: const Icon(Icons.play_circle_outline_rounded),
-                      title: Text(localizations.playThisAyah),
+                    bubblesColor: BubblesColor(
+                      dotPrimaryColor: tokens.filled,
+                      dotSecondaryColor: tokens.gold,
+                    ),
+                    likeBuilder: (bool liked) {
+                      return DesignIcon(
+                        'heart',
+                        size: 26,
+                        filled: liked,
+                        color: liked ? tokens.emText : tokens.muted,
+                      );
+                    },
+                    onTap: (bool liked) async {
+                      if (liked) {
+                        _toggleFavourite(verse, isFavourite: true);
+                        if (!mounted) return false;
+
+                        setSheetState(() {
+                          isFavourite = false;
+                        });
+
+                        return false;
+                      }
+
+                      await _showFavouriteNotePrompt(verse);
+                      if (!mounted) return liked;
+
+                      setSheetState(() {
+                        isFavourite = true;
+                      });
+
+                      return true;
+                    },
+                  ),
+                  actions: <ReaderActionItem>[
+                    ReaderActionItem(
+                      leading: const DesignIcon('play'),
+                      title: localizations.playThisAyah,
                       onTap: () {
                         Navigator.of(context).pop();
                         _playVerse(_currentChapter, verse, continuous: false);
                       },
                     ),
-                    ListTile(
-                      leading: const Icon(Icons.ios_share_outlined),
-                      title: Text(localizations.shareImage),
+                    ReaderActionItem(
+                      leading: const DesignIcon('share'),
+                      title: localizations.shareImage,
                       onTap: () {
                         Navigator.of(context).pop();
                         _shareCurrentAyahImage();
                       },
                     ),
-                    ListTile(
-                      leading: const Icon(Icons.chrome_reader_mode_rounded),
-                      title: Text(localizations.showTafsir),
+                    ReaderActionItem(
+                      leading: const DesignIcon('quran'),
+                      title: localizations.showTafsir,
                       onTap: () {
                         Navigator.of(context).pop();
                         _showTafsirSheet(verse);
                       },
                     ),
-                    ListTile(
-                      leading: const Icon(Icons.edit_note_rounded),
-                      title: Text(localizations.saveToLibrary),
-                      subtitle: Text(localizations.folderTagsAndNote),
+                    ReaderActionItem(
+                      leading: const DesignIcon('bookmark'),
+                      title: localizations.saveToLibrary,
+                      subtitle: localizations.folderTagsAndNote,
                       onTap: () {
                         Navigator.of(context).pop();
                         _showFavouriteNotePrompt(verse);
                       },
                     ),
-                    ListTile(
-                      leading: const Icon(Icons.notes_rounded),
-                      title: Text(localizations.ayahDetails),
+                    ReaderActionItem(
+                      leading: const DesignIcon('info'),
+                      title: localizations.ayahDetails,
                       onTap: () {
                         Navigator.of(context).pop();
                         _showAyahDetailsSheet(verse);
@@ -7996,7 +7463,7 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
 
     bool groupByDownloaded = false;
 
-    return showDialog<AppReciter>(
+    return showReaderDialog<AppReciter>(
       context: context,
       builder: (context) {
         return StatefulBuilder(
@@ -8020,147 +7487,25 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
               );
             }
 
-            final ThemeData theme = Theme.of(context);
-            final ColorScheme colorScheme = theme.colorScheme;
-            final BorderRadius borderRadius = BorderRadius.circular(
-              AppRadii.large,
-            );
-
-            return Dialog(
-              insetPadding: const EdgeInsets.symmetric(
-                horizontal: 24,
-                vertical: 32,
-              ),
-              backgroundColor: colorScheme.surfaceContainer,
-              shape: RoundedRectangleBorder(borderRadius: borderRadius),
-              clipBehavior: Clip.antiAlias,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxWidth: 440,
-                  maxHeight: 560,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    ColoredBox(
-                      color: colorScheme.surfaceContainer,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 18, 12, 10),
-                        child: Row(
-                          children: <Widget>[
-                            Icon(
-                              Icons.record_voice_over_rounded,
-                              color: colorScheme.primary,
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                localizations.reciter,
-                                style: theme.textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
-                            ),
-                            IconButton(
-                              tooltip: groupByDownloaded
-                                  ? 'Show Alphabetical'
-                                  : 'Group Downloaded',
-                              onPressed: () {
-                                setDialogState(() {
-                                  groupByDownloaded = !groupByDownloaded;
-                                });
-                              },
-                              icon: Icon(
-                                groupByDownloaded
-                                    ? Icons.offline_pin_rounded
-                                    : Icons.offline_pin_outlined,
-                                color: groupByDownloaded
-                                    ? Colors.green
-                                    : colorScheme.onSurfaceVariant.withAlpha(
-                                        160,
-                                      ),
-                              ),
-                            ),
-                            IconButton(
-                              tooltip: localizations.close,
-                              onPressed: () => Navigator.of(context).pop(),
-                              icon: const Icon(Icons.close_rounded),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const Divider(height: 1),
-                    Flexible(
-                      child: ClipRect(
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          physics: const BouncingScrollPhysics(),
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          itemCount: displayReciters.length,
-                          itemBuilder: (context, index) {
-                            final AppReciter reciter = displayReciters[index];
-                            final bool isSelected = reciter == currentReciter;
-                            final bool isDownloaded =
-                                reciterDownloadedMap[reciter.code] ?? false;
-
-                            Widget? leadingWidget;
-                            if (isDownloaded) {
-                              leadingWidget = const Icon(
-                                Icons.offline_pin_rounded,
-                                color: Colors.green,
-                                size: 20,
-                              );
-                            } else {
-                              leadingWidget = Icon(
-                                Icons.record_voice_over_rounded,
-                                color: colorScheme.onSurfaceVariant.withAlpha(
-                                  60,
-                                ),
-                                size: 20,
-                              );
-                            }
-
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                              ),
-                              child: Material(
-                                color: isSelected
-                                    ? colorScheme.primaryContainer.withValues(
-                                        alpha: 0.42,
-                                      )
-                                    : Colors.transparent,
-                                borderRadius: BorderRadius.circular(
-                                  AppRadii.medium,
-                                ),
-                                clipBehavior: Clip.antiAlias,
-                                child: ListTile(
-                                  leading: leadingWidget,
-                                  title: Text(
-                                    _localizedReciterName(
-                                      reciter,
-                                      localizations,
-                                    ),
-                                  ),
-                                  trailing: isSelected
-                                      ? Icon(
-                                          Icons.check_circle_rounded,
-                                          color: colorScheme.primary,
-                                        )
-                                      : null,
-                                  onTap: () =>
-                                      Navigator.of(context).pop(reciter),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            return ReciterPickerDialog(
+              groupByDownloaded: groupByDownloaded,
+              groupTooltip: groupByDownloaded
+                  ? 'Show Alphabetical'
+                  : 'Group Downloaded',
+              onToggleGroup: () {
+                setDialogState(() {
+                  groupByDownloaded = !groupByDownloaded;
+                });
+              },
+              items: <ReciterPickerItem>[
+                for (final AppReciter reciter in displayReciters)
+                  ReciterPickerItem(
+                    name: _localizedReciterName(reciter, localizations),
+                    downloaded: reciterDownloadedMap[reciter.code] ?? false,
+                    selected: reciter == currentReciter,
+                    onTap: () => Navigator.of(context).pop(reciter),
+                  ),
+              ],
             );
           },
         );
@@ -8173,11 +7518,11 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     required IconData icon,
     required RepeatChoice selectedValue,
   }) {
-    return showDialog<RepeatChoice>(
+    return showReaderDialog<RepeatChoice>(
       context: context,
-      builder: (context) => AppSelectionDialog<RepeatChoice>(
+      builder: (context) => ReaderChoiceDialog<RepeatChoice>(
         title: title,
-        icon: icon,
+        icon: Icon(icon),
         selectedValue: selectedValue,
         options: RepeatChoice.values
             .map(
@@ -8206,13 +7551,12 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     required int max,
     required String Function(int value) titleBuilder,
   }) {
-    return showDialog<int>(
+    return showReaderDialog<int>(
       context: context,
-      builder: (context) => AppSelectionDialog<int>(
+      builder: (context) => ReaderChoiceDialog<int>(
         title: title,
-        icon: icon,
+        icon: Icon(icon),
         selectedValue: selectedValue,
-        maxHeight: 560,
         options: List<AppSelectionOption<int>>.generate(max - min + 1, (index) {
           final int value = min + index;
           return AppSelectionOption<int>(
@@ -8348,14 +7692,13 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     final ResourceManifest manifest = await ResourceRepository.instance
         .loadManifest();
     if (!mounted) return null;
-    return showDialog<int>(
+    return showReaderDialog<int>(
       context: context,
-      builder: (context) => AppSelectionDialog<int>(
+      builder: (context) => ReaderChoiceDialog<int>(
         title: AppLocalizations.of(context)!.translationLanguage,
-        icon: Icons.translate_rounded,
+        icon: const DesignIcon('chat'),
         selectedValue: selectedTranslation,
         maxWidth: 420,
-        maxHeight: 520,
         options:
             quran.Translation.values
                 .asMap()
@@ -8887,15 +8230,11 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
         bookmark?.folder ?? QuranBookmarkService.defaultFolder;
     try {
       await _withLowFpsSuppressed(() {
-        return showModalBottomSheet<void>(
+        return showReaderSheet<void>(
           context: context,
-          isScrollControlled: true,
-          useSafeArea: true,
-          showDragHandle: true,
           builder: (context) {
             return StatefulBuilder(
               builder: (context, setSheetState) {
-                final ThemeData theme = Theme.of(context);
                 final EquranColors colors = context.equranColors;
                 final AppLocalizations localizations = AppLocalizations.of(
                   context,
@@ -8905,193 +8244,83 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
                 if (!folders.contains(selectedFolder)) {
                   selectedFolder = QuranBookmarkService.defaultFolder;
                 }
-                return Padding(
-                  padding: EdgeInsets.fromLTRB(
-                    20,
-                    8,
-                    20,
-                    20 + MediaQuery.viewInsetsOf(context).bottom,
+                return BookmarkNoteSheet(
+                  title: localizedSurahAyahLabel(
+                    localizations,
+                    _currentChapter,
+                    verse,
                   ),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          localizedSurahAyahLabel(
-                            localizations,
-                            _currentChapter,
-                            verse,
-                          ),
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            color: colors.textPrimary,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: colors.surface,
-                            borderRadius: BorderRadius.circular(
-                              AppRadii.medium,
-                            ),
-                            border: Border.all(color: colors.border),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(14),
-                            child: Text(
-                              quranVerseText(_currentChapter, verse),
-                              textDirection: TextDirection.rtl,
-                              textAlign: TextAlign.center,
-                              maxLines: 3,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontFamily: EquranTextStyles.activeFontFamily,
-                                fontFamilyFallback: const <String>[
-                                  'UthmanicHafs',
-                                ],
-                                color: colors.textPrimary,
-                                fontSize: 22,
-                                height: 1.6,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        SwitchListTile.adaptive(
-                          contentPadding: EdgeInsets.zero,
-                          title: Text(localizations.favourites),
-                          value: isFavourite,
-                          onChanged: (value) => setSheetState(() {
-                            isFavourite = value;
-                          }),
-                        ),
-                        TextField(
-                          controller: noteController,
-                          maxLines: 4,
-                          minLines: 2,
-                          decoration: InputDecoration(
-                            labelText: localizations.note,
-                            hintText: localizations.writeReflectionHint,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: DropdownButtonFormField<String>(
-                                initialValue: selectedFolder,
-                                decoration: InputDecoration(
-                                  labelText: localizations.folders,
-                                ),
-                                items: <DropdownMenuItem<String>>[
-                                  for (final String folder in folders)
-                                    DropdownMenuItem<String>(
-                                      value: folder,
-                                      child: Text(
-                                        folder ==
-                                                QuranBookmarkService
-                                                    .defaultFolder
-                                            ? localizations.unsorted
-                                            : folder,
-                                      ),
-                                    ),
-                                ],
-                                onChanged: (value) {
-                                  if (value == null) return;
-                                  setSheetState(() {
-                                    selectedFolder = value;
-                                    folderController.text = value;
-                                  });
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            IconButton.filledTonal(
-                              tooltip: localizations.createFolder,
-                              style: IconButton.styleFrom(
-                                backgroundColor: colors.mint,
-                                foregroundColor: colors.primary,
-                              ),
-                              onPressed: () async {
-                                final String? folder =
-                                    await _showBookmarkFolderNameDialog();
-                                if (folder == null) return;
-                                final String created =
-                                    await const QuranBookmarkService()
-                                        .createFolder(folder);
-                                setSheetState(() {
-                                  selectedFolder = created;
-                                  folderController.text = created;
-                                });
-                              },
-                              icon: const Icon(
-                                Icons.create_new_folder_outlined,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            localizations.savedAyahsOrganizedHint,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: colors.textSecondary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        TextField(
-                          controller: tagsController,
-                          decoration: InputDecoration(
-                            labelText: localizations.tags,
-                            hintText: localizations.tagsHint,
-                          ),
-                        ),
-                        const SizedBox(height: 18),
-                        Row(
-                          children: <Widget>[
-                            TextButton.icon(
-                              onPressed: () {
-                                unawaited(
-                                  const QuranBookmarkService().deleteBookmark(
-                                    _currentChapter,
-                                    verse,
-                                  ),
-                                );
-                                Navigator.of(context).pop();
-                              },
-                              icon: const Icon(Icons.delete_outline_rounded),
-                              label: Text(localizations.delete),
-                            ),
-                            const Spacer(),
-                            FilledButton.icon(
-                              onPressed: () {
-                                unawaited(
-                                  const QuranBookmarkService()
-                                      .saveBookmarkDetails(
-                                        _currentChapter,
-                                        verse,
-                                        isFavourite: isFavourite,
-                                        note: noteController.text,
-                                        folder: selectedFolder,
-                                        tags: _parseBookmarkTags(
-                                          tagsController.text,
-                                        ),
-                                      ),
-                                );
-                                Navigator.of(context).pop();
-                              },
-                              icon: const Icon(Icons.check_rounded),
-                              label: Text(localizations.save),
-                            ),
-                          ],
-                        ),
-                      ],
+                  bottomInset: MediaQuery.viewInsetsOf(context).bottom,
+                  verse: Text(
+                    quranVerseText(_currentChapter, verse),
+                    textDirection: TextDirection.rtl,
+                    textAlign: TextAlign.center,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontFamily: EquranTextStyles.activeFontFamily,
+                      fontFamilyFallback: const <String>['UthmanicHafs'],
+                      color: colors.textPrimary,
+                      fontSize: 22,
+                      height: 1.6,
                     ),
                   ),
+                  isFavourite: isFavourite,
+                  onFavouriteChanged: (value) => setSheetState(() {
+                    isFavourite = value;
+                  }),
+                  noteController: noteController,
+                  folders: <(String, String)>[
+                    for (final String folder in folders)
+                      (
+                        folder,
+                        folder == QuranBookmarkService.defaultFolder
+                            ? localizations.unsorted
+                            : folder,
+                      ),
+                  ],
+                  selectedFolder: selectedFolder,
+                  onFolderSelected: (value) {
+                    setSheetState(() {
+                      selectedFolder = value;
+                      folderController.text = value;
+                    });
+                  },
+                  onCreateFolder: () async {
+                    final String? folder =
+                        await _showBookmarkFolderNameDialog();
+                    if (folder == null) return;
+                    final String created = await const QuranBookmarkService()
+                        .createFolder(folder);
+                    setSheetState(() {
+                      selectedFolder = created;
+                      folderController.text = created;
+                    });
+                  },
+                  tagsController: tagsController,
+                  onTagsChanged: (_) {},
+                  onDelete: () {
+                    unawaited(
+                      const QuranBookmarkService().deleteBookmark(
+                        _currentChapter,
+                        verse,
+                      ),
+                    );
+                    Navigator.of(context).pop();
+                  },
+                  onSave: () {
+                    unawaited(
+                      const QuranBookmarkService().saveBookmarkDetails(
+                        _currentChapter,
+                        verse,
+                        isFavourite: isFavourite,
+                        note: noteController.text,
+                        folder: selectedFolder,
+                        tags: _parseBookmarkTags(tagsController.text),
+                      ),
+                    );
+                    Navigator.of(context).pop();
+                  },
                 );
               },
             );
@@ -9118,42 +8347,9 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
   Future<String?> _showBookmarkFolderNameDialog() async {
     final TextEditingController controller = TextEditingController();
     try {
-      return await showDialog<String>(
+      return await showReaderDialog<String>(
         context: context,
-        builder: (context) {
-          final AppLocalizations localizations = AppLocalizations.of(context)!;
-          return AlertDialog(
-            title: Text(localizations.newFolder),
-            content: TextField(
-              controller: controller,
-              autofocus: true,
-              textInputAction: TextInputAction.done,
-              decoration: InputDecoration(
-                labelText: localizations.folderName,
-                hintText: localizations.folderNameHint,
-              ),
-              onSubmitted: (_) {
-                final String value = controller.text.trim();
-                if (value.isEmpty) return;
-                Navigator.of(context).pop(value);
-              },
-            ),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text(localizations.cancel),
-              ),
-              FilledButton(
-                onPressed: () {
-                  final String value = controller.text.trim();
-                  if (value.isEmpty) return;
-                  Navigator.of(context).pop(value);
-                },
-                child: Text(localizations.create),
-              ),
-            ],
-          );
-        },
+        builder: (context) => ReaderFolderNameDialog(controller: controller),
       );
     } finally {
       controller.dispose();
@@ -9176,87 +8372,6 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     }
     unawaited(
       const QuranBookmarkService().saveFavourite(_currentChapter, verse),
-    );
-  }
-}
-
-class _ReadingOptionsSection extends StatelessWidget {
-  const _ReadingOptionsSection({required this.title, required this.children});
-
-  final String title;
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
-    return Material(
-      color: colorScheme.surfaceContainerLow,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppRadii.medium),
-        side: BorderSide(color: colorScheme.outlineVariant),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 4),
-            child: Text(
-              title,
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: colorScheme.primary,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-          ),
-          ...children,
-        ],
-      ),
-    );
-  }
-}
-
-class _ReadingOptionTile extends StatelessWidget {
-  const _ReadingOptionTile({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
-    final Color iconColor = colorScheme.primary;
-    final Color textColor = colorScheme.onSurface;
-
-    return ListTile(
-      leading: Container(
-        width: 38,
-        height: 38,
-        decoration: BoxDecoration(
-          color: iconColor.withAlpha(18),
-          borderRadius: BorderRadius.circular(AppRadii.small),
-        ),
-        child: Icon(icon, color: iconColor, size: 21),
-      ),
-      title: Text(
-        title,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(color: textColor, fontWeight: FontWeight.w700),
-      ),
-      subtitle: Text(subtitle, maxLines: 2, overflow: TextOverflow.ellipsis),
-      trailing: Icon(
-        Icons.chevron_right_rounded,
-        color: colorScheme.onSurfaceVariant,
-      ),
-      onTap: onTap,
     );
   }
 }
