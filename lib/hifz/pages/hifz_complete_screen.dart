@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:equran/theme/equran_colors.dart';
-import 'package:equran/utils/app_radii.dart';
+import 'package:equran/theme/equran_spacing.dart';
+import 'package:equran/theme/equran_text_styles.dart';
+import 'package:equran/theme/equran_tokens.dart';
+import 'package:equran/widgets/reader_sheet_chrome.dart';
+import 'package:equran/widgets/redesign/page_typography.dart';
+import 'package:equran/widgets/redesign/redesign_widgets.dart';
 import 'package:equran/hifz/hifz_db.dart';
 import 'package:equran/hifz/models/hifz_unit.dart';
 import 'hifz_session_page.dart';
@@ -77,339 +82,249 @@ class _HifzCompleteScreenState extends State<HifzCompleteScreen>
   @override
   Widget build(BuildContext context) {
     final colors = context.equranColors;
-    final theme = Theme.of(context);
+    final tokens = context.equranTokens;
     final l10n = AppLocalizations.of(context)!;
-    final tryAgainLabel = 'Try again';
-    final gotItLabel = 'Got it';
-    final failLabel = 'Fail';
-    final passLabel = 'Pass';
+    final reduceMotion = MediaQuery.disableAnimationsOf(context);
+    final dueCount = HifzDB.getDueEntries().length;
+    // Hero panels always carry light text (see HeroPanel).
+    final heroInk = EquranColors.dark.textPrimary;
 
-    return Scaffold(
-      backgroundColor: colors.background,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const SizedBox(height: 40),
+    Widget fade(double from, Widget child) => reduceMotion
+        ? child
+        : FadeTransition(
+            opacity: CurvedAnimation(
+              parent: _controller,
+              curve: Interval(from, 1.0),
+            ),
+            child: child,
+          );
 
-              // COMPLETION ICON
-              TweenAnimationBuilder<double>(
-                tween: Tween(begin: 0.0, end: 1.0),
-                duration: const Duration(milliseconds: 600),
-                curve: Curves.elasticOut,
-                builder: (_, value, child) => Transform.scale(
-                  scale: value,
-                  child: Container(
-                    width: 96,
-                    height: 96,
+    return Material(
+      color: colors.background,
+      child: RedesignPageTypography(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // COMPLETION HERO
+                HeroPanel(
+                  padding: const EdgeInsets.fromLTRB(24, 32, 24, 28),
+                  child: Column(
+                    children: [
+                      TweenAnimationBuilder<double>(
+                        tween: Tween(begin: reduceMotion ? 1.0 : 0.0, end: 1.0),
+                        duration: reduceMotion
+                            ? Duration.zero
+                            : const Duration(milliseconds: 450),
+                        curve: Curves.easeOutBack,
+                        builder: (_, value, child) => Transform.scale(
+                          scale: value.clamp(0.0, 1.2),
+                          child: child,
+                        ),
+                        child: Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: tokens.gold.withValues(alpha: 0.14),
+                            border: Border.all(
+                              color: tokens.gold.withValues(alpha: 0.55),
+                            ),
+                          ),
+                          child: Center(
+                            child: DesignIcon(
+                              'check',
+                              size: 38,
+                              strokeWidth: 1.8,
+                              color: tokens.gold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      fade(
+                        0.3,
+                        Text(
+                          l10n.hifzCompleteTitle,
+                          style: redesignDisplayStyle(
+                            context,
+                            size: 32,
+                            color: heroInk,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _sessionSubtitle(l10n),
+                        style: TextStyle(
+                          fontSize: 14,
+                          height: 1.4,
+                          color: tokens.featText2,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+
+                if (widget.unit.isComplete) ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
-                      color: colors.mint,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: colors.primary, width: 2),
+                      color: tokens.goldWash,
+                      borderRadius: BorderRadius.circular(EquranRadii.xl),
+                      border: Border.all(
+                        color: tokens.gold.withValues(alpha: 0.35),
+                      ),
                     ),
-                    child: Icon(
-                      Icons.check_rounded,
-                      color: colors.primary,
-                      size: 52,
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              // TITLE
-              FadeTransition(
-                opacity: CurvedAnimation(
-                  parent: _controller,
-                  curve: const Interval(0.3, 1.0),
-                ),
-                child: Text(
-                  l10n.hifzCompleteTitle,
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    color: colors.textPrimary,
-                    fontWeight: FontWeight.w700,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-
-              const SizedBox(height: 8),
-
-              // SUBTITLE
-              Text(
-                _sessionSubtitle(l10n),
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colors.textSecondary,
-                ),
-                textAlign: TextAlign.center,
-              ),
-
-              const SizedBox(height: 32),
-              if (widget.unit.isComplete)
-                Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        colors.primaryGradientStart,
-                        colors.primaryGradientEnd,
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(AppRadii.large),
-                    border: Border.all(
-                      color: colors.accentGold.withAlpha(102),
-                      width: 1,
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      const Text('🎉', style: TextStyle(fontSize: 36)),
-                      const SizedBox(height: 8),
-                      Text(
-                        l10n.hifzUnitCompleteTitle(widget.unit.displayName),
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          color: colors.onPrimary,
-                          fontWeight: FontWeight.w600,
+                    child: Column(
+                      children: [
+                        DesignIcon(
+                          'trophy',
+                          size: 30,
+                          strokeWidth: 1.5,
+                          color: tokens.gold,
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        l10n.hifzUnitCompleteSubtitle,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colors.onPrimaryMuted,
+                        const SizedBox(height: 10),
+                        Text(
+                          l10n.hifzUnitCompleteTitle(widget.unit.displayName),
+                          style: redesignDisplayStyle(context, size: 22),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-
-              // STATS CARD
-              FadeTransition(
-                opacity: CurvedAnimation(
-                  parent: _controller,
-                  curve: const Interval(0.4, 1.0),
-                ),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: colors.surface,
-                    border: Border.all(color: colors.border, width: 1),
-                    borderRadius: BorderRadius.circular(AppRadii.large),
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        l10n.hifzCompleteSummaryTitle,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          color: colors.textPrimary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Divider(color: colors.divider, height: 1),
-                      const SizedBox(height: 12),
-
-                      // Row of 4 rating chips
-                      Row(
-                        children: [
-                          _StatChip(
-                            label: tryAgainLabel,
-                            count: widget.ratingCounts['again'] ?? 0,
-                            bgColor: colors.surfaceAlt,
-                            textColor: colors.textSecondary,
-                          ),
-                          const SizedBox(width: 8),
-                          _StatChip(
-                            label: gotItLabel,
-                            count: widget.ratingCounts['gotIt'] ?? 0,
-                            bgColor: colors.primary.withAlpha(31),
-                            textColor: colors.primary,
-                          ),
-                          const SizedBox(width: 8),
-                          _StatChip(
-                            label: failLabel,
-                            count: widget.ratingCounts['fail'] ?? 0,
-                            bgColor: colors.warningSurface,
-                            textColor: colors.warning,
-                          ),
-                          const SizedBox(width: 8),
-                          _StatChip(
-                            label: passLabel,
-                            count: widget.ratingCounts['pass'] ?? 0,
-                            bgColor: colors.mint,
-                            textColor: colors.primary,
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 16),
-                      Divider(color: colors.divider, height: 1),
-                      const SizedBox(height: 16),
-
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            l10n.hifzCompleteTotalReviewed,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: colors.textSecondary,
-                            ),
-                          ),
-                          Text(
-                            l10n.hifzCompleteTotalReviewedValue(
-                              widget.totalReviewed,
-                            ),
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: colors.textPrimary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (widget.newGraduated > 0) ...[
                         const SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              l10n.hifzCompleteGraduated,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: colors.textSecondary,
-                              ),
-                            ),
-                            Text(
-                              l10n.hifzCompleteGraduatedValue(
-                                widget.newGraduated,
-                              ),
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: colors.textPrimary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
+                        Text(
+                          l10n.hifzUnitCompleteSubtitle,
+                          style: TextStyle(
+                            fontSize: 14,
+                            height: 1.45,
+                            color: tokens.text2,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
                       ],
-
-                      const SizedBox(height: 8),
-
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            l10n.hifzCompleteRetentionRate,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: colors.textSecondary,
-                            ),
-                          ),
-                          Text(
-                            _retentionLabel(),
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: colors.textPrimary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 8),
-
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            l10n.hifzCompleteNextDue,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: colors.textSecondary,
-                            ),
-                          ),
-                          Text(
-                            _nextDueLabel(l10n),
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: colors.textPrimary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 32),
-
-              // MOTIVATIONAL HADITH SNIPPET
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  color: colors.goldSoft,
-                  borderRadius: BorderRadius.circular(AppRadii.large),
-                  border: Border.all(
-                    color: colors.accentGold.withAlpha(102), // 40%
-                    width: 1,
-                  ),
-                ),
-                child: Text(
-                  l10n.hifzCompleteHadith,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colors.warning,
-                    fontStyle: FontStyle.italic,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-
-              const SizedBox(height: 32),
-
-              // BUTTONS
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colors.primary,
-                    foregroundColor: colors.onPrimary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppRadii.pill),
                     ),
-                    minimumSize: const Size(double.infinity, 52),
+                  ),
+                ],
+
+                const SizedBox(height: 16),
+
+                // SUMMARY
+                fade(
+                  0.4,
+                  HairlineCard(
+                    padding: const EdgeInsets.all(18),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        RedesignEyebrow(l10n.hifzCompleteSummaryTitle),
+                        const SizedBox(height: 14),
+                        IntrinsicHeight(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              _StatTile(
+                                label: l10n.hifzRatingTryAgain,
+                                count: widget.ratingCounts['again'] ?? 0,
+                                bgColor: colors.surfaceAlt,
+                                textColor: tokens.text2,
+                              ),
+                              const SizedBox(width: 8),
+                              _StatTile(
+                                label: l10n.hifzRatingGotIt,
+                                count: widget.ratingCounts['gotIt'] ?? 0,
+                                bgColor: tokens.emWash,
+                                textColor: tokens.emText,
+                              ),
+                              const SizedBox(width: 8),
+                              // Fail and Pass are English-only in the
+                              // original screen; there is no key for them yet.
+                              _StatTile(
+                                label: 'Fail',
+                                count: widget.ratingCounts['fail'] ?? 0,
+                                bgColor: tokens.goldWash,
+                                textColor: tokens.goldText,
+                              ),
+                              const SizedBox(width: 8),
+                              _StatTile(
+                                label: 'Pass',
+                                count: widget.ratingCounts['pass'] ?? 0,
+                                bgColor: tokens.emWash,
+                                textColor: tokens.emText,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        _SummaryRow(
+                          label: l10n.hifzCompleteTotalReviewed,
+                          value: l10n.hifzCompleteTotalReviewedValue(
+                            widget.totalReviewed,
+                          ),
+                        ),
+                        if (widget.newGraduated > 0)
+                          _SummaryRow(
+                            label: l10n.hifzCompleteGraduated,
+                            value: l10n.hifzCompleteGraduatedValue(
+                              widget.newGraduated,
+                            ),
+                          ),
+                        _SummaryRow(
+                          label: l10n.hifzCompleteRetentionRate,
+                          value: _retentionLabel(),
+                        ),
+                        _SummaryRow(
+                          label: l10n.hifzCompleteNextDue,
+                          value: _nextDueLabel(l10n),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // MOTIVATIONAL HADITH SNIPPET
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 16,
+                  ),
+                  decoration: BoxDecoration(
+                    color: tokens.goldWash,
+                    borderRadius: BorderRadius.circular(EquranRadii.large),
+                  ),
+                  child: Text(
+                    l10n.hifzCompleteHadith,
+                    style: EquranTextStyles.displayTranslation(
+                      context,
+                      color: tokens.goldText,
+                    ).copyWith(fontFamilyFallback: const ['NotoNaskhArabic']),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                // BUTTONS
+                FilledButton(
+                  style: readerFilledButtonStyle(context).copyWith(
+                    minimumSize: const WidgetStatePropertyAll(Size(0, 52)),
                   ),
                   onPressed: () => Navigator.of(context).popUntil(
                     (route) => route.isFirst || route.settings.name == '/hifz',
                   ),
-                  child: Text(
-                    l10n.hifzCompleteBackButton,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      color: colors.onPrimary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  child: Text(l10n.hifzCompleteBackButton),
                 ),
-              ),
 
-              if (HifzDB.getDueEntries().isNotEmpty) ...[
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: colors.border),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(AppRadii.pill),
-                      ),
-                      minimumSize: const Size(double.infinity, 52),
+                if (dueCount > 0) ...[
+                  const SizedBox(height: 12),
+                  OutlinedButton(
+                    style: readerOutlinedButtonStyle(context).copyWith(
+                      minimumSize: const WidgetStatePropertyAll(Size(0, 52)),
                     ),
                     onPressed: () {
                       Navigator.of(context).pushReplacement(
@@ -418,20 +333,11 @@ class _HifzCompleteScreenState extends State<HifzCompleteScreen>
                         ),
                       );
                     },
-                    child: Text(
-                      l10n.hifzCompleteKeepReviewing(
-                        HifzDB.getDueEntries().length,
-                      ),
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        color: colors.textSecondary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    child: Text(l10n.hifzCompleteKeepReviewing(dueCount)),
                   ),
-                ),
+                ],
               ],
-              const SizedBox(height: 40),
-            ],
+            ),
           ),
         ),
       ),
@@ -439,45 +345,84 @@ class _HifzCompleteScreenState extends State<HifzCompleteScreen>
   }
 }
 
-class _StatChip extends StatelessWidget {
-  final String label;
-  final int count;
-  final Color bgColor;
-  final Color textColor;
-
-  const _StatChip({
+/// One rating count: a number over its label.
+class _StatTile extends StatelessWidget {
+  const _StatTile({
     required this.label,
     required this.count,
     required this.bgColor,
     required this.textColor,
   });
 
+  final String label;
+  final int count;
+  final Color bgColor;
+  final Color textColor;
+
+  @override
+  Widget build(BuildContext context) => Expanded(
+    child: Container(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(EquranRadii.large),
+        border: Border.all(color: context.equranTokens.hair),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          DisplayNumeral('$count', size: 26, color: textColor),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 12, height: 1.2, color: textColor),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+/// A label and its value on one hairline-separated row.
+class _SummaryRow extends StatelessWidget {
+  const _SummaryRow({required this.label, required this.value});
+  final String label;
+  final String value;
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: BorderRadius.circular(AppRadii.medium),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              '$count',
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: textColor,
-                fontWeight: FontWeight.w700,
+    final tokens = context.equranTokens;
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      decoration: BoxDecoration(
+        border: Border(top: BorderSide(color: tokens.hair)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 3,
+            child: Text(
+              label,
+              style: TextStyle(fontSize: 14, height: 1.3, color: tokens.text2),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            flex: 2,
+            child: Text(
+              value,
+              textAlign: TextAlign.end,
+              style: TextStyle(
+                fontSize: 14,
+                height: 1.3,
+                fontWeight: FontWeight.w600,
+                color: context.equranColors.textPrimary,
               ),
             ),
-            Text(
-              label,
-              style: theme.textTheme.labelSmall?.copyWith(color: textColor),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

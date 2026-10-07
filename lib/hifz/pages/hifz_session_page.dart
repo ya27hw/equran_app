@@ -17,13 +17,17 @@ import '../hifz_frontier_service.dart';
 
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_text_styles.dart';
-import 'package:equran/utils/app_radii.dart';
+import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/backend/settings_db.dart';
 import 'package:equran/backend/hifz_db.dart';
 import 'package:equran/backend/transliteration_service.dart';
 import 'package:equran/backend/quran_stream_url.dart';
 import 'package:equran/backend/audio_downloads.dart';
 import 'package:equran/l10n/app_localizations.dart';
+import 'package:equran/widgets/reader_sheet_chrome.dart';
+import 'package:equran/widgets/redesign/page_typography.dart';
+import 'package:equran/widgets/redesign/redesign_widgets.dart';
+import 'hifz_session_chrome.dart';
 
 enum _Phase { listen, recall, rating }
 
@@ -442,55 +446,19 @@ class _HifzSessionPageState extends State<HifzSessionPage>
     }
   }
 
-  void _confirmExit() {
-    final colors = context.equranColors;
-    final theme = Theme.of(context);
-
-    showDialog<void>(
+  Future<void> _confirmExit() async {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
+    final bool? exit = await showReaderDialog<bool>(
       context: context,
-      builder: (BuildContext dialogContext) {
-        final dialogL10n = AppLocalizations.of(dialogContext)!;
-        return AlertDialog(
-          backgroundColor: colors.surface,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadii.medium),
-          ),
-          title: Text(
-            dialogL10n.hifzExitSessionTitle,
-            style: theme.textTheme.titleLarge?.copyWith(
-              color: colors.textPrimary,
-            ),
-          ),
-          content: Text(
-            dialogL10n.hifzExitSessionBody(_currentIndex, _queue.length),
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colors.textSecondary,
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text(
-                dialogL10n.hifzExitCancel,
-                style: TextStyle(color: colors.textMuted),
-              ),
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-            ),
-            TextButton(
-              child: Text(
-                dialogL10n.hifzExitConfirm,
-                style: TextStyle(color: colors.warning),
-              ),
-              onPressed: () {
-                Navigator.of(dialogContext).pop(); // dismiss dialog
-                Navigator.of(context).pop(); // exit session page
-              },
-            ),
-          ],
-        );
-      },
+      builder: (BuildContext dialogContext) => ReaderConfirmDialog(
+        title: l10n.hifzExitSessionTitle,
+        body: l10n.hifzExitSessionBody(_currentIndex, _queue.length),
+        cancelLabel: l10n.hifzExitCancel,
+        confirmLabel: l10n.hifzExitConfirm,
+        destructive: true,
+      ),
     );
+    if (exit == true && mounted) Navigator.of(context).pop();
   }
 
   Future<void> _playAudio() async {
@@ -546,50 +514,52 @@ class _HifzSessionPageState extends State<HifzSessionPage>
   @override
   Widget build(BuildContext context) {
     final colors = context.equranColors;
-    final theme = Theme.of(context);
+    final tokens = context.equranTokens;
     final l10n = AppLocalizations.of(context)!;
 
     if (_queue.isEmpty) {
-      return Scaffold(
-        backgroundColor: colors.background,
-        body: SafeArea(
-          child: Center(
+      return RedesignSubpage(
+        title: _unit.displayName,
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.check_circle_outline,
-                  color: colors.primary,
-                  size: 72,
+                Container(
+                  width: 88,
+                  height: 88,
+                  decoration: BoxDecoration(
+                    color: tokens.emWash,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: tokens.hair2),
+                  ),
+                  child: DesignIcon(
+                    'check',
+                    size: 40,
+                    strokeWidth: 1.8,
+                    color: tokens.emText,
+                  ),
                 ),
                 const SizedBox(height: 24),
                 Text(
                   l10n.hifzEmptySessionTitle,
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    color: colors.textPrimary,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: redesignDisplayStyle(context, size: 30),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 12),
                 Text(
                   l10n.hifzEmptySessionBody(_unit.displayName),
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colors.textSecondary,
+                  style: TextStyle(
+                    fontSize: 15,
+                    height: 1.45,
+                    color: tokens.text2,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 32),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colors.primary,
-                    foregroundColor: colors.onPrimary,
-                    shape: const StadiumBorder(),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 32,
-                      vertical: 16,
-                    ),
-                  ),
+                const SizedBox(height: 28),
+                FilledButton(
+                  style: readerFilledButtonStyle(context),
                   onPressed: () => Navigator.of(context).pop(),
                   child: Text(l10n.hifzEmptySessionButton),
                 ),
@@ -602,129 +572,92 @@ class _HifzSessionPageState extends State<HifzSessionPage>
 
     final currentCard = _queue[_currentIndex];
 
-    return Scaffold(
-      backgroundColor: colors.background,
-      appBar: AppBar(
-        backgroundColor: colors.background,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.close, color: colors.textSecondary),
-          onPressed: _confirmExit,
-        ),
-        title: Text(
-          _unit.displayName,
-          style: theme.textTheme.titleMedium?.copyWith(
-            color: colors.textPrimary,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: true,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _TrackLabel(track: currentCard.track),
-                const SizedBox(width: 8),
-                Text(
-                  '${_currentIndex + 1}/${_queue.length}',
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: colors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(3),
-          child: SizedBox(
-            height: 3,
-            child: LinearProgressIndicator(
-              value: (_currentIndex + 1) / _queue.length,
-              backgroundColor: colors.surfaceAlt,
-              valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
-              minHeight: 3,
-            ),
-          ),
-        ),
-      ),
-      body: Column(
+    return HifzSessionFrame(
+      child: Column(
         children: [
+          HifzSessionTopBar(
+            title: _unit.displayName,
+            closeTooltip: l10n.close,
+            onClose: _confirmExit,
+            trackLabel: switch (currentCard.track) {
+              _Track.newAyah => l10n.hifzTrackNewLabel,
+              _Track.sabqi => l10n.hifzTrackRevisionLabel,
+              _Track.manzil => l10n.hifzTrackMaintenanceLabel,
+            },
+            trackTone: switch (currentCard.track) {
+              _Track.newAyah => HifzTrackTone.fresh,
+              _Track.sabqi => HifzTrackTone.revision,
+              _Track.manzil => HifzTrackTone.maintenance,
+            },
+            position: '${_currentIndex + 1}/${_queue.length}',
+            progress: (_currentIndex + 1) / _queue.length,
+          ),
           Expanded(
             child: SlideTransition(
               position: _cardSlideAnimation,
               child: FadeTransition(
                 opacity: _fadeAnimation,
-                child: _buildCardContent(colors, theme, currentCard),
+                child: _buildCardContent(colors, currentCard),
               ),
             ),
           ),
-          _buildBottomActionArea(colors, theme),
+          _buildBottomActionArea(),
         ],
       ),
     );
   }
 
-  Widget _buildCardContent(
-    EquranColors colors,
-    ThemeData theme,
-    _SessionCard card,
-  ) {
+  Widget _buildCardContent(EquranColors colors, _SessionCard card) {
     final l10n = AppLocalizations.of(context)!;
+    final tokens = context.equranTokens;
     final entry = card.entry;
+    final reduceMotion = MediaQuery.disableAnimationsOf(context);
+    final switchDuration = reduceMotion
+        ? Duration.zero
+        : const Duration(milliseconds: 200);
+
+    final String langCode = Localizations.localeOf(context).languageCode;
+    final bool useArabicScript =
+        langCode == 'ar' || langCode == 'fa' || langCode == 'ur';
+    final String heading = l10n.hifzStatsNextDueValue(
+      useArabicScript
+          ? quran.getSurahNameArabic(entry.surah)
+          : HifzSurahData.name(entry.surah),
+      entry.ayah,
+    );
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            (() {
-              final String langCode = Localizations.localeOf(
-                context,
-              ).languageCode;
-              final bool useArabicScript =
-                  langCode == 'ar' || langCode == 'fa' || langCode == 'ur';
-              return l10n.hifzStatsNextDueValue(
-                useArabicScript
-                    ? quran.getSurahNameArabic(entry.surah)
-                    : HifzSurahData.name(entry.surah),
-                entry.ayah,
-              );
-            })(),
-            style: theme.textTheme.labelMedium?.copyWith(
-              color: colors.textSecondary,
-            ),
-            textAlign: TextAlign.center,
+          HifzAyahPanel(
+            heading: heading,
+            child: _loadingAyah
+                ? SizedBox(
+                    height: 120,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: tokens.emText,
+                        strokeWidth: 2,
+                      ),
+                    ),
+                  )
+                : (_phase == _Phase.listen
+                      ? _buildListenText(colors)
+                      : _buildRecallText(colors)),
           ),
-          const SizedBox(height: 24),
-          if (_loadingAyah)
-            SizedBox(
-              height: 120,
-              child: Center(
-                child: CircularProgressIndicator(
-                  color: colors.primary,
-                  strokeWidth: 2,
-                ),
-              ),
-            )
-          else ...[
-            if (_phase == _Phase.listen)
-              _buildListenText(colors)
-            else
-              _buildRecallText(colors),
-            const SizedBox(height: 24),
+          if (!_loadingAyah) ...[
+            const SizedBox(height: 20),
             Center(
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if (card.track == _Track.newAyah) ...[
-                    _ToggleButton(
+                    HifzToggleButton(
                       icon: Icons.translate,
+                      tooltip: l10n.hifzToggleTransliteration,
                       active: _showTransliteration,
                       onTap: () {
                         setState(() {
@@ -732,9 +665,10 @@ class _HifzSessionPageState extends State<HifzSessionPage>
                         });
                       },
                     ),
-                    const SizedBox(width: 16),
-                    _ToggleButton(
+                    const SizedBox(width: 14),
+                    HifzToggleButton(
                       icon: Icons.language,
+                      tooltip: l10n.translation,
                       active: _showTranslation,
                       onTap: () {
                         setState(() {
@@ -742,13 +676,14 @@ class _HifzSessionPageState extends State<HifzSessionPage>
                         });
                       },
                     ),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: 14),
                   ],
                   _audioEnabled
-                      ? _ToggleButton(
+                      ? HifzToggleButton(
                           icon: _audioPlaying
                               ? Icons.stop_circle_outlined
                               : Icons.volume_up_outlined,
+                          tooltip: l10n.audio,
                           active: _audioPlaying,
                           onTap: _playAudio,
                         )
@@ -757,8 +692,9 @@ class _HifzSessionPageState extends State<HifzSessionPage>
                           triggerMode: TooltipTriggerMode.tap,
                           child: Opacity(
                             opacity: 0.35,
-                            child: _ToggleButton(
+                            child: HifzToggleButton(
                               icon: Icons.volume_up_outlined,
+                              tooltip: l10n.hifzAudioDisabledTooltip,
                               active: false,
                               onTap: () {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -778,15 +714,17 @@ class _HifzSessionPageState extends State<HifzSessionPage>
             ),
             const SizedBox(height: 16),
             AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
+              duration: switchDuration,
               child: _showTransliteration
                   ? Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: Text(
                         _currentTransliteration,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colors.textSecondary,
+                        style: TextStyle(
+                          fontSize: 14,
+                          height: 1.5,
                           fontStyle: FontStyle.italic,
+                          color: tokens.text2,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -795,24 +733,9 @@ class _HifzSessionPageState extends State<HifzSessionPage>
             ),
             const SizedBox(height: 8),
             AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
+              duration: switchDuration,
               child: _showTranslation
-                  ? Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 16),
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: colors.surfaceAlt,
-                        border: Border.all(color: colors.border),
-                        borderRadius: BorderRadius.circular(AppRadii.medium),
-                      ),
-                      child: Text(
-                        _currentTranslation,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colors.textSecondary,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    )
+                  ? HifzTranslationPanel(text: _currentTranslation)
                   : const SizedBox.shrink(),
             ),
           ],
@@ -824,7 +747,7 @@ class _HifzSessionPageState extends State<HifzSessionPage>
   Widget _buildListenText(EquranColors colors) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 16),
       child: Text(
         _arabicText,
         style: TextStyle(
@@ -842,17 +765,12 @@ class _HifzSessionPageState extends State<HifzSessionPage>
 
   Widget _buildRecallText(EquranColors colors) {
     final l10n = AppLocalizations.of(context)!;
+    final tokens = context.equranTokens;
     return Column(
       children: [
         if (_prevAyahEnd.isNotEmpty) ...[
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: colors.surfaceAlt,
-              borderRadius: BorderRadius.circular(AppRadii.medium),
-              border: Border.all(color: colors.border, width: 1),
-            ),
+          const SizedBox(height: 8),
+          HifzCuePanel(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -862,7 +780,7 @@ class _HifzSessionPageState extends State<HifzSessionPage>
                     fontFamily: EquranTextStyles.activeFontFamily,
                     fontFamilyFallback: const <String>['UthmanicHafs'],
                     fontSize: 18,
-                    color: colors.textMuted,
+                    color: tokens.muted,
                     height: 2.0,
                   ),
                   textAlign: TextAlign.right,
@@ -874,7 +792,7 @@ class _HifzSessionPageState extends State<HifzSessionPage>
                     fontFamily: EquranTextStyles.activeFontFamily,
                     fontFamilyFallback: const <String>['UthmanicHafs'],
                     fontSize: 22,
-                    color: colors.textSecondary,
+                    color: tokens.text2,
                     height: 2.0,
                   ),
                   textAlign: TextAlign.right,
@@ -883,8 +801,9 @@ class _HifzSessionPageState extends State<HifzSessionPage>
               ],
             ),
           ),
-          const SizedBox(height: 24),
-        ],
+          const SizedBox(height: 16),
+        ] else
+          const SizedBox(height: 12),
         Directionality(
           textDirection: TextDirection.rtl,
           child: Wrap(
@@ -904,8 +823,8 @@ class _HifzSessionPageState extends State<HifzSessionPage>
               }
 
               // Blanked word — tap to reveal
-              return _BlankWord(
-                word: word,
+              return HifzBlankWord(
+                width: (word.length * 14.0).clamp(32.0, 120.0),
                 onReveal: () {
                   setState(() {
                     _blankedIndices.remove(i);
@@ -920,70 +839,40 @@ class _HifzSessionPageState extends State<HifzSessionPage>
             }).toList(),
           ),
         ),
+        const SizedBox(height: 8),
       ],
     );
   }
 
-  Widget _buildBottomActionArea(EquranColors colors, ThemeData theme) {
+  Widget _buildBottomActionArea() {
     Widget child;
     final l10n = AppLocalizations.of(context)!;
     final currentCard = _queue[_currentIndex];
 
     if (_phase == _Phase.listen) {
-      child = SizedBox(
-        width: double.infinity,
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: colors.primary,
-            foregroundColor: colors.onPrimary,
-            shape: const StadiumBorder(),
-            minimumSize: const Size(double.infinity, 52),
-          ),
-          onPressed: () {
-            setState(() {
-              _phase = _Phase.recall;
-              _audioEnabled = false;
-            });
-            if (_audioPlaying) {
-              _audioPlayer?.stop();
-            }
-          },
-          child: Text(
-            l10n.hifzImReady,
-            style: theme.textTheme.titleSmall?.copyWith(
-              color: colors.onPrimary,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
+      child = HifzPrimaryButton(
+        label: l10n.hifzImReady,
+        onPressed: () {
+          setState(() {
+            _phase = _Phase.recall;
+            _audioEnabled = false;
+          });
+          if (_audioPlaying) {
+            _audioPlayer?.stop();
+          }
+        },
       );
     } else if (_phase == _Phase.recall) {
-      child = SizedBox(
-        width: double.infinity,
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: colors.surfaceAlt,
-            foregroundColor: colors.textPrimary,
-            shape: const StadiumBorder(),
-            minimumSize: const Size(double.infinity, 52),
-            side: BorderSide(color: colors.border),
-          ),
-          onPressed: () {
-            setState(() {
-              _allRevealed = true;
-              _blankedIndices.clear();
-              _phase = _Phase.rating;
-              _audioEnabled = false;
-            });
-          },
-          child: Text(
-            l10n.hifzRevealAll,
-            style: theme.textTheme.titleSmall?.copyWith(
-              color: colors.textPrimary,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
+      child = HifzSecondaryButton(
+        label: l10n.hifzRevealAll,
+        onPressed: () {
+          setState(() {
+            _allRevealed = true;
+            _blankedIndices.clear();
+            _phase = _Phase.rating;
+            _audioEnabled = false;
+          });
+        },
       );
     } else {
       // _Phase.rating
@@ -991,49 +880,15 @@ class _HifzSessionPageState extends State<HifzSessionPage>
         // Show only two buttons (wider)
         child = Row(
           children: [
-            Expanded(
-              child: GestureDetector(
-                onTap: () => _submitRating('again'),
-                child: Container(
-                  height: 52,
-                  decoration: BoxDecoration(
-                    color: colors.surfaceAlt,
-                    border: Border.all(color: colors.border, width: 1),
-                    borderRadius: BorderRadius.circular(AppRadii.large),
-                  ),
-                  child: Center(
-                    child: Text(
-                      l10n.hifzRatingTryAgain,
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: colors.textSecondary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+            HifzRatingButton(
+              label: l10n.hifzRatingTryAgain,
+              onTap: () => _submitRating('again'),
             ),
             const SizedBox(width: 12),
-            Expanded(
-              child: GestureDetector(
-                onTap: () => _submitRating('gotIt'),
-                child: Container(
-                  height: 52,
-                  decoration: BoxDecoration(
-                    color: colors.primary,
-                    borderRadius: BorderRadius.circular(AppRadii.large),
-                  ),
-                  child: Center(
-                    child: Text(
-                      l10n.hifzRatingGotIt,
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: colors.onPrimary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+            HifzRatingButton(
+              label: l10n.hifzRatingGotIt,
+              emphasis: true,
+              onTap: () => _submitRating('gotIt'),
             ),
           ],
         );
@@ -1043,69 +898,32 @@ class _HifzSessionPageState extends State<HifzSessionPage>
       }
     }
 
-    return Container(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        border: Border(top: BorderSide(color: colors.divider, width: 1)),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: SafeArea(top: false, child: child),
-    );
+    return HifzActionBar(child: child);
   }
 
   Widget _buildRatingButtons() {
-    final colors = context.equranColors;
-    final failLabel = 'Fail';
-    final passLabel = 'Pass';
+    const failLabel = 'Fail';
+    const passLabel = 'Pass';
 
     return Row(
       children: [
-        _RatingButton(
+        HifzRatingButton(
           label: failLabel,
-          interval: _projectedIntervals['fail'] ?? 1,
-          bgColor: colors.surfaceAlt,
-          borderColor: colors.border,
-          labelColor: colors.textSecondary,
-          intervalColor: colors.textMuted,
+          interval: HifzScheduler.formatInterval(
+            _projectedIntervals['fail'] ?? 1,
+          ),
           onTap: () => _submitRating('fail'),
         ),
-        const SizedBox(width: 8),
-        _RatingButton(
+        const SizedBox(width: 12),
+        HifzRatingButton(
           label: passLabel,
-          interval: _projectedIntervals['pass'] ?? 4,
-          bgColor: colors.primary.withAlpha(38), // 15%
-          borderColor: colors.primary.withAlpha(76), // 30%
-          labelColor: colors.primary,
-          intervalColor: colors.primarySoft,
+          emphasis: true,
+          interval: HifzScheduler.formatInterval(
+            _projectedIntervals['pass'] ?? 4,
+          ),
           onTap: () => _submitRating('pass'),
         ),
       ],
-    );
-  }
-}
-
-class _BlankWord extends StatelessWidget {
-  final String word;
-  final VoidCallback onReveal;
-
-  const _BlankWord({required this.word, required this.onReveal});
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.equranColors;
-    final wordWidth = (word.length * 14.0).clamp(32.0, 120.0);
-
-    return GestureDetector(
-      onTap: onReveal,
-      child: Container(
-        width: wordWidth,
-        height: 38,
-        decoration: BoxDecoration(
-          color: colors.surfaceAlt,
-          border: Border.all(color: colors.border, width: 1),
-          borderRadius: BorderRadius.circular(AppRadii.pill),
-        ),
-      ),
     );
   }
 }
@@ -1167,14 +985,17 @@ class _RevealedWordState extends State<_RevealedWord> {
   @override
   Widget build(BuildContext context) {
     final colors = context.equranColors;
+    final accent = context.equranTokens.emText;
     final targetColor = (widget.isJustRevealed && _highlighted)
-        ? colors.primary
+        ? accent
         : colors.textPrimary;
 
     return TweenAnimationBuilder<Color?>(
-      duration: const Duration(milliseconds: 500),
+      duration: MediaQuery.disableAnimationsOf(context)
+          ? Duration.zero
+          : const Duration(milliseconds: 500),
       tween: ColorTween(
-        begin: widget.isJustRevealed ? colors.primary : colors.textPrimary,
+        begin: widget.isJustRevealed ? accent : colors.textPrimary,
         end: targetColor,
       ),
       builder: (context, color, child) {
@@ -1189,154 +1010,6 @@ class _RevealedWordState extends State<_RevealedWord> {
           ),
         );
       },
-    );
-  }
-}
-
-class _ToggleButton extends StatelessWidget {
-  final IconData icon;
-  final bool active;
-  final VoidCallback onTap;
-
-  const _ToggleButton({
-    required this.icon,
-    required this.active,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.equranColors;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: active
-              ? colors.primary.withValues(alpha: 0.15)
-              : colors.surfaceAlt,
-          border: Border.all(
-            color: active
-                ? colors.primary.withValues(alpha: 0.3)
-                : colors.border,
-          ),
-          borderRadius: BorderRadius.circular(AppRadii.pill),
-        ),
-        child: Icon(
-          icon,
-          size: 20,
-          color: active ? colors.primary : colors.textMuted,
-        ),
-      ),
-    );
-  }
-}
-
-class _RatingButton extends StatelessWidget {
-  final String label;
-  final int interval;
-  final Color bgColor;
-  final Color borderColor;
-  final Color labelColor;
-  final Color intervalColor;
-  final VoidCallback onTap;
-
-  const _RatingButton({
-    required this.label,
-    required this.interval,
-    required this.bgColor,
-    required this.borderColor,
-    required this.labelColor,
-    required this.intervalColor,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          height: 56,
-          decoration: BoxDecoration(
-            color: bgColor,
-            border: Border.all(color: borderColor, width: 1),
-            borderRadius: BorderRadius.circular(AppRadii.large),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                label,
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: labelColor,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                HifzScheduler.formatInterval(interval),
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: intervalColor,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _TrackLabel extends StatelessWidget {
-  final _Track track;
-  const _TrackLabel({required this.track});
-
-  Color _trackColor(BuildContext context, _Track t) {
-    final colors = context.equranColors;
-    switch (t) {
-      case _Track.newAyah:
-        return colors.primary;
-      case _Track.sabqi:
-        return colors.accentGold;
-      case _Track.manzil:
-        return colors.textSecondary;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final color = _trackColor(context, track);
-    final theme = Theme.of(context);
-    String trackName;
-    switch (track) {
-      case _Track.newAyah:
-        trackName = l10n.hifzTrackNewLabel;
-        break;
-      case _Track.sabqi:
-        trackName = l10n.hifzTrackRevisionLabel;
-        break;
-      case _Track.manzil:
-        trackName = l10n.hifzTrackMaintenanceLabel;
-        break;
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(AppRadii.pill),
-      ),
-      child: Text(
-        trackName,
-        style: theme.textTheme.labelSmall?.copyWith(
-          color: color,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
     );
   }
 }
