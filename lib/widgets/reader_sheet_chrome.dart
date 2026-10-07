@@ -251,6 +251,8 @@ class ReaderOptionRow extends StatelessWidget {
     this.value,
     this.showChevron = true,
     this.selected = false,
+    this.trailing,
+    this.subtitleMaxLines = 2,
   });
 
   final Widget leading;
@@ -259,6 +261,10 @@ class ReaderOptionRow extends StatelessWidget {
   final String? value;
   final VoidCallback? onTap;
   final bool showChevron;
+
+  /// Replaces the check and the chevron, e.g. a download button.
+  final Widget? trailing;
+  final int subtitleMaxLines;
 
   /// Marks the current choice with a check.
   final bool selected;
@@ -296,7 +302,7 @@ class ReaderOptionRow extends StatelessWidget {
                       const SizedBox(height: 3),
                       Text(
                         subtitle!,
-                        maxLines: 2,
+                        maxLines: subtitleMaxLines,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 12.5,
@@ -320,7 +326,10 @@ class ReaderOptionRow extends StatelessWidget {
                   ),
                 ),
               ],
-              if (selected) ...<Widget>[
+              if (trailing != null) ...<Widget>[
+                const SizedBox(width: 6),
+                trailing!,
+              ] else if (selected) ...<Widget>[
                 const SizedBox(width: 8),
                 DesignIcon(
                   'check',

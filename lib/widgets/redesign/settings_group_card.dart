@@ -63,8 +63,10 @@ class SettingsGroupCard extends StatelessWidget {
                 style: TextStyle(fontSize: 13, color: tokens.muted),
               ),
               children: <Widget>[
-                Divider(height: 1, thickness: 1, color: tokens.hair),
-                ...children,
+                for (final Widget child in children) ...<Widget>[
+                  Divider(height: 1, thickness: 1, color: tokens.hair),
+                  child,
+                ],
               ],
             ),
           ),
