@@ -24,6 +24,7 @@ import 'package:equran/widgets/common/tab_entrance.dart';
 import 'package:equran/widgets/redesign/floating_dock.dart';
 import 'package:equran/zakat/zakat_page.dart';
 import 'package:equran/prayer/islamic_calendar_page.dart';
+import 'package:equran/widgets/redesign/nav_item_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:equran/l10n/app_localizations.dart';
@@ -383,23 +384,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  String _dockIcon(NavItem item) => switch (item) {
-    NavItem.home => 'home',
-    NavItem.quran => 'quran',
-    NavItem.prayer => 'clock',
-    NavItem.duas => 'arch',
-    NavItem.more => 'grid',
-    NavItem.statistics => 'trophy',
-    NavItem.qibla => 'compass',
-    NavItem.downloads => 'folder',
-    NavItem.readingPlans => 'calendar',
-    NavItem.hifz => 'book',
-    NavItem.tasbih => 'dotsgrid',
-    NavItem.asmaUlHusna => 'sparkle',
-    NavItem.settings => 'sliders',
-    NavItem.zakat => 'grid',
-    NavItem.calendar => 'calendar',
-  };
+  String _dockIcon(NavItem item) => navItemDesignIcon(item);
 
   void _handleGlobalPointerDown() {
     FrameRatePolicyManager.instance.setPointerActive(

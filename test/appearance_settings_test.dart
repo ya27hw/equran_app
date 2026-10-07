@@ -96,8 +96,11 @@ void main() {
       expect(colors(tester).background, Colors.black);
       expect(
         tester
-            .widget<SwitchListTile>(
-              find.byKey(const Key('pure-black-background-toggle')),
+            .widget<Switch>(
+              find.descendant(
+                of: find.byKey(const Key('pure-black-background-toggle')),
+                matching: find.byType(Switch),
+              ),
             )
             .value,
         isTrue,
