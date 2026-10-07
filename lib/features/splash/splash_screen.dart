@@ -5,8 +5,8 @@ import 'package:equran/home/library.dart' show HomePage;
 import 'package:equran/backend/startup_coordinator.dart';
 import 'package:equran/services/device_capability_service.dart';
 import 'package:equran/theme/equran_colors.dart';
+import 'package:equran/theme/equran_tokens.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -161,11 +161,12 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     final EquranColors colors = context.equranColors;
+    final EquranTokens tokens = context.equranTokens;
     final Size size = MediaQuery.of(context).size;
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     // Premium Islamic theme colors
-    final Color goldAccent = colors.accentGold;
+    final Color goldAccent = tokens.gold;
     final Color deepTeal = colors.primaryGradientStart;
     final Color darkBackground = colors.background;
 
@@ -292,7 +293,7 @@ class _SplashScreenState extends State<SplashScreen>
                               FontVariation('wght', 500),
                             ],
                             letterSpacing: 1,
-                            color: isDark ? Colors.white : colors.textPrimary,
+                            color: colors.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -316,11 +317,12 @@ class _SplashScreenState extends State<SplashScreen>
                         // Subtitle
                         Text(
                           "The Holy Quran & Prayer Companion",
-                          style: GoogleFonts.inter(
+                          style: TextStyle(
+                            fontFamily: 'Inter',
                             fontSize: 13,
                             fontWeight: FontWeight.w400,
                             letterSpacing: 0.8,
-                            color: colors.textSecondary.withValues(alpha: 0.85),
+                            color: tokens.text2,
                           ),
                         ),
                       ],
