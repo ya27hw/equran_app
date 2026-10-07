@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:equran/backend/daily_tools_config.dart';
 import 'package:equran/backend/library.dart';
 import 'package:equran/debug/saved_preview_main.dart' show savedPreviewTheme;

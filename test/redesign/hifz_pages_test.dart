@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:equran/backend/library.dart';
 import 'package:equran/debug/saved_preview_main.dart' show savedPreviewTheme;
 import 'package:equran/hifz/hifz.dart';

@@ -46,6 +46,7 @@ import 'package:equran/widgets/library.dart'
 import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/home_dashboard/daily_tools_edit_sheet.dart';
+import 'package:equran/word_by_word/word_by_word_download_card.dart';
 import 'package:equran/main.dart' show MyApp;
 import 'package:quran/quran.dart' show Translation, isTranslationLoaded;
 
@@ -479,14 +480,9 @@ class _SettingsPageState extends State<SettingsPage> {
                         manifest
                             .resourcesOfType(ResourceType.wordByWord)
                             .isNotEmpty)
-                      _buildResourceSubsection(
+                      _buildWordByWordCard(
                         context: context,
                         manifest: manifest,
-                        title: localizations.wordByWord,
-                        description: localizations.wordByWordDescription,
-                        resources: manifest.resourcesOfType(
-                          ResourceType.wordByWord,
-                        ),
                         downloads: downloads,
                       ),
                     ListTile(
@@ -502,6 +498,46 @@ class _SettingsPageState extends State<SettingsPage> {
           },
         );
       },
+    );
+  }
+
+  /// The optional word-by-word pack: same install state, download and delete
+  /// calls as every other resource, drawn by [WordByWordDownloadCard].
+  Widget _buildWordByWordCard({
+    required BuildContext context,
+    required ResourceManifest manifest,
+    required Map<String, ResourceDownloadProgress> downloads,
+  }) {
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
+    final ResourceInstallStore store = ResourceInstallStore.instance;
+    return WordByWordDownloadCard(
+      title: localizations.wordByWord,
+      description: localizations.wordByWordDescription,
+      downloadTooltip: localizations.download,
+      updateTooltip: localizations.update,
+      deleteTooltip: localizations.delete,
+      rows: <WordByWordPackRow>[
+        for (final DownloadableResource resource in manifest.resourcesOfType(
+          ResourceType.wordByWord,
+        ))
+          () {
+            final ResourceDownloadProgress? progress = downloads[resource.id];
+            final ResourceInstallState state =
+                progress != null &&
+                    progress.phase != ResourceDownloadPhase.complete &&
+                    progress.phase != ResourceDownloadPhase.failed
+                ? ResourceInstallState.downloading
+                : store.installStateFor(resource);
+            return WordByWordPackRow(
+              name: resource.name,
+              details: _resourceSubtitle(resource),
+              state: state,
+              progress: progress?.fraction,
+              onDownload: () => _downloadResource(resource),
+              onDelete: () => _confirmDeleteResource(resource),
+            );
+          }(),
+      ],
     );
   }
 
