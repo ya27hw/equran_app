@@ -236,6 +236,18 @@ void main() {
     expect(find.text(l.hifzImReady), findsOneWidget);
   });
 
+  testWidgets('tapping the disabled audio button shows its message here', (
+    tester,
+  ) async {
+    final u = await seed('revise');
+    await pumpApp(tester, HifzSessionPage(unit: u));
+    final l = l10n(tester);
+    await tester.tap(find.byIcon(Icons.volume_up_outlined));
+    await tester.pump();
+    expect(find.text(l.hifzAudioDisabledTooltip), findsWidgets);
+    expect(find.byType(SnackBar), findsOneWidget);
+  });
+
   final variants = <(String, EquranColors, double, Locale)>[
     ('emerald-dark', EquranColors.dark, 1.0, const Locale('en')),
     ('emerald-light', EquranColors.light, 1.0, const Locale('en')),

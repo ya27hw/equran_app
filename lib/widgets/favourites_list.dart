@@ -1550,35 +1550,46 @@ class _RemovableTag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tokens = context.equranTokens;
-    return Tooltip(
-      message: tooltip,
-      child: InkWell(
-        onTap: onRemove,
+    return Container(
+      constraints: const BoxConstraints(minHeight: 28),
+      padding: const EdgeInsetsDirectional.only(start: 11),
+      decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(EquranRadii.pill),
-        child: Container(
-          constraints: const BoxConstraints(minHeight: 28),
-          padding: const EdgeInsetsDirectional.symmetric(horizontal: 11),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(EquranRadii.pill),
-            border: Border.all(color: tokens.hair),
+        border: Border.all(color: tokens.hair),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            textDirection: scriptDirectionIn(context, label),
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: tokens.text2,
+            ),
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                label,
-                textDirection: scriptDirectionIn(context, label),
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: tokens.text2,
+          // Only the x removes the tag, as with the old chip's delete icon.
+          Tooltip(
+            message: tooltip,
+            child: InkWell(
+              onTap: onRemove,
+              borderRadius: BorderRadius.circular(EquranRadii.pill),
+              child: SizedBox(
+                width: 34,
+                height: 28,
+                child: Center(
+                  child: DesignIcon(
+                    'x',
+                    size: 12,
+                    strokeWidth: 2,
+                    color: tokens.text2,
+                  ),
                 ),
               ),
-              const SizedBox(width: 6),
-              DesignIcon('x', size: 12, strokeWidth: 2, color: tokens.text2),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

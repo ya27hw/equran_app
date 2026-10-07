@@ -572,37 +572,42 @@ class _HifzSessionPageState extends State<HifzSessionPage>
 
     final currentCard = _queue[_currentIndex];
 
-    return HifzSessionFrame(
-      child: Column(
-        children: [
-          HifzSessionTopBar(
-            title: _unit.displayName,
-            closeTooltip: l10n.close,
-            onClose: _confirmExit,
-            trackLabel: switch (currentCard.track) {
-              _Track.newAyah => l10n.hifzTrackNewLabel,
-              _Track.sabqi => l10n.hifzTrackRevisionLabel,
-              _Track.manzil => l10n.hifzTrackMaintenanceLabel,
-            },
-            trackTone: switch (currentCard.track) {
-              _Track.newAyah => HifzTrackTone.fresh,
-              _Track.sabqi => HifzTrackTone.revision,
-              _Track.manzil => HifzTrackTone.maintenance,
-            },
-            position: '${_currentIndex + 1}/${_queue.length}',
-            progress: (_currentIndex + 1) / _queue.length,
-          ),
-          Expanded(
-            child: SlideTransition(
-              position: _cardSlideAnimation,
-              child: FadeTransition(
-                opacity: _fadeAnimation,
-                child: _buildCardContent(colors, currentCard),
+    // A Scaffold keeps the "audio failed" and "audio disabled" snack bars on
+    // this page instead of the Hifz home page underneath.
+    return Scaffold(
+      backgroundColor: colors.background,
+      body: HifzSessionFrame(
+        child: Column(
+          children: [
+            HifzSessionTopBar(
+              title: _unit.displayName,
+              closeTooltip: l10n.close,
+              onClose: _confirmExit,
+              trackLabel: switch (currentCard.track) {
+                _Track.newAyah => l10n.hifzTrackNewLabel,
+                _Track.sabqi => l10n.hifzTrackRevisionLabel,
+                _Track.manzil => l10n.hifzTrackMaintenanceLabel,
+              },
+              trackTone: switch (currentCard.track) {
+                _Track.newAyah => HifzTrackTone.fresh,
+                _Track.sabqi => HifzTrackTone.revision,
+                _Track.manzil => HifzTrackTone.maintenance,
+              },
+              position: '${_currentIndex + 1}/${_queue.length}',
+              progress: (_currentIndex + 1) / _queue.length,
+            ),
+            Expanded(
+              child: SlideTransition(
+                position: _cardSlideAnimation,
+                child: FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: _buildCardContent(colors, currentCard),
+                ),
               ),
             ),
-          ),
-          _buildBottomActionArea(),
-        ],
+            _buildBottomActionArea(),
+          ],
+        ),
       ),
     );
   }
