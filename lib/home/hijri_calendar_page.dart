@@ -1,7 +1,12 @@
-import 'package:equran/widgets/redesign/redesign_widgets.dart'
-    show IconButton44, RedesignSubpage;
-import 'package:flutter/material.dart';
 import 'package:equran/theme/equran_colors.dart';
+import 'package:equran/theme/equran_tokens.dart';
+import 'package:equran/widgets/redesign/design_icon.dart';
+import 'package:equran/widgets/redesign/hairline_card.dart';
+import 'package:equran/widgets/redesign/hero_panel.dart';
+import 'package:equran/widgets/redesign/icon_button44.dart';
+import 'package:equran/widgets/redesign/page_typography.dart';
+import 'package:equran/widgets/redesign/redesign_subpage.dart';
+import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 
@@ -186,7 +191,10 @@ class HijriCalendar {
 }
 
 class HijriCalendarPage extends StatefulWidget {
-  const HijriCalendarPage({super.key});
+  const HijriCalendarPage({super.key, this.now});
+
+  /// The clock for today; tests pass a fixed one.
+  final DateTime Function()? now;
 
   @override
   State<HijriCalendarPage> createState() => _HijriCalendarPageState();
@@ -201,7 +209,7 @@ class _HijriCalendarPageState extends State<HijriCalendarPage> {
   @override
   void initState() {
     super.initState();
-    _today = DateTime.now();
+    _today = widget.now?.call() ?? DateTime.now();
     _todayHijri = HijriCalendar.fromGregorian(_today);
     _viewingYear = _todayHijri.year;
     _viewingMonth = _todayHijri.month;
@@ -313,7 +321,8 @@ class _HijriCalendarPageState extends State<HijriCalendarPage> {
     final AppLocalizations localizations = AppLocalizations.of(context)!;
     final String lang = localizations.localeName.split('_').first.toLowerCase();
     final EquranColors colors = context.equranColors;
-    final ThemeData theme = Theme.of(context);
+    final EquranTokens tokens = context.equranTokens;
+    final MaterialLocalizations material = MaterialLocalizations.of(context);
 
     // Current Hijri Month Info
     final String monthName = HijriCalendar(
@@ -343,12 +352,13 @@ class _HijriCalendarPageState extends State<HijriCalendarPage> {
     );
     final String gregRange =
         '${rangeFormat.format(firstDayGregorian)} - ${rangeFormat.format(lastDayGregorian)}';
+    final List<String> weekdayHeaders = _getWeekdayHeaders(lang);
 
     return RedesignSubpage(
       title: _translateTitle(lang),
-      actions: [
+      actions: <Widget>[
         IconButton44(
-          icon: Icons.today_rounded,
+          designIcon: 'calendar',
           tooltip: _translateToday(lang),
           onPressed: () {
             setState(() {
@@ -358,194 +368,160 @@ class _HijriCalendarPageState extends State<HijriCalendarPage> {
           },
         ),
       ],
-      child: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.all(16),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 600),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Beautiful Today Card
-                  _buildTodayCard(colors, theme, lang),
-                  const SizedBox(height: 20),
-
-                  // Month Navigation & Grid Card
-                  Card(
-                    color: colors.surface,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      side: BorderSide(color: colors.border.withAlpha(120)),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          // Month Selector
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              IconButton(
-                                icon: Icon(
-                                  Directionality.of(context) ==
-                                          TextDirection.rtl
-                                      ? Icons.chevron_right_rounded
-                                      : Icons.chevron_left_rounded,
-                                  color: colors.primary,
-                                ),
-                                onPressed: _prevMonth,
-                              ),
-                              Expanded(
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      '$monthName $_viewingYear',
-                                      textAlign: TextAlign.center,
-                                      style: theme.textTheme.titleMedium
-                                          ?.copyWith(
-                                            color: colors.textPrimary,
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      gregRange,
-                                      textAlign: TextAlign.center,
-                                      style: theme.textTheme.bodySmall
-                                          ?.copyWith(
-                                            color: colors.textSecondary,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              IconButton(
-                                icon: Icon(
-                                  Directionality.of(context) ==
-                                          TextDirection.rtl
-                                      ? Icons.chevron_left_rounded
-                                      : Icons.chevron_right_rounded,
-                                  color: colors.primary,
-                                ),
-                                onPressed: _nextMonth,
-                              ),
-                            ],
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 600),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                _buildTodayCard(lang),
+                const SizedBox(height: 16),
+                HairlineCard(
+                  padding: const EdgeInsets.fromLTRB(12, 10, 12, 14),
+                  child: Column(
+                    children: <Widget>[
+                      Row(
+                        children: <Widget>[
+                          IconButton44(
+                            designIcon: 'chevl',
+                            tooltip: material.previousMonthTooltip,
+                            ghost: true,
+                            onPressed: _prevMonth,
                           ),
-                          const SizedBox(height: 20),
-
-                          // Weekday Headers
-                          GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: 7,
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 7,
-                                  mainAxisExtent: 32,
-                                ),
-                            itemBuilder: (context, index) {
-                              return Center(
-                                child: Text(
-                                  _getWeekdayHeaders(lang)[index],
-                                  style: theme.textTheme.labelMedium?.copyWith(
-                                    color: colors.textSecondary,
-                                    fontWeight: FontWeight.w800,
+                          Expanded(
+                            child: Column(
+                              children: <Widget>[
+                                Text(
+                                  '$monthName $_viewingYear',
+                                  textAlign: TextAlign.center,
+                                  style: redesignDisplayStyle(
+                                    context,
+                                    size: 24,
                                   ),
                                 ),
-                              );
-                            },
-                          ),
-                          const SizedBox(height: 8),
-
-                          // Month Days Grid
-                          GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: startWeekdayOffset + daysCount,
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 7,
-                                  mainAxisSpacing: 8,
-                                  crossAxisSpacing: 8,
-                                ),
-                            itemBuilder: (context, index) {
-                              if (index < startWeekdayOffset) {
-                                return const SizedBox.shrink();
-                              }
-
-                              final int dayNumber =
-                                  index - startWeekdayOffset + 1;
-                              final DateTime cellGregorian = firstDayGregorian
-                                  .add(Duration(days: dayNumber - 1));
-                              final bool isCurrentToday =
-                                  cellGregorian.year == _today.year &&
-                                  cellGregorian.month == _today.month &&
-                                  cellGregorian.day == _today.day;
-
-                              return Material(
-                                color: isCurrentToday
-                                    ? colors.primary
-                                    : colors.surfaceSoft,
-                                borderRadius: BorderRadius.circular(12),
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(12),
-                                  onTap: () {
-                                    // Could show details or events for this Hijri day
-                                  },
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(
-                                        color: isCurrentToday
-                                            ? colors.primary
-                                            : colors.border.withAlpha(80),
-                                        width: 1,
-                                      ),
-                                    ),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          '$dayNumber',
-                                          style: theme.textTheme.titleMedium
-                                              ?.copyWith(
-                                                color: isCurrentToday
-                                                    ? colors.onPrimary
-                                                    : colors.textPrimary,
-                                                fontWeight: FontWeight.w900,
-                                              ),
-                                        ),
-                                        const SizedBox(height: 2),
-                                        Text(
-                                          '${cellGregorian.day}',
-                                          style: theme.textTheme.bodySmall
-                                              ?.copyWith(
-                                                color: isCurrentToday
-                                                    ? colors.onPrimary
-                                                          .withAlpha(200)
-                                                    : colors.textSecondary,
-                                                fontSize: 9,
-                                                fontWeight: FontWeight.w700,
-                                              ),
-                                        ),
-                                      ],
-                                    ),
+                                const SizedBox(height: 3),
+                                Text(
+                                  gregRange,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 12.5,
+                                    color: tokens.muted,
                                   ),
                                 ),
-                              );
-                            },
+                              ],
+                            ),
+                          ),
+                          IconButton44(
+                            designIcon: 'chev',
+                            tooltip: material.nextMonthTooltip,
+                            ghost: true,
+                            onPressed: _nextMonth,
                           ),
                         ],
                       ),
-                    ),
+                      const SizedBox(height: 14),
+
+                      // Weekday Headers
+                      GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: 7,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 7,
+                              mainAxisExtent: 32,
+                            ),
+                        itemBuilder: (context, index) {
+                          return Center(
+                            child: Text(
+                              weekdayHeaders[index],
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: tokens.muted,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 6),
+
+                      // Month Days Grid
+                      GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: startWeekdayOffset + daysCount,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 7,
+                              mainAxisSpacing: 6,
+                              crossAxisSpacing: 6,
+                            ),
+                        itemBuilder: (context, index) {
+                          if (index < startWeekdayOffset) {
+                            return const SizedBox.shrink();
+                          }
+
+                          final int dayNumber = index - startWeekdayOffset + 1;
+                          final DateTime cellGregorian = firstDayGregorian.add(
+                            Duration(days: dayNumber - 1),
+                          );
+                          final bool isCurrentToday =
+                              cellGregorian.year == _today.year &&
+                              cellGregorian.month == _today.month &&
+                              cellGregorian.day == _today.day;
+
+                          return DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: isCurrentToday
+                                  ? tokens.filled
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                color: isCurrentToday
+                                    ? tokens.filled
+                                    : tokens.hair,
+                              ),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text(
+                                  '$dayNumber',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    height: 1.2,
+                                    fontWeight: FontWeight.w600,
+                                    color: isCurrentToday
+                                        ? Colors.white
+                                        : colors.textPrimary,
+                                    fontFeatures: const <FontFeature>[
+                                      FontFeature.tabularFigures(),
+                                    ],
+                                  ),
+                                ),
+                                Text(
+                                  '${cellGregorian.day}',
+                                  style: TextStyle(
+                                    fontSize: 9.5,
+                                    height: 1.2,
+                                    color: isCurrentToday
+                                        ? Colors.white.withValues(alpha: 0.8)
+                                        : tokens.muted,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -553,79 +529,44 @@ class _HijriCalendarPageState extends State<HijriCalendarPage> {
     );
   }
 
-  Widget _buildTodayCard(EquranColors colors, ThemeData theme, String lang) {
+  Widget _buildTodayCard(String lang) {
+    final EquranTokens tokens = context.equranTokens;
+    final Color gold = heroGoldOf(context);
     final String todayHijriStr =
         '${_todayHijri.day} ${_todayHijri.getMonthName(lang)} ${_todayHijri.year}';
     final DateFormat formatter = DateFormat('EEEE, MMMM d, yyyy', lang);
     final String todayGregorianStr = formatter.format(_today);
 
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [colors.primary, colors.primaryStrong],
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: colors.primary.withAlpha(60),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
+    return HeroPanel(
+      padding: const EdgeInsetsDirectional.fromSTEB(22, 20, 22, 22),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              DesignIcon('moon', size: 16, color: gold),
+              const SizedBox(width: 8),
+              Expanded(
+                child: RedesignEyebrow(_translateToday(lang), color: gold),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          Positioned(
-            right: -20,
-            top: -20,
-            child: Icon(
-              Icons.dark_mode_outlined,
-              size: 130,
-              color: colors.onPrimary.withAlpha(25),
+          const SizedBox(height: 14),
+          Text(
+            todayHijriStr,
+            style: redesignDisplayStyle(
+              context,
+              size: 32,
+              color: EquranColors.dark.textPrimary,
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: colors.onPrimary.withAlpha(35),
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                  child: Text(
-                    _translateToday(lang).toUpperCase(),
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: colors.onPrimary,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1.1,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  todayHijriStr,
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    color: colors.onPrimary,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  todayGregorianStr,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colors.onPrimary.withAlpha(210),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
+          const SizedBox(height: 8),
+          Text(
+            todayGregorianStr,
+            style: TextStyle(
+              fontSize: 14,
+              height: 1.4,
+              color: tokens.featText2,
             ),
           ),
         ],
