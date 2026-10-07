@@ -1,27 +1,35 @@
-import 'package:equran/widgets/common/equran_asset_image.dart';
 import 'package:equran/backend/library.dart';
 import 'package:equran/home/read.dart';
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/reading_plans/routine_progress.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
-import 'package:equran/widgets/common/equran_components.dart';
+import 'package:equran/theme/equran_tokens.dart';
+import 'package:equran/widgets/reader_sheet_chrome.dart';
+import 'package:equran/widgets/redesign/design_icon.dart';
+import 'package:equran/widgets/redesign/hairline_card.dart';
+import 'package:equran/widgets/redesign/hero_panel.dart';
+import 'package:equran/widgets/redesign/icon_button44.dart';
+import 'package:equran/widgets/redesign/page_typography.dart';
+import 'package:equran/widgets/redesign/pill_tag.dart';
 import 'package:equran/widgets/redesign/redesign_subpage.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:quran/quran.dart' as quran;
 
-const String _routineDesignAsset = 'assets/media/images/app/design.webp';
-
 class ReadingPlansPage extends StatelessWidget {
-  const ReadingPlansPage({super.key, this.showAppBar = true});
+  const ReadingPlansPage({super.key, this.showAppBar = true, this.now});
 
   final bool showAppBar;
+
+  /// The clock for today's portion; tests pass a fixed one.
+  final DateTime Function()? now;
 
   @override
   Widget build(BuildContext context) {
     final AppLocalizations localizations = AppLocalizations.of(context)!;
+    final DateTime Function() clock = now ?? DateTime.now;
 
     return RedesignSubpage(
       title: localizations.readingRoutine,
@@ -48,20 +56,19 @@ class ReadingPlansPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-                      _RoutineHero(plan: activePlan),
-                      const SizedBox(height: 18),
-                      _ActivitySummary(plan: activePlan),
-                      const SizedBox(height: 14),
+                      _RoutineHero(plan: activePlan, now: clock),
+                      const SizedBox(height: 16),
+                      _ActivitySummary(plan: activePlan, now: clock),
+                      const SizedBox(height: 16),
                       if (activePlan == null)
                         _EmptyRoutineCard(onCreate: _createThirtyDayPlan)
                       else
-                        _TodayTaskCard(plan: activePlan),
-                      const SizedBox(height: 14),
+                        _TodayTaskCard(plan: activePlan, now: clock),
                       _RoutineHistorySection(
                         plans: plans,
                         activePlan: activePlan,
+                        now: clock,
                       ),
-                      const SizedBox(height: 22),
                       _PlanPresetGrid(
                         onCreatePlan: (BuildContext context, _PlanPreset plan) {
                           _createPresetPlan(context, plan);
@@ -152,92 +159,110 @@ ReadingPlanEntry? _activePlan(List<ReadingPlanEntry> plans) {
   return null;
 }
 
+/// A section heading in the serif display face, in flow with the page.
+class _SectionHeading extends StatelessWidget {
+  const _SectionHeading(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsetsDirectional.fromSTEB(4, 30, 4, 12),
+    child: Text(text, style: redesignDisplayStyle(context, size: 24)),
+  );
+}
+
+/// A rounded bar for a [HeroPanel]: a gold fill on a faint track.
+class _HeroProgressBar extends StatelessWidget {
+  const _HeroProgressBar({required this.value, required this.color});
+
+  final double value;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) => ClipRRect(
+    borderRadius: BorderRadius.circular(EquranRadii.pill),
+    child: LinearProgressIndicator(
+      minHeight: 8,
+      value: value,
+      color: color,
+      backgroundColor: EquranColors.dark.textPrimary.withValues(alpha: 0.16),
+    ),
+  );
+}
+
 class _RoutineHero extends StatelessWidget {
-  const _RoutineHero({required this.plan});
+  const _RoutineHero({required this.plan, required this.now});
 
   final ReadingPlanEntry? plan;
+  final DateTime Function() now;
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
+    final EquranTokens tokens = context.equranTokens;
+    final Color gold = heroGoldOf(context);
     final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final _PlanProgress? progress = plan == null ? null : _planProgress(plan!);
+    final _PlanProgress? progress = plan == null
+        ? null
+        : _planProgress(plan!, now());
+    final String title = plan == null
+        ? localizations.buildQuranRoutine
+        : _localizedPlanTitle(plan!, localizations);
 
-    return EquranGradientCard(
-      padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
-      child: Stack(
+    return HeroPanel(
+      padding: const EdgeInsetsDirectional.fromSTEB(22, 20, 22, 22),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Positioned(
-            right: -12,
-            bottom: -16,
-            width: 150,
-            height: 120,
-            child: Opacity(
-              opacity: 0.20,
-              child: EquranAssetImage(_routineDesignAsset, fit: BoxFit.cover),
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
             children: <Widget>[
-              Row(
-                children: <Widget>[
-                  EquranIconBadge(
-                    icon: Icons.calendar_month_rounded,
-                    backgroundColor: colors.onPrimary.withAlpha(26),
-                    foregroundColor: colors.onPrimary,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      plan == null
-                          ? localizations.buildQuranRoutine
-                          : _localizedPlanTitle(plan!, localizations),
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        color: colors.onPrimary,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Text(
-                plan == null
-                    ? localizations.chooseGentlePlan
-                    : localizations.routineCompletedAyahs(
-                        progress!.completedAyahs,
-                        progress.totalAyahs,
-                      ),
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colors.onPrimaryMuted,
-                  height: 1.35,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 18),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(EquranRadii.pill),
-                child: LinearProgressIndicator(
-                  minHeight: 8,
-                  value: progress?.fraction ?? 0,
-                  color: colors.onPrimary,
-                  backgroundColor: colors.onPrimary.withAlpha(40),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                plan == null
-                    ? localizations.plansReadyNotice
-                    : localizations.finishTargetDate(
-                        _shortDate(plan!.finishBy, localizations.localeName),
-                      ),
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: colors.onPrimaryMuted,
+              DesignIcon('route', size: 16, color: gold),
+              const SizedBox(width: 8),
+              Expanded(
+                child: RedesignEyebrow(
+                  localizations.readingRoutine,
+                  color: gold,
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 14),
+          Text(
+            title,
+            style: redesignDisplayStyle(
+              context,
+              size: 28,
+              color: EquranColors.dark.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            plan == null
+                ? localizations.chooseGentlePlan
+                : localizations.routineCompletedAyahs(
+                    progress!.completedAyahs,
+                    progress.totalAyahs,
+                  ),
+            style: TextStyle(
+              fontSize: 14,
+              height: 1.4,
+              color: tokens.featText2,
+            ),
+          ),
+          const SizedBox(height: 18),
+          _HeroProgressBar(value: progress?.fraction ?? 0, color: gold),
+          const SizedBox(height: 10),
+          Text(
+            plan == null
+                ? localizations.plansReadyNotice
+                : localizations.finishTargetDate(
+                    _shortDate(plan!.finishBy, localizations.localeName),
+                  ),
+            style: TextStyle(
+              fontSize: 12.5,
+              height: 1.35,
+              color: tokens.featText2,
+            ),
           ),
         ],
       ),
@@ -246,14 +271,16 @@ class _RoutineHero extends StatelessWidget {
 }
 
 class _ActivitySummary extends StatelessWidget {
-  const _ActivitySummary({required this.plan});
+  const _ActivitySummary({required this.plan, required this.now});
 
   final ReadingPlanEntry? plan;
+  final DateTime Function() now;
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final bool done = plan != null && routineProgressSummary(plan!).isTodayDone;
+    final bool done =
+        plan != null && routineProgressSummary(plan!, now: now()).isTodayDone;
     final List<_SummaryPillData> items = <_SummaryPillData>[
       _SummaryPillData(localizations.allLabel, plan == null ? 0 : 1),
       _SummaryPillData(localizations.doneLabel, done ? 1 : 0),
@@ -267,7 +294,10 @@ class _ActivitySummary extends StatelessWidget {
     return Wrap(
       spacing: 8,
       runSpacing: 8,
-      children: items.map((item) => _SummaryPill(item: item)).toList(),
+      children: <Widget>[
+        for (final _SummaryPillData item in items)
+          PillTag('${item.label} ${item.count}', selected: item.count > 0),
+      ],
     );
   }
 }
@@ -279,32 +309,6 @@ class _SummaryPillData {
   final int count;
 }
 
-class _SummaryPill extends StatelessWidget {
-  const _SummaryPill({required this.item});
-
-  final _SummaryPillData item;
-
-  @override
-  Widget build(BuildContext context) {
-    final EquranColors colors = context.equranColors;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: item.count > 0 ? colors.mint : colors.surface,
-        borderRadius: BorderRadius.circular(EquranRadii.pill),
-        border: Border.all(color: colors.border),
-      ),
-      child: Text(
-        '${item.label} ${item.count}',
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-          color: item.count > 0 ? colors.primary : colors.textSecondary,
-          fontWeight: FontWeight.w800,
-        ),
-      ),
-    );
-  }
-}
-
 class _EmptyRoutineCard extends StatelessWidget {
   const _EmptyRoutineCard({required this.onCreate});
 
@@ -313,31 +317,39 @@ class _EmptyRoutineCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final EquranColors colors = context.equranColors;
+    final EquranTokens tokens = context.equranTokens;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
-    return EquranSurfaceCard(
-      padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+    return HairlineCard(
+      padding: const EdgeInsetsDirectional.fromSTEB(18, 18, 18, 18),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          Text(
-            localizations.noActiveRoutine,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: colors.textPrimary,
-              fontWeight: FontWeight.w900,
-            ),
+          Row(
+            children: <Widget>[
+              const ReaderIconWell(icon: DesignIcon('route')),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Text(
+                  localizations.noActiveRoutine,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: colors.textPrimary,
+                  ),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Text(
             localizations.startBalancedPlanDescription,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: colors.textSecondary,
-              height: 1.35,
-            ),
+            style: TextStyle(fontSize: 14, height: 1.45, color: tokens.text2),
           ),
           const SizedBox(height: 16),
           FilledButton.icon(
             onPressed: () => onCreate(context),
-            icon: const Icon(Icons.add_rounded),
+            style: readerFilledButtonStyle(context),
+            icon: const DesignIcon('plus', size: 18, strokeWidth: 2),
             label: Text(localizations.start30DayPlan),
           ),
         ],
@@ -347,16 +359,20 @@ class _EmptyRoutineCard extends StatelessWidget {
 }
 
 class _TodayTaskCard extends StatelessWidget {
-  const _TodayTaskCard({required this.plan});
+  const _TodayTaskCard({required this.plan, required this.now});
 
   final ReadingPlanEntry plan;
+  final DateTime Function() now;
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
     final EquranColors colors = context.equranColors;
+    final EquranTokens tokens = context.equranTokens;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final RoutineProgressSummary progress = routineProgressSummary(plan);
+    final RoutineProgressSummary progress = routineProgressSummary(
+      plan,
+      now: now(),
+    );
     final _AyahRef start = _ayahRefFromGlobalIndex(
       progress.todayStartGlobalAyah,
     );
@@ -364,21 +380,29 @@ class _TodayTaskCard extends StatelessWidget {
     final bool done = progress.isTodayDone;
     final double dailyFraction = progress.todayFraction;
     final int percentComplete = (dailyFraction * 100).round();
+    final TextStyle detail = TextStyle(
+      fontSize: 13,
+      height: 1.4,
+      color: tokens.text2,
+    );
 
-    return EquranSurfaceCard(
-      backgroundColor: done ? null : colors.surface,
-      borderColor: done ? colors.primary.withAlpha(90) : colors.border,
+    return Container(
+      padding: const EdgeInsetsDirectional.fromSTEB(18, 18, 18, 18),
+      decoration: BoxDecoration(
+        color: done ? tokens.emWash : colors.surface,
+        borderRadius: BorderRadius.circular(EquranRadii.xl),
+        border: Border.all(color: done ? tokens.hair2 : tokens.hair),
+      ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              EquranIconBadge(
-                icon: done ? Icons.check_rounded : Icons.menu_book_outlined,
-                backgroundColor: done ? colors.primary : colors.mint,
-                foregroundColor: done ? colors.onPrimary : colors.primary,
+              ReaderIconWell(
+                icon: DesignIcon(done ? 'check' : 'book', strokeWidth: 1.8),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -389,9 +413,10 @@ class _TodayTaskCard extends StatelessWidget {
                           : done
                           ? localizations.todayCompleted
                           : localizations.todayReading,
-                      style: theme.textTheme.titleMedium?.copyWith(
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
                         color: colors.textPrimary,
-                        fontWeight: FontWeight.w900,
                       ),
                     ),
                     const SizedBox(height: 3),
@@ -404,9 +429,7 @@ class _TodayTaskCard extends StatelessWidget {
                           : localizations.todaysPortionAyahs(
                               progress.todayPortionAyahs,
                             ),
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colors.textSecondary,
-                      ),
+                      style: detail,
                     ),
                     if (!progress.isRoutineDone &&
                         progress.catchUpAyahs > 0) ...<Widget>[
@@ -415,9 +438,9 @@ class _TodayTaskCard extends StatelessWidget {
                         localizations.includesCatchUpAyahs(
                           progress.catchUpAyahs,
                         ),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colors.textSecondary,
-                          fontWeight: FontWeight.w700,
+                        style: detail.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: tokens.goldText,
                         ),
                       ),
                     ] else if (!progress.isRoutineDone) ...<Widget>[
@@ -427,9 +450,7 @@ class _TodayTaskCard extends StatelessWidget {
                           _refLabel(start),
                           _refLabel(end),
                         ),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colors.textSecondary,
-                        ),
+                        style: detail,
                       ),
                     ],
                   ],
@@ -443,8 +464,8 @@ class _TodayTaskCard extends StatelessWidget {
             child: LinearProgressIndicator(
               value: dailyFraction,
               minHeight: 8,
-              color: colors.primary,
-              backgroundColor: colors.mint,
+              color: tokens.filled,
+              backgroundColor: tokens.hair2,
             ),
           ),
           const SizedBox(height: 8),
@@ -455,17 +476,20 @@ class _TodayTaskCard extends StatelessWidget {
                     percentComplete,
                     progress.todayRemainingAyahs,
                   ),
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colors.textSecondary,
-              fontWeight: FontWeight.w700,
-            ),
+            style: detail.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 16),
           FilledButton.icon(
             onPressed: progress.isRoutineDone
                 ? null
                 : () => _openContinue(context),
-            icon: const Icon(Icons.play_arrow_rounded),
+            style: readerFilledButtonStyle(context),
+            icon: const DesignIcon(
+              'play',
+              size: 16,
+              strokeWidth: 1.8,
+              filled: true,
+            ),
             label: Text(
               progress.isRoutineDone
                   ? localizations.routineComplete
@@ -478,7 +502,10 @@ class _TodayTaskCard extends StatelessWidget {
   }
 
   void _openContinue(BuildContext context) {
-    final RoutineProgressSummary progress = routineProgressSummary(plan);
+    final RoutineProgressSummary progress = routineProgressSummary(
+      plan,
+      now: now(),
+    );
     final int resumeGlobalAyah = progress.nextUnreadGlobalAyah;
     final _AyahRef resume = _ayahRefFromGlobalIndex(resumeGlobalAyah);
     Navigator.of(context).push(
@@ -497,69 +524,105 @@ class _TodayTaskCard extends StatelessWidget {
 }
 
 class _RoutineHistorySection extends StatelessWidget {
-  const _RoutineHistorySection({required this.plans, required this.activePlan});
+  const _RoutineHistorySection({
+    required this.plans,
+    required this.activePlan,
+    required this.now,
+  });
 
   final List<ReadingPlanEntry> plans;
   final ReadingPlanEntry? activePlan;
+  final DateTime Function() now;
 
   @override
   Widget build(BuildContext context) {
     final EquranColors colors = context.equranColors;
+    final EquranTokens tokens = context.equranTokens;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
     final List<ReadingPlanEntry> pastPlans = plans
         .where((ReadingPlanEntry plan) => !plan.active)
         .toList(growable: false);
 
-    return EquranSurfaceCard(
-      padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            localizations.routineHistory,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: colors.textPrimary,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-          const SizedBox(height: 8),
-          if (activePlan != null)
-            _RoutineHistoryTile(
-              plan: activePlan!,
-              label: localizations.currentRoutine,
-              onDelete: () => _deleteRoutine(context, activePlan!),
-            )
-          else
-            Text(
-              localizations.noCurrentRoutine,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: colors.textSecondary),
-            ),
-          if (pastPlans.isNotEmpty) ...<Widget>[
-            const SizedBox(height: 8),
-            ExpansionTile(
-              tilePadding: EdgeInsets.zero,
-              childrenPadding: EdgeInsets.zero,
-              title: Text(
-                localizations.pastRoutines,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: colors.textPrimary,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        _SectionHeading(localizations.routineHistory),
+        HairlineCard(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(EquranRadii.xl - 1),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                for (final ReadingPlanEntry plan in pastPlans)
+                if (activePlan != null)
                   _RoutineHistoryTile(
-                    plan: plan,
-                    label: localizations.pastRoutine,
-                    onDelete: () => _deleteRoutine(context, plan),
+                    plan: activePlan!,
+                    label: localizations.currentRoutine,
+                    now: now,
+                    onDelete: () => _deleteRoutine(context, activePlan!),
+                  )
+                else
+                  Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      18,
+                      18,
+                      18,
+                      18,
+                    ),
+                    child: Text(
+                      localizations.noCurrentRoutine,
+                      style: TextStyle(
+                        fontSize: 14,
+                        height: 1.4,
+                        color: tokens.text2,
+                      ),
+                    ),
                   ),
+                if (pastPlans.isNotEmpty) ...<Widget>[
+                  Divider(height: 1, thickness: 1, color: tokens.hair),
+                  Theme(
+                    data: Theme.of(
+                      context,
+                    ).copyWith(dividerColor: Colors.transparent),
+                    child: ExpansionTile(
+                      tilePadding: const EdgeInsetsDirectional.fromSTEB(
+                        18,
+                        4,
+                        14,
+                        4,
+                      ),
+                      childrenPadding: EdgeInsets.zero,
+                      shape: const Border(),
+                      collapsedShape: const Border(),
+                      iconColor: tokens.muted,
+                      collapsedIconColor: tokens.muted,
+                      title: Text(
+                        localizations.pastRoutines,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: colors.textPrimary,
+                        ),
+                      ),
+                      children: <Widget>[
+                        for (final ReadingPlanEntry plan
+                            in pastPlans) ...<Widget>[
+                          Divider(height: 1, thickness: 1, color: tokens.hair),
+                          _RoutineHistoryTile(
+                            plan: plan,
+                            label: localizations.pastRoutine,
+                            now: now,
+                            onDelete: () => _deleteRoutine(context, plan),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
               ],
             ),
-          ],
-        ],
-      ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -569,33 +632,60 @@ class _RoutineHistoryTile extends StatelessWidget {
     required this.plan,
     required this.label,
     required this.onDelete,
+    required this.now,
   });
 
   final ReadingPlanEntry plan;
   final String label;
   final VoidCallback onDelete;
+  final DateTime Function() now;
 
   @override
   Widget build(BuildContext context) {
-    final _PlanProgress progress = _planProgress(plan);
-    final EquranColors colors = context.equranColors;
+    final _PlanProgress progress = _planProgress(plan, now());
+    final EquranTokens tokens = context.equranTokens;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
 
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: EquranIconBadge(
-        icon: plan.active ? Icons.route_outlined : Icons.history_rounded,
-        size: 38,
-      ),
-      title: Text(_localizedPlanTitle(plan, localizations)),
-      subtitle: Text(
-        '$label • ${localizations.completedAyahsRatio(progress.completedAyahs, progress.totalAyahs)} • ${_shortDate(plan.startedAt, localizations.localeName)}',
-      ),
-      trailing: IconButton(
-        tooltip: localizations.deleteRoutineTooltip,
-        onPressed: onDelete,
-        color: colors.textMuted,
-        icon: const Icon(Icons.delete_outline_rounded),
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 64),
+      child: Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(16, 10, 6, 10),
+        child: Row(
+          children: <Widget>[
+            ReaderIconWell(icon: DesignIcon(plan.active ? 'route' : 'clock')),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    _localizedPlanTitle(plan, localizations),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: context.equranColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    '$label • ${localizations.completedAyahsRatio(progress.completedAyahs, progress.totalAyahs)} • ${_shortDate(plan.startedAt, localizations.localeName)}',
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      height: 1.3,
+                      color: tokens.muted,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            IconButton44(
+              designIcon: 'trash',
+              tooltip: localizations.deleteRoutineTooltip,
+              ghost: true,
+              onPressed: onDelete,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -631,30 +721,16 @@ Future<bool> _confirmRoutineAction({
   bool destructive = false,
 }) async {
   final AppLocalizations localizations = AppLocalizations.of(context)!;
-  final bool? confirmed = await showDialog<bool>(
+  final bool? confirmed = await showReaderDialog<bool>(
     context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: Text(title),
-        content: Text(message),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(localizations.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: destructive
-                ? FilledButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.error,
-                    foregroundColor: Theme.of(context).colorScheme.onError,
-                  )
-                : null,
-            child: Text(confirmLabel),
-          ),
-        ],
-      );
-    },
+    builder: (BuildContext context) => ReaderConfirmDialog(
+      title: title,
+      body: message,
+      cancelLabel: localizations.cancel,
+      confirmLabel: confirmLabel,
+      destructive: destructive,
+      icon: const DesignIcon('trash'),
+    ),
   );
   return confirmed == true;
 }
@@ -674,88 +750,34 @@ class _PlanPresetGrid extends StatelessWidget {
     ];
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        Text(
-          localizations.choosePlan,
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
-        ),
-        const SizedBox(height: 10),
-        LayoutBuilder(
-          builder: (BuildContext context, BoxConstraints constraints) {
-            final bool twoColumn = constraints.maxWidth >= 620;
-            return GridView.builder(
-              itemCount: presets.length,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: twoColumn ? 2 : 1,
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 10,
-                childAspectRatio: twoColumn ? 3.2 : 3.8,
-              ),
-              itemBuilder: (BuildContext context, int index) {
-                return _PlanPresetCard(
-                  preset: presets[index],
-                  onTap: () => onCreatePlan(context, presets[index]),
-                );
-              },
-            );
-          },
-        ),
-      ],
-    );
-  }
-}
-
-class _PlanPresetCard extends StatelessWidget {
-  const _PlanPresetCard({required this.preset, required this.onTap});
-
-  final _PlanPreset preset;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final EquranColors colors = context.equranColors;
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    return EquranSurfaceCard(
-      onTap: onTap,
-      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-      child: Row(
-        children: <Widget>[
-          EquranIconBadge(icon: preset.icon),
-          const SizedBox(width: 12),
-          Expanded(
+        _SectionHeading(localizations.choosePlan),
+        HairlineCard(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(EquranRadii.xl - 1),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text(
-                  preset.title(localizations),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: colors.textPrimary,
-                    fontWeight: FontWeight.w900,
+                for (int i = 0; i < presets.length; i++) ...<Widget>[
+                  if (i > 0)
+                    Divider(
+                      height: 1,
+                      thickness: 1,
+                      color: context.equranTokens.hair,
+                    ),
+                  ReaderOptionRow(
+                    leading: DesignIcon(presets[i].designIcon),
+                    title: presets[i].title(localizations),
+                    subtitle: presets[i].subtitle(localizations),
+                    subtitleMaxLines: 2,
+                    onTap: () => onCreatePlan(context, presets[i]),
                   ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  preset.subtitle(localizations),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(color: colors.textSecondary),
-                ),
+                ],
               ],
             ),
           ),
-          Icon(Icons.chevron_right_rounded, color: colors.textMuted),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -764,12 +786,12 @@ class _PlanPreset {
   const _PlanPreset({
     required this.type,
     required this.days,
-    required this.icon,
+    required this.designIcon,
   });
 
   final String type;
   final int days;
-  final IconData icon;
+  final String designIcon;
 
   String title(AppLocalizations localizations) {
     return switch (type) {
@@ -792,19 +814,19 @@ class _PlanPreset {
   static const _PlanPreset sevenDays = _PlanPreset(
     type: 'complete_7_days',
     days: 7,
-    icon: Icons.bolt_outlined,
+    designIcon: 'sparkle',
   );
 
   static const _PlanPreset thirtyDays = _PlanPreset(
     type: 'complete_30_days',
     days: 30,
-    icon: Icons.calendar_month_outlined,
+    designIcon: 'calendar',
   );
 
   static const _PlanPreset sixtyDays = _PlanPreset(
     type: 'complete_60_days',
     days: 60,
-    icon: Icons.auto_stories_outlined,
+    designIcon: 'book',
   );
 }
 
@@ -827,8 +849,11 @@ class _AyahRef {
   final int verse;
 }
 
-_PlanProgress _planProgress(ReadingPlanEntry plan) {
-  final RoutineProgressSummary progress = routineProgressSummary(plan);
+_PlanProgress _planProgress(ReadingPlanEntry plan, DateTime now) {
+  final RoutineProgressSummary progress = routineProgressSummary(
+    plan,
+    now: now,
+  );
   return _PlanProgress(
     completedAyahs: progress.completedAyahs,
     totalAyahs: progress.totalAyahs,
