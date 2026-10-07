@@ -493,6 +493,9 @@ class _HijriCalendarPageState extends State<HijriCalendarPage> {
                                   '$dayNumber',
                                   style: TextStyle(
                                     fontSize: 15,
+                                    fontVariations: const [
+                                      FontVariation('opsz', 15),
+                                    ],
                                     height: 1.2,
                                     fontWeight: FontWeight.w600,
                                     color: isCurrentToday

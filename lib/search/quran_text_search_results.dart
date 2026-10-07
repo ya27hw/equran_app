@@ -326,6 +326,7 @@ class _RecentSearchTile extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 15,
+                        fontVariations: const [FontVariation('opsz', 15)],
                         fontWeight: FontWeight.w500,
                         color: context.equranColors.textPrimary,
                       ),
@@ -443,6 +444,7 @@ class _CenteredState extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14.5,
+                fontVariations: const [FontVariation('opsz', 14.5)],
                 height: 1.45,
                 color: tokens.text2,
               ),

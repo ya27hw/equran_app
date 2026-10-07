@@ -728,6 +728,7 @@ class BookmarkNoteSheet extends StatelessWidget {
           minLines: 3,
           style: TextStyle(
             fontSize: 15,
+            fontVariations: const [FontVariation('opsz', 15)],
             height: 1.5,
             color: colors.textPrimary,
           ),
@@ -773,7 +774,11 @@ class BookmarkNoteSheet extends StatelessWidget {
           key: const Key('reader-tags-editor'),
           controller: tagsController,
           onChanged: onTagsChanged,
-          style: TextStyle(fontSize: 14.5, color: colors.textPrimary),
+          style: TextStyle(
+            fontSize: 14.5,
+            fontVariations: const [FontVariation('opsz', 14.5)],
+            color: colors.textPrimary,
+          ),
           decoration: readerInputDecoration(context, hint: l.tagsHint),
         ),
         const SizedBox(height: 22),
@@ -825,6 +830,7 @@ class ReaderFolderNameDialog extends StatelessWidget {
           textInputAction: TextInputAction.done,
           style: TextStyle(
             fontSize: 15,
+            fontVariations: const [FontVariation('opsz', 15)],
             color: context.equranColors.textPrimary,
           ),
           decoration: readerInputDecoration(
@@ -897,6 +903,7 @@ class ReaderStepperRow extends StatelessWidget {
                         label,
                         style: TextStyle(
                           fontSize: 15,
+                          fontVariations: const [FontVariation('opsz', 15)],
                           fontWeight: FontWeight.w600,
                           color: colors.textPrimary,
                         ),
@@ -1000,6 +1007,7 @@ class ReaderIntervalSheet extends StatelessWidget {
               style: errorText == null
                   ? TextStyle(
                       fontSize: 14.5,
+                      fontVariations: const [FontVariation('opsz', 14.5)],
                       fontWeight: FontWeight.w600,
                       color: tokens.emText,
                     )
@@ -1083,7 +1091,12 @@ class AyahDetailsSheet extends StatelessWidget {
           Text(
             transliteration,
             textAlign: TextAlign.justify,
-            style: TextStyle(fontSize: 14.5, height: 1.55, color: tokens.muted),
+            style: TextStyle(
+              fontSize: 14.5,
+              fontVariations: const [FontVariation('opsz', 14.5)],
+              height: 1.55,
+              color: tokens.muted,
+            ),
           ),
         ],
         const SizedBox(height: 18),
@@ -1157,6 +1170,7 @@ class ReaderTafsirCard extends StatelessWidget {
               needsDownloadText!,
               style: TextStyle(
                 fontSize: 14.5,
+                fontVariations: const [FontVariation('opsz', 14.5)],
                 height: 1.45,
                 color: tokens.text2,
               ),
@@ -1194,6 +1208,7 @@ class ReaderTafsirCard extends StatelessWidget {
               textAlign: TextAlign.start,
               style: TextStyle(
                 fontSize: 16,
+                fontVariations: const [FontVariation('opsz', 16)],
                 height: 1.65,
                 color: colors.textPrimary,
               ),
@@ -1244,6 +1259,7 @@ class ReaderNotice extends StatelessWidget {
                   title,
                   style: TextStyle(
                     fontSize: 15,
+                    fontVariations: const [FontVariation('opsz', 15)],
                     fontWeight: FontWeight.w600,
                     color: colors.textPrimary,
                   ),
@@ -1342,6 +1358,7 @@ class ReaderSourceRow extends StatelessWidget {
                         title,
                         style: TextStyle(
                           fontSize: 15,
+                          fontVariations: const [FontVariation('opsz', 15)],
                           fontWeight: FontWeight.w600,
                           color: colors.textPrimary,
                         ),
@@ -1435,6 +1452,7 @@ class ReaderNoteDialog extends StatelessWidget {
           maxLines: null,
           style: TextStyle(
             fontSize: 15,
+            fontVariations: const [FontVariation('opsz', 15)],
             height: 1.45,
             color: context.equranColors.textPrimary,
           ),

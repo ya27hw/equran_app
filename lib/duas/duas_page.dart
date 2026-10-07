@@ -343,6 +343,7 @@ class _DuasContent extends StatelessWidget {
             duaGroupName(l, group),
             style: const TextStyle(
               fontSize: 15,
+              fontVariations: [FontVariation('opsz', 15)],
               height: 1.25,
               fontWeight: FontWeight.w600,
             ),
@@ -399,7 +400,11 @@ class _QuickTile extends StatelessWidget {
         const SizedBox(height: 16),
         Text(
           label,
-          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+          style: const TextStyle(
+            fontSize: 15,
+            fontVariations: [FontVariation('opsz', 15)],
+            fontWeight: FontWeight.w600,
+          ),
         ),
         const SizedBox(height: 3),
         Text(

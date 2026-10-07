@@ -335,6 +335,7 @@ class _NavSlotCard extends StatelessWidget {
                           title,
                           style: TextStyle(
                             fontSize: 15,
+                            fontVariations: const [FontVariation('opsz', 15)],
                             fontWeight: FontWeight.w600,
                             color: muted ? tokens.muted : colors.textPrimary,
                           ),

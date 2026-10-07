@@ -495,6 +495,7 @@ Future<void> _showNameSheet(BuildContext context, AsmaUlHusnaName name) async {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 15,
+                  fontVariations: const [FontVariation('opsz', 15)],
                   height: 1.45,
                   color: tokens.text2,
                 ),

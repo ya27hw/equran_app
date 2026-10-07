@@ -315,6 +315,7 @@ class _EmptyRoutineCard extends StatelessWidget {
                   localizations.noActiveRoutine,
                   style: TextStyle(
                     fontSize: 16,
+                    fontVariations: const [FontVariation('opsz', 16)],
                     fontWeight: FontWeight.w600,
                     color: colors.textPrimary,
                   ),
@@ -397,6 +398,7 @@ class _TodayTaskCard extends StatelessWidget {
                           : localizations.todayReading,
                       style: TextStyle(
                         fontSize: 16,
+                        fontVariations: const [FontVariation('opsz', 16)],
                         fontWeight: FontWeight.w600,
                         color: colors.textPrimary,
                       ),
@@ -581,6 +583,7 @@ class _RoutineHistorySection extends StatelessWidget {
                         localizations.pastRoutines,
                         style: TextStyle(
                           fontSize: 15,
+                          fontVariations: const [FontVariation('opsz', 15)],
                           fontWeight: FontWeight.w600,
                           color: colors.textPrimary,
                         ),
@@ -644,6 +647,7 @@ class _RoutineHistoryTile extends StatelessWidget {
                     _localizedPlanTitle(plan, localizations),
                     style: TextStyle(
                       fontSize: 15,
+                      fontVariations: const [FontVariation('opsz', 15)],
                       fontWeight: FontWeight.w600,
                       color: context.equranColors.textPrimary,
                     ),

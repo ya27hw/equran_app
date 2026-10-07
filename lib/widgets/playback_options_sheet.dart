@@ -399,6 +399,7 @@ class _OptionRow extends StatelessWidget {
                             title,
                             style: TextStyle(
                               fontSize: 15,
+                              fontVariations: const [FontVariation('opsz', 15)],
                               fontWeight: FontWeight.w600,
                               color: enabled
                                   ? colors.textPrimary
@@ -420,6 +421,7 @@ class _OptionRow extends StatelessWidget {
                         title,
                         style: TextStyle(
                           fontSize: 15,
+                          fontVariations: const [FontVariation('opsz', 15)],
                           fontWeight: FontWeight.w600,
                           color: colors.textPrimary,
                         ),
@@ -518,6 +520,7 @@ class _SpeedBlock extends StatelessWidget {
                   title,
                   style: TextStyle(
                     fontSize: 15,
+                    fontVariations: const [FontVariation('opsz', 15)],
                     fontWeight: FontWeight.w600,
                     color: colors.textPrimary,
                   ),
@@ -659,6 +662,7 @@ class _DelayBlock extends StatelessWidget {
                   title,
                   style: TextStyle(
                     fontSize: 15,
+                    fontVariations: const [FontVariation('opsz', 15)],
                     fontWeight: FontWeight.w600,
                     color: colors.textPrimary,
                   ),

@@ -269,6 +269,7 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
                   accent.name,
                   style: TextStyle(
                     fontSize: 15,
+                    fontVariations: const [FontVariation('opsz', 15)],
                     fontWeight: FontWeight.w600,
                     color: selected ? tokens.emText : colors.textPrimary,
                   ),
@@ -346,6 +347,7 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14.5,
+                    fontVariations: const [FontVariation('opsz', 14.5)],
                     fontWeight: FontWeight.w600,
                     color: isActive ? tokens.emText : colors.textPrimary,
                   ),

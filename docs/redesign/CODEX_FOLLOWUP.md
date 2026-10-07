@@ -22,7 +22,7 @@ Use `DesignIcon` (`lib/widgets/redesign/design_icon.dart`) for icons, never Mate
    The rest of the weight is the variable axes. They cannot simply be pruned: Inter is used at weights up to 900 (registered
    400/500/600, but Flutter applies `wght` per `FontWeight`), and Newsreader's `opsz` is set per size. Only pin axes after listing every
    weight/size used. Noto Naskh (300 KB) is untouched.
-6. **App text looks about 9% wider than the design.** Investigated, **not changed**.
+6. ~~**App text looks about 9% wider than the design.**~~ Done (2026-10-07, `polish/inter-opsz`): `lib/theme/inter_optical_size.dart` sets `opsz` = font size (clamped 14 to 32) on the theme slots and on every Inter style above 14 px (`withInterOpticalSize()`, or `fontVariations: const [FontVariation('opsz', N)]` next to a literal size). `wght` still follows `fontWeight`. Measured: "Saved for quick access" at 32 px is 8.9% narrower (351.86 to 320.52), 3% at 20 px, unchanged at 14 px and below. **New Inter text above 14 px must set `opsz` too.** Original investigation:
    - The bundled Inter is the right font. At 12 px "Saved for quick access" is 131.947 px in Flutter and in a browser using Inter, identical.
    - The design's `font-family` is `'Inter', system-ui` with no `@font-face`, so the HTML only shows Inter where Inter is installed.
    - Cause of the gap at larger sizes: Inter has an `opsz` axis (14 to 32). Browsers apply `font-optical-sizing: auto` (opsz = font size),

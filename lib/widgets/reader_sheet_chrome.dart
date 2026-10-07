@@ -8,6 +8,7 @@ import 'package:equran/widgets/redesign/hairline_card.dart';
 import 'package:equran/widgets/redesign/icon_button44.dart';
 import 'package:equran/widgets/redesign/page_typography.dart';
 import 'package:flutter/material.dart';
+import 'package:equran/theme/inter_optical_size.dart';
 
 /// Shared chrome for the reader's bottom sheets and dialogs. It follows the
 /// playback options sheet: a page-coloured sheet with a 28 px top radius, a
@@ -294,6 +295,7 @@ class ReaderOptionRow extends StatelessWidget {
                       title,
                       style: TextStyle(
                         fontSize: 15,
+                        fontVariations: const [FontVariation('opsz', 15)],
                         fontWeight: FontWeight.w600,
                         color: colors.textPrimary,
                       ),
@@ -397,6 +399,7 @@ class ReaderSwitchRow extends StatelessWidget {
                         title,
                         style: TextStyle(
                           fontSize: 15,
+                          fontVariations: const [FontVariation('opsz', 15)],
                           fontWeight: FontWeight.w600,
                           color: colors.textPrimary,
                         ),
@@ -449,7 +452,7 @@ TextStyle _buttonText(BuildContext context, double size) => TextStyle(
   fontWeight: FontWeight.w600,
   fontFamily: _isArabicScript(context) ? 'NotoNaskhArabic' : 'Inter',
   fontFamilyFallback: const <String>['NotoNaskhArabic'],
-);
+).withInterOpticalSize();
 
 ButtonStyle readerFilledButtonStyle(BuildContext context) =>
     FilledButton.styleFrom(
@@ -498,11 +501,19 @@ InputDecoration readerInputDecoration(
   return InputDecoration(
     hintText: hint,
     labelText: label,
-    labelStyle: TextStyle(color: tokens.muted, fontSize: 15),
+    labelStyle: TextStyle(
+      color: tokens.muted,
+      fontSize: 15,
+      fontVariations: const [FontVariation('opsz', 15)],
+    ),
     floatingLabelStyle: TextStyle(color: tokens.emText, fontSize: 14),
     errorText: errorText,
     suffixText: suffixText,
-    hintStyle: TextStyle(color: tokens.muted, fontSize: 15),
+    hintStyle: TextStyle(
+      color: tokens.muted,
+      fontSize: 15,
+      fontVariations: const [FontVariation('opsz', 15)],
+    ),
     filled: true,
     fillColor: context.equranColors.surface,
     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -636,7 +647,12 @@ class ReaderConfirmDialog extends StatelessWidget {
       icon: icon,
       content: Text(
         body,
-        style: TextStyle(fontSize: 14.5, height: 1.45, color: tokens.text2),
+        style: TextStyle(
+          fontSize: 14.5,
+          fontVariations: const [FontVariation('opsz', 14.5)],
+          height: 1.45,
+          color: tokens.text2,
+        ),
       ),
       actions: <Widget>[
         TextButton(
@@ -767,6 +783,7 @@ class ReaderChoiceTile extends StatelessWidget {
                           title,
                           style: TextStyle(
                             fontSize: 15,
+                            fontVariations: const [FontVariation('opsz', 15)],
                             fontWeight: selected
                                 ? FontWeight.w600
                                 : FontWeight.w500,

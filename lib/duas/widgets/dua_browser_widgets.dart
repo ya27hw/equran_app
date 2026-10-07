@@ -174,10 +174,18 @@ class DuaSearchField extends StatelessWidget {
     );
     return TextField(
       controller: controller,
-      style: TextStyle(fontSize: 15, color: context.equranColors.textPrimary),
+      style: TextStyle(
+        fontSize: 15,
+        fontVariations: const [FontVariation('opsz', 15)],
+        color: context.equranColors.textPrimary,
+      ),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(color: tokens.muted, fontSize: 15),
+        hintStyle: TextStyle(
+          color: tokens.muted,
+          fontSize: 15,
+          fontVariations: const [FontVariation('opsz', 15)],
+        ),
         prefixIcon: Center(
           widthFactor: 1,
           child: DesignIcon('search', size: 19, color: tokens.muted),
@@ -423,6 +431,7 @@ class DuaCategoryRow extends StatelessWidget {
                           category.localizedTitle(context),
                           style: const TextStyle(
                             fontSize: 16,
+                            fontVariations: [FontVariation('opsz', 16)],
                             fontWeight: FontWeight.w600,
                             height: 1.3,
                           ),
@@ -563,6 +572,7 @@ class DuaSuggestionHero extends StatelessWidget {
                     ),
                     textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
                       fontSize: 15,
+                      fontVariations: const [FontVariation('opsz', 15)],
                       fontWeight: FontWeight.w600,
                     ),
                   ),

@@ -493,6 +493,7 @@ class _BookmarkLibraryHeader extends StatelessWidget {
             onChanged: onSearchChanged,
             style: TextStyle(
               fontSize: 15,
+              fontVariations: const [FontVariation('opsz', 15)],
               color: context.equranColors.textPrimary,
             ),
             decoration: _savedInputDecoration(context, l.searchHintSaved)
@@ -671,7 +672,11 @@ InputDecoration _savedInputDecoration(BuildContext context, String hint) {
   return InputDecoration(
     constraints: const BoxConstraints(minHeight: 52),
     hintText: hint,
-    hintStyle: TextStyle(color: tokens.muted, fontSize: 15),
+    hintStyle: TextStyle(
+      color: tokens.muted,
+      fontSize: 15,
+      fontVariations: const [FontVariation('opsz', 15)],
+    ),
     filled: true,
     fillColor: context.equranColors.surface,
     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -984,6 +989,7 @@ class _AyahHeading extends StatelessWidget {
                   localizedSurahName(l, entry.surah),
                   style: TextStyle(
                     fontSize: 15,
+                    fontVariations: const [FontVariation('opsz', 15)],
                     fontWeight: FontWeight.w600,
                     color: context.equranColors.textPrimary,
                   ),
@@ -1348,6 +1354,7 @@ class _BookmarkEditorState extends State<_BookmarkEditor> {
                       localizations.favourite,
                       style: TextStyle(
                         fontSize: 15,
+                        fontVariations: const [FontVariation('opsz', 15)],
                         fontWeight: FontWeight.w500,
                         color: colors.textPrimary,
                       ),
@@ -1371,6 +1378,7 @@ class _BookmarkEditorState extends State<_BookmarkEditor> {
                 minLines: 3,
                 style: TextStyle(
                   fontSize: 15,
+                  fontVariations: const [FontVariation('opsz', 15)],
                   height: 1.5,
                   color: colors.textPrimary,
                 ),

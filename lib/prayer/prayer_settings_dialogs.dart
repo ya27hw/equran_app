@@ -205,7 +205,11 @@ class _PrayerSteppedIntDialogState extends State<PrayerSteppedIntDialog> {
           inputFormatters: <TextInputFormatter>[
             FilteringTextInputFormatter.digitsOnly,
           ],
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+          style: const TextStyle(
+            fontSize: 20,
+            fontVariations: [FontVariation('opsz', 20)],
+            fontWeight: FontWeight.w600,
+          ),
           decoration: readerInputDecoration(context).copyWith(
             prefixIcon: widget.min < 0
                 ? IconButton(
@@ -215,6 +219,7 @@ class _PrayerSteppedIntDialogState extends State<PrayerSteppedIntDialog> {
                       _isNegative ? '−' : '+',
                       style: TextStyle(
                         fontSize: 22,
+                        fontVariations: const [FontVariation('opsz', 22)],
                         fontWeight: FontWeight.w700,
                         color: tokens.emText,
                       ),

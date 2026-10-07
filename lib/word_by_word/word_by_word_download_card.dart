@@ -79,6 +79,7 @@ class WordByWordDownloadCard extends StatelessWidget {
                         title,
                         style: TextStyle(
                           fontSize: 15,
+                          fontVariations: const [FontVariation('opsz', 15)],
                           fontWeight: FontWeight.w600,
                           color: colors.textPrimary,
                         ),
@@ -142,6 +143,7 @@ class _PackRow extends StatelessWidget {
                   row.name,
                   style: TextStyle(
                     fontSize: 14.5,
+                    fontVariations: const [FontVariation('opsz', 14.5)],
                     fontWeight: FontWeight.w500,
                     color: context.equranColors.textPrimary,
                   ),

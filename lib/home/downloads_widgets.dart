@@ -9,6 +9,7 @@ import 'package:equran/widgets/redesign/hero_panel.dart';
 import 'package:equran/widgets/redesign/icon_button44.dart';
 import 'package:equran/widgets/redesign/page_typography.dart';
 import 'package:flutter/material.dart';
+import 'package:equran/theme/inter_optical_size.dart';
 
 /// Presentational pieces of the Downloads page. They only draw; the page keeps
 /// the download summary, filters and every delete call.
@@ -95,6 +96,7 @@ class DownloadsCleanupCard extends StatelessWidget {
                   title,
                   style: TextStyle(
                     fontSize: 15.5,
+                    fontVariations: const [FontVariation('opsz', 15.5)],
                     fontWeight: FontWeight.w600,
                     color: colors.textPrimary,
                   ),
@@ -321,7 +323,7 @@ class DownloadRow extends StatelessWidget {
                       fontSize: nested ? 14 : 15,
                       fontWeight: FontWeight.w600,
                       color: active ? tokens.emText : colors.textPrimary,
-                    ),
+                    ).withInterOpticalSize(),
                   ),
                   if (subtitle.isNotEmpty) ...<Widget>[
                     const SizedBox(height: 2),
@@ -376,6 +378,7 @@ class DownloadsFolder extends StatelessWidget {
           title,
           style: TextStyle(
             fontSize: 15,
+            fontVariations: const [FontVariation('opsz', 15)],
             fontWeight: FontWeight.w600,
             color: colors.textPrimary,
           ),

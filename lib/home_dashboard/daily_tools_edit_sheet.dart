@@ -235,6 +235,9 @@ class _DailyToolsEditSheetState extends State<DailyToolsEditSheet> {
                                     tool.getTitle(localizations),
                                     style: TextStyle(
                                       fontSize: 15,
+                                      fontVariations: const [
+                                        FontVariation('opsz', 15),
+                                      ],
                                       fontWeight: FontWeight.w600,
                                       color: isPinned
                                           ? colors.textPrimary

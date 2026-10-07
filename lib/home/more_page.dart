@@ -502,6 +502,7 @@ class _MoreRow extends StatelessWidget {
                     style: theme.textTheme.titleSmall?.copyWith(
                       color: colors.textPrimary,
                       fontSize: 15.5,
+                      fontVariations: const [FontVariation('opsz', 15.5)],
                       fontWeight: FontWeight.w600,
                     ),
                   ),

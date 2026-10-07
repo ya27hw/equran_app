@@ -98,7 +98,12 @@ class ClearDataDialog extends StatelessWidget {
       icon: const DesignIcon('trash'),
       content: Text(
         message,
-        style: TextStyle(fontSize: 14.5, height: 1.45, color: tokens.text2),
+        style: TextStyle(
+          fontSize: 14.5,
+          fontVariations: const [FontVariation('opsz', 14.5)],
+          height: 1.45,
+          color: tokens.text2,
+        ),
       ),
       actions: <Widget>[
         TextButton(

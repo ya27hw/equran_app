@@ -104,6 +104,7 @@ class PrayerMapInfoCard extends StatelessWidget {
             locationLabel,
             style: TextStyle(
               fontSize: 15.5,
+              fontVariations: const [FontVariation('opsz', 15.5)],
               fontWeight: FontWeight.w600,
               color: colors.textPrimary,
             ),

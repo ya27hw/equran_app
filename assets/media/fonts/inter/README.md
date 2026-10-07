@@ -4,6 +4,9 @@ Bundled variable upright font (weight and optical-size axes), registered at
 400, 500 and 600. Used by the opt-in shared labels and standalone debug gallery;
 existing pages keep their current typography.
 
+Flutter keeps `opsz` at 14 unless a style sets it; use `withInterOpticalSize()` from
+`lib/theme/inter_optical_size.dart` for Inter text above 14 px (see CODEX_FOLLOWUP item 6).
+
 Source: https://github.com/google/fonts/tree/main/ofl/inter
 Downloaded 2026-10-03. Licensed under SIL OFL 1.1; see OFL.txt.
 

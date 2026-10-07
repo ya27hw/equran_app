@@ -418,6 +418,7 @@ class HifzTranslationPanel extends StatelessWidget {
       textAlign: TextAlign.center,
       style: TextStyle(
         fontSize: 14.5,
+        fontVariations: const [FontVariation('opsz', 14.5)],
         height: 1.5,
         color: context.equranTokens.text2,
       ),

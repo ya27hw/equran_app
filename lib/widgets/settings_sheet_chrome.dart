@@ -95,6 +95,7 @@ class ReaderSliderBlock extends StatelessWidget {
                   title,
                   style: TextStyle(
                     fontSize: 15,
+                    fontVariations: const [FontVariation('opsz', 15)],
                     fontWeight: FontWeight.w600,
                     color: colors.textPrimary,
                   ),
@@ -316,6 +317,7 @@ class SettingsResourceRow extends StatelessWidget {
                       title,
                       style: TextStyle(
                         fontSize: 15,
+                        fontVariations: const [FontVariation('opsz', 15)],
                         fontWeight: FontWeight.w600,
                         color: selected ? tokens.emText : colors.textPrimary,
                       ),

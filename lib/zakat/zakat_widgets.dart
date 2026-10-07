@@ -10,6 +10,7 @@ import 'package:equran/widgets/redesign/hero_parts.dart';
 import 'package:equran/widgets/redesign/icon_button44.dart';
 import 'package:equran/widgets/redesign/page_typography.dart';
 import 'package:flutter/material.dart';
+import 'package:equran/theme/inter_optical_size.dart';
 
 /// Presentational pieces of the Zakat calculator. They only draw; the page
 /// keeps every figure, the nisab choice, prices and history storage.
@@ -107,6 +108,7 @@ class ZakatCard extends StatelessWidget {
                   title,
                   style: TextStyle(
                     fontSize: 15.5,
+                    fontVariations: const [FontVariation('opsz', 15.5)],
                     fontWeight: FontWeight.w600,
                     color: context.equranColors.textPrimary,
                   ),
@@ -153,6 +155,7 @@ class ZakatAmountLabel extends StatelessWidget {
     textDirection: TextDirection.ltr,
     style: TextStyle(
       fontSize: 14.5,
+      fontVariations: const [FontVariation('opsz', 14.5)],
       fontWeight: FontWeight.w600,
       color: context.equranTokens.emText,
       fontFeatures: const <FontFeature>[FontFeature.tabularFigures()],
@@ -238,6 +241,7 @@ class ZakatCurrencyButton extends StatelessWidget {
                   textDirection: TextDirection.ltr,
                   style: TextStyle(
                     fontSize: 15,
+                    fontVariations: const [FontVariation('opsz', 15)],
                     fontWeight: FontWeight.w600,
                     color: tokens.emText,
                   ),
@@ -319,6 +323,7 @@ class ZakatNisabChoice extends StatelessWidget {
                         label,
                         style: TextStyle(
                           fontSize: 14.5,
+                          fontVariations: const [FontVariation('opsz', 14.5)],
                           fontWeight: FontWeight.w600,
                           color: selected ? tokens.emText : colors.textPrimary,
                         ),
@@ -378,6 +383,7 @@ class ZakatStepperRow extends StatelessWidget {
               label,
               style: TextStyle(
                 fontSize: 14.5,
+                fontVariations: const [FontVariation('opsz', 14.5)],
                 fontWeight: FontWeight.w600,
                 color: context.equranColors.textPrimary,
               ),
@@ -585,7 +591,7 @@ class ZakatValueRow extends StatelessWidget {
                 fontSize: emphasis ? 15 : 14,
                 fontWeight: emphasis ? FontWeight.w600 : FontWeight.w400,
                 color: emphasis ? tokens.emText : tokens.text2,
-              ),
+              ).withInterOpticalSize(),
             ),
           ),
           const SizedBox(width: 12),
@@ -597,7 +603,7 @@ class ZakatValueRow extends StatelessWidget {
               fontWeight: FontWeight.w600,
               color: emphasis ? tokens.emText : colors.textPrimary,
               fontFeatures: const <FontFeature>[FontFeature.tabularFigures()],
-            ),
+            ).withInterOpticalSize(),
           ),
         ],
       ),
@@ -696,6 +702,7 @@ class ZakatHistoryCard extends StatelessWidget {
                   title,
                   style: TextStyle(
                     fontSize: 14.5,
+                    fontVariations: const [FontVariation('opsz', 14.5)],
                     fontWeight: FontWeight.w600,
                     color: context.equranColors.textPrimary,
                   ),

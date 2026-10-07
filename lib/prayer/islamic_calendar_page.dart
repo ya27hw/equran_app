@@ -18,6 +18,7 @@ import 'package:equran/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
 import 'dart:ui' as ui;
+import 'package:equran/theme/inter_optical_size.dart';
 
 class IslamicCalendarPage extends StatefulWidget {
   const IslamicCalendarPage({super.key, this.now});
@@ -696,7 +697,7 @@ class _IslamicCalendarPageState extends State<IslamicCalendarPage> {
                               fontFeatures: const <FontFeature>[
                                 FontFeature.tabularFigures(),
                               ],
-                            ),
+                            ).withInterOpticalSize(),
                           ),
                         ),
                         PositionedDirectional(
@@ -707,7 +708,7 @@ class _IslamicCalendarPageState extends State<IslamicCalendarPage> {
                             style: TextStyle(
                               fontSize: hijriSize,
                               color: hijriColor,
-                            ),
+                            ).withInterOpticalSize(),
                           ),
                         ),
                         if (hasEvent && !isToday && !isSelected)
@@ -1100,6 +1101,7 @@ class _IslamicCalendarPageState extends State<IslamicCalendarPage> {
                         _localizeOccasion(occasion),
                         style: TextStyle(
                           fontSize: 14.5,
+                          fontVariations: const [FontVariation('opsz', 14.5)],
                           fontWeight: FontWeight.w600,
                           color: colors.textPrimary,
                         ),
@@ -1152,6 +1154,7 @@ class _IslamicCalendarPageState extends State<IslamicCalendarPage> {
                         _localizeAction(action),
                         style: TextStyle(
                           fontSize: 14.5,
+                          fontVariations: const [FontVariation('opsz', 14.5)],
                           height: 1.45,
                           color: colors.textPrimary,
                         ),

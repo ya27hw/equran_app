@@ -552,6 +552,7 @@ class _HifzSessionPageState extends State<HifzSessionPage>
                   l10n.hifzEmptySessionBody(_unit.displayName),
                   style: TextStyle(
                     fontSize: 15,
+                    fontVariations: const [FontVariation('opsz', 15)],
                     height: 1.45,
                     color: tokens.text2,
                   ),

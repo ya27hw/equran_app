@@ -432,6 +432,7 @@ class _PresetSelector extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: 17,
+                    fontVariations: const [FontVariation('opsz', 17)],
                     fontWeight: FontWeight.w600,
                     color: colors.textPrimary,
                   ),
@@ -615,6 +616,9 @@ class _CircularCounterState extends State<_CircularCounter>
                                     style: TextStyle(
                                       color: tokens.text2,
                                       fontSize: 18,
+                                      fontVariations: const [
+                                        FontVariation('opsz', 18),
+                                      ],
                                       fontWeight: FontWeight.w600,
                                       fontFeatures: const <FontFeature>[
                                         FontFeature.tabularFigures(),
@@ -817,6 +821,9 @@ class _RecentDhikrSessionsSheet extends StatelessWidget {
                                       ),
                                 style: TextStyle(
                                   fontSize: 15,
+                                  fontVariations: const [
+                                    FontVariation('opsz', 15),
+                                  ],
                                   fontWeight: FontWeight.w600,
                                   color: context.equranColors.textPrimary,
                                 ),

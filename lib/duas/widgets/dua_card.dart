@@ -14,6 +14,7 @@ import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:like_button/like_button.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:equran/theme/inter_optical_size.dart';
 
 enum _DuaOverflowAction { copy, share }
 
@@ -122,7 +123,7 @@ class DuaCard extends StatelessWidget {
                             color: tokens.muted,
                             height: 1.45,
                             fontStyle: FontStyle.italic,
-                          ),
+                          ).withInterOpticalSize(),
                         ),
                       ],
                       if (showTranslation &&
@@ -142,7 +143,7 @@ class DuaCard extends StatelessWidget {
                             fontSize: translationFontSize,
                             color: tokens.text2,
                             height: 1.55,
-                          ),
+                          ).withInterOpticalSize(),
                         ),
                       ],
                       if (metadata.isNotEmpty) ...<Widget>[
@@ -406,6 +407,7 @@ class _OverflowMenuItem extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontSize: 14.5,
+              fontVariations: const [FontVariation('opsz', 14.5)],
               color: context.equranColors.textPrimary,
             ),
           ),

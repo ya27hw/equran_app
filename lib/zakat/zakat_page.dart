@@ -836,7 +836,10 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
           inputFormatters: <TextInputFormatter>[
             FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
           ],
-          style: const TextStyle(fontSize: 16),
+          style: const TextStyle(
+            fontSize: 16,
+            fontVariations: [FontVariation('opsz', 16)],
+          ),
           decoration: _amountDecoration(
             hint:
                 hint ??
@@ -872,7 +875,10 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
             final double v = double.tryParse(val) ?? 0.0;
             setState(() => _categoryAmounts[category] = v);
           },
-          style: const TextStyle(fontSize: 16),
+          style: const TextStyle(
+            fontSize: 16,
+            fontVariations: [FontVariation('opsz', 16)],
+          ),
           decoration: _amountDecoration(
             hint: hint ?? localizations.amountInCurrency(_baseCurrency),
             prefixText: _currencySymbol,

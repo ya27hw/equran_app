@@ -519,6 +519,7 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
                       localizations.customMethod,
                       style: TextStyle(
                         fontSize: 15,
+                        fontVariations: const [FontVariation('opsz', 15)],
                         fontWeight: FontWeight.w600,
                         color: colors.textPrimary,
                       ),

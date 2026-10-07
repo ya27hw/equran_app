@@ -228,6 +228,7 @@ class _PrayerTimeRow extends StatelessWidget {
                             localizedPrayerName(l, entry.kind),
                             style: TextStyle(
                               fontSize: 17,
+                              fontVariations: const [FontVariation('opsz', 17)],
                               fontWeight: FontWeight.w600,
                               color: text,
                             ),

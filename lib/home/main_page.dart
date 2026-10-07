@@ -193,10 +193,18 @@ class _MainPageState extends State<MainPage>
               controller: _searchController,
               autofocus: true,
               onChanged: _changeSearchQuery,
-              style: TextStyle(fontSize: 15, color: colors.textPrimary),
+              style: TextStyle(
+                fontSize: 15,
+                fontVariations: const [FontVariation('opsz', 15)],
+                color: colors.textPrimary,
+              ),
               decoration: InputDecoration.collapsed(
                 hintText: _searchHint(localizations),
-                hintStyle: TextStyle(fontSize: 15, color: tokens.muted),
+                hintStyle: TextStyle(
+                  fontSize: 15,
+                  fontVariations: const [FontVariation('opsz', 15)],
+                  color: tokens.muted,
+                ),
               ),
             ),
           ),
@@ -627,6 +635,7 @@ class _QuranPageTile extends StatelessWidget {
                       style: theme.textTheme.titleSmall?.copyWith(
                         color: colors.textPrimary,
                         fontSize: 16,
+                        fontVariations: const [FontVariation('opsz', 16)],
                         fontWeight: FontWeight.w600,
                       ),
                     ),

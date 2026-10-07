@@ -129,6 +129,7 @@ class _HifzHomePageState extends State<HifzHomePage> {
                       : l10n.juzNumber(n),
                   style: TextStyle(
                     fontSize: 15,
+                    fontVariations: const [FontVariation('opsz', 15)],
                     fontWeight: FontWeight.w600,
                     color: colors.textPrimary,
                   ),
@@ -345,6 +346,9 @@ class _HifzHomePageState extends State<HifzHomePage> {
                                       ),
                                       style: TextStyle(
                                         fontSize: 15,
+                                        fontVariations: const [
+                                          FontVariation('opsz', 15),
+                                        ],
                                         fontWeight: FontWeight.w600,
                                         color: colors.textPrimary,
                                       ),
@@ -511,6 +515,9 @@ class _HifzHomePageState extends State<HifzHomePage> {
                                   : l10n.hifzSearchJuz,
                               textStyle: TextStyle(
                                 fontSize: 15,
+                                fontVariations: const [
+                                  FontVariation('opsz', 15),
+                                ],
                                 color: colors.textPrimary,
                               ),
                               trailingIcon: DesignIcon(
@@ -548,6 +555,9 @@ class _HifzHomePageState extends State<HifzHomePage> {
                                 hintStyle: TextStyle(
                                   color: tokens.muted,
                                   fontSize: 15,
+                                  fontVariations: const [
+                                    FontVariation('opsz', 15),
+                                  ],
                                 ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16),
@@ -1050,6 +1060,7 @@ class _UnitProgressCard extends StatelessWidget {
                       unit.displayName,
                       style: TextStyle(
                         fontSize: 16,
+                        fontVariations: const [FontVariation('opsz', 16)],
                         fontWeight: FontWeight.w600,
                         color: colors.textPrimary,
                       ),

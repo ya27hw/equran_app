@@ -1074,6 +1074,7 @@ class _RoutinePlanCta extends StatelessWidget {
         theme.textTheme.titleSmall?.copyWith(
           color: colors.textPrimary,
           fontSize: 15.5,
+          fontVariations: const [FontVariation('opsz', 15.5)],
           fontWeight: FontWeight.w600,
         ) ??
         const TextStyle();

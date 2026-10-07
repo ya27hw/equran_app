@@ -8,6 +8,7 @@ import 'package:equran/theme/equran_tokens.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:equran/theme/inter_optical_size.dart';
 
 /// A critically damped follower for an angle in degrees.
 ///
@@ -240,7 +241,7 @@ class _QiblaCompassState extends State<QiblaCompass>
         fontWeight: FontWeight.w500,
         color: tokens.muted,
         fontFeatures: const <FontFeature>[FontFeature.tabularFigures()],
-      ),
+      ).withInterOpticalSize(),
     );
     final Color goldInk =
         ThemeData.estimateBrightnessForColor(tokens.gold) == Brightness.light
@@ -449,7 +450,7 @@ class _Hub extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                   letterSpacing: 1.4,
                   color: tokens.muted,
-                ),
+                ).withInterOpticalSize(),
               ),
             ],
           ),
