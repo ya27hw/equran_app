@@ -198,9 +198,13 @@ Settings landing, floating dock, player bar, playback options sheet.
   `arabic-rtl`; `saved_tab_test` `arabic-rtl` and `arabic-text-1.3`), identical with and without the cleanup commit; likely the same font
   fallback, unconfirmed.
 - **(i) Inter `opsz` (item 6)** remains open; it is being handled separately.
-- ~~**(j) Unreferenced after the cleanup:** `lib/widgets/holographic_card.dart`~~ Deleted in `5297dca`. The `foil` dependency in
-  `pubspec.yaml` (vendored in `third_party/foil`) is now unused, and the `holographicCardsEnabled` setting (More page easter egg, backup
-  key) no longer has any effect; both were left alone.
+- ~~**(j) Unreferenced after the cleanup:** `lib/widgets/holographic_card.dart`~~ Deleted in `5297dca`. Removed in `fix/followups`: the
+  `foil` dependency (`pubspec.yaml`, `pubspec.lock`, `third_party/foil`, its notice lines), the `holographicCardsEnabled` setting, the 7-tap
+  easter egg in the About dialog and the key in new backup exports. Old backups that contain the key still restore: `_retiredSettings` in
+  `lib/backend/backup_service.dart` skips it (any value) and the rest of the backup is restored; `test/backup_restore_test.dart` covers it.
+  A value already stored in the settings box by an older version stays there, unused, and is not exported.
+  The same test found that restoring any schema-2 backup always failed and rolled back: `_restoreSections` opened the Hifz boxes as
+  `Box<dynamic>`, but Hive only returns a box for the exact type it was opened with (`Box<HifzEntry>` etc.). Fixed (typed lookups).
 
 ## Design file
 The Prayer hero in the canvas still has the Sunrise/Maghrib labels touching the arc end (fixed in the app, not in the design).

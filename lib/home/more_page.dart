@@ -1,5 +1,4 @@
 import 'package:equran/widgets/common/equran_asset_image.dart';
-import 'package:equran/backend/library.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/theme/equran_tokens.dart';
@@ -642,8 +641,6 @@ class _CustomAboutDialog extends StatefulWidget {
 }
 
 class _CustomAboutDialogState extends State<_CustomAboutDialog> {
-  int _clickCount = 0;
-
   Future<void> _copyDonationAddress(String address) async {
     await Clipboard.setData(ClipboardData(text: address));
     if (!mounted) return;
@@ -742,43 +739,11 @@ class _CustomAboutDialogState extends State<_CustomAboutDialog> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _clickCount++;
-                    });
-                    if (_clickCount == 7) {
-                      _clickCount = 0;
-                      final SettingsDB settings = SettingsDB();
-                      final bool currentVal =
-                          settings.get(
-                                'holographicCardsEnabled',
-                                defaultValue: false,
-                              )
-                              as bool;
-                      final bool nextVal = !currentVal;
-                      settings.put('holographicCardsEnabled', nextVal);
-
-                      Navigator.of(context).pop();
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            nextVal
-                                ? '🌈 Holographic cards enabled!'
-                                : '✨ Holographic cards disabled!',
-                          ),
-                          behavior: SnackBarBehavior.floating,
-                        ),
-                      );
-                    }
-                  },
-                  child: Text(
-                    'eQuran',
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      color: colors.textPrimary,
-                      fontWeight: FontWeight.w900,
-                    ),
+                Text(
+                  'eQuran',
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    color: colors.textPrimary,
+                    fontWeight: FontWeight.w900,
                   ),
                 ),
                 Text(
