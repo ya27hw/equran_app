@@ -164,7 +164,7 @@ Settings landing, floating dock, player bar, playback options sheet.
   card's streak chip used `DateTime.now()` instead of the page's injected clock, so against the real date the seeded 4 Oct 2026 activity
   counted as a broken streak and the chip vanished (a real wall-clock dependency, fixed in the app). The rest was stale Inter `opsz` text
   from `144ac99`, which regenerated only the fresh goldens.
-- **(e) Zakat leftovers:** ~~`$Infinity` message~~, ~~USD wording in `enterPaidAmountUsd`~~, ~~no delete confirmation~~, ~~hard-coded
+- **(e) Zakat leftovers:** (`fix/followups`: with no usable gold/silver rates the result card now shows a neutral "Nisab not checked" pill, a dash for the due amount and the add-rates note, instead of "Below Nisab"; the maths is unchanged, new key `zakatNisabNotChecked`.) ~~`$Infinity` message~~, ~~USD wording in `enterPaidAmountUsd`~~, ~~no delete confirmation~~, ~~hard-coded
   "tola"~~ all done in `5e253a9` (the history tab has no streak suffix; there was no "d" to move). Still open, owner decision: the
   demo livestock constants (`_computeLivestockValue` in `lib/zakat/zakat_page.dart`: 180 / 850 / 1800 per sheep-goat / cow-buffalo /
   camel, in whatever currency is selected with no conversion, added as a wealth line item at a flat 2.5% instead of the Shari'a livestock

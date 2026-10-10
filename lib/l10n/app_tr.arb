@@ -1974,6 +1974,7 @@
   "netZakatableWealth": "Net Zekata Tabi Servet",
   "eligible": "ZEKAT GEREKLİ",
   "belowNisab": "NİSAP ALTINDA",
+  "zakatNisabNotChecked": "NİSAP KONTROL EDİLMEDİ",
   "zakatDueLabel": "ÖDENECEK ZEKAT (%2.5)",
   "resetCalculator": "Hesaplayıcıyı Sıfırla",
   "goldPriceGram": "Gram altın fiyatı ({currency})",

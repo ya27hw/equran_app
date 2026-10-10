@@ -2124,6 +2124,7 @@
   "netZakatableWealth": "Net Zakatable Wealth",
   "eligible": "ELIGIBLE",
   "belowNisab": "BELOW NISAB",
+  "zakatNisabNotChecked": "NISAB NOT CHECKED",
   "zakatDueLabel": "ZAKAT DUE (2.5%)",
   "resetCalculator": "Reset Calculator",
   "goldPriceGram": "Gold price per gram ({currency})",

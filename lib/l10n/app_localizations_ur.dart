@@ -4099,6 +4099,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get belowNisab => 'نصاب سے کم';
 
   @override
+  String get zakatNisabNotChecked => 'نصاب کی جانچ نہیں ہوئی';
+
+  @override
   String get zakatDueLabel => 'واجب الادا زکوٰۃ (2.5%)';
 
   @override

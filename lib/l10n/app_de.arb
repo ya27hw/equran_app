@@ -2089,6 +2089,7 @@
   "netZakatableWealth": "Zakierbares Nettovermögen",
   "eligible": "BERECHTIGT",
   "belowNisab": "UNTER NISAB",
+  "zakatNisabNotChecked": "NISAB NICHT GEPRÜFT",
   "zakatDueLabel": "ZAKAT-FÄLLIGKEIT (2,5 %)",
   "resetCalculator": "Rechner zurücksetzen",
   "goldPriceGram": "Goldpreis pro Gramm ({currency})",

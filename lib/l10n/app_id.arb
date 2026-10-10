@@ -1974,6 +1974,7 @@
   "netZakatableWealth": "Kekayaan Wajib Zakat Bersih",
   "eligible": "WAJIB ZAKAT",
   "belowNisab": "DI BAWAH NISAB",
+  "zakatNisabNotChecked": "NISAB BELUM DICEK",
   "zakatDueLabel": "ZAKAT WAJIB (2.5%)",
   "resetCalculator": "Reset Kalkulator",
   "goldPriceGram": "Harga emas per gram ({currency})",

@@ -7161,6 +7161,12 @@ abstract class AppLocalizations {
   /// **'BELOW NISAB'**
   String get belowNisab;
 
+  /// No description provided for @zakatNisabNotChecked.
+  ///
+  /// In en, this message translates to:
+  /// **'NISAB NOT CHECKED'**
+  String get zakatNisabNotChecked;
+
   /// No description provided for @zakatDueLabel.
   ///
   /// In en, this message translates to:

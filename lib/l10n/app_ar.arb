@@ -1449,6 +1449,7 @@
   "netZakatableWealth": "صافي المال الخاضع للزكاة",
   "eligible": "تجب فيه الزكاة",
   "belowNisab": "دون النصاب",
+  "zakatNisabNotChecked": "النصاب غير محدد",
   "zakatDueLabel": "الزكاة الواجبة (2.5%)",
   "resetCalculator": "إعادة ضبط الحاسبة",
   "goldPriceGram": "سعر الذهب للجرام ({currency})",

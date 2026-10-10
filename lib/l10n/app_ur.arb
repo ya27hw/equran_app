@@ -1974,6 +1974,7 @@
   "netZakatableWealth": "خالص قابلِ زکوٰۃ اثاثے",
   "eligible": "زکوٰۃ واجب ہے",
   "belowNisab": "نصاب سے کم",
+  "zakatNisabNotChecked": "نصاب کی جانچ نہیں ہوئی",
   "zakatDueLabel": "واجب الادا زکوٰۃ (2.5%)",
   "resetCalculator": "کیلکولیٹر ری سیٹ کریں",
   "goldPriceGram": "سونے کی قیمت فی گرام ({currency})",

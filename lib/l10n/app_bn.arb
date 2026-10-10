@@ -1974,6 +1974,7 @@
   "netZakatableWealth": "নেট যাকাতযোগ্য সম্পদ",
   "eligible": "যাকাত প্রযোজ্য",
   "belowNisab": "নিসাবের নিচে",
+  "zakatNisabNotChecked": "নিসাব যাচাই হয়নি",
   "zakatDueLabel": "যাকাত প্রদেয় (২.৫%)",
   "resetCalculator": "ক্যালকুলেটর রিসেট করুন",
   "goldPriceGram": "প্রতি গ্রাম স্বর্ণের মূল্য ({currency})",

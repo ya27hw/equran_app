@@ -2089,6 +2089,7 @@
   "netZakatableWealth": "خالص اموال مشمول زکات",
   "eligible": "مشمول زکات",
   "belowNisab": "کمتر از حد نصاب",
+  "zakatNisabNotChecked": "حد نصاب نامشخص",
   "zakatDueLabel": "زکات تعلق‌گرفته (۲.۵٪)",
   "resetCalculator": "بازنشانی محاسبه‌گر",
   "goldPriceGram": "قیمت هر گرم طلا ({currency})",

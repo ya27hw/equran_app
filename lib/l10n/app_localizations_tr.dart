@@ -4104,6 +4104,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get belowNisab => 'NİSAP ALTINDA';
 
   @override
+  String get zakatNisabNotChecked => 'NİSAP KONTROL EDİLMEDİ';
+
+  @override
   String get zakatDueLabel => 'ÖDENECEK ZEKAT (%2.5)';
 
   @override

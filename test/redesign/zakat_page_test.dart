@@ -327,21 +327,23 @@ void main() {
     expect(find.textContaining('USD'), findsNothing);
   });
 
+  /// Cached rates in another currency cannot be used, and the live request is
+  /// blocked in the test binding: no nisab figure exists.
+  Future<void> seedNoUsableRates() => SettingsDB().put(
+    'zakat_metal_rates',
+    MetalRateSnapshot(
+      goldPricePerGram: 70,
+      silverPricePerGram: 0.9,
+      source: 'Metals.Live',
+      fetchedAt: DateTime(2026, 10, 1, 9, 30),
+      currency: 'EUR',
+    ).toMap(),
+  );
+
   testWidgets('without metal rates the nisab message shows no number', (
     tester,
   ) async {
-    // Cached rates in another currency cannot be used, and the live request
-    // is blocked in the test binding: no nisab figure exists.
-    await SettingsDB().put(
-      'zakat_metal_rates',
-      MetalRateSnapshot(
-        goldPricePerGram: 70,
-        silverPricePerGram: 0.9,
-        source: 'Metals.Live',
-        fetchedAt: DateTime(2026, 10, 1, 9, 30),
-        currency: 'EUR',
-      ).toMap(),
-    );
+    await seedNoUsableRates();
     await pump(tester);
     await tester.enterText(find.byType(TextField).at(0), '100');
     await tester.pumpAndSettle();
@@ -349,6 +351,73 @@ void main() {
     expect(find.textContaining('Infinity'), findsNothing);
     expect(find.textContaining('∞'), findsNothing);
   });
+
+  testWidgets('without metal rates the verdict is unknown, not below nisab', (
+    tester,
+  ) async {
+    await seedNoUsableRates();
+    await pump(tester);
+    // Unknown even before any wealth is entered, and with wealth entered.
+    for (final String cash in <String>['', '100', '1000000']) {
+      await tester.enterText(find.byType(TextField).at(0), cash);
+      await tester.pumpAndSettle();
+      expect(find.text(l10n(tester).zakatNisabNotChecked), findsOneWidget);
+      expect(find.text(l10n(tester).zakatNisabNeedsRates), findsOneWidget);
+      expect(find.text(l10n(tester).belowNisab), findsNothing);
+      expect(find.text(l10n(tester).eligible), findsNothing);
+      // The due figure is a dash, not a final amount.
+      expect(find.text('\u2014'), findsOneWidget);
+      expect(find.text(l10n(tester).saveToHistory), findsOneWidget);
+    }
+    // The save action stays disabled: nothing is due.
+    final Finder save = find.widgetWithText(
+      FilledButton,
+      l10n(tester).saveToHistory,
+    );
+    expect(tester.widget<FilledButton>(save).onPressed, isNull);
+  });
+
+  testWidgets('with metal rates the verdict is still shown and no dash', (
+    tester,
+  ) async {
+    await pump(tester);
+    expect(find.text(l10n(tester).zakatNisabNotChecked), findsNothing);
+    expect(find.text(l10n(tester).zakatNisabNeedsRates), findsNothing);
+    expect(find.text('\u2014'), findsNothing);
+    await tester.enterText(find.byType(TextField).at(0), '100');
+    await tester.pumpAndSettle();
+    expect(find.text(l10n(tester).belowNisab), findsOneWidget);
+    expect(find.text(l10n(tester).zakatNisabNotChecked), findsNothing);
+    await tester.enterText(find.byType(TextField).at(0), '1000');
+    await tester.pumpAndSettle();
+    expect(find.text(l10n(tester).eligible), findsOneWidget);
+    expect(find.text('\u2014'), findsNothing);
+  });
+
+  for (final (String name, EquranColors colors, double scale, Locale locale)
+      in <(String, EquranColors, double, Locale)>[
+        ('emerald-dark', EquranColors.dark, 1.0, const Locale('en')),
+        ('emerald-light', EquranColors.light, 1.0, const Locale('en')),
+        ('text-1.3', EquranColors.dark, 1.3, const Locale('en')),
+        ('arabic-rtl', EquranColors.dark, 1.0, const Locale('ar')),
+      ]) {
+    testWidgets('Zakat calculator without rates golden $name', (tester) async {
+      await seedNoUsableRates();
+      await pump(
+        tester,
+        colors: colors,
+        scale: scale,
+        locale: locale,
+        height: scale > 1 ? 3900 : 3000,
+      );
+      await tester.enterText(find.byType(TextField).at(0), '12000');
+      await tester.pumpAndSettle();
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('goldens/zakat/calculator-no-rates-$name.png'),
+      );
+    });
+  }
 
   testWidgets('the tola unit label is localized', (tester) async {
     await pump(tester, locale: const Locale('ar'));

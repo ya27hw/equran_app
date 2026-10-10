@@ -4020,6 +4020,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get belowNisab => 'دون النصاب';
 
   @override
+  String get zakatNisabNotChecked => 'النصاب غير محدد';
+
+  @override
   String get zakatDueLabel => 'الزكاة الواجبة (2.5%)';
 
   @override

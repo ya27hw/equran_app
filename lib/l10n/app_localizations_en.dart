@@ -4085,6 +4085,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get belowNisab => 'BELOW NISAB';
 
   @override
+  String get zakatNisabNotChecked => 'NISAB NOT CHECKED';
+
+  @override
   String get zakatDueLabel => 'ZAKAT DUE (2.5%)';
 
   @override

@@ -540,6 +540,7 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
     final _ZakatComputation comp = _computeZakat();
     final bool isEligible = comp.isEligible;
     final double zakatDue = comp.zakatDue;
+    final bool nisabKnown = comp.nisabThreshold.isFinite;
     final TextStyle captionStyle = TextStyle(
       fontSize: 12.5,
       height: 1.4,
@@ -738,19 +739,22 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
         ZakatResultHero(
           netLabel: l.netZakatableWealth,
           netAmount: _formatAmount(comp.netWealth),
-          statusLabel: isEligible ? l.eligible : l.belowNisab,
-          eligible: isEligible,
+          // Without gold and silver rates there is no nisab figure (the
+          // threshold is infinite), so the verdict is unknown, not "below" and
+          // the due amount is not a result: show a neutral state and a dash.
+          statusLabel: !nisabKnown
+              ? l.zakatNisabNotChecked
+              : isEligible
+              ? l.eligible
+              : l.belowNisab,
+          eligible: nisabKnown && isEligible,
           dueLabel: l.zakatDueLabel,
-          dueAmount: _formatAmount(zakatDue),
-          showHeart: isEligible && zakatDue > 0,
-          note: !isEligible && comp.netWealth > 0
-              // Without gold and silver rates there is no nisab figure to show
-              // (the threshold is infinite), so ask for rates instead.
-              ? (comp.nisabThreshold.isFinite
-                    ? l.zakatBelowNisabExplanation(
-                        _formatAmount(comp.nisabThreshold),
-                      )
-                    : l.zakatNisabNeedsRates)
+          dueAmount: nisabKnown ? _formatAmount(zakatDue) : '\u2014',
+          showHeart: nisabKnown && isEligible && zakatDue > 0,
+          note: !nisabKnown
+              ? l.zakatNisabNeedsRates
+              : !isEligible && comp.netWealth > 0
+              ? l.zakatBelowNisabExplanation(_formatAmount(comp.nisabThreshold))
               : null,
         ),
 

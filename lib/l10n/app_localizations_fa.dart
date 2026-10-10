@@ -4095,6 +4095,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get belowNisab => 'کمتر از حد نصاب';
 
   @override
+  String get zakatNisabNotChecked => 'حد نصاب نامشخص';
+
+  @override
   String get zakatDueLabel => 'زکات تعلق‌گرفته (۲.۵٪)';
 
   @override
