@@ -194,6 +194,15 @@ void main() {
     expect(find.text('السلام عليكم'), findsNothing);
   });
 
+  testWidgets('streak chip uses the page clock, not the wall clock', (
+    tester,
+  ) async {
+    // The seeded activity is dated 4 Oct 2026; against the real date the
+    // streak would count as broken and the chip (and its golden) vanish.
+    await pump(tester, rich: true);
+    expect(find.text('12-day streak'), findsOneWidget);
+  });
+
   testWidgets('header Hijri date follows the app language', (tester) async {
     // 4 Oct 2026 is 21 Rabi al-Thani 1448; digits stay Western everywhere.
     await pump(tester, rich: true, locale: const Locale('ar'));

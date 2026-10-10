@@ -121,7 +121,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
           child: RefreshIndicator(
             onRefresh: () async {
               setState(() {
-                _now = DateTime.now();
+                _now = widget.clock();
               });
               await _loadExactAlarmStatus();
             },
@@ -382,6 +382,7 @@ class _DashboardContent extends StatelessWidget {
               stats: summary.stats,
               activity: summary.todayActivity,
               latestReadingActivityDate: summary.latestReadingActivityDate,
+              now: now,
               onOpenStats: actions.onOpenStats,
             ),
             if (summary.activePlan != null) ...<Widget>[
@@ -2045,12 +2046,17 @@ class _JourneyPreviewCard extends StatelessWidget {
     required this.stats,
     required this.activity,
     required this.latestReadingActivityDate,
+    required this.now,
     required this.onOpenStats,
   });
 
   final QuranStatsSnapshot? stats;
   final QuranActivityDay? activity;
   final DateTime? latestReadingActivityDate;
+
+  /// The page clock (injectable in tests), not the wall clock, so the streak
+  /// chip agrees with the rest of the screen.
+  final DateTime now;
   final VoidCallback onOpenStats;
 
   @override
@@ -2068,7 +2074,7 @@ class _JourneyPreviewCard extends StatelessWidget {
     final bool showStreak = shouldShowJourneyStreak(
       currentStreak: snapshot.currentStreak,
       lastReadingActivityDate: latestReadingActivityDate,
-      now: DateTime.now(),
+      now: now,
     );
 
     return _HomePremiumCard(
