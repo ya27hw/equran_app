@@ -1,10 +1,10 @@
-import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
+import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/utils/text_direction.dart';
 import 'package:flutter/material.dart';
 
-/// Small parts for the content of a `HeroPanel`. The panel is dark in every
-/// palette, so their colours come from the panel's own ink, not the page's.
+/// Small parts for the content of a `HeroPanel`. Their colours come from the
+/// panel's own tokens (`onFeat`, `featGold`), not the page's.
 
 /// A pill on a hero panel.
 class HeroPill extends StatelessWidget {
@@ -20,7 +20,7 @@ class HeroPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color ink = EquranColors.dark.textPrimary;
+    final Color ink = context.equranTokens.onFeat;
     return Container(
       padding: const EdgeInsetsDirectional.symmetric(
         horizontal: 11,
@@ -73,7 +73,7 @@ class HeroProgressBar extends StatelessWidget {
       minHeight: 8,
       value: value,
       color: color,
-      backgroundColor: EquranColors.dark.textPrimary.withValues(alpha: 0.16),
+      backgroundColor: context.equranTokens.onFeat.withValues(alpha: 0.16),
     ),
   );
 }

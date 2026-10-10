@@ -87,8 +87,7 @@ class _HifzCompleteScreenState extends State<HifzCompleteScreen>
     final l10n = AppLocalizations.of(context)!;
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
     final dueCount = HifzDB.getDueEntries().length;
-    // Hero panels always carry light text (see HeroPanel).
-    final heroInk = EquranColors.dark.textPrimary;
+    final heroInk = tokens.onFeat;
 
     Widget fade(double from, Widget child) => reduceMotion
         ? child
@@ -129,9 +128,9 @@ class _HifzCompleteScreenState extends State<HifzCompleteScreen>
                           height: 80,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: tokens.gold.withValues(alpha: 0.14),
+                            color: tokens.featGold.withValues(alpha: 0.14),
                             border: Border.all(
-                              color: tokens.gold.withValues(alpha: 0.55),
+                              color: tokens.featGold.withValues(alpha: 0.55),
                             ),
                           ),
                           child: Center(
@@ -139,7 +138,7 @@ class _HifzCompleteScreenState extends State<HifzCompleteScreen>
                               'check',
                               size: 38,
                               strokeWidth: 1.8,
-                              color: tokens.gold,
+                              color: tokens.featGold,
                             ),
                           ),
                         ),

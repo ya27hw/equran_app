@@ -34,7 +34,7 @@ class ZakatIntroHero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final EquranTokens tokens = context.equranTokens;
-    final Color gold = heroGoldOf(context);
+    final Color gold = tokens.featGold;
     return HeroPanel(
       padding: const EdgeInsetsDirectional.fromSTEB(22, 20, 22, 22),
       child: Column(
@@ -44,7 +44,7 @@ class ZakatIntroHero extends StatelessWidget {
             children: <Widget>[
               DesignIcon('heart', size: 16, color: gold),
               const SizedBox(width: 8),
-              Expanded(child: RedesignEyebrow(title, color: gold)),
+              Expanded(child: RedesignEyebrow(title, color: tokens.featText2)),
               const SizedBox(width: 10),
               HeroPill(rateLabel),
             ],
@@ -440,8 +440,8 @@ class ZakatResultHero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final EquranTokens tokens = context.equranTokens;
-    final Color gold = heroGoldOf(context);
-    final Color ink = EquranColors.dark.textPrimary;
+    final Color gold = tokens.featGold;
+    final Color ink = tokens.onFeat;
     return HeroPanel(
       padding: const EdgeInsetsDirectional.fromSTEB(22, 20, 22, 22),
       child: Column(
@@ -489,7 +489,7 @@ class ZakatResultHero extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    RedesignEyebrow(dueLabel, color: gold),
+                    RedesignEyebrow(dueLabel, color: tokens.featText2),
                     const SizedBox(height: 8),
                     Align(
                       alignment: AlignmentDirectional.centerStart,

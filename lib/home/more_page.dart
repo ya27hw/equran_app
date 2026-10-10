@@ -282,8 +282,8 @@ class _MoreHero extends StatelessWidget {
   Widget build(BuildContext context) {
     final EquranTokens tokens = context.equranTokens;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final Color ink = EquranColors.dark.textPrimary;
-    final Color gold = heroGoldOf(context);
+    final Color ink = tokens.onFeat;
+    final Color gold = tokens.featGold;
 
     return PressableScale(
       child: HeroPanel(
@@ -343,7 +343,7 @@ class _MoreHero extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
-                                  color: gold,
+                                  color: ink,
                                 ),
                               ),
                               const SizedBox(width: 6),

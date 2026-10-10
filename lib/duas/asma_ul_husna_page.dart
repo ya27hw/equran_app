@@ -262,8 +262,8 @@ class _AsmaHeaderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final EquranTokens tokens = context.equranTokens;
-    final Color gold = heroGoldOf(context);
-    final Color ink = EquranColors.dark.textPrimary;
+    final Color gold = tokens.featGold;
+    final Color ink = tokens.onFeat;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
 
     return HeroPanel(
@@ -293,7 +293,7 @@ class _AsmaHeaderCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 18),
-          const OrnamentDivider(),
+          const OrnamentDivider(onHero: true),
           const SizedBox(height: 16),
           Text(
             'وَلِلَّهِ الْأَسْمَاءُ الْحُسْنَىٰ',
@@ -314,7 +314,7 @@ class _AsmaHeaderCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: gold,
+              color: tokens.featText2,
             ),
           ),
         ],

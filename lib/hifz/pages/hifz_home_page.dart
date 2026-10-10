@@ -168,7 +168,7 @@ class _HifzHomePageState extends State<HifzHomePage> {
     required double progressFraction,
   }) {
     final EquranTokens tokens = context.equranTokens;
-    final Color gold = heroGoldOf(context);
+    final Color gold = tokens.featGold;
     Widget stat(String value, String label) => Expanded(
       child: Column(
         children: [
@@ -200,7 +200,10 @@ class _HifzHomePageState extends State<HifzHomePage> {
               DesignIcon('sparkle', size: 16, color: gold),
               const SizedBox(width: 8),
               Expanded(
-                child: RedesignEyebrow(l10n.hifzJourneyTitle, color: gold),
+                child: RedesignEyebrow(
+                  l10n.hifzJourneyTitle,
+                  color: tokens.featText2,
+                ),
               ),
             ],
           ),
@@ -238,7 +241,7 @@ class _HifzHomePageState extends State<HifzHomePage> {
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: gold,
+                  color: tokens.onFeat,
                 ),
               ),
             ],

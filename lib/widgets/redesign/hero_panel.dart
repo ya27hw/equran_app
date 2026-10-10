@@ -1,21 +1,8 @@
 import 'dart:math' as math;
 import 'dart:ui' as ui;
-import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/theme/equran_tokens.dart';
 import 'package:flutter/material.dart';
-
-/// The gold for text and icons on a [HeroPanel], lifted until it reads on both
-/// gradient stops in every palette.
-Color heroGoldOf(BuildContext context) {
-  final EquranTokens tokens = context.equranTokens;
-  return EquranTokens.ensure(
-    tokens.gold,
-    against: <Color>[tokens.featA, tokens.featB],
-    target: 4.5,
-    toward: EquranColors.dark.textPrimary,
-  );
-}
 
 class HeroPanel extends StatelessWidget {
   const HeroPanel({
@@ -34,14 +21,14 @@ class HeroPanel extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: radius,
         gradient: _HeroGradient([tokens.featA, tokens.featB]),
-        border: Border.all(color: tokens.gold.withValues(alpha: 0.22)),
+        border: Border.all(color: tokens.featRule),
       ),
       child: ClipRRect(
         borderRadius: radius,
         child: DefaultTextStyle.merge(
-          style: TextStyle(color: EquranColors.dark.textPrimary),
+          style: TextStyle(color: tokens.onFeat),
           child: IconTheme.merge(
-            data: IconThemeData(color: EquranColors.dark.textPrimary),
+            data: IconThemeData(color: tokens.onFeat),
             child: Padding(padding: padding, child: child),
           ),
         ),

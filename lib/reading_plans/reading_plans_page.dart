@@ -182,7 +182,7 @@ class _RoutineHero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final EquranTokens tokens = context.equranTokens;
-    final Color gold = heroGoldOf(context);
+    final Color gold = tokens.featGold;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
     final _PlanProgress? progress = plan == null
         ? null
@@ -203,7 +203,7 @@ class _RoutineHero extends StatelessWidget {
               Expanded(
                 child: RedesignEyebrow(
                   localizations.readingRoutine,
-                  color: gold,
+                  color: tokens.featText2,
                 ),
               ),
             ],
@@ -214,7 +214,7 @@ class _RoutineHero extends StatelessWidget {
             style: redesignDisplayStyle(
               context,
               size: 28,
-              color: EquranColors.dark.textPrimary,
+              color: tokens.onFeat,
             ),
           ),
           const SizedBox(height: 8),

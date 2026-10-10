@@ -37,9 +37,11 @@ class DownloadsSummaryHero extends StatelessWidget {
         children: <Widget>[
           Row(
             children: <Widget>[
-              DesignIcon('download', size: 16, color: tokens.goldText),
+              DesignIcon('download', size: 16, color: tokens.featGold),
               const SizedBox(width: 8),
-              Flexible(child: RedesignEyebrow(eyebrow, color: tokens.goldText)),
+              Flexible(
+                child: RedesignEyebrow(eyebrow, color: tokens.featText2),
+              ),
             ],
           ),
           const SizedBox(height: 14),

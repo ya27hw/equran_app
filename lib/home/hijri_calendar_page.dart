@@ -338,7 +338,7 @@ class _HijriCalendarPageState extends State<HijriCalendarPage> {
 
   Widget _buildTodayCard(String lang) {
     final EquranTokens tokens = context.equranTokens;
-    final Color gold = heroGoldOf(context);
+    final Color gold = tokens.featGold;
     final String todayHijriStr =
         '${_todayHijri.hDay} ${_todayHijri.getLocalizedMonthName(lang)} ${_todayHijri.hYear}';
     final DateFormat formatter = DateFormat('EEEE, MMMM d, yyyy', lang);
@@ -354,7 +354,10 @@ class _HijriCalendarPageState extends State<HijriCalendarPage> {
               DesignIcon('moon', size: 16, color: gold),
               const SizedBox(width: 8),
               Expanded(
-                child: RedesignEyebrow(_translateToday(lang), color: gold),
+                child: RedesignEyebrow(
+                  _translateToday(lang),
+                  color: tokens.featText2,
+                ),
               ),
             ],
           ),
@@ -364,7 +367,7 @@ class _HijriCalendarPageState extends State<HijriCalendarPage> {
             style: redesignDisplayStyle(
               context,
               size: 32,
-              color: EquranColors.dark.textPrimary,
+              color: tokens.onFeat,
             ),
           ),
           const SizedBox(height: 8),

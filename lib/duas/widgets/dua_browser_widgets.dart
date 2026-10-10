@@ -507,12 +507,6 @@ class DuaSuggestionHero extends StatelessWidget {
   Widget build(BuildContext context) {
     final tokens = context.equranTokens;
     final l = AppLocalizations.of(context)!;
-    final heroGold = EquranTokens.ensure(
-      tokens.gold,
-      against: [tokens.featA, tokens.featB],
-      target: 4.5,
-      toward: EquranColors.dark.textPrimary,
-    );
     return HeroPanel(
       child: Stack(
         children: [
@@ -522,7 +516,7 @@ class DuaSuggestionHero extends StatelessWidget {
             child: ExcludeSemantics(
               child: CustomPaint(
                 size: const Size(210, 130),
-                painter: _DuaArchPainter(tokens.gold),
+                painter: _DuaArchPainter(tokens.featGold),
               ),
             ),
           ),
@@ -531,7 +525,7 @@ class DuaSuggestionHero extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                DuaEyebrow(suggestion.eyebrow(l), color: heroGold),
+                DuaEyebrow(suggestion.eyebrow(l), color: tokens.featText2),
                 const SizedBox(height: 12),
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 230),
@@ -541,7 +535,7 @@ class DuaSuggestionHero extends StatelessWidget {
                       context,
                       size: 27,
                       height: 1.12,
-                      color: EquranColors.dark.textPrimary,
+                      color: tokens.onFeat,
                     ),
                   ),
                 ),
@@ -561,8 +555,8 @@ class DuaSuggestionHero extends StatelessWidget {
                   ),
                   label: Text(l.beginAction),
                   style: FilledButton.styleFrom(
-                    backgroundColor: tokens.gold,
-                    foregroundColor: EquranColors.blackDark.background,
+                    backgroundColor: tokens.featGold,
+                    foregroundColor: tokens.onFeatGold,
                     minimumSize: const Size(0, 44),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 20,
