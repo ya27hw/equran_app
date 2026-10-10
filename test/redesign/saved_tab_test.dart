@@ -196,6 +196,9 @@ void main() {
         find.byKey(const Key('saved-note-editor')),
         'Changed reflection',
       );
+      // Existing tags show as removable pills; new ones are typed inline.
+      await tester.tap(find.byTooltip('Remove #patience'));
+      await tester.pumpAndSettle();
       await tester.enterText(
         find.byKey(const Key('saved-tags-editor')),
         'hope, new, new',
@@ -363,12 +366,12 @@ void main() {
       await openEditor(tester, 'Edit tags');
       await tester.tap(find.byType(SwitchListTile));
       await tester.pumpAndSettle();
-      final tag = find.widgetWithText(Chip, '#hope');
+      final tag = find.byTooltip('Remove #hope');
       await tester.ensureVisible(tag);
       await tester.pumpAndSettle();
-      await tester.tap(find.byTooltip('Remove #hope'));
+      await tester.tap(tag);
       await tester.pumpAndSettle();
-      expect(find.widgetWithText(Chip, '#hope'), findsNothing);
+      expect(find.byTooltip('Remove #hope'), findsNothing);
       await tester.ensureVisible(find.text('Save'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Save'));

@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_compass/flutter_compass.dart';
 import 'package:equran/l10n/app_localizations.dart';
+import 'package:equran/utils/text_case.dart';
 
 class QiblaPage extends StatefulWidget {
   const QiblaPage({
@@ -754,7 +755,7 @@ class _Stat extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            label.toUpperCase(),
+            upperCaseIn(context, label),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(

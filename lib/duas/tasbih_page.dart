@@ -5,7 +5,13 @@ import 'package:equran/backend/library.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/theme/equran_text_styles.dart';
+import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/utils/quran_display.dart';
+import 'package:equran/widgets/reader_sheet_chrome.dart';
+import 'package:equran/widgets/redesign/design_icon.dart';
+import 'package:equran/widgets/redesign/display_numeral.dart';
+import 'package:equran/widgets/redesign/hairline_card.dart';
+import 'package:equran/widgets/redesign/page_typography.dart';
 import 'package:equran/widgets/redesign/redesign_widgets.dart'
     show IconButton44, RedesignSubpage;
 import 'package:flutter/material.dart';
@@ -136,6 +142,10 @@ class _TasbihPageState extends State<TasbihPage> {
                       ),
                       const SizedBox(height: 22),
                       TextButton(
+                        style: readerTextButtonStyle(
+                          context,
+                          color: context.equranTokens.emText,
+                        ),
                         onPressed: () => _showRecentSessionsSheet(sessions),
                         child: Text(
                           AppLocalizations.of(context)!.recentSessions,
@@ -261,10 +271,8 @@ class _TasbihPageState extends State<TasbihPage> {
   }
 
   void _showRecentSessionsSheet(List<DhikrSessionEntry> sessions) {
-    showModalBottomSheet<void>(
+    showReaderSheet<void>(
       context: context,
-      showDragHandle: true,
-      useSafeArea: true,
       builder: (context) => _RecentDhikrSessionsSheet(
         sessions: sessions.take(12).toList(growable: false),
       ),
@@ -400,67 +408,51 @@ class _PresetSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final EquranColors colors = context.equranColors;
-    final ThemeData theme = Theme.of(context);
+    final EquranTokens tokens = context.equranTokens;
     final _DhikrPreset selectedPreset = _DhikrPreset.presets[selectedIndex];
     final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final BorderRadius radius = BorderRadius.circular(16);
 
-    return Material(
-      color: colors.background.withAlpha(0),
-      borderRadius: radius,
-      clipBehavior: Clip.antiAlias,
-      child: Ink(
-        decoration: BoxDecoration(
-          color: colors.surface,
-          borderRadius: radius,
-          border: Border.all(color: colors.border),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(8, 10, 8, 11),
-          child: Column(
+    return HairlineCard(
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 14),
+      child: Column(
+        children: <Widget>[
+          Row(
             children: <Widget>[
-              Row(
-                children: <Widget>[
-                  IconButton(
-                    tooltip: localizations.previousDhikr,
-                    onPressed: enabled ? onPrevious : null,
-                    color: colors.textSecondary,
-                    icon: const Icon(Icons.chevron_left_rounded),
-                  ),
-                  Expanded(
-                    child: Text(
-                      selectedPreset.localizedLabel(localizations),
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        color: colors.textPrimary,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    tooltip: localizations.nextDhikr,
-                    onPressed: enabled ? onNext : null,
-                    color: colors.textSecondary,
-                    icon: const Icon(Icons.chevron_right_rounded),
-                  ),
-                ],
+              IconButton44(
+                designIcon: 'chevl',
+                tooltip: localizations.previousDhikr,
+                ghost: true,
+                onPressed: enabled ? onPrevious : null,
               ),
-              Text(
-                localizations.counts33To33To34(selectedPreset.target),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colors.textSecondary,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
+              Expanded(
+                child: Text(
+                  selectedPreset.localizedLabel(localizations),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontVariations: const [FontVariation('opsz', 17)],
+                    fontWeight: FontWeight.w600,
+                    color: colors.textPrimary,
+                  ),
                 ),
+              ),
+              IconButton44(
+                designIcon: 'chev',
+                tooltip: localizations.nextDhikr,
+                ghost: true,
+                onPressed: enabled ? onNext : null,
               ),
             ],
           ),
-        ),
+          Text(
+            localizations.counts33To33To34(selectedPreset.target),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 13, color: tokens.muted),
+          ),
+        ],
       ),
     );
   }
@@ -518,7 +510,7 @@ class _CircularCounterState extends State<_CircularCounter>
   @override
   Widget build(BuildContext context) {
     final EquranColors colors = context.equranColors;
-    final ThemeData theme = Theme.of(context);
+    final EquranTokens tokens = context.equranTokens;
     final double progress = widget.preset.target <= 0
         ? 0
         : (widget.count / widget.preset.target).clamp(0.0, 1.0).toDouble();
@@ -556,7 +548,7 @@ class _CircularCounterState extends State<_CircularCounter>
                           boxShadow: widget.pulse
                               ? <BoxShadow>[
                                   BoxShadow(
-                                    color: colors.primarySoft.withAlpha(110),
+                                    color: tokens.emText.withAlpha(90),
                                     blurRadius: 34,
                                     spreadRadius: 4,
                                   ),
@@ -572,8 +564,8 @@ class _CircularCounterState extends State<_CircularCounter>
                           return CustomPaint(
                             painter: _CounterRingPainter(
                               progress: animatedProgress,
-                              trackColor: colors.border,
-                              progressColor: colors.primary,
+                              trackColor: tokens.hair2,
+                              progressColor: tokens.emText,
                             ),
                             child: child,
                           );
@@ -611,25 +603,27 @@ class _CircularCounterState extends State<_CircularCounter>
                               Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
-                                  Text(
+                                  DisplayNumeral(
                                     '${widget.count}',
-                                    style: theme.textTheme.displayLarge
-                                        ?.copyWith(
-                                          color: colors.textPrimary,
-                                          fontSize: 88,
-                                          fontWeight: FontWeight.w700,
-                                          height: 0.9,
-                                        ),
+                                    size: 88,
+                                    height: 0.95,
+                                    color: colors.textPrimary,
                                   ),
                                   const SizedBox(height: 10),
                                   Text(
                                     '/ ${widget.preset.target}',
-                                    style: theme.textTheme.titleMedium
-                                        ?.copyWith(
-                                          color: colors.textSecondary,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w600,
-                                        ),
+                                    textDirection: TextDirection.ltr,
+                                    style: TextStyle(
+                                      color: tokens.text2,
+                                      fontSize: 18,
+                                      fontVariations: const [
+                                        FontVariation('opsz', 18),
+                                      ],
+                                      fontWeight: FontWeight.w600,
+                                      fontFeatures: const <FontFeature>[
+                                        FontFeature.tabularFigures(),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),
@@ -662,8 +656,7 @@ class _DhikrCaption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final EquranColors colors = context.equranColors;
-    final ThemeData theme = Theme.of(context);
+    final EquranTokens tokens = context.equranTokens;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
 
     return Column(
@@ -671,25 +664,20 @@ class _DhikrCaption extends StatelessWidget {
         Text(
           preset.localizedLabel(localizations),
           textAlign: TextAlign.center,
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: colors.textPrimary,
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-          ),
+          style: redesignDisplayStyle(context, size: 26),
         ),
-        const SizedBox(height: 5),
+        const SizedBox(height: 6),
         Text(
           completionMessage ??
               localizations.autoAdvancesToNextPreset(
                 nextPreset.localizedLabel(localizations),
               ),
           textAlign: TextAlign.center,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: completionMessage == null
-                ? colors.textSecondary
-                : colors.primarySoft,
+          style: TextStyle(
             fontSize: 13,
+            height: 1.4,
             fontWeight: FontWeight.w600,
+            color: completionMessage == null ? tokens.text2 : tokens.emText,
           ),
         ),
       ],
@@ -708,28 +696,16 @@ class _HapticsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final EquranColors colors = context.equranColors;
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Icon(Icons.vibration_rounded, color: colors.textSecondary, size: 19),
-        const SizedBox(width: 7),
-        Text(
-          AppLocalizations.of(context)!.haptics,
-          style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            color: colors.textSecondary,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(width: 8),
-        Switch(
+    return HairlineCard(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(EquranRadii.xl - 1),
+        child: ReaderSwitchRow(
+          leading: const Icon(Icons.vibration_rounded),
+          title: AppLocalizations.of(context)!.haptics,
           value: hapticsEnabled,
-          activeThumbColor: colors.primary,
-          activeTrackColor: colors.primarySoft.withAlpha(90),
           onChanged: onHapticsChanged,
         ),
-      ],
+      ),
     );
   }
 }
@@ -778,44 +754,17 @@ class _StatsMetricCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final EquranColors colors = context.equranColors;
-    final ThemeData theme = Theme.of(context);
-    final BorderRadius radius = BorderRadius.circular(16);
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.surfaceAlt,
-        borderRadius: radius,
-        border: Border.all(color: colors.border),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 11),
-        child: Column(
-          children: <Widget>[
-            Text(
-              label.toUpperCase(),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: colors.textMuted,
-                fontSize: 11,
-                letterSpacing: 1.2,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              value,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                color: colors.textPrimary,
-                fontSize: 22,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ],
-        ),
+    return HairlineCard(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+      child: Column(
+        children: <Widget>[
+          FittedBox(fit: BoxFit.scaleDown, child: RedesignEyebrow(label)),
+          const SizedBox(height: 8),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: DisplayNumeral(value, size: 26, height: 1.1),
+          ),
+        ],
       ),
     );
   }
@@ -828,57 +777,84 @@ class _RecentDhikrSessionsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final EquranColors colors = context.equranColors;
-    final ThemeData theme = Theme.of(context);
+    final EquranTokens tokens = context.equranTokens;
     final localizations = AppLocalizations.of(context)!;
 
-    return ListView(
-      shrinkWrap: true,
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(18, 6, 18, 24),
+    return ReaderSheetFrame(
+      title: localizations.recentSessions,
       children: <Widget>[
-        Text(
-          localizations.recentSessions,
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: colors.textPrimary,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 10),
         if (sessions.isEmpty)
           Text(
             localizations.savedDhikrSessionsEmpty,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colors.textSecondary,
-            ),
+            style: TextStyle(fontSize: 14, height: 1.45, color: tokens.text2),
           )
         else
-          for (final DhikrSessionEntry session in sessions)
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: Icon(
-                session.completedAt == null
-                    ? Icons.radio_button_checked_rounded
-                    : Icons.check_circle_rounded,
-                color: session.completedAt == null
-                    ? colors.textMuted
-                    : colors.primary,
-              ),
-              title: Text(
-                session.label == _postPrayerDhikrStorageLabel
-                    ? localizations.postPrayerDhikr
-                    : _localizedDhikrSessionLabel(session.label, localizations),
-              ),
-              subtitle: Text(
-                session.label == _postPrayerDhikrStorageLabel
-                    ? '${_postPrayerDhikrSummary(localizations)}\n${_sessionTimeLabel(session, localizations)}'
-                    : localizations.dhikrSessionCounted(
-                        session.count,
-                        session.targetCount,
-                        _sessionTimeLabel(session, localizations),
-                      ),
-              ),
-            ),
+          ReaderSheetGroup(
+            children: <Widget>[
+              for (final DhikrSessionEntry session in sessions)
+                ConstrainedBox(
+                  constraints: const BoxConstraints(minHeight: 64),
+                  child: Padding(
+                    padding: const EdgeInsetsDirectional.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                    child: Row(
+                      children: <Widget>[
+                        ReaderIconWell(
+                          icon: DesignIcon(
+                            session.completedAt == null ? 'clock' : 'check',
+                            strokeWidth: 1.8,
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                session.label == _postPrayerDhikrStorageLabel
+                                    ? localizations.postPrayerDhikr
+                                    : _localizedDhikrSessionLabel(
+                                        session.label,
+                                        localizations,
+                                      ),
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontVariations: const [
+                                    FontVariation('opsz', 15),
+                                  ],
+                                  fontWeight: FontWeight.w600,
+                                  color: context.equranColors.textPrimary,
+                                ),
+                              ),
+                              const SizedBox(height: 3),
+                              Text(
+                                session.label == _postPrayerDhikrStorageLabel
+                                    ? '${_postPrayerDhikrSummary(localizations)}\n${_sessionTimeLabel(session, localizations)}'
+                                    : localizations.dhikrSessionCounted(
+                                        session.count,
+                                        session.targetCount,
+                                        _sessionTimeLabel(
+                                          session,
+                                          localizations,
+                                        ),
+                                      ),
+                                style: TextStyle(
+                                  fontSize: 12.5,
+                                  height: 1.3,
+                                  color: tokens.muted,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          ),
       ],
     );
   }

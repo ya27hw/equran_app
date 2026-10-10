@@ -25,7 +25,7 @@ class _StatsText extends StatelessWidget {
       height: 1.4,
       color: color ?? context.equranTokens.text2,
       fontWeight: weight,
-    ),
+    ).withInterOpticalSize(),
   );
 }
 

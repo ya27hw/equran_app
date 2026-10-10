@@ -1,25 +1,37 @@
 import 'package:equran/backend/settings_db.dart';
 import 'package:equran/theme/equran_colors.dart';
-import 'package:equran/utils/app_radii.dart';
-import 'package:equran/widgets/common/equran_components.dart';
+import 'package:equran/theme/equran_spacing.dart';
+import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/prayer/hijri_calendar.dart';
 import 'package:equran/prayer/prayer_notification_service.dart';
+import 'package:equran/widgets/reader_sheet_chrome.dart';
+import 'package:equran/widgets/redesign/design_icon.dart';
+import 'package:equran/widgets/redesign/hairline_card.dart';
+import 'package:equran/widgets/redesign/icon_button44.dart';
+import 'package:equran/widgets/redesign/page_typography.dart';
+import 'package:equran/widgets/redesign/pill_tag.dart';
 import 'package:equran/widgets/redesign/redesign_subpage.dart';
+import 'package:equran/widgets/redesign/segmented_control.dart';
+import 'package:equran/widgets/settings_sheet_chrome.dart';
 import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
 import 'dart:ui' as ui;
+import 'package:equran/theme/inter_optical_size.dart';
 
 class IslamicCalendarPage extends StatefulWidget {
-  const IslamicCalendarPage({super.key});
+  const IslamicCalendarPage({super.key, this.now});
+
+  /// The clock for today and the selected day; tests pass a fixed one.
+  final DateTime Function()? now;
 
   @override
   State<IslamicCalendarPage> createState() => _IslamicCalendarPageState();
 }
 
 class _IslamicCalendarPageState extends State<IslamicCalendarPage> {
-  DateTime _focusedDate = DateTime.now();
+  late DateTime _focusedDate;
   DateTime? _selectedDate;
   int _sightingOffset = 0;
   bool _fastingRemindersEnabled = false;
@@ -34,8 +46,11 @@ class _IslamicCalendarPageState extends State<IslamicCalendarPage> {
       'fasting_reminders_enabled',
       defaultValue: false,
     );
-    _selectedDate = DateTime.now();
+    _focusedDate = _now();
+    _selectedDate = _focusedDate;
   }
+
+  DateTime _now() => widget.now?.call() ?? DateTime.now();
 
   Future<void> _updateSightingOffset(int newOffset) async {
     await SettingsDB().put('hijri_offset', newOffset);
@@ -263,54 +278,40 @@ class _IslamicCalendarPageState extends State<IslamicCalendarPage> {
     }
   }
 
-  Color? _getDayHighlightColor(HijriCalendar hijri, EquranColors colors) {
-    // Use gold/accent for major blessed events (never stronger than today/selection)
+  /// The calendar treatment a day gets. The conditions are the page's own
+  /// (Eid, Ramadan, fasting days, blessed nights); only how they are drawn
+  /// changed.
+  _DayKind _dayKind(HijriCalendar hijri) {
     final bool isMajorEid =
         (hijri.hMonth == 10 && hijri.hDay == 1) ||
         (hijri.hMonth == 12 && hijri.hDay == 10);
-
-    if (isMajorEid) {
-      return colors.accentGold; // Gold for Eids — special but not overpowering
-    }
-
-    if (hijri.hMonth == 9) {
-      return colors.primary.withAlpha(18); // Very soft Ramadan wash
-    }
+    if (isMajorEid) return _DayKind.eid;
+    if (hijri.hMonth == 9) return _DayKind.ramadan;
 
     final String? occasion = hijri.majorOccasion;
     if (occasion == 'Day of Arafah' || occasion == 'Day of Ashura') {
-      return colors.mint.withAlpha(45);
+      return _DayKind.fast;
     }
     if (occasion == 'Laylat al-Qadr' ||
         occasion == 'Shab-e-Barat' ||
         occasion == 'Isra\' and Mi\'raj') {
-      return colors.goldSoft.withAlpha(35);
+      return _DayKind.blessedNight;
     }
-
     if (hijri.hDay == 13 || hijri.hDay == 14 || hijri.hDay == 15) {
-      return colors.mint.withAlpha(22); // Ayyam al-Bid — very subtle
+      return _DayKind.fast;
     }
-
-    return null;
+    return _DayKind.none;
   }
 
   @override
   Widget build(BuildContext context) {
-    final EquranColors colors = context.equranColors;
-    final ThemeData theme = Theme.of(context);
+    final DateTime focused = _focusedDate;
+    final bool reduceMotion = MediaQuery.disableAnimationsOf(context);
 
     // Days in current focused month
-    final DateTime firstOfMonth = DateTime(
-      _focusedDate.year,
-      _focusedDate.month,
-      1,
-    );
+    final DateTime firstOfMonth = DateTime(focused.year, focused.month, 1);
     final int blankDaysCount = firstOfMonth.weekday - 1; // Mon = 1
-    final DateTime lastOfMonth = DateTime(
-      _focusedDate.year,
-      _focusedDate.month + 1,
-      0,
-    );
+    final DateTime lastOfMonth = DateTime(focused.year, focused.month + 1, 0);
     final int daysInMonthCount = lastOfMonth.day;
 
     final List<String> weekdays = List<String>.generate(7, (index) {
@@ -326,153 +327,134 @@ class _IslamicCalendarPageState extends State<IslamicCalendarPage> {
         padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
         physics: const BouncingScrollPhysics(),
         children: <Widget>[
-          // ==================== DATE WIDGET (Header) at the very top ====================
-          _buildCalendarHeader(theme, colors),
-
-          const SizedBox(height: 10),
-
-          // ==================== CALENDAR GRID — wrapped in a beautiful card ====================
-          EquranSurfaceCard(
-            padding: const EdgeInsets.all(8),
-            child: Column(
-              children: <Widget>[
-                // Uses responsive, elegant cells with correct visual hierarchy.
-                // Subtle animation on month change.
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 280),
-                  switchInCurve: Curves.easeOutCubic,
-                  switchOutCurve: Curves.easeInCubic,
-                  child: _buildPremiumMonthGrid(
-                    key: ValueKey<int>(
-                      _focusedDate.month * 10000 + _focusedDate.year,
-                    ),
-                    theme,
-                    colors,
-                    firstOfMonth: firstOfMonth,
-                    blankDaysCount: blankDaysCount,
-                    daysInMonthCount: daysInMonthCount,
-                    weekdays: weekdays,
-                  ),
-                ),
-              ],
+          _buildCalendarHeader(),
+          const SizedBox(height: 12),
+          HairlineCard(
+            padding: const EdgeInsets.all(12),
+            child: AnimatedSwitcher(
+              duration: reduceMotion
+                  ? Duration.zero
+                  : const Duration(milliseconds: 280),
+              switchInCurve: Curves.easeOutCubic,
+              switchOutCurve: Curves.easeInCubic,
+              child: _buildPremiumMonthGrid(
+                key: ValueKey<int>(focused.month * 10000 + focused.year),
+                firstOfMonth: firstOfMonth,
+                blankDaysCount: blankDaysCount,
+                daysInMonthCount: daysInMonthCount,
+                weekdays: weekdays,
+              ),
             ),
           ),
-
-          Divider(color: colors.divider, height: 24),
-
-          // ==================== TWO MOON WIDGETS — placed beneath the calendar ====================
-          _buildTopMoonCombinedSection(theme, colors),
-
-          const SizedBox(height: 8),
-
-          // Elegant Event Legend (small but beautiful)
-          _buildEventLegend(theme, colors),
-
-          const SizedBox(height: 10),
-
-          // Quick Jump to Major Dates
-          _buildQuickJumps(theme, colors),
-
           const SizedBox(height: 14),
-
-          // This Year's Key Islamic Dates (compact summary)
-          _buildYearKeyDates(theme, colors),
-
-          Divider(color: colors.divider, height: 24),
-
-          // Date Details Box
+          _buildEventLegend(),
+          const SizedBox(height: 16),
+          _buildTopMoonCombinedSection(),
+          const SizedBox(height: 20),
+          _buildQuickJumps(),
+          const SizedBox(height: 22),
+          _buildYearKeyDates(),
           if (_selectedDate != null) ...<Widget>[
-            _buildDateDetailsCard(theme, colors),
+            const SizedBox(height: 22),
+            _buildDateDetailsCard(),
           ],
         ],
       ),
     );
   }
 
-  // ==================== TOP COMBINED SQUARE-ISH SECTION ====================
-  // Moon Sighting controls (left) + Beautiful Moon Phase visual (right)
-  // Designed to feel balanced and square when placed side-by-side on phones.
-  Widget _buildTopMoonCombinedSection(ThemeData theme, EquranColors colors) {
+  // Moon sighting controls and the moon phase, side by side.
+  Widget _buildTopMoonCombinedSection() {
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          // Left: Moon Sighting / Offset controls (compact & clean)
-          Expanded(child: _buildCompactMoonSightingCard(theme, colors)),
+          Expanded(child: _buildCompactMoonSightingCard()),
           const SizedBox(width: 12),
-          // Right: Beautiful Moon Phase visual (tight, elegant, no overflow)
-          Expanded(child: _buildMoonPhaseCard(theme, colors)),
+          Expanded(child: _buildMoonPhaseCard()),
         ],
       ),
     );
   }
 
-  Widget _buildCompactMoonSightingCard(ThemeData theme, EquranColors colors) {
-    final String offsetLabel = _sightingOffset == 0
-        ? localizations.standard
-        : '${_sightingOffset > 0 ? '+' : ''}${_sightingOffset.abs() == 1 ? localizations.daySingular(_sightingOffset.abs()) : localizations.daysPlural(_sightingOffset.abs())}';
+  /// A hairline card that can be tapped; the ripple needs the surface to be a
+  /// [Material], so this does not wrap a plain container.
+  Widget _tapCard({required Widget child, VoidCallback? onTap}) {
+    final EquranTokens tokens = context.equranTokens;
+    return Material(
+      color: context.equranColors.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(EquranRadii.xl),
+        side: BorderSide(color: tokens.hair),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(onTap: onTap, child: child),
+    );
+  }
 
-    return InkWell(
-      onTap: () => _showCalendarSettingsSheet(theme, colors),
-      borderRadius: BorderRadius.circular(AppRadii.large),
-      child: EquranSurfaceCard(
-        padding: const EdgeInsets.all(14),
-        backgroundColor: colors.surface,
-        borderColor: colors.border,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                Icon(
-                  Icons.visibility_outlined,
-                  color: colors.primary,
-                  size: 32,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  localizations.moonSighting,
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: colors.primary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
+  Widget _infoCardBody({
+    required Widget icon,
+    required String label,
+    required String value,
+    required String caption,
+    int captionLines = 2,
+  }) {
+    final EquranTokens tokens = context.equranTokens;
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          ReaderIconWell(icon: icon),
+          const SizedBox(height: 14),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w600,
+              color: tokens.emText,
             ),
-            const SizedBox(height: 6),
-            Text(
-              offsetLabel,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: colors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              localizations.tapToAdjust,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colors.textSecondary,
-              ),
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 4),
+          Text(value, style: redesignDisplayStyle(context, size: 22)),
+          const SizedBox(height: 6),
+          Text(
+            caption,
+            maxLines: captionLines,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 12.5, height: 1.35, color: tokens.muted),
+          ),
+        ],
       ),
     );
   }
 
-  // ==================== SEPARATE BEAUTIFUL MOON PHASE CARD ====================
-  Widget _buildMoonPhaseCard(ThemeData theme, EquranColors colors) {
-    final DateTime referenceDate = _selectedDate ?? DateTime.now();
+  Widget _buildCompactMoonSightingCard() {
+    final String offsetLabel = _sightingOffset == 0
+        ? localizations.standard
+        : '${_sightingOffset > 0 ? '+' : ''}${_sightingOffset.abs() == 1 ? localizations.daySingular(_sightingOffset.abs()) : localizations.daysPlural(_sightingOffset.abs())}';
+
+    return _tapCard(
+      onTap: _showCalendarSettingsSheet,
+      child: _infoCardBody(
+        icon: const DesignIcon('sliders'),
+        label: localizations.moonSighting,
+        value: offsetLabel,
+        caption: localizations.tapToAdjust,
+      ),
+    );
+  }
+
+  Widget _buildMoonPhaseCard() {
+    final DateTime referenceDate = _selectedDate ?? _now();
     final HijriCalendar hijri = HijriCalendar.fromDate(
       referenceDate,
       offset: _sightingOffset,
     );
     final int phase = hijri.estimatedMoonPhase;
-    final IconData moonIcon = _moonIconForPhase(phase);
     final String phaseName = _localizeMoonPhase(phase);
 
-    // Short contextual line — avoid repeating the phase name
+    // Short contextual line, so the phase name is not repeated.
     final String contextLine = switch (phase) {
       0 => localizations.moonPhaseContextNew,
       1 => localizations.moonPhaseContextWaxing,
@@ -480,53 +462,24 @@ class _IslamicCalendarPageState extends State<IslamicCalendarPage> {
       _ => localizations.moonPhaseContextWaning,
     };
 
-    return EquranSurfaceCard(
-      padding: const EdgeInsets.all(14),
-      backgroundColor: colors.surface,
-      borderColor: colors.border,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Icon(moonIcon, size: 32, color: colors.primary),
-          const SizedBox(height: 6),
-          Text(
-            localizations.moonPhase,
-            style: theme.textTheme.labelMedium?.copyWith(
-              color: colors.primary,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            phaseName,
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: colors.textPrimary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            contextLine,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colors.textSecondary,
-            ),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
+    return _tapCard(
+      child: _infoCardBody(
+        icon: Icon(_moonIconForPhase(phase)),
+        label: localizations.moonPhase,
+        value: phaseName,
+        caption: contextLine,
       ),
     );
   }
 
-  // ==================== NEW PREMIUM HEADER ====================
-  Widget _buildCalendarHeader(ThemeData theme, EquranColors colors) {
-    // Use MMM YYYY format as requested for the main calendar card label
-    final String gregorianLabel = DateFormat('MMM yyyy').format(_focusedDate);
+  Widget _buildCalendarHeader() {
+    final EquranTokens tokens = context.equranTokens;
+    final String gregorianLabel = DateFormat(
+      'MMM yyyy',
+      localizations.localeName,
+    ).format(_focusedDate);
 
-    // Try to show approximate Hijri month for the middle of the focused Gregorian month
+    // Approximate Hijri month for the middle of the focused Gregorian month.
     final DateTime midMonth = DateTime(
       _focusedDate.year,
       _focusedDate.month,
@@ -536,13 +489,16 @@ class _IslamicCalendarPageState extends State<IslamicCalendarPage> {
       midMonth,
       offset: _sightingOffset,
     );
+    final MaterialLocalizations material = MaterialLocalizations.of(context);
 
-    return EquranSurfaceCard(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+    return HairlineCard(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       child: Row(
         children: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.chevron_left_rounded, size: 26),
+          IconButton44(
+            designIcon: 'chevl',
+            tooltip: material.previousMonthTooltip,
+            ghost: true,
             onPressed: () {
               setState(() {
                 _focusedDate = DateTime(
@@ -551,7 +507,6 @@ class _IslamicCalendarPageState extends State<IslamicCalendarPage> {
                 );
               });
             },
-            color: colors.textSecondary,
           ),
           Expanded(
             child: Column(
@@ -559,24 +514,26 @@ class _IslamicCalendarPageState extends State<IslamicCalendarPage> {
               children: <Widget>[
                 Text(
                   gregorianLabel,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w900,
-                    color: colors.textPrimary,
-                  ),
+                  textAlign: TextAlign.center,
+                  style: redesignDisplayStyle(context, size: 24),
                 ),
-                const SizedBox(height: 1),
+                const SizedBox(height: 2),
                 Text(
                   '${midHijri.getLocalizedMonthName(localizations.localeName)} ${midHijri.hYear}',
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: colors.accentGold,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 13,
                     fontWeight: FontWeight.w600,
+                    color: tokens.goldText,
                   ),
                 ),
               ],
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.chevron_right_rounded, size: 26),
+          IconButton44(
+            designIcon: 'chev',
+            tooltip: material.nextMonthTooltip,
+            ghost: true,
             onPressed: () {
               setState(() {
                 _focusedDate = DateTime(
@@ -585,64 +542,61 @@ class _IslamicCalendarPageState extends State<IslamicCalendarPage> {
                 );
               });
             },
-            color: colors.textSecondary,
           ),
         ],
       ),
     );
   }
 
-  // ==================== THE BEAUTIFUL NEW MONTH GRID ====================
-  Widget _buildPremiumMonthGrid(
-    ThemeData theme,
-    EquranColors colors, {
+  Widget _buildPremiumMonthGrid({
     Key? key,
     required DateTime firstOfMonth,
     required int blankDaysCount,
     required int daysInMonthCount,
     required List<String> weekdays,
   }) {
+    final EquranTokens tokens = context.equranTokens;
+    final EquranColors colors = context.equranColors;
     final double screenWidth = MediaQuery.sizeOf(context).width;
-    // Responsive cell sizing for small phones
     final double cellAspect = screenWidth < 360 ? 0.95 : 1.05;
-    final double headerAspect = 1.6;
+    final DateTime today = _now();
+    final double gregorianSize = screenWidth < 360 ? 11.0 : 13.0;
+    final double hijriSize = screenWidth < 360 ? 8.0 : 9.5;
 
     return Column(
       key: key,
       children: <Widget>[
-        // Elegant Weekday Header
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 7,
-            childAspectRatio: headerAspect,
+            childAspectRatio: 1.6,
           ),
           itemCount: 7,
           itemBuilder: (BuildContext context, int index) {
             return Center(
               child: Text(
                 weekdays[index],
-                style: theme.textTheme.labelMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: colors.textMuted,
-                  letterSpacing: 0.5,
+                style: TextStyle(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w600,
+                  color: tokens.muted,
+                  letterSpacing: 0.4,
                 ),
               ),
             );
           },
         ),
         const SizedBox(height: 4),
-
-        // The actual days – premium cells with correct hierarchy
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 7,
             childAspectRatio: cellAspect,
-            mainAxisSpacing: 3,
-            crossAxisSpacing: 3,
+            mainAxisSpacing: 4,
+            crossAxisSpacing: 4,
           ),
           itemCount: blankDaysCount + daysInMonthCount,
           itemBuilder: (BuildContext context, int index) {
@@ -661,114 +615,118 @@ class _IslamicCalendarPageState extends State<IslamicCalendarPage> {
               offset: _sightingOffset,
             );
 
-            final bool isToday = _isSameDay(date, DateTime.now());
+            final bool isToday = _isSameDay(date, today);
             final bool isSelected =
                 _selectedDate != null && _isSameDay(date, _selectedDate!);
+            final _DayKind kind = _dayKind(hijri);
+            final bool hasEvent = hijri.shortEventLabel != null;
 
-            final Color? eventColor = _getDayHighlightColor(hijri, colors);
-            final String? eventLabel = hijri.shortEventLabel;
-
-            // === Visual Hierarchy (critical fix) ===
-            // 1. Today or Selected = strongest treatment (primary ring + tint)
-            // 2. Major events = elegant gold accents (never stronger than today)
-            // 3. Other blessed days = very soft mint/gold wash
-            Color bgColor = colors.surface;
-            Color borderColor = colors.border;
-            double borderWidth = 1.0;
-            Color dayNumberColor = colors.textPrimary;
+            // Visual hierarchy, strongest first:
+            // 1. Selected: the solid emerald fill.
+            // 2. Today: an emerald wash with a full-strength ring.
+            // 3. Events: washes and dots that are always lighter than both
+            //    (Eid gets a gold wash and a hairline, never a ring).
+            Color bgColor = Colors.transparent;
+            Color borderColor = tokens.hair;
+            double borderWidth = 1;
+            Color dayColor = colors.textPrimary;
+            Color hijriColor = tokens.muted;
 
             if (isSelected) {
-              bgColor = colors.primary.withAlpha(38);
-              borderColor = colors.primary;
-              borderWidth = 1.8;
-              dayNumberColor = colors.primary;
+              bgColor = tokens.filled;
+              borderColor = isToday ? tokens.gold : tokens.filled;
+              borderWidth = isToday ? 2 : 1;
+              dayColor = Colors.white;
+              hijriColor = Colors.white.withValues(alpha: 0.78);
             } else if (isToday) {
-              bgColor = colors.primary.withAlpha(18);
-              borderColor = colors.accentGold;
-              borderWidth = 1.0;
-              dayNumberColor = colors.primary;
-            } else if (eventColor != null) {
-              // Events get gold or soft tint, but lighter treatment
-              bgColor = eventColor.withAlpha(
-                eventColor == colors.accentGold ? 22 : 30,
-              );
-              borderColor = eventColor.withAlpha(140);
-              borderWidth = 1.2;
-              if (eventColor == colors.accentGold) {
-                dayNumberColor = colors.textPrimary;
+              bgColor = tokens.emWash;
+              borderColor = tokens.emText;
+              borderWidth = 1.6;
+              dayColor = tokens.emText;
+            } else {
+              switch (kind) {
+                case _DayKind.eid:
+                  bgColor = tokens.goldWash;
+                  borderColor = tokens.gold.withValues(alpha: 0.5);
+                case _DayKind.ramadan:
+                  bgColor = tokens.emWash;
+                case _DayKind.fast:
+                case _DayKind.blessedNight:
+                case _DayKind.none:
+                  break;
               }
             }
 
-            final double gregorianSize = screenWidth < 360 ? 11.0 : 13.0;
-            final double hijriSize = screenWidth < 360 ? 8.0 : 9.5;
+            final Color dotColor = kind == _DayKind.fast
+                ? tokens.emText
+                : tokens.gold;
+            final String semanticsLabel =
+                '${DateFormat.yMMMMd(localizations.localeName).format(date)}, ${hijri.toLocalizedDateString(localizations.localeName)}';
 
-            return GestureDetector(
-              onTap: () {
-                setState(() {
-                  _selectedDate = date;
-                });
-              },
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
-                curve: Curves.easeOut,
-                decoration: BoxDecoration(
-                  color: bgColor,
-                  borderRadius: BorderRadius.circular(AppRadii.medium),
-                  border: Border.all(color: borderColor, width: borderWidth),
-                  boxShadow: isToday || isSelected
-                      ? <BoxShadow>[
-                          BoxShadow(
-                            color: colors.primary.withAlpha(25),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ]
-                      : null,
-                ),
-                child: Stack(
-                  children: <Widget>[
-                    // Gregorian day (prominent)
-                    Positioned(
-                      top: 5,
-                      left: 6,
-                      child: Text(
-                        dayNumber.toString(),
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          color: dayNumberColor,
-                          fontWeight: FontWeight.w600,
-                          fontSize: gregorianSize,
-                        ),
+            return Semantics(
+              button: true,
+              selected: isSelected,
+              label: semanticsLabel,
+              child: ExcludeSemantics(
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedDate = date;
+                    });
+                  },
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: bgColor,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: borderColor,
+                        width: borderWidth,
                       ),
                     ),
-
-                    // Hijri day (elegant, smaller, gold-tinted on events)
-                    Positioned(
-                      bottom: 5,
-                      right: 6,
-                      child: Text(
-                        hijri.hDay.toString(),
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: colors.textMuted,
-                          fontSize: hijriSize,
-                        ),
-                      ),
-                    ),
-
-                    // Subtle event indicator (gold dot or small label for major days)
-                    if (eventLabel != null && !isToday && !isSelected)
-                      Positioned(
-                        top: 5,
-                        right: 6,
-                        child: Container(
-                          width: 4.5,
-                          height: 4.5,
-                          decoration: BoxDecoration(
-                            color: eventColor ?? colors.accentGold,
-                            shape: BoxShape.circle,
+                    child: Stack(
+                      children: <Widget>[
+                        PositionedDirectional(
+                          top: 5,
+                          start: 7,
+                          child: Text(
+                            '$dayNumber',
+                            style: TextStyle(
+                              fontSize: gregorianSize,
+                              fontWeight: FontWeight.w600,
+                              color: dayColor,
+                              fontFeatures: const <FontFeature>[
+                                FontFeature.tabularFigures(),
+                              ],
+                            ).withInterOpticalSize(),
                           ),
                         ),
-                      ),
-                  ],
+                        PositionedDirectional(
+                          bottom: 5,
+                          end: 7,
+                          child: Text(
+                            '${hijri.hDay}',
+                            style: TextStyle(
+                              fontSize: hijriSize,
+                              color: hijriColor,
+                            ).withInterOpticalSize(),
+                          ),
+                        ),
+                        if (hasEvent && !isToday && !isSelected)
+                          PositionedDirectional(
+                            top: 7,
+                            end: 7,
+                            child: Container(
+                              width: 5,
+                              height: 5,
+                              decoration: BoxDecoration(
+                                color: dotColor,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             );
@@ -797,68 +755,66 @@ class _IslamicCalendarPageState extends State<IslamicCalendarPage> {
     }
   }
 
-  Widget _buildEventLegend(ThemeData theme, EquranColors colors) {
-    final localizations = AppLocalizations.of(context)!;
+  /// The legend draws each swatch the way the grid draws the day.
+  Widget _buildEventLegend() {
+    final EquranTokens tokens = context.equranTokens;
+    Widget swatch({
+      Color? fill,
+      Color? border,
+      double borderWidth = 1,
+      Color? dot,
+    }) => Container(
+      width: 16,
+      height: 16,
+      decoration: BoxDecoration(
+        color: fill ?? Colors.transparent,
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(color: border ?? tokens.hair, width: borderWidth),
+      ),
+      alignment: dot == null ? null : AlignmentDirectional.topEnd,
+      padding: dot == null ? null : const EdgeInsets.all(2),
+      child: dot == null
+          ? null
+          : Container(
+              width: 4,
+              height: 4,
+              decoration: BoxDecoration(color: dot, shape: BoxShape.circle),
+            ),
+    );
+    final List<(String, Widget)> items = <(String, Widget)>[
+      (
+        localizations.todayLegend,
+        swatch(fill: tokens.emWash, border: tokens.emText, borderWidth: 1.6),
+      ),
+      (
+        localizations.eidLegend,
+        swatch(
+          fill: tokens.goldWash,
+          border: tokens.gold.withValues(alpha: 0.5),
+        ),
+      ),
+      (localizations.ramadanLegend, swatch(fill: tokens.emWash)),
+      (localizations.blessedNightLegend, swatch(dot: tokens.gold)),
+      (localizations.fastLegend, swatch(dot: tokens.emText)),
+    ];
     return Wrap(
-      spacing: 8,
-      runSpacing: 6,
+      spacing: 14,
+      runSpacing: 8,
       children: <Widget>[
-        _legendChip(theme, colors, localizations.todayLegend, colors.primary),
-        _legendChip(theme, colors, localizations.eidLegend, colors.accentGold),
-        _legendChip(
-          theme,
-          colors,
-          localizations.ramadanLegend,
-          colors.primary.withAlpha(140),
-        ),
-        _legendChip(
-          theme,
-          colors,
-          localizations.blessedNightLegend,
-          colors.goldSoft,
-        ),
-        _legendChip(theme, colors, localizations.fastLegend, colors.mint),
+        for (final (String label, Widget mark) in items)
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              mark,
+              const SizedBox(width: 6),
+              Text(label, style: TextStyle(fontSize: 12, color: tokens.text2)),
+            ],
+          ),
       ],
     );
   }
 
-  Widget _legendChip(
-    ThemeData theme,
-    EquranColors colors,
-    String label,
-    Color color,
-  ) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withAlpha(22),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withAlpha(90), width: 0.8),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Container(
-            width: 5,
-            height: 5,
-            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-          ),
-          const SizedBox(width: 5),
-          Text(
-            label,
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: colors.textSecondary,
-              fontWeight: FontWeight.w600,
-              fontSize: 10,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ==================== ELEGANT SETTINGS BAR + SHEET ====================
-  Widget _buildQuickJumps(ThemeData theme, EquranColors colors) {
+  Widget _buildQuickJumps() {
     final List<_QuickJump> jumps = <_QuickJump>[
       _QuickJump('1 Ramaḍān', 9, 1),
       _QuickJump('Eid al-Fiṭr', 10, 1),
@@ -868,6 +824,7 @@ class _IslamicCalendarPageState extends State<IslamicCalendarPage> {
       _QuickJump('Isrāʾ & Miʿrāj', 7, 27),
     ];
 
+    final Color background = context.equranColors.background;
     return SizedBox(
       height: 36,
       child: Stack(
@@ -879,48 +836,28 @@ class _IslamicCalendarPageState extends State<IslamicCalendarPage> {
             separatorBuilder: (_, index) => const SizedBox(width: 8),
             itemBuilder: (BuildContext context, int index) {
               final _QuickJump jump = jumps[index];
-              return InkWell(
-                onTap: () => _jumpToDate(jump.month, jump.day),
-                borderRadius: BorderRadius.circular(AppRadii.pill),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: colors.surfaceAlt,
-                    borderRadius: BorderRadius.circular(AppRadii.pill),
-                    border: Border.all(color: colors.border),
-                  ),
-                  child: Center(
-                    child: Text(
-                      _localizeOccasion(jump.label),
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: colors.textPrimary,
-                      ),
-                    ),
-                  ),
-                ),
+              return ChipButton(
+                _localizeOccasion(jump.label),
+                onPressed: () => _jumpToDate(jump.month, jump.day),
               );
             },
           ),
-          Positioned(
-            right: 0,
+          PositionedDirectional(
+            end: 0,
             top: 0,
             bottom: 0,
             width: 40,
             child: IgnorePointer(
-              child: Container(
+              child: DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
+                    begin: AlignmentDirectional.centerStart,
+                    end: AlignmentDirectional.centerEnd,
                     colors: <Color>[
-                      colors.background.withValues(alpha: 0.0),
-                      colors.background.withValues(alpha: 0.9),
+                      background.withValues(alpha: 0.0),
+                      background.withValues(alpha: 0.9),
                     ],
-                    stops: <double>[0.75, 1.0],
+                    stops: const <double>[0.75, 1.0],
                   ),
                 ),
               ),
@@ -931,8 +868,8 @@ class _IslamicCalendarPageState extends State<IslamicCalendarPage> {
     );
   }
 
-  Widget _buildYearKeyDates(ThemeData theme, EquranColors colors) {
-    final int year = DateTime.now().year;
+  Widget _buildYearKeyDates() {
+    final int year = _now().year;
     final List<MapEntry<String, DateTime>> keyDates =
         <MapEntry<String, DateTime>>[];
 
@@ -962,25 +899,24 @@ class _IslamicCalendarPageState extends State<IslamicCalendarPage> {
     if (keyDates.isEmpty) return const SizedBox.shrink();
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        Text(
-          localizations.keyDatesInYear(year),
-          style: theme.textTheme.titleSmall?.copyWith(
-            color: colors.textPrimary,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0,
+        Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(4, 0, 4, 12),
+          child: Text(
+            localizations.keyDatesInYear(year),
+            style: redesignDisplayStyle(context, size: 24),
           ),
         ),
-        const SizedBox(height: 6),
         Wrap(
-          spacing: 6,
-          runSpacing: 6,
+          spacing: 8,
+          runSpacing: 8,
           children: keyDates.map((entry) {
             final String label =
                 '${_localizeOccasion(entry.key)} • ${DateFormat('d MMM', localizations.localeName).format(entry.value)}';
-            return InkWell(
-              onTap: () {
+            return ChipButton(
+              label,
+              onPressed: () {
                 setState(() {
                   _focusedDate = DateTime(
                     entry.value.year,
@@ -990,24 +926,6 @@ class _IslamicCalendarPageState extends State<IslamicCalendarPage> {
                   _selectedDate = entry.value;
                 });
               },
-              borderRadius: BorderRadius.circular(AppRadii.small),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: colors.surfaceAlt,
-                  borderRadius: BorderRadius.circular(AppRadii.small),
-                  border: Border.all(color: colors.border),
-                ),
-                child: Text(
-                  label,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
             );
           }).toList(),
         ),
@@ -1017,7 +935,7 @@ class _IslamicCalendarPageState extends State<IslamicCalendarPage> {
 
   void _jumpToDate(int hijriMonth, int hijriDay) {
     // Find a reasonable Gregorian date in the current or next year that matches the target Hijri day
-    final DateTime now = DateTime.now();
+    final DateTime now = _now();
     DateTime candidate = DateTime(now.year, now.month, now.day);
 
     // Search forward up to 400 days
@@ -1042,163 +960,60 @@ class _IslamicCalendarPageState extends State<IslamicCalendarPage> {
     ).showSnackBar(SnackBar(content: Text(localizations.dateNotFound)));
   }
 
-  Future<void> _showCalendarSettingsSheet(
-    ThemeData theme,
-    EquranColors colors,
-  ) async {
-    final localizations = AppLocalizations.of(context)!;
-    await showModalBottomSheet<void>(
+  Future<void> _showCalendarSettingsSheet() async {
+    final AppLocalizations l = AppLocalizations.of(context)!;
+    String offsetLabel(int offset) => offset == 0
+        ? l.standard
+        : offset > 0
+        ? '+${offset.abs() == 1 ? l.daySingular(offset.abs()) : l.daysPlural(offset.abs())}'
+        : '-${offset.abs() == 1 ? l.daySingular(offset.abs()) : l.daysPlural(offset.abs())}';
+    const List<int> offsets = <int>[-1, 0, 1];
+
+    await showReaderSheet<void>(
       context: context,
-      backgroundColor: colors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
       builder: (BuildContext sheetContext) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Center(
-                child: Container(
-                  width: 36,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: colors.border,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
+        return ReaderSheetFrame(
+          title: l.calendarSettings,
+          subtitle: l.calendarSettingsSubtitle,
+          children: <Widget>[
+            ReaderFieldLabel(l.sightingOffsetLabel),
+            RedesignSegmentedControl(
+              labels: <String>[for (final int o in offsets) offsetLabel(o)],
+              selectedIndex: offsets.indexOf(_sightingOffset).clamp(0, 2),
+              onChanged: (int index) {
+                Navigator.pop(sheetContext);
+                _updateSightingOffset(offsets[index]);
+              },
+            ),
+            const SizedBox(height: 22),
+            ReaderSheetGroup(
+              bottomPadding: 14,
+              children: <Widget>[
+                ReaderSwitchRow(
+                  leading: const DesignIcon('bell'),
+                  title: l.fastingReminder,
+                  subtitle: l.fastingRemindersSubtitle,
+                  value: _fastingRemindersEnabled,
+                  onChanged: (bool value) async {
+                    Navigator.pop(sheetContext);
+                    await _toggleFastingReminders(value);
+                  },
                 ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                localizations.calendarSettings,
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                localizations.calendarSettingsSubtitle,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colors.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Sighting Offset
-              Text(
-                localizations.sightingOffsetLabel,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [-1, 0, 1].map<Widget>((int offset) {
-                  final bool selected = _sightingOffset == offset;
-                  final String label = offset == 0
-                      ? localizations.standard
-                      : offset > 0
-                      ? '+${offset.abs() == 1 ? localizations.daySingular(offset.abs()) : localizations.daysPlural(offset.abs())}'
-                      : '-${offset.abs() == 1 ? localizations.daySingular(offset.abs()) : localizations.daysPlural(offset.abs())}';
-                  return Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.pop(sheetContext);
-                          _updateSightingOffset(offset);
-                        },
-                        borderRadius: BorderRadius.circular(AppRadii.medium),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          decoration: BoxDecoration(
-                            color: selected
-                                ? colors.primary.withAlpha(15)
-                                : colors.surfaceAlt,
-                            borderRadius: BorderRadius.circular(
-                              AppRadii.medium,
-                            ),
-                            border: Border.all(
-                              color: selected ? colors.primary : colors.border,
-                              width: selected ? 1.5 : 1,
-                            ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              label,
-                              style: TextStyle(
-                                fontWeight: selected
-                                    ? FontWeight.w700
-                                    : FontWeight.w600,
-                                color: selected
-                                    ? colors.primary
-                                    : colors.textPrimary,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-
-              const SizedBox(height: 24),
-
-              // Fasting Reminders
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          localizations.fastingReminder,
-                          style: theme.textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          localizations.fastingRemindersSubtitle,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colors.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Switch(
-                    value: _fastingRemindersEnabled,
-                    activeThumbColor: colors.primary,
-                    onChanged: (bool value) async {
-                      Navigator.pop(sheetContext);
-                      await _toggleFastingReminders(value);
-                    },
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 12),
-              Text(
-                localizations.hijriDateDisclaimer,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colors.textMuted,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ],
-          ),
+              ],
+            ),
+            ReaderNotice(
+              icon: const DesignIcon('info'),
+              text: l.hijriDateDisclaimer,
+            ),
+          ],
         );
       },
     );
   }
 
-  // ==================== EXISTING DETAILS CARD (will be enhanced next) ====================
-  Widget _buildDateDetailsCard(ThemeData theme, EquranColors colors) {
-    final localizations = AppLocalizations.of(context)!;
+  Widget _buildDateDetailsCard() {
+    final EquranTokens tokens = context.equranTokens;
+    final EquranColors colors = context.equranColors;
     final DateTime selDate = _selectedDate!;
     final HijriCalendar hijri = HijriCalendar.fromDate(
       selDate,
@@ -1207,188 +1022,149 @@ class _IslamicCalendarPageState extends State<IslamicCalendarPage> {
     final String? occasion = _getIslamicOccasion(hijri);
     final List<String> recommended = _getRecommendedActions(hijri);
 
-    final BorderRadius borderRadius = BorderRadius.circular(AppRadii.large);
-
-    return ClipRRect(
-      borderRadius: borderRadius,
-      child: Container(
-        margin: const EdgeInsets.only(top: 4),
-        decoration: BoxDecoration(
-          color: colors.surfaceAlt,
-          border: Border.all(color: colors.border, width: 1),
-          borderRadius: borderRadius,
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-              color: colors.shadow.withAlpha(
-                Theme.of(context).brightness == Brightness.light ? 13 : 32,
+    return HairlineCard(
+      padding: const EdgeInsetsDirectional.fromSTEB(20, 18, 8, 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: Text(
+                        DateFormat(
+                          'EEEE, d MMMM yyyy',
+                          localizations.localeName,
+                        ).format(selDate),
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: tokens.text2,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      hijri.toLocalizedDateString(localizations.localeName),
+                      style: redesignDisplayStyle(context, size: 28),
+                    ),
+                    if (hijri.monthNameArabic.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          hijri.toArabicString(),
+                          textDirection: ui.TextDirection.rtl,
+                          style: TextStyle(
+                            fontFamily: 'NotoNaskhArabic',
+                            fontSize: 17,
+                            height: 1.6,
+                            color: tokens.goldText,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
-              blurRadius: 22,
-              offset: const Offset(0, 10),
+              IconButton44(
+                designIcon: 'share',
+                tooltip: localizations.shareDate,
+                ghost: true,
+                onPressed: () => _shareDate(selDate, hijri, occasion),
+              ),
+            ],
+          ),
+
+          if (occasion != null) ...<Widget>[
+            const SizedBox(height: 14),
+            Padding(
+              padding: const EdgeInsetsDirectional.only(end: 12),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: tokens.goldWash,
+                  borderRadius: BorderRadius.circular(EquranRadii.large),
+                ),
+                child: Row(
+                  children: <Widget>[
+                    DesignIcon('sparkle', size: 18, color: tokens.goldText),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        _localizeOccasion(occasion),
+                        style: TextStyle(
+                          fontSize: 14.5,
+                          fontVariations: const [FontVariation('opsz', 14.5)],
+                          fontWeight: FontWeight.w600,
+                          color: colors.textPrimary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
-        ),
-        child: IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+
+          const SizedBox(height: 14),
+          Row(
             children: <Widget>[
-              Container(width: 3, color: colors.primary),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(18),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  DateFormat(
-                                    'EEEE, d MMMM yyyy',
-                                    localizations.localeName,
-                                  ).format(selDate),
-                                  style: theme.textTheme.labelMedium?.copyWith(
-                                    color: colors.textSecondary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  hijri.toLocalizedDateString(
-                                    localizations.localeName,
-                                  ),
-                                  style: theme.textTheme.headlineSmall
-                                      ?.copyWith(
-                                        color: colors.primary,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                ),
-                                if (hijri.monthNameArabic.isNotEmpty)
-                                  Text(
-                                    hijri.toArabicString(),
-                                    style: theme.textTheme.titleSmall?.copyWith(
-                                      color: colors.accentGold,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                    textDirection: ui.TextDirection.rtl,
-                                  ),
-                              ],
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.share_rounded),
-                            onPressed: () =>
-                                _shareDate(selDate, hijri, occasion),
-                            color: colors.textSecondary,
-                            tooltip: localizations.shareDate,
-                          ),
-                        ],
-                      ),
-
-                      if (occasion != null) ...<Widget>[
-                        const SizedBox(height: 14),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: colors.primary.withAlpha(12),
-                            borderRadius: BorderRadius.circular(
-                              AppRadii.medium,
-                            ),
-                            border: Border.all(
-                              color: colors.primary.withAlpha(60),
-                            ),
-                          ),
-                          child: Row(
-                            children: <Widget>[
-                              Icon(
-                                Icons.star_rounded,
-                                color: colors.accentGold,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  _localizeOccasion(occasion),
-                                  style: theme.textTheme.titleSmall?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: colors.primary,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-
-                      const SizedBox(height: 14),
-
-                      // Moon row (fasting pill removed to prevent overflow)
-                      Row(
-                        children: <Widget>[
-                          Icon(
-                            Icons.nightlight_round,
-                            color: colors.textMuted,
-                            size: 18,
-                          ),
-                          const SizedBox(width: 6),
-                          Flexible(
-                            child: Text(
-                              _localizeMoonPhase(hijri.estimatedMoonPhase),
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: colors.textSecondary,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      if (recommended.isNotEmpty) ...<Widget>[
-                        const SizedBox(height: 16),
-                        Text(
-                          localizations.recommendedForThisDay.toUpperCase(),
-                          style: theme.textTheme.labelMedium?.copyWith(
-                            color: colors.textMuted,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 1.1,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        ...recommended.map(
-                          (action) => Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                const Text(
-                                  '• ',
-                                  style: TextStyle(fontSize: 14),
-                                ),
-                                Expanded(
-                                  child: Text(
-                                    _localizeAction(action),
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      color: colors.textPrimary,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
+              DesignIcon('moon', size: 16, color: tokens.muted),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  _localizeMoonPhase(hijri.estimatedMoonPhase),
+                  style: TextStyle(fontSize: 14, color: tokens.text2),
                 ),
               ),
             ],
           ),
-        ),
+
+          if (recommended.isNotEmpty) ...<Widget>[
+            const SizedBox(height: 20),
+            RedesignEyebrow(localizations.recommendedForThisDay),
+            const SizedBox(height: 10),
+            for (final String action in recommended)
+              Padding(
+                padding: const EdgeInsetsDirectional.only(end: 12, bottom: 8),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Container(
+                        width: 6,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: tokens.emText,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        _localizeAction(action),
+                        style: TextStyle(
+                          fontSize: 14.5,
+                          fontVariations: const [FontVariation('opsz', 14.5)],
+                          height: 1.45,
+                          color: colors.textPrimary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ],
       ),
     );
   }
@@ -1479,3 +1255,5 @@ class _QuickJump {
   final int month;
   final int day;
 }
+
+enum _DayKind { eid, ramadan, fast, blessedNight, none }

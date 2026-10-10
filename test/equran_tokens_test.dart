@@ -40,6 +40,11 @@ Map<String, Color> derivedColors(EquranColors colors, EquranTokens tokens) => {
   'featA': tokens.featA,
   'featB': tokens.featB,
   'featText2': tokens.featText2,
+  'onFeat': tokens.onFeat,
+  'featGold': tokens.featGold,
+  'featRule': tokens.featRule,
+  'onGold': tokens.onGold,
+  'onFeatGold': tokens.onFeatGold,
   'glow': tokens.glow,
   'dock': tokens.dock,
   'scrim': tokens.scrim,
@@ -96,14 +101,16 @@ void main() {
         for (int i = 0; i < channels.length; i++) {
           expect(
             channels[i],
-            closeTo(referenceChannels[i], 1 / 255),
+            // +-1 of 255; the margin absorbs float error when Python's
+            // banker's rounding and Dart's half-away rounding differ by one.
+            closeTo(referenceChannels[i], 1.001 / 255),
             reason: '${entry.key}.${field.key}, RGBA channel $i',
           );
         }
       }
     });
 
-    test('${entry.key}: all 13 report() contrast pairs pass', () {
+    test('${entry.key}: all report() contrast pairs pass', () {
       final washSurface = EquranTokens.mix(
         colors.surface,
         colors.accentGold,
@@ -120,12 +127,17 @@ void main() {
         ('goldText on surface', tokens.goldText, colors.surface, 4.5),
         ('goldText on goldWash', tokens.goldText, washSurface, 4.5),
         ('danger on surface', tokens.danger, colors.surface, 4.5),
-        ('hero text on featA', const Color(0xFFF3F7F4), tokens.featA, 4.5),
-        ('hero caption on featA', tokens.featText2, tokens.featA, 4.5),
-        ('hero gold on featB', const Color(0xFFE2BC6B), tokens.featB, 4.5),
+        ('onFeat on featA', tokens.onFeat, tokens.featA, 4.5),
+        ('onFeat on featB', tokens.onFeat, tokens.featB, 4.5),
+        ('featText2 on featA', tokens.featText2, tokens.featA, 4.5),
+        ('featText2 on featB', tokens.featText2, tokens.featB, 4.5),
+        ('featGold on featA', tokens.featGold, tokens.featA, 3.0),
+        ('featGold on featB', tokens.featGold, tokens.featB, 3.0),
+        ('onFeatGold on featGold', tokens.onFeatGold, tokens.featGold, 4.5),
+        ('onGold on gold', tokens.onGold, tokens.gold, 4.5),
         ('gold graphics on surface', tokens.gold, colors.surface, 3.0),
       ];
-      expect(pairs, hasLength(13));
+      expect(pairs, hasLength(18));
       for (final (name, foreground, background, target) in pairs) {
         expect(
           EquranTokens.contrast(foreground, background),

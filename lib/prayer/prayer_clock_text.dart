@@ -1,6 +1,7 @@
 import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/widgets/redesign/redesign_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:equran/theme/inter_optical_size.dart';
 
 /// Lining, tabular clock figures with the design's smaller day-period suffix.
 class PrayerClockText extends StatelessWidget {
@@ -45,7 +46,7 @@ class PrayerClockText extends StatelessWidget {
                 height: 1,
                 fontWeight: FontWeight.w700,
                 color: context.equranTokens.muted,
-              ),
+              ).withInterOpticalSize(),
             ),
           ],
         ],

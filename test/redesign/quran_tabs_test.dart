@@ -6,6 +6,8 @@ import 'package:equran/home/read.dart';
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/widgets/favourites_list.dart' show SavedQuranHeader;
+import 'package:equran/widgets/grouped_card_sliver.dart';
+import 'package:equran/widgets/juz_card.dart';
 import 'package:equran/widgets/quran_reading_hero.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -157,6 +159,100 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('header-search')), findsNothing);
     expect(find.textContaining('Fatiha'), findsWidgets);
+  });
+
+  testWidgets('order chip shows numerals for the active tab and reverses it', (
+    tester,
+  ) async {
+    await pump(tester);
+    final l = AppLocalizations.of(tester.element(find.byType(MainPage)))!;
+    expect(find.byTooltip(l.reverseOrder), findsOneWidget);
+    expect(find.text('1\u2013114'), findsOneWidget);
+    expect(find.textContaining('Fatiha'), findsWidgets);
+    await tester.tap(find.text('1\u2013114'));
+    await tester.pumpAndSettle();
+    expect(find.text('114\u20131'), findsOneWidget);
+    expect(find.textContaining('Nas'), findsWidgets);
+    expect(find.textContaining('Fatiha'), findsNothing);
+    // The same flag drives the other tabs, so the label follows the tab.
+    await tester.tap(
+      find.descendant(
+        of: find.byType(SavedQuranHeader),
+        matching: find.text(l.juz),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('30\u20131'), findsOneWidget);
+    await tester.tap(
+      find.descendant(
+        of: find.byType(SavedQuranHeader),
+        matching: find.text(l.pages),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('${quran.totalPagesCount}\u20131'), findsOneWidget);
+    await tester.tap(find.text('${quran.totalPagesCount}\u20131'));
+    await tester.pumpAndSettle();
+    expect(find.text('1\u2013${quran.totalPagesCount}'), findsOneWidget);
+    // Saved has no order to reverse.
+    await tester.tap(
+      find.descendant(
+        of: find.byType(SavedQuranHeader),
+        matching: find.text(l.saved),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byTooltip(l.reverseOrder), findsNothing);
+  });
+
+  testWidgets('order chip numerals stay left-to-right in Arabic', (
+    tester,
+  ) async {
+    await pump(tester, locale: const Locale('ar'));
+    final label = tester.widget<Text>(find.text('1\u2013114'));
+    expect(label.textDirection, TextDirection.ltr);
+  });
+
+  testWidgets('Juz rows share one card per juz and open the surah slice', (
+    tester,
+  ) async {
+    final observer = _ReadingObserver();
+    await pump(tester, tab: 1, observers: [observer]);
+    expect(find.byType(GroupedCardSliver), findsWidgets);
+    // Lazy: only the first juz cards are built, not all 30.
+    expect(find.byType(QuranJuzTile).evaluate().length, lessThan(40));
+    expect(find.byKey(const ValueKey('juz-header-1')), findsOneWidget);
+    await tester.tap(find.byType(QuranJuzTile).first);
+    await tester.pump(const Duration(milliseconds: 250));
+    final target =
+        (observer.pushed! as MaterialPageRoute<void>).builder(
+              tester.element(find.byType(MainPage)),
+            )
+            as ReadPage;
+    expect(target.chapter, 1);
+    expect(target.startVerse, 1);
+    expect(target.juzMode, isTrue);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('Pages are one lazy grouped card and open the page start', (
+    tester,
+  ) async {
+    final observer = _ReadingObserver();
+    await pump(tester, tab: 2, observers: [observer]);
+    expect(find.byType(GroupedCardSliver), findsOneWidget);
+    expect(find.text('1'), findsWidgets);
+    expect(find.text('604'), findsNothing, reason: 'built lazily');
+    await tester.tap(find.text('2').first);
+    await tester.pump();
+    final target =
+        (observer.pushed! as MaterialPageRoute<void>).builder(
+              tester.element(find.byType(MainPage)),
+            )
+            as ReadPage;
+    expect(target.chapter, 2);
+    expect(target.startVerse, 1);
+    await tester.pumpWidget(const SizedBox());
   });
 
   testWidgets('first-read hero opens Al Fatiha at ayah one', (tester) async {

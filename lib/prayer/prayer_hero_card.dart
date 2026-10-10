@@ -9,6 +9,7 @@ import 'package:equran/utils/quran_display.dart';
 import 'package:equran/widgets/common/equran_components.dart';
 import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
+import 'package:equran/theme/inter_optical_size.dart';
 
 const String _appAssetBase = 'assets/media/images/app';
 const String _fallbackPrayerAsset = '$_appAssetBase/prayer_time.webp';
@@ -244,12 +245,14 @@ class PrayerHeroCard extends StatelessWidget {
                                 child: Text(
                                   prayerTime,
                                   maxLines: 1,
-                                  style: theme.textTheme.titleLarge?.copyWith(
-                                    color: colors.onPrimary,
-                                    fontSize: timeSize,
-                                    fontWeight: FontWeight.w900,
-                                    height: 0.94,
-                                  ),
+                                  style: theme.textTheme.titleLarge
+                                      ?.copyWith(
+                                        color: colors.onPrimary,
+                                        fontSize: timeSize,
+                                        fontWeight: FontWeight.w900,
+                                        height: 0.94,
+                                      )
+                                      .withInterOpticalSize(),
                                 ),
                               ),
                               SizedBox(height: compact ? 6 : 8),
@@ -257,11 +260,13 @@ class PrayerHeroCard extends StatelessWidget {
                                 title,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.titleLarge?.copyWith(
-                                  color: colors.onPrimary,
-                                  fontSize: titleSize,
-                                  fontWeight: FontWeight.w900,
-                                ),
+                                style: theme.textTheme.titleLarge
+                                    ?.copyWith(
+                                      color: colors.onPrimary,
+                                      fontSize: titleSize,
+                                      fontWeight: FontWeight.w900,
+                                    )
+                                    .withInterOpticalSize(),
                               ),
                               Padding(
                                 padding: EdgeInsets.symmetric(

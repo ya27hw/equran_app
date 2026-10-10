@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:equran/utils/text_direction.dart';
 import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/theme/equran_tokens.dart';
@@ -65,6 +67,7 @@ class PillTag extends StatelessWidget {
             textDirection: scriptDirectionIn(context, label),
             style: TextStyle(
               fontFamily: 'Inter',
+              fontFamilyFallback: const ['NotoNaskhArabic'],
               fontSize: compact ? 10.5 : 12,
               letterSpacing: compact ? .84 : null,
               height: 1.25,
@@ -85,62 +88,123 @@ class ChipButton extends StatelessWidget {
     required this.onPressed,
     this.selected = false,
     this.icon,
+    this.designIcon,
+    this.dashed = false,
     this.count,
+    this.labelDirection,
   });
   final String label;
   final VoidCallback? onPressed;
   final bool selected;
   final IconData? icon;
+
+  /// A [DesignIcon] name; takes precedence over [icon].
+  final String? designIcon;
+
+  /// Draws a dashed hairline instead of a solid one (the "New folder" chip).
+  final bool dashed;
   final String? count;
+
+  /// Overrides the label's script-derived direction; for numeral runs such as
+  /// "1-114" that must not flip in right-to-left layouts.
+  final TextDirection? labelDirection;
 
   @override
   Widget build(BuildContext context) {
     final tokens = context.equranTokens;
+    final button = TextButton(
+      onPressed: onPressed,
+      style: TextButton.styleFrom(
+        foregroundColor: selected ? tokens.emText : tokens.text2,
+        disabledForegroundColor: tokens.muted,
+        backgroundColor: selected ? tokens.emWash : Colors.transparent,
+        minimumSize: const Size(0, 36),
+        padding: const EdgeInsetsDirectional.symmetric(
+          horizontal: 14,
+          vertical: 9,
+        ),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        side: dashed
+            ? BorderSide.none
+            : BorderSide(color: selected ? tokens.hair2 : tokens.hair),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(EquranRadii.pill),
+        ),
+        textStyle: const TextStyle(
+          fontFamily: 'Inter',
+          fontFamilyFallback: ['NotoNaskhArabic'],
+          fontSize: 13,
+          height: 1.2,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (designIcon != null) ...[
+            DesignIcon(
+              designIcon!,
+              size: 14,
+              strokeWidth: 2,
+              color: selected ? tokens.emText : tokens.text2,
+            ),
+            const SizedBox(width: 6),
+          ] else if (icon != null) ...[
+            Icon(icon, size: 16),
+            const SizedBox(width: 6),
+          ],
+          Text(
+            label,
+            textDirection: labelDirection ?? scriptDirectionIn(context, label),
+          ),
+          if (count != null) ...[
+            const SizedBox(width: 6),
+            Text(count!, style: TextStyle(color: tokens.muted, fontSize: 12)),
+          ],
+        ],
+      ),
+    );
     return MergeSemantics(
       child: Semantics(
         selected: selected,
-        child: TextButton(
-          onPressed: onPressed,
-          style: TextButton.styleFrom(
-            foregroundColor: selected ? tokens.emText : tokens.text2,
-            disabledForegroundColor: tokens.muted,
-            backgroundColor: selected ? tokens.emWash : Colors.transparent,
-            minimumSize: const Size(0, 36),
-            padding: const EdgeInsetsDirectional.symmetric(
-              horizontal: 14,
-              vertical: 9,
-            ),
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            side: BorderSide(color: selected ? tokens.hair2 : tokens.hair),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(EquranRadii.pill),
-            ),
-            textStyle: const TextStyle(
-              fontFamily: 'Inter',
-              fontSize: 13,
-              height: 1.2,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (icon != null) ...[
-                Icon(icon, size: 16),
-                const SizedBox(width: 6),
-              ],
-              Text(label, textDirection: scriptDirectionIn(context, label)),
-              if (count != null) ...[
-                const SizedBox(width: 6),
-                Text(
-                  count!,
-                  style: TextStyle(color: tokens.muted, fontSize: 12),
-                ),
-              ],
-            ],
-          ),
-        ),
+        child: dashed
+            ? CustomPaint(
+                foregroundPainter: _DashedPillBorderPainter(tokens.hair),
+                child: button,
+              )
+            : button,
       ),
     );
   }
+}
+
+class _DashedPillBorderPainter extends CustomPainter {
+  const _DashedPillBorderPainter(this.color);
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final path = Path()
+      ..addRRect(
+        RRect.fromRectAndRadius(
+          (Offset.zero & size).deflate(.5),
+          Radius.circular(size.height / 2),
+        ),
+      );
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+    for (final metric in path.computeMetrics()) {
+      for (double d = 0; d < metric.length; d += 6) {
+        canvas.drawPath(
+          metric.extractPath(d, math.min(d + 3, metric.length)),
+          paint,
+        );
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(_DashedPillBorderPainter old) => color != old.color;
 }

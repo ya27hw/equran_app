@@ -1,3 +1,4 @@
+import 'package:equran/utils/resource_labels.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'appearance_settings_page.dart';
@@ -32,20 +33,22 @@ import 'package:equran/backend/backup_service.dart';
 import 'package:equran/prayer/prayer_times_settings_page.dart';
 import 'package:equran/utils/app_theme.dart';
 import 'package:equran/theme/equran_spacing.dart';
+import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/widgets/redesign/redesign_widgets.dart';
 import 'package:equran/widgets/redesign/settings_group_card.dart';
 import 'package:equran/utils/library.dart';
 import 'package:equran/utils/quran_display.dart';
 import 'package:equran/widgets/library.dart'
-    show
-        AppSelectionDialog,
-        AppSelectionOption,
-        FontSlider,
-        PlayBackSlider,
-        SettingsSwitch;
+    show AppSelectionOption, FontSlider, PlayBackSlider, SettingsSwitch;
 import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
+import 'package:equran/home/settings_dialogs.dart';
 import 'package:equran/home_dashboard/daily_tools_edit_sheet.dart';
+import 'package:equran/widgets/reader_sheet_chrome.dart';
+import 'package:equran/widgets/redesign/page_typography.dart'
+    show RedesignEyebrow;
+import 'package:equran/widgets/settings_sheet_chrome.dart';
+import 'package:equran/word_by_word/word_by_word_download_card.dart';
 import 'package:equran/main.dart' show MyApp;
 import 'package:quran/quran.dart' show Translation, isTranslationLoaded;
 
@@ -97,10 +100,10 @@ class _SettingsPageState extends State<SettingsPage> {
             initiallyExpanded: true,
             children: <Widget>[
               _buildLanguageTile(context),
-              ListTile(
-                leading: const Icon(Icons.access_time_rounded),
-                title: Text(localizations.prayerTimesSettings),
-                subtitle: Text(localizations.prayerTimesSettingsSubtitle),
+              ReaderOptionRow(
+                leading: const DesignIcon('clock'),
+                title: localizations.prayerTimesSettings,
+                subtitle: localizations.prayerTimesSettingsSubtitle,
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute<void>(
                     builder: (context) => const PrayerTimesSettingsPage(),
@@ -121,41 +124,34 @@ class _SettingsPageState extends State<SettingsPage> {
             subtitle: localizations.appearanceSubtitle,
             icon: Icons.palette_rounded,
             children: <Widget>[
-              ListTile(
+              ReaderOptionRow(
                 leading: const Icon(Icons.palette_rounded),
-                title: Text(localizations.appearance),
-                subtitle: Text(localizations.appearanceTileSubtitle),
-                trailing: const Icon(Icons.chevron_right_rounded),
+                title: localizations.appearance,
+                subtitle: localizations.appearanceTileSubtitle,
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute<void>(
                     builder: (context) => const AppearanceSettingsPage(),
                   ),
                 ),
               ),
-              ListTile(
+              ReaderOptionRow(
                 leading: const Icon(Icons.linear_scale_rounded),
-                title: Text(localizations.customizeNavigation),
-                subtitle: Text(localizations.navigationSettingsSubtitle),
-                trailing: const Icon(Icons.chevron_right_rounded),
+                title: localizations.customizeNavigation,
+                subtitle: localizations.navigationSettingsSubtitle,
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute<void>(
                     builder: (context) => const NavigationSettingsPage(),
                   ),
                 ),
               ),
-              ListTile(
-                leading: const Icon(Icons.grid_view_rounded),
-                title: Text(
-                  DailyToolsEditSheet.translateCustomizeTitle(
-                    localizations.localeName.toLowerCase(),
-                  ),
+              ReaderOptionRow(
+                leading: const DesignIcon('grid'),
+                title: DailyToolsEditSheet.translateCustomizeTitle(
+                  localizations.localeName.toLowerCase(),
                 ),
-                subtitle: Text(
-                  DailyToolsEditSheet.translateCustomizeDesc(
-                    localizations.localeName.toLowerCase(),
-                  ),
+                subtitle: DailyToolsEditSheet.translateCustomizeDesc(
+                  localizations.localeName.toLowerCase(),
                 ),
-                trailing: const Icon(Icons.chevron_right_rounded),
                 onTap: () => DailyToolsEditSheet.show(context),
               ),
               SettingsSwitch(
@@ -260,15 +256,15 @@ class _SettingsPageState extends State<SettingsPage> {
         ? localizations.qpcV4Tajweed
         : localizations.uthmaniMadinah;
 
-    return ListTile(
+    return ReaderOptionRow(
       leading: const Icon(Icons.font_download_outlined),
-      title: Text(localizations.quranScriptStyle),
-      subtitle: Text(label),
+      title: localizations.quranScriptStyle,
+      subtitle: label,
       onTap: () async {
         final String? value = await _showSelectionDialog<String>(
           context: context,
           title: localizations.quranScriptStyle,
-          icon: Icons.font_download_outlined,
+          icon: const Icon(Icons.font_download_outlined),
           selectedValue: currentStyle,
           options: <AppSelectionOption<String>>[
             AppSelectionOption<String>(
@@ -301,10 +297,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget _buildTranslationTile(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    return ListTile(
+    return ReaderOptionRow(
       leading: const Icon(Icons.g_translate_rounded),
-      title: Text(localizations.translation),
-      subtitle: Text(_selectedTranslationName(localizations)),
+      title: localizations.translation,
+      subtitle: _selectedTranslationName(localizations),
       onTap: () async {
         final ResourceManifest manifest = await _resourceManifestFuture;
         if (!context.mounted) return;
@@ -312,7 +308,7 @@ class _SettingsPageState extends State<SettingsPage> {
         final int? value = await _showSelectionDialog<int>(
           context: context,
           title: localizations.translationLanguage,
-          icon: Icons.translate_rounded,
+          icon: const Icon(Icons.translate_rounded),
           selectedValue: selected,
           options:
               Translation.values
@@ -323,7 +319,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       value: entry.key,
                       title:
                           '${translationDisplayName(entry.value)} • '
-                          '${QuranTranslationService.instance.availabilityLabel(entry.value, manifest)}',
+                          '${translationAvailabilityLabel(localizations, entry.value, manifest)}',
                     ),
                   )
                   .toList()
@@ -350,13 +346,13 @@ class _SettingsPageState extends State<SettingsPage> {
   Future<T?> _showSelectionDialog<T>({
     required BuildContext context,
     required String title,
-    required IconData icon,
+    required Widget icon,
     required T selectedValue,
     required List<AppSelectionOption<T>> options,
   }) {
-    return showDialog<T>(
+    return showReaderDialog<T>(
       context: context,
-      builder: (context) => AppSelectionDialog<T>(
+      builder: (context) => ReaderChoiceDialog<T>(
         title: title,
         icon: icon,
         selectedValue: selectedValue,
@@ -378,10 +374,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget _buildReciterTile(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    return ListTile(
-      leading: const Icon(Icons.record_voice_over_rounded),
-      title: Text(localizations.reciter),
-      subtitle: Text(_selectedReciterName()),
+    return ReaderOptionRow(
+      leading: const DesignIcon('headphones'),
+      title: localizations.reciter,
+      subtitle: _selectedReciterName(),
       onTap: () async {
         final List<AppReciter> items = AppReciter.values.toList()
           ..sort(
@@ -394,7 +390,7 @@ class _SettingsPageState extends State<SettingsPage> {
         final AppReciter? value = await _showSelectionDialog<AppReciter>(
           context: context,
           title: localizations.reciter,
-          icon: Icons.record_voice_over_rounded,
+          icon: const DesignIcon('headphones'),
           selectedValue: selectedReciter,
           options: items
               .map(
@@ -432,15 +428,19 @@ class _SettingsPageState extends State<SettingsPage> {
         if (manifest == null || manifest.resources.isEmpty) {
           return Column(
             children: <Widget>[
-              ListTile(
+              ReaderOptionRow(
                 leading: const Icon(Icons.error_outline_rounded),
-                title: Text(localizations.resourcesUnavailable),
-                subtitle: Text(localizations.resourcesManifestUnavailable),
+                title: localizations.resourcesUnavailable,
+                subtitle: localizations.resourcesManifestUnavailable,
+                onTap: null,
+                showChevron: false,
               ),
-              ListTile(
+              _hairline(context),
+              ReaderOptionRow(
                 leading: const Icon(Icons.refresh_rounded),
-                title: Text(localizations.retry),
+                title: localizations.retry,
                 onTap: _refreshResourceManifest,
+                showChevron: false,
               ),
             ],
           );
@@ -485,21 +485,18 @@ class _SettingsPageState extends State<SettingsPage> {
                         manifest
                             .resourcesOfType(ResourceType.wordByWord)
                             .isNotEmpty)
-                      _buildResourceSubsection(
+                      _buildWordByWordCard(
                         context: context,
                         manifest: manifest,
-                        title: localizations.wordByWord,
-                        description: localizations.wordByWordDescription,
-                        resources: manifest.resourcesOfType(
-                          ResourceType.wordByWord,
-                        ),
                         downloads: downloads,
                       ),
-                    ListTile(
+                    _hairline(context),
+                    ReaderOptionRow(
                       leading: const Icon(Icons.refresh_rounded),
-                      title: Text(localizations.refreshManifest),
-                      subtitle: Text(localizations.checkGithubReleases),
+                      title: localizations.refreshManifest,
+                      subtitle: localizations.checkGithubReleases,
                       onTap: _refreshResourceManifest,
+                      showChevron: false,
                     ),
                   ],
                 );
@@ -511,6 +508,49 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  /// The optional word-by-word pack: same install state, download and delete
+  /// calls as every other resource, drawn by [WordByWordDownloadCard].
+  Widget _buildWordByWordCard({
+    required BuildContext context,
+    required ResourceManifest manifest,
+    required Map<String, ResourceDownloadProgress> downloads,
+  }) {
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
+    final ResourceInstallStore store = ResourceInstallStore.instance;
+    return WordByWordDownloadCard(
+      title: localizations.wordByWord,
+      description: localizations.wordByWordDescription,
+      downloadTooltip: localizations.download,
+      updateTooltip: localizations.update,
+      deleteTooltip: localizations.delete,
+      rows: <WordByWordPackRow>[
+        for (final DownloadableResource resource in manifest.resourcesOfType(
+          ResourceType.wordByWord,
+        ))
+          () {
+            final ResourceDownloadProgress? progress = downloads[resource.id];
+            final ResourceInstallState state =
+                progress != null &&
+                    progress.phase != ResourceDownloadPhase.complete &&
+                    progress.phase != ResourceDownloadPhase.failed
+                ? ResourceInstallState.downloading
+                : store.installStateFor(resource);
+            return WordByWordPackRow(
+              name: resource.name,
+              details: _resourceSubtitle(resource),
+              state: state,
+              progress: progress?.fraction,
+              onDownload: () => _downloadResource(resource),
+              onDelete: () => _confirmDeleteResource(resource),
+            );
+          }(),
+      ],
+    );
+  }
+
+  Widget _hairline(BuildContext context) =>
+      Divider(height: 1, thickness: 1, color: context.equranTokens.hair);
+
   Widget _buildResourceSubsection({
     required BuildContext context,
     required ResourceManifest manifest,
@@ -521,10 +561,18 @@ class _SettingsPageState extends State<SettingsPage> {
   }) {
     if (resources.isEmpty) {
       final localizations = AppLocalizations.of(context)!;
-      return ListTile(
-        leading: const Icon(Icons.cloud_off_rounded),
-        title: Text(title),
-        subtitle: Text(localizations.noResourcesListed),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          ReaderOptionRow(
+            leading: const Icon(Icons.cloud_off_rounded),
+            title: title,
+            subtitle: localizations.noResourcesListed,
+            onTap: null,
+            showChevron: false,
+          ),
+          _hairline(context),
+        ],
       );
     }
 
@@ -532,31 +580,29 @@ class _SettingsPageState extends State<SettingsPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-          child: Text(
-            title,
-            style: Theme.of(
-              context,
-            ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w800),
-          ),
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 18, 20, 10),
+          child: RedesignEyebrow(title),
         ),
         if (description != null)
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+            padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 8),
             child: Text(
               description,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              style: TextStyle(
+                fontSize: 12.5,
+                color: context.equranTokens.muted,
               ),
             ),
           ),
-        for (final DownloadableResource resource in resources)
+        for (final DownloadableResource resource in resources) ...<Widget>[
+          _hairline(context),
           _buildResourceTile(
             context: context,
             manifest: manifest,
             resource: resource,
             progress: downloads[resource.id],
           ),
+        ],
       ],
     );
   }
@@ -583,33 +629,27 @@ class _SettingsPageState extends State<SettingsPage> {
         ? ResourceInstallState.downloading
         : store.installStateFor(resource);
     final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final String status = selected
-        ? '${installState.label} • ${localizations.selected}'
-        : installState.label;
 
-    return ListTile(
-      leading: isTafsir
-          ? Checkbox(
-              value: selected,
-              onChanged: (value) => _toggleTafsirSelection(
-                manifest: manifest,
-                resource: resource,
-                selected: value == true,
-              ),
-            )
-          : Icon(
-              isTranslation
-                  ? selected
-                        ? Icons.radio_button_checked_rounded
-                        : Icons.translate_rounded
-                  : isQuranFonts
-                  ? Icons.font_download_outlined
-                  : isWordByWord
-                  ? Icons.touch_app_outlined
-                  : Icons.graphic_eq_rounded,
-            ),
-      title: Text(resource.name),
-      subtitle: Text('${_resourceSubtitle(resource)} • $status'),
+    return SettingsResourceRow(
+      // A check in the well marks the tafsir or translation in use.
+      leading: selected
+          ? const DesignIcon('check', strokeWidth: 2)
+          : isTafsir
+          ? const DesignIcon('book')
+          : isTranslation
+          ? const Icon(Icons.translate_rounded)
+          : isQuranFonts
+          ? const Icon(Icons.font_download_outlined)
+          : isWordByWord
+          ? const Icon(Icons.touch_app_outlined)
+          : const DesignIcon('headphones'),
+      title: resource.name,
+      details: _resourceSubtitle(resource),
+      statusLabel: resourceInstallStateLabel(localizations, installState),
+      installed: installState == ResourceInstallState.installed,
+      updateAvailable: installState == ResourceInstallState.updateAvailable,
+      selected: selected,
+      selectedLabel: localizations.selected,
       trailing: _buildResourceAction(resource, installState, progress),
       onTap: isTafsir
           ? () => _toggleTafsirSelection(
@@ -633,31 +673,23 @@ class _SettingsPageState extends State<SettingsPage> {
   ) {
     final AppLocalizations localizations = AppLocalizations.of(context)!;
     if (state == ResourceInstallState.downloading) {
-      final double? fraction = progress?.fraction;
-      return SizedBox.square(
-        dimension: 32,
-        child: CircularProgressIndicator(strokeWidth: 2.4, value: fraction),
-      );
+      return SettingsProgressRing(progress: progress?.fraction);
     }
 
     if (state == ResourceInstallState.installed) {
-      return IconButton(
+      return IconButton44(
         tooltip: localizations.delete,
         onPressed: () => _confirmDeleteResource(resource),
-        icon: const Icon(Icons.delete_outline_rounded),
+        designIcon: 'trash',
       );
     }
 
-    return IconButton(
+    return IconButton44(
       tooltip: state == ResourceInstallState.updateAvailable
           ? localizations.update
           : localizations.download,
       onPressed: () => _downloadResource(resource),
-      icon: Icon(
-        state == ResourceInstallState.updateAvailable
-            ? Icons.system_update_alt_rounded
-            : Icons.download_rounded,
-      ),
+      designIcon: 'download',
     );
   }
 
@@ -699,22 +731,14 @@ class _SettingsPageState extends State<SettingsPage> {
     final int? size = getResourceSize(resource);
     final String sizeLabel = size == null ? '' : ' (${prettyBytes(size)})';
     final localizations = AppLocalizations.of(context)!;
-    final bool? download = await showDialog<bool>(
+    final bool? download = await showReaderDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(localizations.downloadQpcFontsTitle),
-        content: Text(localizations.downloadQpcFontsBody(sizeLabel)),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(localizations.cancel),
-          ),
-          FilledButton.icon(
-            onPressed: () => Navigator.of(context).pop(true),
-            icon: const Icon(Icons.download_rounded),
-            label: Text(localizations.download),
-          ),
-        ],
+      builder: (context) => ReaderConfirmDialog(
+        title: localizations.downloadQpcFontsTitle,
+        body: localizations.downloadQpcFontsBody(sizeLabel),
+        icon: const DesignIcon('download'),
+        cancelLabel: localizations.cancel,
+        confirmLabel: localizations.download,
       ),
     );
     if (download != true) return false;
@@ -819,31 +843,22 @@ class _SettingsPageState extends State<SettingsPage> {
 
     if (ResourceInstallStore.instance.isInstalled(resource)) return true;
 
-    final bool? download = await showDialog<bool>(
+    final bool? download = await showReaderDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          AppLocalizations.of(
-            context,
-          )!.downloadTranslationQuestion(translationDisplayName(translation)),
-        ),
-        content: Text(
-          AppLocalizations.of(
-            context,
-          )!.translationNotInstalled(prettyBytes(getResourceSize(resource))),
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(AppLocalizations.of(context)!.cancel),
+      builder: (context) {
+        final AppLocalizations l = AppLocalizations.of(context)!;
+        return ReaderConfirmDialog(
+          title: l.downloadTranslationQuestion(
+            translationDisplayName(translation),
           ),
-          FilledButton.icon(
-            onPressed: () => Navigator.of(context).pop(true),
-            icon: const Icon(Icons.download_rounded),
-            label: Text(AppLocalizations.of(context)!.download),
+          body: l.translationNotInstalled(
+            prettyBytes(getResourceSize(resource)),
           ),
-        ],
-      ),
+          icon: const DesignIcon('download'),
+          cancelLabel: l.cancel,
+          confirmLabel: l.download,
+        );
+      },
     );
     if (download != true) return false;
     return _downloadResource(resource);
@@ -888,24 +903,19 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _confirmDeleteResource(DownloadableResource resource) async {
-    final bool? confirmed = await showDialog<bool>(
+    final bool? confirmed = await showReaderDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          AppLocalizations.of(context)!.deleteResourceQuestion(resource.name),
-        ),
-        content: Text(AppLocalizations.of(context)!.deleteResourceBody),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(AppLocalizations.of(context)!.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text(AppLocalizations.of(context)!.delete),
-          ),
-        ],
-      ),
+      builder: (context) {
+        final AppLocalizations l = AppLocalizations.of(context)!;
+        return ReaderConfirmDialog(
+          title: l.deleteResourceQuestion(resource.name),
+          body: l.deleteResourceBody,
+          icon: const DesignIcon('trash'),
+          cancelLabel: l.cancel,
+          confirmLabel: l.delete,
+          destructive: true,
+        );
+      },
     );
     if (confirmed != true) return;
     await ResourceDownloadService.instance.uninstall(resource);
@@ -932,10 +942,10 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildDailyQuranGoalTile(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final int goal = _dailyQuranGoalAyahs();
-    return ListTile(
+    return ReaderOptionRow(
       leading: const Icon(Icons.flag_rounded),
-      title: Text(localizations.dailyQuranGoal),
-      subtitle: Text(localizations.dailyQuranGoalSubtitle(goal)),
+      title: localizations.dailyQuranGoal,
+      subtitle: localizations.dailyQuranGoalSubtitle(goal),
       onTap: () async {
         final int? value = await _showDailyGoalDialog(context, goal);
         if (value == null) return;
@@ -948,68 +958,19 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<int?> _showDailyGoalDialog(BuildContext context, int initialGoal) {
-    final TextEditingController controller = TextEditingController(
-      text: initialGoal.toString(),
-    );
-    String? errorText;
-
-    return showDialog<int>(
+    return showReaderDialog<int>(
       context: context,
-      builder: (dialogContext) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            final localizations = AppLocalizations.of(context)!;
-            return AlertDialog(
-              title: Text(localizations.dailyQuranGoal),
-              content: TextField(
-                controller: controller,
-                keyboardType: TextInputType.number,
-                autofocus: true,
-                decoration: InputDecoration(
-                  labelText: localizations.ayahsPerDay,
-                  hintText: '20',
-                  errorText: errorText,
-                ),
-                onChanged: (_) {
-                  if (errorText != null) {
-                    setDialogState(() {
-                      errorText = null;
-                    });
-                  }
-                },
-              ),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.of(dialogContext).pop(),
-                  child: Text(localizations.cancel),
-                ),
-                FilledButton(
-                  onPressed: () {
-                    final int? value = int.tryParse(controller.text.trim());
-                    if (value == null || value < 1 || value > 1000) {
-                      setDialogState(() {
-                        errorText = localizations.enterGoalRange;
-                      });
-                      return;
-                    }
-                    Navigator.of(dialogContext).pop(value);
-                  },
-                  child: Text(localizations.save),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    ).whenComplete(controller.dispose);
+      builder: (context) => DailyGoalDialog(initialGoal: initialGoal),
+    );
   }
 
   Widget _buildClearReadingHistoryTile(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    return ListTile(
-      leading: const Icon(Icons.delete_sweep_rounded),
-      title: Text(localizations.clearReadingHistory),
-      subtitle: Text(localizations.clearReadingHistorySubtitle),
+    return ReaderOptionRow(
+      leading: const DesignIcon('trash'),
+      title: localizations.clearReadingHistory,
+      subtitle: localizations.clearReadingHistorySubtitle,
+      showChevron: false,
       onTap: () => _showClearDataDialog(
         context: context,
         title: localizations.clearReadingHistory,
@@ -1021,10 +982,11 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget _buildBackupDataTile(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    return ListTile(
+    return ReaderOptionRow(
       leading: const Icon(Icons.backup_rounded),
-      title: Text(localizations.backupData),
-      subtitle: Text(localizations.backupDataSubtitle),
+      title: localizations.backupData,
+      subtitle: localizations.backupDataSubtitle,
+      showChevron: false,
       onTap: () async {
         try {
           final String? outputPath = await BackupService.exportBackupFile();
@@ -1048,10 +1010,11 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget _buildRestoreDataTile(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    return ListTile(
+    return ReaderOptionRow(
       leading: const Icon(Icons.settings_backup_restore_rounded),
-      title: Text(localizations.restoreData),
-      subtitle: Text(localizations.restoreDataSubtitle),
+      title: localizations.restoreData,
+      subtitle: localizations.restoreDataSubtitle,
+      showChevron: false,
       onTap: () async {
         final bool shouldRestore = await _showRestoreConfirmation(context);
         if (!shouldRestore || !context.mounted) return;
@@ -1086,10 +1049,11 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget _buildClearFavouritesTile(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    return ListTile(
-      leading: const Icon(Icons.delete_forever_rounded),
-      title: Text(localizations.clearFavourites),
-      subtitle: Text(localizations.clearFavouritesSubtitle),
+    return ReaderOptionRow(
+      leading: const DesignIcon('trash'),
+      title: localizations.clearFavourites,
+      subtitle: localizations.clearFavouritesSubtitle,
+      showChevron: false,
       onTap: () => _showClearDataDialog(
         context: context,
         title: localizations.clearFavourites,
@@ -1120,50 +1084,10 @@ class _SettingsPageState extends State<SettingsPage> {
     required String message,
     required Future<void> Function() onConfirm,
   }) {
-    final localizations = AppLocalizations.of(context)!;
-    showDialog<void>(
+    showReaderDialog<void>(
       context: context,
-      builder: (BuildContext context) => AlertDialog(
-        backgroundColor: Theme.of(context).colorScheme.errorContainer,
-        title: Text(
-          title,
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onErrorContainer,
-          ),
-        ),
-        icon: const Icon(Icons.warning_amber_rounded),
-        content: Text(
-          message,
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onErrorContainer,
-          ),
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(
-              localizations.no,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onErrorContainer,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () async {
-              await onConfirm();
-              if (context.mounted) {
-                Navigator.of(context).pop();
-              }
-            },
-            child: Text(
-              localizations.yes,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onErrorContainer,
-              ),
-            ),
-          ),
-        ],
-      ),
+      builder: (BuildContext context) =>
+          ClearDataDialog(title: title, message: message, onConfirm: onConfirm),
     );
   }
 
@@ -1212,23 +1136,18 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<bool> _showRestoreConfirmation(BuildContext context) async {
-    final bool? shouldRestore = await showDialog<bool>(
+    final bool? shouldRestore = await showReaderDialog<bool>(
       context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: Text(AppLocalizations.of(context)!.restoreBackup),
-        icon: const Icon(Icons.restore_page_outlined),
-        content: Text(AppLocalizations.of(context)!.restoreBackupWarning),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(AppLocalizations.of(context)!.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text(AppLocalizations.of(context)!.restore),
-          ),
-        ],
-      ),
+      builder: (BuildContext context) {
+        final AppLocalizations l = AppLocalizations.of(context)!;
+        return ReaderConfirmDialog(
+          title: l.restoreBackup,
+          body: l.restoreBackupWarning,
+          icon: const Icon(Icons.restore_page_outlined),
+          cancelLabel: l.cancel,
+          confirmLabel: l.restore,
+        );
+      },
     );
 
     return shouldRestore == true;
@@ -1274,10 +1193,10 @@ class _SettingsPageState extends State<SettingsPage> {
       defaultValue: "system",
     );
 
-    return ListTile(
+    return ReaderOptionRow(
       leading: const Icon(Icons.language_rounded),
-      title: Text(localizations.language),
-      subtitle: Text(_languageLabel(currentLang, localizations)),
+      title: localizations.language,
+      subtitle: _languageLabel(currentLang, localizations),
       onTap: () => _showLanguageDialog(context),
     );
   }
@@ -1306,7 +1225,7 @@ class _SettingsPageState extends State<SettingsPage> {
     final String? selectedLang = await _showSelectionDialog<String>(
       context: context,
       title: localizations.language,
-      icon: Icons.language_rounded,
+      icon: const Icon(Icons.language_rounded),
       selectedValue: currentLang,
       options: <AppSelectionOption<String>>[
         AppSelectionOption<String>(

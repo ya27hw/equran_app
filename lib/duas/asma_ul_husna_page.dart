@@ -1,11 +1,18 @@
 import 'dart:convert';
 
+import 'package:equran/duas/widgets/dua_browser_widgets.dart'
+    show DuaSearchField;
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/theme/equran_colors.dart';
-import 'package:equran/utils/app_radii.dart';
+import 'package:equran/theme/equran_spacing.dart';
+import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/utils/quran_display.dart';
-import 'package:equran/widgets/redesign/page_typography.dart'
-    show redesignDisplayStyle;
+import 'package:equran/widgets/reader_sheet_chrome.dart';
+import 'package:equran/widgets/redesign/hero_panel.dart';
+import 'package:equran/widgets/redesign/ornament_divider.dart';
+import 'package:equran/widgets/redesign/page_typography.dart';
+import 'package:equran/widgets/redesign/pill_tag.dart';
+import 'package:equran/widgets/redesign/redesign_subpage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -61,6 +68,9 @@ class AsmaUlHusnaName {
 class AsmaUlHusnaPage extends StatefulWidget {
   const AsmaUlHusnaPage({super.key, this.showAppBar = true});
 
+  /// Kept for the callers that choose between a tab and a pushed page. The
+  /// shared page frame shows a back button only when the route can pop, so
+  /// both cases look right.
   final bool showAppBar;
 
   @override
@@ -70,9 +80,7 @@ class AsmaUlHusnaPage extends StatefulWidget {
 class _AsmaUlHusnaPageState extends State<AsmaUlHusnaPage> {
   late final Future<List<AsmaUlHusnaName>> _namesFuture;
   final TextEditingController _searchController = TextEditingController();
-  final FocusNode _searchFocusNode = FocusNode();
   String _query = '';
-  bool _searchActive = false;
 
   @override
   void initState() {
@@ -85,7 +93,6 @@ class _AsmaUlHusnaPageState extends State<AsmaUlHusnaPage> {
   void dispose() {
     _searchController.removeListener(_handleSearchChanged);
     _searchController.dispose();
-    _searchFocusNode.dispose();
     super.dispose();
   }
 
@@ -110,272 +117,141 @@ class _AsmaUlHusnaPageState extends State<AsmaUlHusnaPage> {
     });
   }
 
-  void _focusSearch() {
-    setState(() {
-      _searchActive = true;
-    });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      _searchFocusNode.requestFocus();
-    });
-  }
-
-  void _closeSearch() {
-    _searchController.clear();
-    _searchFocusNode.unfocus();
-    setState(() {
-      _searchActive = false;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final bool showAppBar = widget.showAppBar;
 
-    return Scaffold(
-      backgroundColor: colors.background,
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: <Widget>[
-          if (showAppBar)
-            SliverAppBar(
-              pinned: true,
-              toolbarHeight: 64,
-              title: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 220),
-                switchInCurve: Curves.easeOutCubic,
-                switchOutCurve: Curves.easeInCubic,
-                child: _searchActive
-                    ? _NavSearchField(
-                        key: const ValueKey<String>('asma-search-field'),
-                        controller: _searchController,
-                        focusNode: _searchFocusNode,
-                      )
-                    : Text(
-                        localizations.asmaUlHusna,
-                        key: const ValueKey<String>('asma-title'),
-                      ),
-              ),
-              centerTitle: !_searchActive,
-              backgroundColor: colors.background,
-              foregroundColor: colors.textPrimary,
-              elevation: 0,
-              scrolledUnderElevation: 0,
-              surfaceTintColor: Colors.transparent,
-              titleTextStyle: theme.textTheme.titleLarge?.copyWith(
-                color: colors.textPrimary,
-                fontWeight: FontWeight.w700,
-              ),
-              iconTheme: IconThemeData(color: colors.textSecondary),
-              actionsIconTheme: IconThemeData(color: colors.textSecondary),
-              actions: <Widget>[
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 220),
-                  child: IconButton(
-                    key: ValueKey<bool>(_searchActive),
-                    tooltip: _searchActive
-                        ? localizations.closeSearch
-                        : localizations.searchNames,
-                    onPressed: _searchActive ? _closeSearch : _focusSearch,
-                    icon: Icon(
-                      _searchActive
-                          ? Icons.close_rounded
-                          : Icons.search_rounded,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          if (!showAppBar)
-            SliverToBoxAdapter(
-              child: SafeArea(
-                bottom: false,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 14, 20, 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      Text(
-                        localizations.asmaUlHusna,
-                        style: redesignDisplayStyle(context, size: 32),
-                      ),
-                      const SizedBox(height: 14),
-                      _NavSearchField(
-                        controller: _searchController,
-                        focusNode: _searchFocusNode,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          SliverSafeArea(
-            top: false,
-            bottom: true,
-            sliver: SliverList(
-              delegate: SliverChildListDelegate.fixed(<Widget>[
-                FutureBuilder<List<AsmaUlHusnaName>>(
-                  future: _namesFuture,
-                  builder: (context, snapshot) {
-                    final List<AsmaUlHusnaName> names =
-                        snapshot.data ?? const <AsmaUlHusnaName>[];
-                    final List<AsmaUlHusnaName> visibleNames = names
-                        .where((name) => name.matches(_query))
-                        .toList(growable: false);
+    return RedesignSubpage(
+      title: localizations.asmaUlHusna,
+      child: FutureBuilder<List<AsmaUlHusnaName>>(
+        future: _namesFuture,
+        builder: (context, snapshot) {
+          final List<AsmaUlHusnaName> names =
+              snapshot.data ?? const <AsmaUlHusnaName>[];
+          final List<AsmaUlHusnaName> visibleNames = names
+              .where((name) => name.matches(_query))
+              .toList(growable: false);
 
-                    if (snapshot.connectionState != ConnectionState.done) {
-                      return const _AsmaLoadingState();
-                    }
-                    if (snapshot.hasError || names.isEmpty) {
-                      return _AsmaMessageState(
-                        title: localizations.namesUnavailable,
-                        message: localizations.unableLoadAsmaUlHusna,
-                      );
-                    }
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const _AsmaLoadingState();
+          }
+          if (snapshot.hasError || names.isEmpty) {
+            return _AsmaMessageState(
+              title: localizations.namesUnavailable,
+              message: localizations.unableLoadAsmaUlHusna,
+            );
+          }
 
-                    return Center(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 1180),
-                        child: _AsmaNamesContent(
-                          names: names,
-                          visibleNames: visibleNames,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ]),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _NavSearchField extends StatelessWidget {
-  const _NavSearchField({
-    super.key,
-    required this.controller,
-    required this.focusNode,
-  });
-
-  final TextEditingController controller;
-  final FocusNode focusNode;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    return TextField(
-      controller: controller,
-      focusNode: focusNode,
-      textInputAction: TextInputAction.search,
-      style: theme.textTheme.bodySmall?.copyWith(
-        color: colors.textPrimary,
-        fontWeight: FontWeight.w600,
-      ),
-      decoration: InputDecoration(
-        hintText: localizations.searchNamesHint,
-        hintStyle: theme.textTheme.bodySmall?.copyWith(color: colors.textMuted),
-        prefixIcon: Icon(Icons.search_rounded, color: colors.textMuted),
-        filled: true,
-        fillColor: colors.surfaceAlt,
-        isDense: true,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadii.pill),
-          borderSide: BorderSide.none,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadii.pill),
-          borderSide: BorderSide.none,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadii.pill),
-          borderSide: BorderSide(color: colors.accentGold),
-        ),
+          return _AsmaNamesContent(
+            names: names,
+            visibleNames: visibleNames,
+            searchController: _searchController,
+          );
+        },
       ),
     );
   }
 }
 
 class _AsmaNamesContent extends StatelessWidget {
-  const _AsmaNamesContent({required this.names, required this.visibleNames});
+  const _AsmaNamesContent({
+    required this.names,
+    required this.visibleNames,
+    required this.searchController,
+  });
 
   final List<AsmaUlHusnaName> names;
   final List<AsmaUlHusnaName> visibleNames;
+  final TextEditingController searchController;
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        const Padding(
-          padding: EdgeInsets.fromLTRB(16, 14, 16, 0),
-          child: _AsmaHeaderCard(),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 22, 16, 8),
-          child: Text(
-            localizations.allNamesCount(names.length).toUpperCase(),
-            style: theme.textTheme.labelMedium?.copyWith(
-              color: colors.textMuted,
-              letterSpacing: 1.2,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-        ),
-        if (visibleNames.isEmpty)
-          _AsmaMessageState(
-            title: localizations.noNamesFound,
-            message: localizations.tryAnotherAsmaSearch,
-          )
-        else
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final double width = constraints.maxWidth;
-              final int columns = width >= 1040
-                  ? 4
-                  : width >= 720
-                  ? 3
-                  : 2;
-              final double aspectRatio = columns >= 4
-                  ? 1.18
-                  : columns == 3
-                  ? 1.08
-                  : 0.95;
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 1180),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final double width = constraints.maxWidth;
+            final int columns = width >= 1040
+                ? 4
+                : width >= 720
+                ? 3
+                : 2;
+            // Cards grow with the text size so the meaning never clips.
+            final double textScale = MediaQuery.textScalerOf(
+              context,
+            ).scale(1).clamp(1.0, 2.0);
+            final double cardHeight = 172 * textScale;
 
-              return GridView.builder(
-                padding: const EdgeInsets.all(16),
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: visibleNames.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: columns,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: aspectRatio,
+            return CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: <Widget>[
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(
+                    EquranSpacing.pagePadding,
+                    4,
+                    EquranSpacing.pagePadding,
+                    0,
+                  ),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate.fixed(<Widget>[
+                      DuaSearchField(
+                        controller: searchController,
+                        hint: localizations.searchNamesHint,
+                      ),
+                      const SizedBox(height: 16),
+                      const _AsmaHeaderCard(),
+                      Padding(
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                          4,
+                          26,
+                          4,
+                          12,
+                        ),
+                        child: RedesignEyebrow(
+                          localizations.allNamesCount(names.length),
+                        ),
+                      ),
+                      if (visibleNames.isEmpty)
+                        _AsmaMessageState(
+                          title: localizations.noNamesFound,
+                          message: localizations.tryAnotherAsmaSearch,
+                        ),
+                    ]),
+                  ),
                 ),
-                itemBuilder: (context, index) {
-                  final AsmaUlHusnaName name = visibleNames[index];
-                  return _NameCard(
-                    name: name,
-                    onTap: () => _showNameSheet(context, name),
-                  );
-                },
-              );
-            },
-          ),
-      ],
+                if (visibleNames.isNotEmpty)
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(
+                      EquranSpacing.pagePadding,
+                      0,
+                      EquranSpacing.pagePadding,
+                      32,
+                    ),
+                    sliver: SliverGrid.builder(
+                      itemCount: visibleNames.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: columns,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                        mainAxisExtent: cardHeight,
+                      ),
+                      itemBuilder: (context, index) {
+                        final AsmaUlHusnaName name = visibleNames[index];
+                        return _NameCard(
+                          name: name,
+                          onTap: () => _showNameSheet(context, name),
+                        );
+                      },
+                    ),
+                  ),
+              ],
+            );
+          },
+        ),
+      ),
     );
   }
 }
@@ -385,129 +261,65 @@ class _AsmaHeaderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
-    final Color ornamentColor = colors.accentGold.withValues(alpha: 0.50);
-    final Color referenceColor = colors.accentGold.withValues(alpha: 0.80);
+    final EquranTokens tokens = context.equranTokens;
+    final Color gold = tokens.featGold;
+    final Color ink = tokens.onFeat;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final bool wide = constraints.maxWidth >= 720;
-        final double titleSize = wide ? 44 : 34;
-        final double ayahSize = wide ? 30 : 24;
-        return Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: <Color>[
-                colors.primaryGradientStart,
-                colors.primaryGradientEnd,
-              ],
-            ),
-            borderRadius: BorderRadius.circular(AppRadii.xl),
-            border: Border.all(
-              color: colors.accentGold.withValues(alpha: 0.30),
+    return HeroPanel(
+      padding: const EdgeInsetsDirectional.fromSTEB(20, 26, 20, 24),
+      child: Column(
+        children: <Widget>[
+          Text(
+            'أَسْمَاءُ اللَّهِ الْحُسْنَى',
+            textDirection: TextDirection.rtl,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'NotoNaskhArabic',
+              color: ink,
+              fontSize: 32,
+              fontWeight: FontWeight.w600,
+              height: 1.5,
             ),
           ),
-          child: CustomPaint(
-            painter: _CornerOrnamentPainter(color: ornamentColor),
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(18, wide ? 30 : 24, 18, 24),
-              child: Column(
-                children: <Widget>[
-                  Text(
-                    'أَسْمَاءُ اللَّهِ الْحُسْنَى',
-                    textDirection: TextDirection.rtl,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.displaySmall?.copyWith(
-                      fontFamily: 'NotoNaskhArabic',
-                      color: colors.onPrimary,
-                      fontSize: titleSize,
-                      fontWeight: FontWeight.w700,
-                      height: 1.35,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    localizations.the99BeautifulNamesOfAllah,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colors.onPrimaryMuted,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  SizedBox(
-                    width: 100,
-                    child: Divider(
-                      height: 1,
-                      thickness: 1,
-                      color: colors.accentGold.withValues(alpha: 0.35),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  Text(
-                    'وَلِلَّهِ الْأَسْمَاءُ الْحُسْنَىٰ',
-                    textDirection: TextDirection.rtl,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      fontFamily: 'NotoNaskhArabic',
-                      color: referenceColor,
-                      fontSize: ayahSize,
-                      fontWeight: FontWeight.w700,
-                      height: 1.45,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    localizedSurahAyahLabel(localizations, 7, 180),
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      color: referenceColor,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ],
-              ),
+          const SizedBox(height: 4),
+          Text(
+            localizations.the99BeautifulNamesOfAllah,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              height: 1.4,
+              color: tokens.featText2,
             ),
           ),
-        );
-      },
+          const SizedBox(height: 18),
+          const OrnamentDivider(onHero: true),
+          const SizedBox(height: 16),
+          Text(
+            'وَلِلَّهِ الْأَسْمَاءُ الْحُسْنَىٰ',
+            textDirection: TextDirection.rtl,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'NotoNaskhArabic',
+              color: gold,
+              fontSize: 24,
+              fontWeight: FontWeight.w600,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            localizedSurahAyahLabel(localizations, 7, 180),
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: tokens.featText2,
+            ),
+          ),
+        ],
+      ),
     );
-  }
-}
-
-class _CornerOrnamentPainter extends CustomPainter {
-  const _CornerOrnamentPainter({required this.color});
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()
-      ..color = color
-      ..strokeWidth = 1
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-    const double inset = 8;
-    const double length = 16;
-
-    void drawCorner(double x, double y, double horizontal, double vertical) {
-      canvas.drawLine(Offset(x, y), Offset(x + horizontal, y), paint);
-      canvas.drawLine(Offset(x, y), Offset(x, y + vertical), paint);
-    }
-
-    drawCorner(inset, inset, length, length);
-    drawCorner(size.width - inset, inset, -length, length);
-    drawCorner(inset, size.height - inset, length, -length);
-    drawCorner(size.width - inset, size.height - inset, -length, -length);
-  }
-
-  @override
-  bool shouldRepaint(covariant _CornerOrnamentPainter oldDelegate) {
-    return oldDelegate.color != color;
   }
 }
 
@@ -519,100 +331,71 @@ class _NameCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
     final EquranColors colors = context.equranColors;
-    final TextStyle arabicStyle =
-        (theme.textTheme.headlineLarge ?? const TextStyle()).copyWith(
-          fontFamily: 'NotoNaskhArabic',
-          color: colors.textPrimary,
-          fontSize: 32,
-          fontWeight: FontWeight.w700,
-          height: 1.45,
-        );
+    final EquranTokens tokens = context.equranTokens;
 
     return Material(
       color: colors.surface,
-      borderRadius: BorderRadius.circular(AppRadii.large),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(EquranRadii.xl),
+        side: BorderSide(color: tokens.hair),
+      ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AppRadii.large),
-            border: Border.all(color: colors.border),
-          ),
-          padding: const EdgeInsets.all(12),
-          child: Stack(
-            fit: StackFit.expand,
+        child: Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(14, 12, 14, 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Align(
-                alignment: AlignmentDirectional.topEnd,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 9,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: colors.accentGold.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(AppRadii.pill),
-                  ),
-                  child: Text(
-                    name.number.toString().padLeft(2, '0'),
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: colors.accentGold,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
+                alignment: AlignmentDirectional.centerStart,
+                child: PillTag(
+                  name.number.toString().padLeft(2, '0'),
+                  gold: true,
+                  compact: true,
                 ),
               ),
-              PositionedDirectional(
-                top: 38,
-                start: 0,
-                end: 0,
-                bottom: 58,
+              Expanded(
                 child: Align(
-                  alignment: AlignmentDirectional.topEnd,
+                  alignment: AlignmentDirectional.centerEnd,
                   child: FittedBox(
                     fit: BoxFit.scaleDown,
-                    alignment: AlignmentDirectional.topEnd,
+                    alignment: AlignmentDirectional.centerEnd,
                     child: Text(
                       name.name,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                       textDirection: TextDirection.rtl,
-                      textAlign: TextAlign.right,
-                      style: arabicStyle,
+                      style: TextStyle(
+                        fontFamily: 'NotoNaskhArabic',
+                        color: colors.textPrimary,
+                        fontSize: 30,
+                        fontWeight: FontWeight.w600,
+                        height: 1.5,
+                      ),
                     ),
                   ),
                 ),
               ),
-              PositionedDirectional(
-                start: 0,
-                end: 0,
-                bottom: 0,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      name.transliteration,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: colors.primary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      name.meaning,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colors.textSecondary,
-                      ),
-                    ),
-                  ],
+              Text(
+                name.transliteration,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w600,
+                  color: tokens.emText,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                name.meaning,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 12.5,
+                  height: 1.3,
+                  color: tokens.text2,
                 ),
               ),
             ],
@@ -628,10 +411,11 @@ class _AsmaLoadingState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final EquranColors colors = context.equranColors;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 64),
-      child: Center(child: CircularProgressIndicator(color: colors.primary)),
+      child: Center(
+        child: CircularProgressIndicator(color: context.equranTokens.emText),
+      ),
     );
   }
 }
@@ -644,26 +428,22 @@ class _AsmaMessageState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
+    final EquranTokens tokens = context.equranTokens;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 48, 16, 24),
+      padding: const EdgeInsets.fromLTRB(16, 40, 16, 24),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Text(
             title,
             textAlign: TextAlign.center,
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: colors.textPrimary,
-              fontWeight: FontWeight.w800,
-            ),
+            style: redesignDisplayStyle(context, size: 24),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Text(
             message,
             textAlign: TextAlign.center,
-            style: theme.textTheme.bodySmall?.copyWith(color: colors.textMuted),
+            style: TextStyle(fontSize: 14, height: 1.45, color: tokens.text2),
           ),
         ],
       ),
@@ -672,30 +452,21 @@ class _AsmaMessageState extends StatelessWidget {
 }
 
 Future<void> _showNameSheet(BuildContext context, AsmaUlHusnaName name) async {
-  final ThemeData theme = Theme.of(context);
-  final EquranColors colors = context.equranColors;
-
-  await showModalBottomSheet<void>(
+  await showReaderSheet<void>(
     context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    builder: (context) {
+    builder: (BuildContext context) {
       final AppLocalizations localizations = AppLocalizations.of(context)!;
-      return SafeArea(
-        top: false,
-        child: Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(AppRadii.xl),
-            ),
-            border: Border(top: BorderSide(color: colors.border)),
-          ),
-          padding: const EdgeInsets.fromLTRB(24, 26, 24, 18),
+      final EquranColors colors = context.equranColors;
+      final EquranTokens tokens = context.equranTokens;
+      return RedesignPageTypography(
+        child: SingleChildScrollView(
+          padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 28),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
+              const ReaderSheetHandle(),
+              const SizedBox(height: 10),
               Text(
                 name.name,
                 textDirection: TextDirection.rtl,
@@ -704,57 +475,47 @@ Future<void> _showNameSheet(BuildContext context, AsmaUlHusnaName name) async {
                   fontFamily: 'NotoNaskhArabic',
                   fontSize: 52,
                   color: colors.textPrimary,
-                  fontWeight: FontWeight.w700,
-                  height: 1.35,
+                  fontWeight: FontWeight.w600,
+                  height: 1.5,
                 ),
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: 4),
               Text(
                 name.transliteration,
                 textAlign: TextAlign.center,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: colors.accentGold,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 0.5,
+                style: redesignDisplayStyle(
+                  context,
+                  size: 26,
+                  color: tokens.goldText,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 name.meaning,
                 textAlign: TextAlign.center,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colors.textSecondary,
-                  fontWeight: FontWeight.w600,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontVariations: const [FontVariation('opsz', 15)],
+                  height: 1.45,
+                  color: tokens.text2,
                 ),
               ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: 100,
-                child: Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: colors.accentGold.withValues(alpha: 0.50),
-                ),
-              ),
+              const SizedBox(height: 22),
+              const OrnamentDivider(),
               const SizedBox(height: 18),
               Text(
                 localizations.reciteThisNameInDua,
                 textAlign: TextAlign.center,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colors.textMuted,
+                style: TextStyle(
+                  fontSize: 13.5,
                   fontStyle: FontStyle.italic,
+                  color: tokens.muted,
                 ),
               ),
               const SizedBox(height: 22),
               OutlinedButton(
                 onPressed: () => Navigator.of(context).pop(),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: colors.textSecondary,
-                  side: BorderSide(color: colors.border),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppRadii.pill),
-                  ),
-                ),
+                style: readerOutlinedButtonStyle(context),
                 child: Text(localizations.close),
               ),
             ],

@@ -3,19 +3,24 @@ import 'package:equran/theme/equran_tokens.dart';
 import 'package:flutter/material.dart';
 
 class OrnamentDivider extends StatelessWidget {
-  const OrnamentDivider({super.key});
+  const OrnamentDivider({super.key, this.onHero = false});
+
+  /// Draws the gold rule and diamond of a `HeroPanel` instead of the page's.
+  final bool onHero;
 
   @override
   Widget build(BuildContext context) {
     final tokens = context.equranTokens;
+    final Color rule = onHero ? tokens.featRule : tokens.hair2;
+    final Color diamond = onHero ? tokens.featGold : tokens.gold;
     Widget line(bool reverse) => Expanded(
       child: Container(
         height: 1,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: reverse
-                ? [tokens.hair2, Colors.transparent]
-                : [Colors.transparent, tokens.hair2],
+                ? [rule, Colors.transparent]
+                : [Colors.transparent, rule],
           ),
         ),
       ),
@@ -31,7 +36,7 @@ class OrnamentDivider extends StatelessWidget {
               angle: math.pi / 4,
               child: SizedBox.square(
                 dimension: 6,
-                child: ColoredBox(color: tokens.gold.withValues(alpha: 0.85)),
+                child: ColoredBox(color: diamond.withValues(alpha: 0.85)),
               ),
             ),
             const SizedBox(width: 12),

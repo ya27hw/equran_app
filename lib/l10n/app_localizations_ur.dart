@@ -826,6 +826,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get closeSearch => 'تلاش بند کریں۔';
 
   @override
+  String get reverseOrder => 'ترتیب الٹیں';
+
+  @override
   String get noSurahsFound => 'کوئی سورت نہیں ملی۔';
 
   @override
@@ -4096,16 +4099,23 @@ class AppLocalizationsUr extends AppLocalizations {
   String get belowNisab => 'نصاب سے کم';
 
   @override
+  String get zakatNisabNotChecked => 'نصاب کی جانچ نہیں ہوئی';
+
+  @override
   String get zakatDueLabel => 'واجب الادا زکوٰۃ (2.5%)';
 
   @override
   String get resetCalculator => 'کیلکولیٹر ری سیٹ کریں';
 
   @override
-  String get goldPriceGram => 'سونے کی قیمت فی گرام (USD)';
+  String goldPriceGram(String currency) {
+    return 'سونے کی قیمت فی گرام ($currency)';
+  }
 
   @override
-  String get silverPriceGram => 'چاندی کی قیمت فی گرام (USD)';
+  String silverPriceGram(String currency) {
+    return 'چاندی کی قیمت فی گرام ($currency)';
+  }
 
   @override
   String get zakatSavedLedger =>
@@ -4118,7 +4128,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get updateZakatPaidAmount => 'ادا شدہ زکوٰۃ کی رقم اپ ڈیٹ کریں';
 
   @override
-  String get enterPaidAmountUsd => 'ادا شدہ رقم USD میں درج کریں';
+  String enterPaidAmountInCurrency(String currency) {
+    return 'ادا شدہ رقم $currency میں درج کریں';
+  }
 
   @override
   String get calculatorTab => 'کیلکولیٹر';
@@ -4324,18 +4336,6 @@ class AppLocalizationsUr extends AppLocalizations {
   String amountInCurrency(String currency) {
     return '$currency میں رقم';
   }
-
-  @override
-  String get livestockSubtitle => 'بھیڑ/بکریاں، گائے، اونٹ — آسان جدید قیمتیں';
-
-  @override
-  String get livestockSheepGoats => 'بھیڑ اور بکریاں';
-
-  @override
-  String get livestockCowsBuffalo => 'گائے / بھینس';
-
-  @override
-  String get livestockCamels => 'اونٹ';
 
   @override
   String get noHistoricalCalculations => 'کوئی ماضی کا حساب نہیں ہے';
@@ -4685,4 +4685,334 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get showSplashScreenSubtitle => 'ایپ کھلنے پر مختصر اینیمیشن چلائیں۔';
+
+  @override
+  String get savedFolderLabel => 'فولڈر';
+
+  @override
+  String get savedManageFolders => 'فولڈرز کا انتظام';
+
+  @override
+  String get zakatNisabNeedsRates =>
+      'نصاب جانچنے کے لیے سونے اور چاندی کے ریٹ درج کریں۔ ریٹ لوڈ نہیں ہو سکے، اس لیے خود درج کریں۔';
+
+  @override
+  String get zakatDeleteRecordQuestion => 'یہ حساب حذف کریں؟';
+
+  @override
+  String get zakatDeleteRecordBody =>
+      'محفوظ شدہ حساب آپ کی تاریخ سے ہٹا دیا جائے گا۔';
+
+  @override
+  String get unitTola => 'تولہ';
+
+  @override
+  String get hifzRatingFail => 'ناکام';
+
+  @override
+  String get hifzRatingPass => 'کامیاب';
+
+  @override
+  String get shareImageFormat => 'شیئر کی جانے والی تصویر کا فارمیٹ';
+
+  @override
+  String get shareFormatStory => 'اسٹوری 9:16';
+
+  @override
+  String get shareFormatSquare => 'چوکور 1:1';
+
+  @override
+  String get shareFormatClassic => 'کلاسک';
+
+  @override
+  String get unableToShareAyahImage => 'آیت کی تصویر شیئر نہیں کی جا سکی۔';
+
+  @override
+  String get reciterGroupDownloaded => 'ڈاؤن لوڈ شدہ کو گروپ کریں';
+
+  @override
+  String get reciterShowAlphabetical => 'حروفِ تہجی کی ترتیب میں دکھائیں';
+
+  @override
+  String get audioConnectionInterrupted =>
+      'آڈیو کنکشن منقطع ہو گیا۔ اپنا انٹرنیٹ چیک کریں اور دوبارہ کوشش کریں۔';
+
+  @override
+  String get offlineDownloadAyahOrReconnect =>
+      'آپ آف لائن ہیں۔ اس آیت کو ڈاؤن لوڈ کریں یا اسٹریم کرنے کے لیے دوبارہ کنیکٹ کریں۔';
+
+  @override
+  String get unableToPlayAyahAudio => 'آیت کی آڈیو نہیں چلائی جا سکی۔';
+
+  @override
+  String get repeatOnce => 'ایک بار';
+
+  @override
+  String repeatTimes(int count) {
+    return '$count بار';
+  }
+
+  @override
+  String get repeatInfinite => 'لامحدود';
+
+  @override
+  String get halfSecond => '0.5 سیکنڈ';
+
+  @override
+  String get resourceStateUpdateAvailable => 'اپ ڈیٹ دستیاب ہے';
+
+  @override
+  String get resourcePhaseStarting => 'شروع ہو رہا ہے';
+
+  @override
+  String get resourcePhaseVerifying => 'تصدیق ہو رہی ہے';
+
+  @override
+  String get resourcePhaseExtracting => 'نکالا جا رہا ہے';
+
+  @override
+  String get resourcePhaseInstalling => 'انسٹال ہو رہا ہے';
+
+  @override
+  String get resourcePhaseFailed => 'ناکام';
+
+  @override
+  String get resourceTypeGeneric => 'وسیلہ';
+
+  @override
+  String get translationBundled => 'ایپ کے ساتھ شامل';
+
+  @override
+  String get translationDownloadUnavailable => 'ڈاؤن لوڈ دستیاب نہیں';
+
+  @override
+  String get navigationSettingsHint =>
+      'ترتیب بدلنے کے لیے ٹائلز کو گھسیٹیں۔ کسی دستیاب آئٹم کو فعال ٹائل پر چھوڑ کر ان کی جگہ بدلیں، یا نیچے کسی آئٹم پر ٹیپ کر کے اسے پن کریں (سب سے کم حالیہ استعمال شدہ آئٹم ہٹ جائے گا)۔';
+
+  @override
+  String navigationActiveSlots(int count, int max) {
+    return 'فعال نیویگیشن بار سلاٹس ($count/$max)';
+  }
+
+  @override
+  String get navigationAvailableItems => 'دستیاب غیر پن شدہ آئٹمز';
+
+  @override
+  String navigationSlot(int number) {
+    return 'سلاٹ $number';
+  }
+
+  @override
+  String navigationSlotLocked(int number) {
+    return 'سلاٹ $number (مقفل ہب)';
+  }
+
+  @override
+  String navigationSwapped(String first, String second) {
+    return '$first اور $second کی جگہ بدل دی گئی';
+  }
+
+  @override
+  String navigationRemoved(String item) {
+    return '$item کو نیویگیشن بار سے ہٹا دیا گیا';
+  }
+
+  @override
+  String navigationPinned(String item) {
+    return '$item پن کر دیا گیا';
+  }
+
+  @override
+  String navigationPinnedDisplaced(String item, String displaced) {
+    return '$item پن کر دیا گیا ($displaced ہٹا دیا گیا)';
+  }
+
+  @override
+  String get navSubtitleHome => 'مرکزی ڈیش بورڈ';
+
+  @override
+  String get navSubtitleQuran => 'قرآنِ پاک پڑھیں';
+
+  @override
+  String get navSubtitlePrayer => 'نماز کے اوقات اور اذان';
+
+  @override
+  String get navSubtitleSettings => 'سسٹم ترجیحات';
+
+  @override
+  String get dockZakat => 'زکوٰۃ';
+
+  @override
+  String get dockCalendar => 'کیلنڈر';
+
+  @override
+  String downloadsReciterCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count قاری',
+      one: '1 قاری',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String downloadsItemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count آئٹمز',
+      one: '1 آئٹم',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String downloadsDeleteReciterBody(String reciter, String surah) {
+    return '$reciter کے لیے $surah کی تمام ڈاؤن لوڈز ہٹا دیں؟';
+  }
+
+  @override
+  String get downloadsAllSurahs => 'تمام سورتیں';
+
+  @override
+  String get downloadsFilterTitle => 'ڈاؤن لوڈز فلٹر اور ترتیب دیں';
+
+  @override
+  String get downloadsFilterSubtitle =>
+      'آپ کی لائبریری میں کون سی تلاوتیں نظر آئیں، اس پر مزید کنٹرول';
+
+  @override
+  String get downloadsFilterSearchHint => 'تلاوتیں یا سورتیں تلاش کریں...';
+
+  @override
+  String get downloadsGroupBy => 'گروپ بندی بلحاظ';
+
+  @override
+  String get downloadsSortBy => 'ترتیب بلحاظ';
+
+  @override
+  String get downloadsCategory => 'زمرہ';
+
+  @override
+  String get downloadsContentType => 'مواد کی قسم';
+
+  @override
+  String get downloadsSortReciterAsc => 'قاری (ا ← ی)';
+
+  @override
+  String get downloadsSortReciterDesc => 'قاری (ی ← ا)';
+
+  @override
+  String get downloadsSortSizeDesc => 'سائز (سب سے بڑا پہلے)';
+
+  @override
+  String get downloadsSortSizeAsc => 'سائز (سب سے چھوٹا پہلے)';
+
+  @override
+  String get downloadsSortSurahAsc => 'سورہ (1 ← 114)';
+
+  @override
+  String get downloadsSortSurahDesc => 'سورہ (114 ← 1)';
+
+  @override
+  String get offsetSetPositive => 'مثبت کریں';
+
+  @override
+  String get offsetSetNegative => 'منفی کریں';
+
+  @override
+  String get notificationPermissionCheckTimedOut =>
+      'نوٹیفکیشن کی اجازت کی جانچ کا وقت ختم ہو گیا۔ ایپ دوبارہ کھولیں یا سسٹم سیٹنگز میں نوٹیفکیشنز فعال کریں۔';
+
+  @override
+  String get notificationPermissionCheckFailed =>
+      'نوٹیفکیشن کی اجازت چیک نہیں ہو سکی۔ دوبارہ کوشش کریں یا سسٹم سیٹنگز میں نوٹیفکیشنز فعال کریں۔';
+
+  @override
+  String get exactAlarmPermissionCheckTimedOut =>
+      'درست الارم کی اجازت کی جانچ کا وقت ختم ہو گیا۔ ایپ دوبارہ کھولیں یا سسٹم سیٹنگز میں الارم اور ریمائنڈرز فعال کریں۔';
+
+  @override
+  String get exactAlarmPermissionCheckFailed =>
+      'درست الارم کی اجازت چیک نہیں ہو سکی۔ دوبارہ کوشش کریں یا سسٹم سیٹنگز میں الارم اور ریمائنڈرز فعال کریں۔';
+
+  @override
+  String get asrMethodHanafi => 'حنفی';
+
+  @override
+  String get highLatitudeRuleAutoTitle => 'خودکار';
+
+  @override
+  String get highLatitudeRuleNoneTitle => 'کوئی نہیں';
+
+  @override
+  String get highLatitudeRuleMiddleOfTheNightTitle => 'رات کا درمیان';
+
+  @override
+  String get highLatitudeRuleOneSeventhTitle => 'ساتواں حصہ';
+
+  @override
+  String get highLatitudeRuleAngleBasedTitle => 'زاویے پر مبنی';
+
+  @override
+  String get prayerMethodAuto => 'مقام کے لیے بہترین';
+
+  @override
+  String get prayerMethodMuslimWorldLeague => 'مسلم ورلڈ لیگ';
+
+  @override
+  String get prayerMethodEgyptian => 'مصری';
+
+  @override
+  String get prayerMethodUmmAlQura => 'ام القریٰ';
+
+  @override
+  String get prayerMethodDubai => 'دبئی / خلیج';
+
+  @override
+  String get prayerMethodKuwait => 'کویت';
+
+  @override
+  String get prayerMethodQatar => 'قطر';
+
+  @override
+  String get prayerMethodKarachi => 'کراچی';
+
+  @override
+  String get prayerMethodMoonsighting => 'رویتِ ہلال کمیٹی';
+
+  @override
+  String get prayerMethodMorocco => 'مراکش';
+
+  @override
+  String get prayerMethodSingapore => 'سنگاپور';
+
+  @override
+  String get prayerMethodTehran => 'تہران';
+
+  @override
+  String get prayerMethodTurkey => 'ترکی / دیانت';
+
+  @override
+  String get prayerMethodShortAuto => 'خودکار';
+
+  @override
+  String get prayerMethodShortMwl => 'MWL';
+
+  @override
+  String get prayerMethodShortDubai => 'دبئی';
+
+  @override
+  String get prayerMethodShortMoonsighting => 'رویتِ ہلال';
+
+  @override
+  String get prayerMethodShortTurkey => 'ترکی';
+
+  @override
+  String get dailyToolsKeepOnePinned => 'کم از کم ایک ٹول پن شدہ رہنا چاہیے۔';
+
+  @override
+  String get zakatLivestockNotCalculated =>
+      'مویشیوں کی زکوٰۃ یہاں شمار نہیں کی جاتی، اس لیے کل میں شامل نہیں۔ براہِ کرم کسی مستند عالم سے پوچھیں۔';
 }

@@ -210,7 +210,7 @@ Widget gallerySample(BuildContext context, String name) {
               'For this evening',
               style: EquranTextStyles.displaySectionTitle(
                 context,
-                color: EquranColors.dark.textPrimary,
+                color: tokens.onFeat,
               ),
             ),
             const SizedBox(height: 10),
@@ -219,11 +219,7 @@ Widget gallerySample(BuildContext context, String name) {
               style: TextStyle(color: tokens.featText2),
             ),
             const SizedBox(height: 16),
-            DisplayNumeral(
-              '15:24',
-              size: 40,
-              color: EquranColors.dark.textPrimary,
-            ),
+            DisplayNumeral('15:24', size: 40, color: tokens.onFeat),
           ],
         ),
       );

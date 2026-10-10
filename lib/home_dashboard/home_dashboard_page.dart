@@ -39,7 +39,7 @@ import 'package:equran/duas/hisn_al_muslim_repository.dart';
 import 'package:equran/duas/hisn_al_muslim_models.dart';
 import 'package:equran/duas/duas_category_page.dart';
 import 'package:equran/backend/daily_tools_config.dart';
-import 'package:equran/home/hijri_calendar_page.dart' hide HijriCalendar;
+import 'package:equran/home/hijri_calendar_page.dart';
 import 'package:equran/hifz/hifz.dart';
 import 'package:equran/duas/asma_ul_husna_page.dart';
 
@@ -121,7 +121,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
           child: RefreshIndicator(
             onRefresh: () async {
               setState(() {
-                _now = DateTime.now();
+                _now = widget.clock();
               });
               await _loadExactAlarmStatus();
             },
@@ -170,10 +170,11 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
       _now,
       offset: hijriOffset,
     );
-    final String weekday = DateFormat(
-      'EEEE',
-      Localizations.localeOf(context).toString(),
-    ).format(_now);
+    final String localeName = Localizations.localeOf(context).toString();
+    final String weekday = DateFormat('EEEE', localeName).format(_now);
+    // Month name in the app language and Western digits (the app-wide policy);
+    // the bidi algorithm puts the day first under right-to-left scripts.
+    final String hijriDate = hijri.toLocalizedDateString(localeName);
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
@@ -187,14 +188,17 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
         children: <Widget>[
           Expanded(
             child: RedesignEyebrow(
-              '$weekday \u00B7 ${hijri.toString()}',
+              '$weekday \u00B7 $hijriDate',
               color: tokens.goldText,
             ),
           ),
           if (location != null) ...<Widget>[
             const SizedBox(width: 12),
             _LocationPill(
-              label: location.cityLabel,
+              label: localizedCityLabel(
+                AppLocalizations.of(context)!,
+                location,
+              ),
               onTap: widget.onOpenPrayerTimes,
             ),
           ],
@@ -381,6 +385,7 @@ class _DashboardContent extends StatelessWidget {
               stats: summary.stats,
               activity: summary.todayActivity,
               latestReadingActivityDate: summary.latestReadingActivityDate,
+              now: now,
               onOpenStats: actions.onOpenStats,
             ),
             if (summary.activePlan != null) ...<Widget>[
@@ -1074,6 +1079,7 @@ class _RoutinePlanCta extends StatelessWidget {
         theme.textTheme.titleSmall?.copyWith(
           color: colors.textPrimary,
           fontSize: 15.5,
+          fontVariations: const [FontVariation('opsz', 15.5)],
           fontWeight: FontWeight.w600,
         ) ??
         const TextStyle();
@@ -2043,12 +2049,17 @@ class _JourneyPreviewCard extends StatelessWidget {
     required this.stats,
     required this.activity,
     required this.latestReadingActivityDate,
+    required this.now,
     required this.onOpenStats,
   });
 
   final QuranStatsSnapshot? stats;
   final QuranActivityDay? activity;
   final DateTime? latestReadingActivityDate;
+
+  /// The page clock (injectable in tests), not the wall clock, so the streak
+  /// chip agrees with the rest of the screen.
+  final DateTime now;
   final VoidCallback onOpenStats;
 
   @override
@@ -2066,7 +2077,7 @@ class _JourneyPreviewCard extends StatelessWidget {
     final bool showStreak = shouldShowJourneyStreak(
       currentStreak: snapshot.currentStreak,
       lastReadingActivityDate: latestReadingActivityDate,
-      now: DateTime.now(),
+      now: now,
     );
 
     return _HomePremiumCard(

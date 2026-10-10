@@ -54,6 +54,7 @@ class SettingsGroupCard extends StatelessWidget {
                 title,
                 style: TextStyle(
                   fontSize: 15.5,
+                  fontVariations: const [FontVariation('opsz', 15.5)],
                   fontWeight: FontWeight.w600,
                   color: colors.textPrimary,
                 ),
@@ -63,8 +64,10 @@ class SettingsGroupCard extends StatelessWidget {
                 style: TextStyle(fontSize: 13, color: tokens.muted),
               ),
               children: <Widget>[
-                Divider(height: 1, thickness: 1, color: tokens.hair),
-                ...children,
+                for (final Widget child in children) ...<Widget>[
+                  Divider(height: 1, thickness: 1, color: tokens.hair),
+                  child,
+                ],
               ],
             ),
           ),

@@ -1,7 +1,8 @@
 import 'package:equran/backend/library.dart' show SettingsDB;
 import 'package:equran/backend/qpc_v4_font_service.dart';
 import 'package:equran/theme/equran_text_styles.dart';
-import 'package:equran/utils/app_slider_theme.dart';
+import 'package:equran/theme/equran_tokens.dart';
+import 'package:equran/widgets/settings_sheet_chrome.dart';
 import 'package:equran/utils/number_formatting.dart';
 import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
@@ -133,44 +134,17 @@ class _FontSliderState extends State<FontSlider> {
     required double max,
     required ValueChanged<double> onChanged,
   }) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 2, 16, 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.titleSmall,
-          ),
-          const SizedBox(height: 4),
-          Row(
-            children: <Widget>[
-              Text('A−', style: Theme.of(context).textTheme.labelMedium),
-              Expanded(
-                child: SliderTheme(
-                  data: AppSliderTheme.standard(context),
-                  child: Slider(
-                    value: value,
-                    min: min,
-                    max: max,
-                    label: formatCompactNumber(value),
-                    onChanged: onChanged,
-                  ),
-                ),
-              ),
-              Text('A+', style: Theme.of(context).textTheme.labelMedium),
-              const SizedBox(width: 8),
-              SizedBox(
-                width: 56,
-                child: Text(
-                  formatCompactNumber(value),
-                  textAlign: TextAlign.end,
-                ),
-              ),
-            ],
-          ),
-        ],
+    return ReaderSliderBlock(
+      title: title,
+      valueLabel: formatCompactNumber(value),
+      minLabel: 'A−',
+      maxLabel: 'A+',
+      slider: Slider(
+        value: value,
+        min: min,
+        max: max,
+        label: formatCompactNumber(value),
+        onChanged: onChanged,
       ),
     );
   }
@@ -190,7 +164,7 @@ class _FontPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
+    final EquranTokens tokens = context.equranTokens;
 
     final int translationIndex = SettingsDB().get(
       'translation',
@@ -227,7 +201,7 @@ class _FontPreview extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
+                color: tokens.text2,
                 fontSize: fontSizeTranslation,
               ),
             ),

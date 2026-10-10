@@ -1,11 +1,10 @@
 import 'package:equran/widgets/common/equran_asset_image.dart';
-import 'package:equran/backend/library.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/widgets/redesign/redesign_widgets.dart';
 import 'package:equran/widgets/redesign/page_typography.dart';
-import 'package:equran/widgets/common/equran_components.dart';
+import 'package:equran/widgets/common/pressable_scale.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:equran/hifz/hifz.dart';
@@ -281,73 +280,91 @@ class _MoreHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
-    final localizations = AppLocalizations.of(context)!;
+    final EquranTokens tokens = context.equranTokens;
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
+    final Color ink = tokens.onFeat;
+    final Color gold = tokens.featGold;
 
-    return EquranGradientCard(
-      onTap: onOpenReadingPlans,
-      padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final double copyWidth = constraints.maxWidth < 560
-              ? (constraints.maxWidth * 0.58).clamp(220.0, 420.0).toDouble()
-              : 420;
-
-          return Stack(
-            children: <Widget>[
-              const Positioned.fill(child: _MoreHeroArtwork()),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  SizedBox(
-                    width: copyWidth,
-                    child: Text(
-                      localizations.yourIslamicCompanion,
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        color: colors.onPrimary,
-                        fontWeight: FontWeight.w900,
+    return PressableScale(
+      child: HeroPanel(
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            key: const Key('more-hero'),
+            onTap: onOpenReadingPlans,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final double copyWidth = constraints.maxWidth < 560
+                    ? (constraints.maxWidth * 0.62).clamp(220.0, 420.0)
+                    : 420;
+                return Stack(
+                  children: <Widget>[
+                    const Positioned.fill(child: _MoreHeroArtwork()),
+                    Padding(
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                        22,
+                        20,
+                        22,
+                        22,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          SizedBox(
+                            width: copyWidth,
+                            child: Text(
+                              localizations.yourIslamicCompanion,
+                              style: redesignDisplayStyle(
+                                context,
+                                size: 26,
+                                height: 1.15,
+                                color: ink,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          SizedBox(
+                            width: copyWidth,
+                            child: Text(
+                              localizations.moreHeroSubtitle,
+                              style: TextStyle(
+                                fontSize: 14,
+                                height: 1.4,
+                                color: tokens.featText2,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Text(
+                                localizations.openRoutine,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: ink,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              DesignIcon(
+                                'chev',
+                                size: 16,
+                                strokeWidth: 1.8,
+                                color: gold,
+                                mirrorInRtl: true,
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    width: copyWidth,
-                    child: Text(
-                      localizations.moreHeroSubtitle,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: colors.onPrimaryMuted,
-                        height: 1.4,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Text(
-                        localizations.openRoutine,
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          color: colors.onPrimary,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
-                      const SizedBox(width: 5),
-                      Icon(
-                        Directionality.of(context) == TextDirection.rtl
-                            ? Icons.chevron_left_rounded
-                            : Icons.chevron_right_rounded,
-                        color: colors.onPrimary,
-                        size: 19,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          );
-        },
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -502,6 +519,7 @@ class _MoreRow extends StatelessWidget {
                     style: theme.textTheme.titleSmall?.copyWith(
                       color: colors.textPrimary,
                       fontSize: 15.5,
+                      fontVariations: const [FontVariation('opsz', 15.5)],
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -623,8 +641,6 @@ class _CustomAboutDialog extends StatefulWidget {
 }
 
 class _CustomAboutDialogState extends State<_CustomAboutDialog> {
-  int _clickCount = 0;
-
   Future<void> _copyDonationAddress(String address) async {
     await Clipboard.setData(ClipboardData(text: address));
     if (!mounted) return;
@@ -723,43 +739,11 @@ class _CustomAboutDialogState extends State<_CustomAboutDialog> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _clickCount++;
-                    });
-                    if (_clickCount == 7) {
-                      _clickCount = 0;
-                      final SettingsDB settings = SettingsDB();
-                      final bool currentVal =
-                          settings.get(
-                                'holographicCardsEnabled',
-                                defaultValue: false,
-                              )
-                              as bool;
-                      final bool nextVal = !currentVal;
-                      settings.put('holographicCardsEnabled', nextVal);
-
-                      Navigator.of(context).pop();
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            nextVal
-                                ? '🌈 Holographic cards enabled!'
-                                : '✨ Holographic cards disabled!',
-                          ),
-                          behavior: SnackBarBehavior.floating,
-                        ),
-                      );
-                    }
-                  },
-                  child: Text(
-                    'eQuran',
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      color: colors.textPrimary,
-                      fontWeight: FontWeight.w900,
-                    ),
+                Text(
+                  'eQuran',
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    color: colors.textPrimary,
+                    fontWeight: FontWeight.w900,
                   ),
                 ),
                 Text(

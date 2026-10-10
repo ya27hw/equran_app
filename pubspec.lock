@@ -517,13 +517,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  foil:
-    dependency: "direct main"
-    description:
-      path: "third_party/foil"
-      relative: true
-    source: path
-    version: "0.9.0+1"
   geoclue:
     dependency: transitive
     description:

@@ -9,14 +9,19 @@ import 'package:equran/prayer/prayer_notification_service.dart';
 import 'package:equran/prayer/prayer_settings_store.dart';
 import 'package:equran/prayer/prayer_times_service.dart';
 import 'package:equran/theme/equran_colors.dart';
-import 'package:equran/utils/app_radii.dart';
-import 'package:equran/widgets/app_selection_dialog.dart';
+import 'package:equran/prayer/prayer_settings_dialogs.dart';
+import 'package:equran/theme/equran_spacing.dart';
+import 'package:equran/theme/equran_tokens.dart';
+import 'package:equran/widgets/app_selection_dialog.dart'
+    show AppSelectionOption;
+import 'package:equran/widgets/reader_sheet_chrome.dart';
+import 'package:equran/widgets/redesign/design_icon.dart';
+import 'package:equran/widgets/settings_sheet_chrome.dart';
 import 'package:equran/widgets/prayer_widget_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:equran/widgets/redesign/redesign_subpage.dart';
 import 'package:equran/widgets/redesign/settings_group_card.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class PrayerTimesSettingsPage extends StatefulWidget {
   const PrayerTimesSettingsPage({super.key});
@@ -75,7 +80,6 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
   @override
   Widget build(BuildContext context) {
     final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final ThemeData theme = Theme.of(context);
 
     return RedesignSubpage(
       title: localizations.prayerTimesSettings,
@@ -89,17 +93,18 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
             subtitle: _locationSubtitle,
             icon: Icons.location_on_outlined,
             children: <Widget>[
-              ListTile(
-                leading: const Icon(Icons.map_outlined),
-                title: Text(localizations.chooseOnMap),
-                subtitle: Text(localizations.moveMapUnderPin),
+              ReaderOptionRow(
+                leading: const DesignIcon('pin'),
+                title: localizations.chooseOnMap,
+                subtitle: localizations.moveMapUnderPin,
                 onTap: () => _chooseOnMap(_location),
               ),
               if (_location != null)
-                ListTile(
+                ReaderOptionRow(
                   leading: const Icon(Icons.location_disabled_outlined),
-                  title: Text(localizations.clearSavedLocation),
-                  subtitle: Text(localizations.clearSavedLocationSubtitle),
+                  title: localizations.clearSavedLocation,
+                  subtitle: localizations.clearSavedLocationSubtitle,
+                  showChevron: false,
                   onTap: _clearLocation,
                 ),
             ],
@@ -111,41 +116,49 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
             subtitle: _calculationSubtitle,
             icon: Icons.calculate_outlined,
             children: <Widget>[
-              ListTile(
-                title: Text(localizations.calculationMethod),
-                subtitle: Text(_methodSubtitle),
+              ReaderOptionRow(
+                leading: const Icon(Icons.calculate_outlined),
+                title: localizations.calculationMethod,
+                subtitle: _methodSubtitle,
+                subtitleMaxLines: 3,
                 onTap: _selectCalculationMethod,
               ),
-              ListTile(
-                title: Text(localizations.asrMethod),
-                subtitle: Text(_settings.asrMethod.label),
+              ReaderOptionRow(
+                leading: const DesignIcon('sun'),
+                title: localizations.asrMethod,
+                subtitle: localizedAsrMethod(
+                  localizations,
+                  _settings.asrMethod,
+                ),
                 onTap: _selectAsrMethod,
               ),
-              ListTile(
-                title: Text(localizations.highLatitudeAdjustment),
-                subtitle: Text(
-                  '${_settings.highLatitudeRule.label}\n${localizations.highLatitudeAdjustmentSubtitle}',
-                ),
-                isThreeLine: true,
+              ReaderOptionRow(
+                leading: const Icon(Icons.public_rounded),
+                title: localizations.highLatitudeAdjustment,
+                subtitle:
+                    '${localizedHighLatitudeRule(localizations, _settings.highLatitudeRule)}\n${localizations.highLatitudeAdjustmentSubtitle}',
+                subtitleMaxLines: 4,
                 onTap: _selectHighLatitudeRule,
               ),
-              ListTile(
-                title: Text(localizations.timeFormat),
-                subtitle: Text(
-                  _settings.use24HourFormat ? '24-hour' : '12-hour',
-                ),
+              ReaderOptionRow(
+                leading: const DesignIcon('clock'),
+                title: localizations.timeFormat,
+                subtitle: _settings.use24HourFormat
+                    ? localizations.twentyFourHour
+                    : localizations.twelveHour,
                 onTap: _selectTimeFormat,
               ),
-              SwitchListTile(
-                title: Text(localizations.useLocationTimezone),
-                subtitle: Text(_timezoneSettingSubtitle),
+              ReaderSwitchRow(
+                leading: const Icon(Icons.language_rounded),
+                title: localizations.useLocationTimezone,
+                subtitle: _timezoneSettingSubtitle,
                 value: _settings.useLocationTimezone,
                 onChanged: (bool enabled) => _saveSettings(
                   _settings.copyWith(useLocationTimezone: enabled),
                 ),
               ),
               if (_settings.method == PrayerCalculationMethod.custom)
-                _buildCustomMethodCard(theme),
+                _buildCustomMethodCard(),
             ],
           ),
           _buildProhibitedTimesSection(context),
@@ -156,21 +169,21 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
             icon: Icons.tune_rounded,
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 2, 16, 8),
+                padding: const EdgeInsetsDirectional.fromSTEB(18, 14, 18, 12),
                 child: Text(
                   localizations.offsetsAreAppliedAfterBaseCalculation,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                    height: 1.35,
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    height: 1.4,
+                    color: context.equranTokens.muted,
                   ),
                 ),
               ),
               for (final PrayerTimeKind prayer in PrayerTimeKind.displayOrder)
-                ListTile(
-                  title: Text(prayer.label),
-                  subtitle: Text(
-                    _offsetLabel(_settings.offsets.forPrayer(prayer)),
-                  ),
+                ReaderOptionRow(
+                  leading: const DesignIcon('clock'),
+                  title: localizedPrayerName(localizations, prayer),
+                  subtitle: _offsetLabel(_settings.offsets.forPrayer(prayer)),
                   onTap: () => _editOffset(prayer),
                 ),
             ],
@@ -203,12 +216,11 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
       subtitle: localizations.prohibitedTimesSubtitle,
       icon: Icons.block_outlined,
       children: <Widget>[
-        ListTile(
-          title: Text(localizations.sunriseProhibitedTime),
-          subtitle: Text(
-            localizations.sunriseProhibitedTimeMinutes(
-              _settings.sunriseProhibitedDurationMinutes,
-            ),
+        ReaderOptionRow(
+          leading: const Icon(Icons.block_outlined),
+          title: localizations.sunriseProhibitedTime,
+          subtitle: localizations.sunriseProhibitedTimeMinutes(
+            _settings.sunriseProhibitedDurationMinutes,
           ),
           onTap: () => _editProhibitedDuration(
             title: localizations.sunriseProhibitedTime,
@@ -220,12 +232,11 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
             ),
           ),
         ),
-        ListTile(
-          title: Text(localizations.zawalProhibitedTime),
-          subtitle: Text(
-            localizations.zawalProhibitedTimeMinutes(
-              _settings.dhuhrProhibitedDurationMinutes,
-            ),
+        ReaderOptionRow(
+          leading: const Icon(Icons.block_outlined),
+          title: localizations.zawalProhibitedTime,
+          subtitle: localizations.zawalProhibitedTimeMinutes(
+            _settings.dhuhrProhibitedDurationMinutes,
           ),
           onTap: () => _editProhibitedDuration(
             title: localizations.zawalProhibitedTime,
@@ -237,12 +248,11 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
             ),
           ),
         ),
-        ListTile(
-          title: Text(localizations.sunsetProhibitedTime),
-          subtitle: Text(
-            localizations.sunsetProhibitedTimeMinutes(
-              _settings.sunsetProhibitedDurationMinutes,
-            ),
+        ReaderOptionRow(
+          leading: const Icon(Icons.block_outlined),
+          title: localizations.sunsetProhibitedTime,
+          subtitle: localizations.sunsetProhibitedTimeMinutes(
+            _settings.sunsetProhibitedDurationMinutes,
           ),
           onTap: () => _editProhibitedDuration(
             title: localizations.sunsetProhibitedTime,
@@ -260,8 +270,7 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
 
   Widget _buildPrayerRemindersSection(BuildContext context) {
     final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colors = theme.colorScheme;
+    final EquranTokens tokens = context.equranTokens;
     final PrayerReminderSettings reminders = _settings.reminderSettings;
     final bool remindersOn = reminders.remindersEnabled;
     final PrayerNotificationPermissionStatus? permission =
@@ -280,24 +289,27 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
       subtitle: _reminderSubtitle,
       icon: Icons.notifications_active_outlined,
       children: <Widget>[
-        SwitchListTile(
-          secondary: _isUpdatingReminders
+        ReaderSwitchRow(
+          leading: _isUpdatingReminders
               ? const SizedBox.square(
                   dimension: 22,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Icon(Icons.notifications_none_rounded),
-          title: Text(localizations.prayerRemindersEnabled),
-          subtitle: Text(_notificationPermissionSubtitle),
+              : const DesignIcon('bell'),
+          title: localizations.prayerRemindersEnabled,
+          subtitle: _notificationPermissionSubtitle,
           value: remindersOn,
           onChanged: _isUpdatingReminders ? null : _toggleGlobalReminders,
         ),
-        ListTile(
-          leading: const Icon(Icons.notifications_none_rounded),
-          title: Text(localizations.notificationsPermission),
-          subtitle: Text(_notificationPermissionSubtitle),
+        ReaderOptionRow(
+          leading: const DesignIcon('bell'),
+          title: localizations.notificationsPermission,
+          subtitle: _notificationPermissionSubtitle,
+          showChevron: false,
+          onTap: null,
           trailing: permission == PrayerNotificationPermissionStatus.denied
               ? TextButton(
+                  style: readerNoticeButtonStyle(context),
                   onPressed: _isUpdatingReminders
                       ? null
                       : _requestNotificationPermission,
@@ -305,12 +317,15 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
                 )
               : null,
         ),
-        ListTile(
+        ReaderOptionRow(
           leading: const Icon(Icons.alarm_on_outlined),
-          title: Text(localizations.exactAlarmPermission),
-          subtitle: Text(_exactAlarmPermissionSubtitle),
+          title: localizations.exactAlarmPermission,
+          subtitle: _exactAlarmPermissionSubtitle,
+          showChevron: false,
+          onTap: null,
           trailing: exactAlarmOff
               ? TextButton(
+                  style: readerNoticeButtonStyle(context),
                   onPressed: _isUpdatingReminders
                       ? null
                       : _openExactAlarmSettings,
@@ -319,68 +334,54 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
               : null,
         ),
         if (permissionOff || _notificationMessage != null)
-          _buildNotificationPermissionBanner(theme),
+          _buildNotificationPermissionBanner(),
         if (exactAlarmOff || _exactAlarmMessage != null)
-          _buildExactAlarmPermissionBanner(theme),
+          _buildExactAlarmPermissionBanner(),
         if (remindersOn && _location == null)
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            padding: const EdgeInsetsDirectional.fromSTEB(18, 14, 18, 14),
             child: Text(
               localizations.chooseLocationBeforeReminders,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colors.onSurfaceVariant,
-                height: 1.35,
+              style: TextStyle(
+                fontSize: 12.5,
+                height: 1.4,
+                color: tokens.muted,
               ),
             ),
           ),
-        AnimatedCrossFade(
-          firstChild: const SizedBox.shrink(),
-          secondChild: Column(
-            children: <Widget>[
-              for (final PrayerTimeKind prayer in PrayerTimeKind.reminderOrder)
-                SwitchListTile(
-                  title: Text(prayer.label),
-                  subtitle: Text(localizations.notifyAtSavedPrayerTime),
-                  value: reminders.prayerToggleFor(prayer),
-                  onChanged: _isUpdatingReminders
-                      ? null
-                      : (bool enabled) =>
-                            _togglePrayerReminder(prayer, enabled),
-                ),
-              ListTile(
-                leading: const Icon(Icons.schedule_rounded),
-                title: Text(localizations.reminderTime),
-                subtitle: Text(
-                  _reminderOffsetLabel(reminders.reminderOffsetMinutes),
-                ),
-                enabled: !_isUpdatingReminders,
-                onTap: _isUpdatingReminders ? null : _selectReminderOffset,
-              ),
-              if (kDebugMode)
-                ListTile(
-                  leading: const Icon(Icons.bug_report_outlined),
-                  title: Text(localizations.schedule1MinuteExactTest),
-                  subtitle: Text(
-                    localizations.schedule1MinuteExactTestSubtitle,
-                  ),
-                  enabled: !_isUpdatingReminders,
-                  onTap: _isUpdatingReminders
-                      ? null
-                      : _scheduleDebugPrayerNotification,
-                ),
-            ],
+        if (remindersOn) ...<Widget>[
+          for (final PrayerTimeKind prayer in PrayerTimeKind.reminderOrder)
+            ReaderSwitchRow(
+              leading: const DesignIcon('bell'),
+              title: localizedPrayerName(localizations, prayer),
+              subtitle: localizations.notifyAtSavedPrayerTime,
+              value: reminders.prayerToggleFor(prayer),
+              onChanged: _isUpdatingReminders
+                  ? null
+                  : (bool enabled) => _togglePrayerReminder(prayer, enabled),
+            ),
+          ReaderOptionRow(
+            leading: const DesignIcon('clock'),
+            title: localizations.reminderTime,
+            subtitle: _reminderOffsetLabel(reminders.reminderOffsetMinutes),
+            onTap: _isUpdatingReminders ? null : _selectReminderOffset,
           ),
-          crossFadeState: remindersOn
-              ? CrossFadeState.showSecond
-              : CrossFadeState.showFirst,
-          duration: const Duration(milliseconds: 180),
-        ),
+          if (kDebugMode)
+            ReaderOptionRow(
+              leading: const Icon(Icons.bug_report_outlined),
+              title: localizations.schedule1MinuteExactTest,
+              subtitle: localizations.schedule1MinuteExactTestSubtitle,
+              showChevron: false,
+              onTap: _isUpdatingReminders
+                  ? null
+                  : _scheduleDebugPrayerNotification,
+            ),
+        ],
       ],
     );
   }
 
-  Widget _buildNotificationPermissionBanner(ThemeData theme) {
-    final ColorScheme colors = theme.colorScheme;
+  Widget _buildNotificationPermissionBanner() {
     final PrayerNotificationPermissionStatus? permission =
         _notificationPermission;
     final bool unsupported =
@@ -394,202 +395,148 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
         : openSettings
         ? _openNotificationSettings
         : _requestNotificationPermission;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: colors.errorContainer.withValues(alpha: 0.34),
-          borderRadius: BorderRadius.circular(AppRadii.medium),
-          border: Border.all(color: colors.error.withValues(alpha: 0.2)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 11, 12, 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Icon(
-                    Icons.notifications_off_outlined,
-                    color: colors.error,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 9),
-                  Expanded(
-                    child: Text(
-                      _notificationMessage ??
-                          localizations.notificationPermissionOffEnable,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colors.onSurfaceVariant,
-                        height: 1.35,
-                      ),
-                    ),
-                  ),
-                ],
+    return ReaderNotice(
+      margin: const EdgeInsetsDirectional.fromSTEB(14, 12, 14, 12),
+      danger: true,
+      icon: const Icon(Icons.notifications_off_outlined),
+      text:
+          _notificationMessage ?? localizations.notificationPermissionOffEnable,
+      action: unsupported
+          ? null
+          : TextButton.icon(
+              style: readerNoticeButtonStyle(context),
+              onPressed: _isUpdatingReminders ? null : action,
+              icon: Icon(
+                error
+                    ? Icons.refresh_rounded
+                    : openSettings
+                    ? Icons.settings_outlined
+                    : Icons.notifications_active_outlined,
+                size: 18,
               ),
-              const SizedBox(height: 10),
-              if (!unsupported)
-                Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: TextButton.icon(
-                    onPressed: _isUpdatingReminders ? null : action,
-                    icon: Icon(
-                      error
-                          ? Icons.refresh_rounded
-                          : openSettings
-                          ? Icons.settings_outlined
-                          : Icons.notifications_active_outlined,
-                    ),
-                    label: Text(
-                      error
-                          ? localizations.retry
-                          : openSettings
-                          ? localizations.openAppSettings
-                          : localizations.requestPermission,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
+              label: Text(
+                error
+                    ? localizations.retry
+                    : openSettings
+                    ? localizations.openAppSettings
+                    : localizations.requestPermission,
+              ),
+            ),
     );
   }
 
-  Widget _buildExactAlarmPermissionBanner(ThemeData theme) {
-    final ColorScheme colors = theme.colorScheme;
+  Widget _buildExactAlarmPermissionBanner() {
     final bool error = _exactAlarmPermissionHasError;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: colors.errorContainer.withValues(alpha: 0.34),
-          borderRadius: BorderRadius.circular(AppRadii.medium),
-          border: Border.all(color: colors.error.withValues(alpha: 0.2)),
+    return ReaderNotice(
+      margin: const EdgeInsetsDirectional.fromSTEB(14, 12, 14, 12),
+      danger: true,
+      icon: const Icon(Icons.alarm_off_outlined),
+      text: _exactAlarmMessage ?? localizations.exactAlarmPermissionDisabled,
+      action: TextButton.icon(
+        style: readerNoticeButtonStyle(context),
+        onPressed: _isUpdatingReminders
+            ? null
+            : error
+            ? _refreshExactAlarmPermission
+            : _openExactAlarmSettings,
+        icon: Icon(
+          error ? Icons.refresh_rounded : Icons.settings_outlined,
+          size: 18,
         ),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 11, 12, 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Icon(Icons.alarm_off_outlined, color: colors.error, size: 20),
-                  const SizedBox(width: 9),
-                  Expanded(
-                    child: Text(
-                      _exactAlarmMessage ??
-                          localizations.exactAlarmPermissionDisabled,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colors.onSurfaceVariant,
-                        height: 1.35,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: TextButton.icon(
-                  onPressed: _isUpdatingReminders
-                      ? null
-                      : error
-                      ? _refreshExactAlarmPermission
-                      : _openExactAlarmSettings,
-                  icon: Icon(
-                    error ? Icons.refresh_rounded : Icons.settings_outlined,
-                  ),
-                  label: Text(
-                    error
-                        ? localizations.retry
-                        : localizations.openAlarmPermissionSettings,
-                  ),
-                ),
-              ),
-            ],
-          ),
+        label: Text(
+          error
+              ? localizations.retry
+              : localizations.openAlarmPermissionSettings,
         ),
       ),
     );
   }
 
-  Widget _buildCustomMethodCard(ThemeData theme) {
-    final ColorScheme colors = theme.colorScheme;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: colors.primaryContainer.withValues(alpha: 0.22),
-          borderRadius: BorderRadius.circular(AppRadii.medium),
-          border: Border.all(color: colors.primary.withValues(alpha: 0.16)),
+  Widget _buildCustomMethodCard() {
+    final EquranTokens tokens = context.equranTokens;
+    final EquranColors colors = context.equranColors;
+    final List<Widget> rows = <Widget>[
+      ReaderOptionRow(
+        leading: const DesignIcon('sliders'),
+        title: localizations.fajrAngle,
+        subtitle: '${_settings.customFajrAngle.toStringAsFixed(1)}°',
+        onTap: () => _editDoubleSetting(
+          title: localizations.fajrAngle,
+          currentValue: _settings.customFajrAngle,
+          min: 0,
+          max: 30,
+          suffix: 'degrees',
+          onChanged: (double value) =>
+              _saveSettings(_settings.copyWith(customFajrAngle: value)),
         ),
+      ),
+      Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 12),
+        child: Text(
+          localizations.highLatitudeMosqueNotice,
+          style: TextStyle(fontSize: 12.5, height: 1.4, color: tokens.muted),
+        ),
+      ),
+      ReaderOptionRow(
+        leading: const DesignIcon('moon'),
+        title: localizations.ishaMode,
+        subtitle: _localizedIshaModeLabel(_settings.customIshaMode),
+        onTap: _selectCustomIshaMode,
+      ),
+      ..._buildCustomIshaFields(),
+      ReaderOptionRow(
+        leading: const DesignIcon('sliders'),
+        title: localizations.maghribAngle,
+        subtitle: _settings.customMaghribAngle == null
+            ? localizations.useSunset
+            : '${_settings.customMaghribAngle!.toStringAsFixed(1)}°',
+        onTap: () => _editOptionalDoubleSetting(
+          title: localizations.maghribAngle,
+          currentValue: _settings.customMaghribAngle,
+          min: 0,
+          max: 30,
+          emptyLabel: localizations.leaveBlankToUseSunset,
+          onChanged: (double? value) =>
+              _saveSettings(_settings.withCustomMaghribAngle(value)),
+        ),
+      ),
+    ];
+    return Container(
+      margin: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: colors.surfaceAlt,
+        borderRadius: BorderRadius.circular(EquranRadii.large),
+        border: Border.all(color: tokens.hair),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(EquranRadii.large - 1),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.fromLTRB(14, 12, 14, 4),
+              padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 16, 12),
               child: Row(
                 children: <Widget>[
-                  Icon(Icons.construction_rounded, color: colors.primary),
-                  const SizedBox(width: 10),
+                  const ReaderIconWell(icon: Icon(Icons.construction_rounded)),
+                  const SizedBox(width: 14),
                   Expanded(
                     child: Text(
                       localizations.customMethod,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontVariations: const [FontVariation('opsz', 15)],
+                        fontWeight: FontWeight.w600,
+                        color: colors.textPrimary,
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-            ListTile(
-              title: Text(localizations.fajrAngle),
-              subtitle: Text(
-                '${_settings.customFajrAngle.toStringAsFixed(1)}°',
-              ),
-              onTap: () => _editDoubleSetting(
-                title: localizations.fajrAngle,
-                currentValue: _settings.customFajrAngle,
-                min: 0,
-                max: 30,
-                suffix: 'degrees',
-                onChanged: (double value) =>
-                    _saveSettings(_settings.copyWith(customFajrAngle: value)),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 2),
-              child: Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: Text(localizations.highLatitudeMosqueNotice),
-              ),
-            ),
-            ListTile(
-              title: Text(localizations.ishaMode),
-              subtitle: Text(_localizedIshaModeLabel(_settings.customIshaMode)),
-              onTap: _selectCustomIshaMode,
-            ),
-            ..._buildCustomIshaFields(),
-            ListTile(
-              title: Text(localizations.maghribAngle),
-              subtitle: Text(
-                _settings.customMaghribAngle == null
-                    ? localizations.useSunset
-                    : '${_settings.customMaghribAngle!.toStringAsFixed(1)}°',
-              ),
-              onTap: () => _editOptionalDoubleSetting(
-                title: localizations.maghribAngle,
-                currentValue: _settings.customMaghribAngle,
-                min: 0,
-                max: 30,
-                emptyLabel: localizations.leaveBlankToUseSunset,
-                onChanged: (double? value) =>
-                    _saveSettings(_settings.withCustomMaghribAngle(value)),
-              ),
-            ),
+            for (final Widget row in rows) ...<Widget>[
+              Divider(height: 1, thickness: 1, color: tokens.hair),
+              row,
+            ],
           ],
         ),
       ),
@@ -612,13 +559,12 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
         _buildCustomIshaIntervalTile(requiredValue: true),
       ],
       PrayerCustomIshaMode.fixedTime => <Widget>[
-        ListTile(
-          title: Text(localizations.fixedIshaTime),
-          subtitle: Text(
-            _clockLabel(
-              _settings.customIshaFixedTimeHour,
-              _settings.customIshaFixedTimeMinute,
-            ),
+        ReaderOptionRow(
+          leading: const DesignIcon('clock'),
+          title: localizations.fixedIshaTime,
+          subtitle: _clockLabel(
+            _settings.customIshaFixedTimeHour,
+            _settings.customIshaFixedTimeMinute,
           ),
           onTap: () => _editCustomIshaClockTime(
             title: localizations.fixedIshaTime,
@@ -636,16 +582,16 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
       PrayerCustomIshaMode.latestCap => <Widget>[
         _buildCustomIshaAngleTile(title: localizations.baseIshaAngle),
         _buildCustomIshaIntervalTile(requiredValue: false),
-        ListTile(
-          title: Text(localizations.latestIshaTime),
-          subtitle: Text(
-            localizations.latestIshaTimeHelp(
-              _clockLabel(
-                _settings.customIshaLatestCapHour,
-                _settings.customIshaLatestCapMinute,
-              ),
+        ReaderOptionRow(
+          leading: const DesignIcon('clock'),
+          title: localizations.latestIshaTime,
+          subtitle: localizations.latestIshaTimeHelp(
+            _clockLabel(
+              _settings.customIshaLatestCapHour,
+              _settings.customIshaLatestCapMinute,
             ),
           ),
+          subtitleMaxLines: 3,
           onTap: () => _editCustomIshaClockTime(
             title: localizations.latestIshaTime,
             initialHour: _settings.customIshaLatestCapHour,
@@ -664,9 +610,10 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
 
   Widget _buildCustomIshaAngleTile({String? title}) {
     final String resolvedTitle = title ?? localizations.ishaAngle;
-    return ListTile(
-      title: Text(resolvedTitle),
-      subtitle: Text('${_settings.customIshaAngle.toStringAsFixed(1)}°'),
+    return ReaderOptionRow(
+      leading: const DesignIcon('sliders'),
+      title: resolvedTitle,
+      subtitle: '${_settings.customIshaAngle.toStringAsFixed(1)}°',
       onTap: () => _editDoubleSetting(
         title: resolvedTitle,
         currentValue: _settings.customIshaAngle,
@@ -680,17 +627,14 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
   }
 
   Widget _buildCustomIshaIntervalTile({required bool requiredValue}) {
-    return ListTile(
-      title: Text(
-        requiredValue
-            ? localizations.ishaInterval
-            : localizations.baseIshaInterval,
-      ),
-      subtitle: Text(
-        _settings.customIshaInterval == null
-            ? localizations.useIshaAngle
-            : localizations.minutesAfterMaghrib(_settings.customIshaInterval!),
-      ),
+    return ReaderOptionRow(
+      leading: const DesignIcon('clock'),
+      title: requiredValue
+          ? localizations.ishaInterval
+          : localizations.baseIshaInterval,
+      subtitle: _settings.customIshaInterval == null
+          ? localizations.useIshaAngle
+          : localizations.minutesAfterMaghrib(_settings.customIshaInterval!),
       onTap: () => requiredValue
           ? _editIntSetting(
               title: localizations.ishaInterval,
@@ -714,35 +658,11 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
   }
 
   Widget _buildDisclaimer(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colors = theme.colorScheme;
     return Padding(
       padding: const EdgeInsets.only(top: 8),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: colors.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(AppRadii.medium),
-          border: Border.all(color: colors.outlineVariant),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(14),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Icon(Icons.info_outline_rounded, color: colors.primary, size: 20),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  localizations.prayerTimesExperimental,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colors.onSurfaceVariant,
-                    height: 1.35,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+      child: ReaderNotice(
+        icon: const DesignIcon('info'),
+        text: localizations.prayerTimesExperimental,
       ),
     );
   }
@@ -751,14 +671,14 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
     final PrayerCalculationMethod? selected =
         await _showSelectionDialog<PrayerCalculationMethod>(
           title: localizations.calculationMethod,
-          icon: Icons.calculate_outlined,
+          icon: const Icon(Icons.calculate_outlined),
           selectedValue: _settings.method,
           options: PrayerCalculationMethod.values
               .map(
                 (PrayerCalculationMethod method) =>
                     AppSelectionOption<PrayerCalculationMethod>(
                       value: method,
-                      title: method.label,
+                      title: localizedCalculationMethod(localizations, method),
                       subtitle: method == PrayerCalculationMethod.auto
                           ? localizations.bestMethodSubtitle
                           : null,
@@ -774,13 +694,13 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
     final PrayerAsrMethod? selected =
         await _showSelectionDialog<PrayerAsrMethod>(
           title: localizations.asrMethod,
-          icon: Icons.wb_sunny_outlined,
+          icon: const DesignIcon('sun'),
           selectedValue: _settings.asrMethod,
           options: PrayerAsrMethod.values
               .map(
                 (PrayerAsrMethod method) => AppSelectionOption<PrayerAsrMethod>(
                   value: method,
-                  title: method.label,
+                  title: localizedAsrMethod(localizations, method),
                 ),
               )
               .toList(),
@@ -793,7 +713,7 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
     final PrayerHighLatitudeRule? selected =
         await _showSelectionDialog<PrayerHighLatitudeRule>(
           title: localizations.highLatitudeAdjustment,
-          icon: Icons.public_rounded,
+          icon: const Icon(Icons.public_rounded),
           selectedValue: _settings.highLatitudeRule,
           options: PrayerHighLatitudeRule.values
               .map(
@@ -801,7 +721,7 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
                   PrayerHighLatitudeRule rule,
                 ) => AppSelectionOption<PrayerHighLatitudeRule>(
                   value: rule,
-                  title: rule.label,
+                  title: localizedHighLatitudeRule(localizations, rule),
                   subtitle: switch (rule) {
                     PrayerHighLatitudeRule.auto =>
                       localizations.highLatitudeRuleAutoSubtitle,
@@ -826,7 +746,7 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
     final PrayerCustomIshaMode? selected =
         await _showSelectionDialog<PrayerCustomIshaMode>(
           title: localizations.ishaMode,
-          icon: Icons.dark_mode_outlined,
+          icon: const DesignIcon('moon'),
           selectedValue: _settings.customIshaMode,
           options: PrayerCustomIshaMode.values
               .map(
@@ -860,7 +780,7 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
   Future<void> _selectTimeFormat() async {
     final bool? use24HourFormat = await _showSelectionDialog<bool>(
       title: localizations.timeFormat,
-      icon: Icons.schedule_rounded,
+      icon: const DesignIcon('clock'),
       selectedValue: _settings.use24HourFormat,
       options: <AppSelectionOption<bool>>[
         AppSelectionOption<bool>(value: false, title: localizations.twelveHour),
@@ -960,7 +880,7 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
   Future<void> _selectReminderOffset() async {
     final int? selected = await _showSelectionDialog<int>(
       title: localizations.reminderTime,
-      icon: Icons.schedule_rounded,
+      icon: const DesignIcon('clock'),
       selectedValue: _settings.reminderSettings.reminderOffsetMinutes,
       options: <AppSelectionOption<int>>[
         AppSelectionOption<int>(value: 0, title: localizations.atPrayerTime),
@@ -1141,13 +1061,13 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
 
   Future<T?> _showSelectionDialog<T>({
     required String title,
-    required IconData icon,
+    required Widget icon,
     required T selectedValue,
     required List<AppSelectionOption<T>> options,
   }) {
-    return showDialog<T>(
+    return showReaderDialog<T>(
       context: context,
-      builder: (BuildContext context) => AppSelectionDialog<T>(
+      builder: (BuildContext context) => ReaderChoiceDialog<T>(
         title: title,
         icon: icon,
         selectedValue: selectedValue,
@@ -1257,7 +1177,7 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
     required String emptyLabel,
     required ValueChanged<int?> onChanged,
   }) async {
-    final _OptionalNumberResult<int>? result =
+    final OptionalNumberResult<int>? result =
         await _showOptionalSteppedIntDialog(
           title: title,
           currentValue: currentValue,
@@ -1277,7 +1197,7 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
     required String emptyLabel,
     required ValueChanged<double?> onChanged,
   }) async {
-    final _OptionalNumberResult<double>? result =
+    final OptionalNumberResult<double>? result =
         await _showOptionalNumberDialog<double>(
           title: title,
           currentValue: currentValue,
@@ -1306,10 +1226,10 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
       validator: validator,
       formatter: formatter,
       allowEmpty: false,
-    );
+    ).then((OptionalNumberResult<T>? result) => result?.value);
   }
 
-  Future<_OptionalNumberResult<T>?> _showOptionalNumberDialog<T extends num>({
+  Future<OptionalNumberResult<T>?> _showOptionalNumberDialog<T extends num>({
     required String title,
     required T? currentValue,
     required String helperText,
@@ -1317,7 +1237,7 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
     required bool Function(T value) validator,
     required String Function(T value) formatter,
   }) {
-    return _showOptionalNumberDialogInternal<T>(
+    return _showNumberDialogInternal<T>(
       title: title,
       currentValue: currentValue,
       helperText: helperText,
@@ -1345,7 +1265,7 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
     ).then((value) => value?.value);
   }
 
-  Future<_OptionalNumberResult<int>?> _showOptionalSteppedIntDialog({
+  Future<OptionalNumberResult<int>?> _showOptionalSteppedIntDialog({
     required String title,
     required int? currentValue,
     required int min,
@@ -1362,7 +1282,7 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
     );
   }
 
-  Future<_OptionalNumberResult<int>?> _showSteppedIntDialogInternal({
+  Future<OptionalNumberResult<int>?> _showSteppedIntDialogInternal({
     required String title,
     required int? currentValue,
     required int min,
@@ -1370,115 +1290,20 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
     required String helperText,
     required bool allowNullValue,
   }) {
-    int signedValue = (currentValue ?? 0).clamp(min, max).toInt();
-    bool isNegative = signedValue < 0;
-    final TextEditingController controller = TextEditingController(
-      text: currentValue == null ? '' : signedValue.abs().toString(),
-    );
-
-    int signedValueFromText() {
-      final String raw = controller.text.trim();
-      final int magnitude = raw.isEmpty ? 0 : int.tryParse(raw) ?? -1;
-      if (magnitude < 0) return min - 1;
-      if (isNegative && magnitude != 0 && min < 0) return -magnitude;
-      return magnitude;
-    }
-
-    return showDialog<_OptionalNumberResult<int>?>(
+    return showReaderDialog<OptionalNumberResult<int>?>(
       context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setDialogState) {
-            void toggleSign() {
-              if (min >= 0) return;
-              setDialogState(() {
-                isNegative = !isNegative;
-                final int fromText = signedValueFromText();
-                if (fromText >= min && fromText <= max) {
-                  signedValue = fromText;
-                }
-              });
-            }
-
-            return AlertDialog(
-              title: Text(title),
-              content: TextField(
-                controller: controller,
-                autofocus: true,
-                textAlign: TextAlign.center,
-                keyboardType: TextInputType.number,
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.digitsOnly,
-                ],
-                decoration: InputDecoration(
-                  prefixIcon: min < 0
-                      ? IconButton(
-                          tooltip: isNegative ? 'Set positive' : 'Set negative',
-                          onPressed: toggleSign,
-                          icon: Text(
-                            isNegative ? '−' : '+',
-                            style: Theme.of(context).textTheme.titleLarge
-                                ?.copyWith(
-                                  fontWeight: FontWeight.w900,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                          ),
-                        )
-                      : null,
-                  helperText: helperText,
-                ),
-                onChanged: (_) {
-                  setDialogState(() {
-                    final int fromText = signedValueFromText();
-                    if (fromText >= min && fromText <= max) {
-                      signedValue = fromText;
-                    }
-                  });
-                },
-              ),
-              actions: <Widget>[
-                if (allowNullValue)
-                  TextButton(
-                    onPressed: () => Navigator.of(
-                      context,
-                    ).pop(const _OptionalNumberResult<Never>(null)),
-                    child: Text(localizations.clear),
-                  ),
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(localizations.cancel),
-                ),
-                FilledButton(
-                  onPressed: () {
-                    final int value = signedValueFromText();
-                    if (value < min || value > max) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            localizations.enterValueFromMinToMax(
-                              min.toString(),
-                              max.toString(),
-                            ),
-                          ),
-                        ),
-                      );
-                      return;
-                    }
-                    Navigator.of(
-                      context,
-                    ).pop(_OptionalNumberResult<int>(value));
-                  },
-                  child: Text(localizations.save),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    ).whenComplete(controller.dispose);
+      builder: (BuildContext context) => PrayerSteppedIntDialog(
+        title: title,
+        currentValue: currentValue,
+        min: min,
+        max: max,
+        helperText: helperText,
+        allowNullValue: allowNullValue,
+      ),
+    );
   }
 
-  Future<T?> _showNumberDialogInternal<T extends num>({
+  Future<OptionalNumberResult<T>?> _showNumberDialogInternal<T extends num>({
     required String title,
     required T? currentValue,
     required String helperText,
@@ -1487,108 +1312,18 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
     required String Function(T value) formatter,
     required bool allowEmpty,
   }) {
-    final TextEditingController controller = TextEditingController(
-      text: currentValue == null ? '' : formatter(currentValue),
-    );
-    return showDialog<T?>(
+    return showReaderDialog<OptionalNumberResult<T>?>(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: TextField(
-            controller: controller,
-            autofocus: true,
-            keyboardType: const TextInputType.numberWithOptions(
-              signed: true,
-              decimal: true,
-            ),
-            decoration: InputDecoration(helperText: helperText),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(localizations.cancel),
-            ),
-            FilledButton(
-              onPressed: () {
-                final String raw = controller.text.trim();
-                if (allowEmpty && raw.isEmpty) {
-                  Navigator.of(context).pop(null);
-                  return;
-                }
-                final T? value = parser(raw);
-                if (value == null || !validator(value)) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(localizations.enterValidValue)),
-                  );
-                  return;
-                }
-                Navigator.of(context).pop(value);
-              },
-              child: Text(localizations.save),
-            ),
-          ],
-        );
-      },
-    ).whenComplete(controller.dispose);
-  }
-
-  Future<_OptionalNumberResult<T>?>
-  _showOptionalNumberDialogInternal<T extends num>({
-    required String title,
-    required T? currentValue,
-    required String helperText,
-    required T? Function(String value) parser,
-    required bool Function(T value) validator,
-    required String Function(T value) formatter,
-    required bool allowEmpty,
-  }) {
-    final TextEditingController controller = TextEditingController(
-      text: currentValue == null ? '' : formatter(currentValue),
+      builder: (BuildContext context) => PrayerNumberDialog<T>(
+        title: title,
+        currentValue: currentValue,
+        helperText: helperText,
+        parser: parser,
+        validator: validator,
+        formatter: formatter,
+        allowEmpty: allowEmpty,
+      ),
     );
-    return showDialog<_OptionalNumberResult<T>?>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: TextField(
-            controller: controller,
-            autofocus: true,
-            keyboardType: const TextInputType.numberWithOptions(
-              signed: true,
-              decimal: true,
-            ),
-            decoration: InputDecoration(helperText: helperText),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(localizations.cancel),
-            ),
-            FilledButton(
-              onPressed: () {
-                final String raw = controller.text.trim();
-                if (allowEmpty && raw.isEmpty) {
-                  Navigator.of(
-                    context,
-                  ).pop(const _OptionalNumberResult<Never>(null));
-                  return;
-                }
-                final T? value = parser(raw);
-                if (value == null || !validator(value)) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(localizations.enterValidValue)),
-                  );
-                  return;
-                }
-                Navigator.of(context).pop(_OptionalNumberResult<T>(value));
-              },
-              child: Text(localizations.save),
-            ),
-          ],
-        );
-      },
-    ).whenComplete(controller.dispose);
   }
 
   Future<void> _chooseOnMap(PrayerLocation? initialLocation) async {
@@ -1684,9 +1419,7 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
       if (mounted) {
         setState(() {
           _exactAlarmPermission = PrayerExactAlarmPermissionStatus.denied;
-          _exactAlarmMessage =
-              reminderResult.message ??
-              localizations.exactAlarmPermissionOffWarning;
+          _exactAlarmMessage = localizations.exactAlarmPermissionDisabled;
         });
         _showMessage(_exactAlarmMessage!);
       }
@@ -1743,9 +1476,7 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
         _exactAlarmMessage = null;
       }
       if (result.status == PrayerNotificationScheduleStatus.exactAlarmDenied) {
-        _exactAlarmMessage =
-            result.message ??
-            'Exact alarm permission is disabled. Prayer reminders may be delayed.';
+        _exactAlarmMessage = localizations.exactAlarmPermissionDisabled;
       }
     });
   }
@@ -1789,14 +1520,13 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
       setState(() {
         _notificationPermissionHasError = true;
         _notificationMessage =
-            'Notification permission check timed out. Try reopening the app or enabling notifications in system settings.';
+            localizations.notificationPermissionCheckTimedOut;
       });
     } catch (_) {
       if (!mounted) return;
       setState(() {
         _notificationPermissionHasError = true;
-        _notificationMessage =
-            'Could not check notification permission. Try again or enable notifications in system settings.';
+        _notificationMessage = localizations.notificationPermissionCheckFailed;
       });
     } finally {
       if (mounted) {
@@ -1829,15 +1559,13 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
       if (!mounted) return;
       setState(() {
         _exactAlarmPermissionHasError = true;
-        _exactAlarmMessage =
-            'Exact alarm permission check timed out. Try reopening the app or enabling alarms & reminders in system settings.';
+        _exactAlarmMessage = localizations.exactAlarmPermissionCheckTimedOut;
       });
     } catch (_) {
       if (!mounted) return;
       setState(() {
         _exactAlarmPermissionHasError = true;
-        _exactAlarmMessage =
-            'Could not check exact alarm permission. Try again or enable alarms & reminders in system settings.';
+        _exactAlarmMessage = localizations.exactAlarmPermissionCheckFailed;
       });
     } finally {
       if (mounted) {
@@ -1858,7 +1586,7 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
     final AppLocalizations localizations = AppLocalizations.of(context)!;
     final PrayerLocation? location = _location;
     if (location == null) return localizations.chooseLocationBeforeCalculating;
-    return location.displayLabel;
+    return localizedLocationLabel(localizations, location);
   }
 
   String get _calculationSubtitle {
@@ -1969,7 +1697,8 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
         _settings.method == PrayerCalculationMethod.auto && location != null
         ? _service.effectiveMethodFor(location: location, settings: _settings)
         : _settings.method;
-    return prayerMethodDisplayLabel(
+    return localizedPrayerMethodDisplayLabel(
+      localizations,
       settings: _settings,
       effectiveMethod: effectiveMethod,
     );
@@ -1996,12 +1725,6 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
   String _formatClockTime(DateTime time) {
     return TimeOfDay(hour: time.hour, minute: time.minute).format(context);
   }
-}
-
-class _OptionalNumberResult<T extends num> {
-  const _OptionalNumberResult(this.value);
-
-  final T? value;
 }
 
 extension PrayerOffsetsUpdate on PrayerOffsets {

@@ -15,6 +15,7 @@ import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/widgets/redesign/redesign_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:timezone/timezone.dart' as timezone;
+import 'package:equran/utils/text_case.dart';
 
 String duaGroupName(AppLocalizations l, DuaGroup group) => switch (group) {
   DuaGroup.dailyAthkar => l.duaGroupDailyAthkar,
@@ -146,7 +147,7 @@ class DuaEyebrow extends StatelessWidget {
       'ur',
     ].contains(Localizations.localeOf(context).languageCode);
     return Text(
-      arabic ? text : text.toUpperCase(),
+      arabic ? text : upperCaseIn(context, text),
       style: EquranTextStyles.eyebrow(context).copyWith(
         color: color,
         fontFamily: arabic ? 'NotoNaskhArabic' : 'Inter',
@@ -174,10 +175,18 @@ class DuaSearchField extends StatelessWidget {
     );
     return TextField(
       controller: controller,
-      style: TextStyle(fontSize: 15, color: context.equranColors.textPrimary),
+      style: TextStyle(
+        fontSize: 15,
+        fontVariations: const [FontVariation('opsz', 15)],
+        color: context.equranColors.textPrimary,
+      ),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(color: tokens.muted, fontSize: 15),
+        hintStyle: TextStyle(
+          color: tokens.muted,
+          fontSize: 15,
+          fontVariations: const [FontVariation('opsz', 15)],
+        ),
         prefixIcon: Center(
           widthFactor: 1,
           child: DesignIcon('search', size: 19, color: tokens.muted),
@@ -423,6 +432,7 @@ class DuaCategoryRow extends StatelessWidget {
                           category.localizedTitle(context),
                           style: const TextStyle(
                             fontSize: 16,
+                            fontVariations: [FontVariation('opsz', 16)],
                             fontWeight: FontWeight.w600,
                             height: 1.3,
                           ),
@@ -497,12 +507,6 @@ class DuaSuggestionHero extends StatelessWidget {
   Widget build(BuildContext context) {
     final tokens = context.equranTokens;
     final l = AppLocalizations.of(context)!;
-    final heroGold = EquranTokens.ensure(
-      tokens.gold,
-      against: [tokens.featA, tokens.featB],
-      target: 4.5,
-      toward: EquranColors.dark.textPrimary,
-    );
     return HeroPanel(
       child: Stack(
         children: [
@@ -512,7 +516,7 @@ class DuaSuggestionHero extends StatelessWidget {
             child: ExcludeSemantics(
               child: CustomPaint(
                 size: const Size(210, 130),
-                painter: _DuaArchPainter(tokens.gold),
+                painter: _DuaArchPainter(tokens.featGold),
               ),
             ),
           ),
@@ -521,7 +525,7 @@ class DuaSuggestionHero extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                DuaEyebrow(suggestion.eyebrow(l), color: heroGold),
+                DuaEyebrow(suggestion.eyebrow(l), color: tokens.featText2),
                 const SizedBox(height: 12),
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 230),
@@ -531,7 +535,7 @@ class DuaSuggestionHero extends StatelessWidget {
                       context,
                       size: 27,
                       height: 1.12,
-                      color: EquranColors.dark.textPrimary,
+                      color: tokens.onFeat,
                     ),
                   ),
                 ),
@@ -551,8 +555,8 @@ class DuaSuggestionHero extends StatelessWidget {
                   ),
                   label: Text(l.beginAction),
                   style: FilledButton.styleFrom(
-                    backgroundColor: tokens.gold,
-                    foregroundColor: EquranColors.blackDark.background,
+                    backgroundColor: tokens.featGold,
+                    foregroundColor: tokens.onFeatGold,
                     minimumSize: const Size(0, 44),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 20,
@@ -563,6 +567,7 @@ class DuaSuggestionHero extends StatelessWidget {
                     ),
                     textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
                       fontSize: 15,
+                      fontVariations: const [FontVariation('opsz', 15)],
                       fontWeight: FontWeight.w600,
                     ),
                   ),

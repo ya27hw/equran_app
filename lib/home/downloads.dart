@@ -2,18 +2,47 @@ import 'package:equran/backend/library.dart'
     show
         AudioDownloadEntry,
         AudioDownloadService,
+        AudioDownloadType,
         AudioDownloadsSummary,
         DownloadMetadataService;
-import 'package:equran/theme/equran_colors.dart';
-import 'package:equran/utils/app_radii.dart';
+import 'package:equran/home/downloads_filter_sheet.dart';
+import 'package:equran/home/downloads_widgets.dart';
+import 'package:equran/theme/equran_spacing.dart';
+import 'package:equran/theme/equran_tokens.dart';
+import 'package:equran/widgets/reader_sheet_chrome.dart';
+import 'package:equran/widgets/redesign/design_icon.dart';
+import 'package:equran/widgets/redesign/hairline_card.dart';
+import 'package:equran/widgets/redesign/icon_button44.dart';
 import 'package:equran/utils/downloads_grouping.dart';
 import 'package:equran/utils/quran_display.dart';
-import 'package:equran/widgets/common/equran_components.dart';
 import 'package:equran/widgets/redesign/redesign_subpage.dart';
 import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/backend/playback_cache_service.dart';
 import 'package:quran/quran.dart' as quran;
+
+/// Row title for a download: the surah name, or "Surah • Ayah n" for a loose
+/// ayah. [AudioDownloadEntry.title] is English only and stays for search.
+String _entryTitle(AppLocalizations l10n, AudioDownloadEntry entry) {
+  return switch (entry.type) {
+    AudioDownloadType.ayah => localizedSurahAyahLabel(
+      l10n,
+      entry.surah,
+      entry.ayah ?? 0,
+    ),
+    _ => localizedSurahName(l10n, entry.surah),
+  };
+}
+
+String _entrySubtitle(AppLocalizations l10n, AudioDownloadEntry entry) {
+  return switch (entry.type) {
+    AudioDownloadType.surah => '',
+    AudioDownloadType.ayahSurah => l10n.ayahsCount(
+      quran.getVerseCount(entry.surah),
+    ),
+    AudioDownloadType.ayah => localizedAyahReference(l10n, entry.ayah ?? 0),
+  };
+}
 
 class _SurahAyahDownloadsGroup {
   const _SurahAyahDownloadsGroup({required this.surah, required this.entries});
@@ -29,7 +58,10 @@ class _SurahAyahDownloadsGroup {
 }
 
 class DownloadsPage extends StatefulWidget {
-  const DownloadsPage({super.key});
+  const DownloadsPage({super.key, @visibleForTesting this.loadSummary});
+
+  /// Replaces the file-system scan; tests use it to show fixed downloads.
+  final Future<AudioDownloadsSummary> Function()? loadSummary;
 
   @override
   State<DownloadsPage> createState() => _DownloadsPageState();
@@ -108,6 +140,9 @@ class _DownloadsPageState extends State<DownloadsPage> {
   }
 
   Future<AudioDownloadsSummary> _loadSummary() async {
+    final Future<AudioDownloadsSummary> Function()? override =
+        widget.loadSummary;
+    if (override != null) return override();
     final AudioDownloadsSummary summary = await AudioDownloadService()
         .summary();
     await const DownloadMetadataService().syncFromSummary(summary);
@@ -115,25 +150,19 @@ class _DownloadsPageState extends State<DownloadsPage> {
   }
 
   Future<void> _deleteEntry(AudioDownloadEntry entry) async {
-    final bool? confirm = await showDialog<bool>(
+    final bool? confirm = await showReaderDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        icon: const Icon(Icons.warning_amber_rounded),
-        title: Text(AppLocalizations.of(context)!.deleteDownloadQuestion),
-        content: Text(
-          AppLocalizations.of(context)!.removeDownloadFromOffline(entry.title),
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(AppLocalizations.of(context)!.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text(AppLocalizations.of(context)!.delete),
-          ),
-        ],
-      ),
+      builder: (context) {
+        final AppLocalizations l = AppLocalizations.of(context)!;
+        return ReaderConfirmDialog(
+          title: l.deleteDownloadQuestion,
+          body: l.removeDownloadFromOffline(_entryTitle(l, entry)),
+          icon: const DesignIcon('trash'),
+          cancelLabel: l.cancel,
+          confirmLabel: l.delete,
+          destructive: true,
+        );
+      },
     );
 
     if (confirm != true) return;
@@ -143,7 +172,9 @@ class _DownloadsPageState extends State<DownloadsPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            AppLocalizations.of(context)!.deletedDownload(entry.title),
+            AppLocalizations.of(context)!.deletedDownload(
+              _entryTitle(AppLocalizations.of(context)!, entry),
+            ),
           ),
         ),
       );
@@ -152,28 +183,22 @@ class _DownloadsPageState extends State<DownloadsPage> {
 
   Future<void> _clearAll(AudioDownloadsSummary summary) async {
     if (summary.allDownloads.isEmpty) return;
-    final bool? confirm = await showDialog<bool>(
+    final bool? confirm = await showReaderDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        icon: const Icon(Icons.warning_amber_rounded),
-        title: Text(AppLocalizations.of(context)!.deleteAllDownloadsQuestion),
-        content: Text(
-          AppLocalizations.of(context)!.deleteAllDownloadsBody(
+      builder: (context) {
+        final AppLocalizations l = AppLocalizations.of(context)!;
+        return ReaderConfirmDialog(
+          title: l.deleteAllDownloadsQuestion,
+          body: l.deleteAllDownloadsBody(
             summary.allDownloads.length,
             AudioDownloadService.formatBytes(summary.totalSizeBytes),
           ),
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(AppLocalizations.of(context)!.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text(AppLocalizations.of(context)!.deleteAll),
-          ),
-        ],
-      ),
+          icon: const DesignIcon('trash'),
+          cancelLabel: l.cancel,
+          confirmLabel: l.deleteAll,
+          destructive: true,
+        );
+      },
     );
 
     if (confirm != true) return;
@@ -192,7 +217,6 @@ class _DownloadsPageState extends State<DownloadsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
     return RedesignSubpage(
       title: AppLocalizations.of(context)!.downloads,
       child: FutureBuilder<AudioDownloadsSummary>(
@@ -322,9 +346,9 @@ class _DownloadsPageState extends State<DownloadsPage> {
               ),
               padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
               children: <Widget>[
-                _buildSummaryCard(theme, summary),
+                _buildSummaryCard(summary),
                 const SizedBox(height: 16),
-                _buildCleanupPreviewCard(theme, summary),
+                _buildCleanupPreviewCard(summary),
                 const SizedBox(height: 16),
                 if (reciterGroups.isNotEmpty) ...<Widget>[
                   _buildFilterButton(summary, reciterGroups),
@@ -353,7 +377,7 @@ class _DownloadsPageState extends State<DownloadsPage> {
     AudioDownloadsSummary summary,
     List<ReciterDownloadsGroup> originalGroups,
   ) {
-    final EquranColors colors = context.equranColors;
+    final EquranTokens tokens = context.equranTokens;
 
     final bool hasActive =
         _selectedReciterFilter != 'all' ||
@@ -376,61 +400,47 @@ class _DownloadsPageState extends State<DownloadsPage> {
     if (_groupBy != 'reciter') activeCount++;
 
     return Align(
-      alignment: Alignment.centerRight,
+      alignment: AlignmentDirectional.centerEnd,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           if (hasActive)
             TextButton(
               onPressed: _resetAllFilters,
-              style: TextButton.styleFrom(
-                foregroundColor: colors.primary,
-                visualDensity: VisualDensity.compact,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-              ),
-              child: const Text(
-                'Clear',
-                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
-              ),
+              style: readerTextButtonStyle(context, color: tokens.emText),
+              child: Text(AppLocalizations.of(context)!.clear),
             ),
           const SizedBox(width: 4),
           Stack(
             clipBehavior: Clip.none,
             children: <Widget>[
-              IconButton(
+              IconButton44(
                 onPressed: () => _showFilterSortSheet(summary, originalGroups),
-                icon: const Icon(Icons.filter_list_rounded),
-                style: IconButton.styleFrom(
-                  backgroundColor: colors.primary,
-                  foregroundColor: colors.onPrimary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppRadii.medium),
-                  ),
-                  padding: const EdgeInsets.all(10),
-                  minimumSize: const Size(40, 40),
-                ),
-                tooltip: 'Filter & sort',
+                designIcon: 'sliders',
+                tooltip: AppLocalizations.of(context)!.filterAndSort,
               ),
               if (activeCount > 0)
-                Positioned(
-                  right: -1,
-                  top: -1,
+                PositionedDirectional(
+                  end: -2,
+                  top: -2,
                   child: Container(
-                    padding: const EdgeInsets.all(3.5),
+                    constraints: const BoxConstraints(
+                      minWidth: 18,
+                      minHeight: 18,
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: colors.accentGold,
+                      color: tokens.goldWash,
                       shape: BoxShape.circle,
-                      border: Border.all(color: colors.surface, width: 1.5),
+                      border: Border.all(color: tokens.goldText, width: 1),
                     ),
                     child: Text(
                       '$activeCount',
-                      style: const TextStyle(
-                        color: Colors.black87,
-                        fontSize: 9,
-                        fontWeight: FontWeight.w800,
+                      style: TextStyle(
+                        color: tokens.goldText,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
                         height: 1.0,
                       ),
                     ),
@@ -443,165 +453,50 @@ class _DownloadsPageState extends State<DownloadsPage> {
     );
   }
 
-  Widget _buildSummaryCard(ThemeData theme, AudioDownloadsSummary summary) {
-    final EquranColors colors = context.equranColors;
+  Widget _buildSummaryCard(AudioDownloadsSummary summary) {
     final localizations = AppLocalizations.of(context)!;
-    final double headlineSize = theme.textTheme.headlineMedium?.fontSize ?? 28;
-
-    return EquranGradientCard(
-      padding: EdgeInsets.zero,
-      child: SizedBox(
-        height: 120,
-        child: Stack(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Icon(
-                        Icons.offline_pin_rounded,
-                        color: colors.onPrimary.withAlpha(200),
-                        size: 18,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        localizations.offlineAudio.toUpperCase(),
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: colors.onPrimary.withAlpha(200),
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 1.1,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    AudioDownloadService.formatBytes(summary.totalSizeBytes),
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      color: colors.onPrimary,
-                      fontWeight: FontWeight.w900,
-                      fontSize: headlineSize + 2,
-                      height: 1.1,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    localizations.surahAyahSummary(
-                      summary.surahCount,
-                      summary.ayahCount,
-                    ),
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colors.onPrimaryMuted,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+    return DownloadsSummaryHero(
+      eyebrow: localizations.offlineAudio,
+      size: AudioDownloadService.formatBytes(summary.totalSizeBytes),
+      caption: localizations.surahAyahSummary(
+        summary.surahCount,
+        summary.ayahCount,
       ),
     );
   }
 
-  Widget _buildCleanupPreviewCard(
-    ThemeData theme,
-    AudioDownloadsSummary summary,
-  ) {
-    final EquranColors colors = context.equranColors;
+  Widget _buildCleanupPreviewCard(AudioDownloadsSummary summary) {
     final bool hasDownloads = summary.allDownloads.isNotEmpty;
     final localizations = AppLocalizations.of(context)!;
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(AppRadii.large),
-        border: Border.all(color: colors.border),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                Icon(Icons.cleaning_services_outlined, color: colors.primary),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    localizations.cleanupPreview,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: colors.textPrimary,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            _CleanupPreviewRow(
-              label: localizations.downloadedSurahs,
-              value: '${summary.surahCount}',
-            ),
-            _CleanupPreviewRow(
-              label: localizations.downloadedAyahs,
-              value: '${summary.ayahCount}',
-            ),
-            _CleanupPreviewRow(
-              label: localizations.potentialSpaceToFree,
-              value: AudioDownloadService.formatBytes(summary.totalSizeBytes),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              localizations.cleanupDoesNotRemoveData,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colors.textSecondary,
-                height: 1.35,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Align(
-              alignment: AlignmentDirectional.centerEnd,
-              child: OutlinedButton.icon(
-                onPressed: hasDownloads ? () => _clearAll(summary) : null,
-                icon: const Icon(Icons.delete_sweep_outlined),
-                label: Text(localizations.reviewDeletion),
-              ),
-            ),
-          ],
+    return DownloadsCleanupCard(
+      title: localizations.cleanupPreview,
+      rows: <(String, String)>[
+        (localizations.downloadedSurahs, '${summary.surahCount}'),
+        (localizations.downloadedAyahs, '${summary.ayahCount}'),
+        (
+          localizations.potentialSpaceToFree,
+          AudioDownloadService.formatBytes(summary.totalSizeBytes),
         ),
-      ),
+      ],
+      note: localizations.cleanupDoesNotRemoveData,
+      actionLabel: localizations.reviewDeletion,
+      onAction: hasDownloads ? () => _clearAll(summary) : null,
     );
   }
 
   Widget _buildEmptyDownloadsCard() {
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
     final localizations = AppLocalizations.of(context)!;
-    return Material(
-      color: colorScheme.surfaceContainerLow,
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppRadii.medium),
-        side: BorderSide(color: colorScheme.outlineVariant),
-      ),
-      child: Column(
-        children: <Widget>[
-          ListTile(
-            leading: const Icon(Icons.download_done_outlined),
-            title: Text(localizations.noDownloadedAudioYet),
-            subtitle: Text(
-              localizations.downloadedAudioEmpty,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ),
-        ],
+    return HairlineCard(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(EquranRadii.xl - 1),
+        child: ReaderOptionRow(
+          leading: const DesignIcon('download'),
+          title: localizations.noDownloadedAudioYet,
+          subtitle: localizations.downloadedAudioEmpty,
+          subtitleMaxLines: 4,
+          showChevron: false,
+          onTap: null,
+        ),
       ),
     );
   }
@@ -639,125 +534,63 @@ class _DownloadsPageState extends State<DownloadsPage> {
   }
 
   Widget _buildSurahSection(SurahDownloadsGroup group) {
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
     final localizations = AppLocalizations.of(context)!;
 
     final bool isCollapsed = _collapsedSurahs.contains(group.surah);
     final byReciter = group.entriesByReciter;
 
-    return Material(
-      color: colorScheme.surfaceContainerLow,
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppRadii.medium),
-        side: BorderSide(color: colorScheme.outlineVariant),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          ListTile(
-            onTap: () => _toggleSurahSection(group.surah),
-            leading: const Icon(Icons.menu_book_rounded),
-            title: Text(
-              localizedSurahName(localizations, group.surah),
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            subtitle: Text(
-              '${byReciter.length} reciter${byReciter.length == 1 ? '' : 's'}  •  ${AudioDownloadService.formatBytes(group.sizeBytes)}',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ),
-            trailing: Icon(
-              isCollapsed
-                  ? Icons.keyboard_arrow_down_rounded
-                  : Icons.keyboard_arrow_up_rounded,
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-          AnimatedSize(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.fastOutSlowIn,
-            child: isCollapsed
-                ? const SizedBox.shrink()
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      const Divider(height: 1),
-                      ...byReciter.entries.map((reciterEntry) {
-                        final reciterCode = reciterEntry.key;
-                        final reciterEntries = reciterEntry.value;
-                        final reciterSize = reciterEntries.fold<int>(
-                          0,
-                          (sum, e) => sum + e.sizeBytes,
-                        );
+    return DownloadsSection(
+      leading: const DesignIcon('quran'),
+      title: localizedSurahName(localizations, group.surah),
+      subtitle:
+          '${localizations.downloadsReciterCount(byReciter.length)}  •  ${AudioDownloadService.formatBytes(group.sizeBytes)}',
+      collapsed: isCollapsed,
+      onToggle: () => _toggleSurahSection(group.surah),
+      children: <Widget>[
+        ...byReciter.entries.map((reciterEntry) {
+          final reciterCode = reciterEntry.key;
+          final reciterEntries = reciterEntry.value;
+          final reciterSize = reciterEntries.fold<int>(
+            0,
+            (sum, e) => sum + e.sizeBytes,
+          );
 
-                        return ListTile(
-                          dense: true,
-                          leading: const Icon(
-                            Icons.record_voice_over_rounded,
-                            size: 18,
-                          ),
-                          title: Text(reciterDisplayName(reciterCode)),
-                          subtitle: Text(
-                            '${reciterEntries.length} item${reciterEntries.length == 1 ? '' : 's'}  •  ${AudioDownloadService.formatBytes(reciterSize)}',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                          trailing: IconButton(
-                            icon: const Icon(
-                              Icons.delete_outline_rounded,
-                              size: 18,
-                            ),
-                            onPressed: () async {
-                              // Single confirmation for the whole reciter+surah batch
-                              final bool? confirm = await showDialog<bool>(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  icon: const Icon(Icons.warning_amber_rounded),
-                                  title: const Text('Delete downloads?'),
-                                  content: Text(
-                                    'Remove all downloads for ${reciterDisplayName(reciterCode)} on ${localizedSurahName(localizations, group.surah)}?',
-                                  ),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(false),
-                                      child: const Text('Cancel'),
-                                    ),
-                                    FilledButton(
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(true),
-                                      child: const Text('Delete'),
-                                    ),
-                                  ],
-                                ),
-                              );
-
-                              if (confirm != true) return;
-
-                              for (final e in reciterEntries) {
-                                await _deleteEntry(e);
-                              }
-                            },
-                          ),
-                        );
-                      }),
-                    ],
+          return DownloadRow(
+            icon: const DesignIcon('headphones'),
+            title: reciterDisplayName(reciterCode),
+            subtitle:
+                '${localizations.downloadsItemCount(reciterEntries.length)}  •  ${AudioDownloadService.formatBytes(reciterSize)}',
+            deleteTooltip: localizations.deleteDownload,
+            onDelete: () async {
+              // Single confirmation for the whole reciter+surah batch
+              final bool? confirm = await showReaderDialog<bool>(
+                context: context,
+                builder: (context) => ReaderConfirmDialog(
+                  icon: const DesignIcon('trash'),
+                  title: localizations.deleteDownloadsQuestion,
+                  body: localizations.downloadsDeleteReciterBody(
+                    reciterDisplayName(reciterCode),
+                    localizedSurahName(localizations, group.surah),
                   ),
-          ),
-        ],
-      ),
+                  cancelLabel: localizations.cancel,
+                  confirmLabel: localizations.delete,
+                  destructive: true,
+                ),
+              );
+
+              if (confirm != true) return;
+
+              for (final e in reciterEntries) {
+                await _deleteEntry(e);
+              }
+            },
+          );
+        }),
+      ],
     );
   }
 
   Widget _buildReciterSection(ReciterDownloadsGroup group) {
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
     final localizations = AppLocalizations.of(context)!;
 
     final bool isCollapsed = _collapsedReciters.contains(group.reciterCode);
@@ -774,64 +607,28 @@ class _DownloadsPageState extends State<DownloadsPage> {
       (total, g) => total + g.ayahCount,
     );
 
-    return Material(
-      color: colorScheme.surfaceContainerLow,
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppRadii.medium),
-        side: BorderSide(color: colorScheme.outlineVariant),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          ListTile(
-            onTap: () => _toggleReciterSection(group.reciterCode),
-            title: Text(
-              reciterDisplayName(group.reciterCode),
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            subtitle: Text(
-              '${surahs.length} surahs  •  ${group.ayahCount} ayahs  •  ${AudioDownloadService.formatBytes(group.sizeBytes)}',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-                fontSize: (theme.textTheme.bodySmall?.fontSize ?? 12) - 1,
-              ),
-            ),
-            trailing: Icon(
-              isCollapsed
-                  ? Icons.keyboard_arrow_down_rounded
-                  : Icons.keyboard_arrow_up_rounded,
-              color: colorScheme.onSurfaceVariant,
-            ),
+    return DownloadsSection(
+      title: reciterDisplayName(group.reciterCode),
+      subtitle:
+          '${localizations.surahCount(surahs.length)}  •  ${localizations.ayahsCount(group.ayahCount)}  •  ${AudioDownloadService.formatBytes(group.sizeBytes)}',
+      collapsed: isCollapsed,
+      onToggle: () => _toggleReciterSection(group.reciterCode),
+      children: <Widget>[
+        if (surahs.isNotEmpty)
+          DownloadsGroupLabel(
+            title: localizations.surahs,
+            count: surahs.length,
           ),
-          AnimatedSize(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.fastOutSlowIn,
-            alignment: Alignment.topCenter,
-            child: isCollapsed
-                ? const SizedBox.shrink()
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      const Divider(height: 1),
-                      if (surahs.isNotEmpty)
-                        _buildGroupHeader(localizations.surahs, surahs.length),
-                      ...surahs.map(_buildDownloadTile),
-                      if (surahs.isNotEmpty && ayahSurahs.isNotEmpty)
-                        const Divider(height: 1),
-                      if (ayahSurahs.isNotEmpty)
-                        _buildGroupHeader(
-                          localizations.ayahs,
-                          ayahSectionCount,
-                        ),
-                      ...ayahSurahs.map(_buildAyahSurahTile),
-                    ],
-                  ),
+        ...surahs.map(_buildDownloadTile),
+        if (surahs.isNotEmpty && ayahSurahs.isNotEmpty)
+          Divider(height: 1, thickness: 1, color: context.equranTokens.hair),
+        if (ayahSurahs.isNotEmpty)
+          DownloadsGroupLabel(
+            title: localizations.ayahs,
+            count: ayahSectionCount,
           ),
-        ],
-      ),
+        ...ayahSurahs.map(_buildAyahSurahTile),
+      ],
     );
   }
 
@@ -856,122 +653,39 @@ class _DownloadsPageState extends State<DownloadsPage> {
 
   Widget _buildAyahSurahTile(_SurahAyahDownloadsGroup group) {
     final localizations = AppLocalizations.of(context)!;
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
-
-    return ExpansionTile(
-      leading: Icon(
-        Icons.folder_outlined,
-        color: colorScheme.primary.withAlpha(200),
-      ),
-      collapsedShape: const Border(),
-      shape: const Border(),
-      title: Text(
-        localizedSurahName(localizations, group.surah),
-        style: theme.textTheme.titleSmall?.copyWith(
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-      subtitle: Text(
-        '${group.ayahCount} ayahs  •  ${AudioDownloadService.formatBytes(group.sizeBytes)}',
-        style: theme.textTheme.bodySmall?.copyWith(
-          color: colorScheme.onSurfaceVariant,
-        ),
-      ),
-      tilePadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
-      childrenPadding: const EdgeInsetsDirectional.fromSTEB(16, 0, 8, 8),
+    return DownloadsFolder(
+      title: localizedSurahName(localizations, group.surah),
+      subtitle:
+          '${localizations.ayahsCount(group.ayahCount)}  •  ${AudioDownloadService.formatBytes(group.sizeBytes)}',
       children: group.entries
           .map((entry) => _buildNestedDownloadTile(entry))
           .toList(growable: false),
     );
   }
 
-  Widget _buildGroupHeader(String title, int count) {
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
-    return Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(12, 10, 12, 2),
-      child: Row(
-        children: <Widget>[
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            decoration: BoxDecoration(
-              color: colorScheme.primary.withAlpha(30),
-              borderRadius: BorderRadius.circular(AppRadii.small),
-            ),
-            child: Text(
-              title,
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: colorScheme.primary,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            '$count',
-            style: theme.textTheme.labelMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  bool _isActiveOffline(
+    ActivePlaybackTrack? activeTrack,
+    AudioDownloadEntry e,
+  ) =>
+      activeTrack != null &&
+      activeTrack.isPlaying &&
+      activeTrack.isOffline &&
+      activeTrack.surah == e.surah &&
+      activeTrack.reciterCode == e.reciterCode;
 
   Widget _buildDownloadTile(AudioDownloadEntry entry) {
     return ValueListenableBuilder<ActivePlaybackTrack?>(
       valueListenable: PlaybackCacheService.instance.activeTrackNotifier,
       builder: (context, activeTrack, child) {
-        final bool isActiveOffline =
-            activeTrack != null &&
-            activeTrack.isPlaying &&
-            activeTrack.isOffline &&
-            activeTrack.surah == entry.surah &&
-            activeTrack.reciterCode == entry.reciterCode;
-
-        final ThemeData theme = Theme.of(context);
-        final ColorScheme colorScheme = theme.colorScheme;
-
-        return ListTile(
-          dense: true,
-          visualDensity: VisualDensity.compact,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 2,
-          ),
-          leading: Icon(
-            Icons.offline_pin_rounded,
-            color: isActiveOffline
-                ? Colors.greenAccent
-                : colorScheme.primary.withAlpha(180),
-            size: 22,
-          ),
-          title: Text(
-            entry.title,
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          subtitle: Text(
-            entry.subtitle.isNotEmpty
-                ? '${entry.subtitle}  •  ${AudioDownloadService.formatBytes(entry.sizeBytes)}'
-                : AudioDownloadService.formatBytes(entry.sizeBytes),
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-          trailing: IconButton(
-            tooltip: AppLocalizations.of(context)!.deleteDownload,
-            onPressed: () => _deleteEntry(entry),
-            icon: Icon(
-              Icons.delete_outline_rounded,
-              color: colorScheme.onSurfaceVariant,
-              size: 20,
-            ),
-            visualDensity: VisualDensity.compact,
-          ),
+        final AppLocalizations l10n = AppLocalizations.of(context)!;
+        final String detail = _entrySubtitle(l10n, entry);
+        final String size = AudioDownloadService.formatBytes(entry.sizeBytes);
+        return DownloadRow(
+          active: _isActiveOffline(activeTrack, entry),
+          title: _entryTitle(l10n, entry),
+          subtitle: detail.isNotEmpty ? '$detail  •  $size' : size,
+          deleteTooltip: l10n.deleteDownload,
+          onDelete: () => _deleteEntry(entry),
         );
       },
     );
@@ -981,49 +695,13 @@ class _DownloadsPageState extends State<DownloadsPage> {
     return ValueListenableBuilder<ActivePlaybackTrack?>(
       valueListenable: PlaybackCacheService.instance.activeTrackNotifier,
       builder: (context, activeTrack, child) {
-        final bool isActiveOffline =
-            activeTrack != null &&
-            activeTrack.isPlaying &&
-            activeTrack.isOffline &&
-            activeTrack.surah == entry.surah &&
-            activeTrack.reciterCode == entry.reciterCode;
-
-        final ThemeData theme = Theme.of(context);
-        final ColorScheme colorScheme = theme.colorScheme;
-
-        return ListTile(
-          dense: true,
-          visualDensity: VisualDensity.compact,
-          contentPadding: const EdgeInsetsDirectional.only(start: 12, end: 4),
-          leading: Icon(
-            Icons.music_note_rounded,
-            size: 16,
-            color: isActiveOffline
-                ? Colors.greenAccent
-                : colorScheme.onSurfaceVariant.withAlpha(160),
-          ),
-          title: Text(
-            entry.title,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          subtitle: Text(
-            AudioDownloadService.formatBytes(entry.sizeBytes),
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-          trailing: IconButton(
-            tooltip: AppLocalizations.of(context)!.deleteDownload,
-            onPressed: () => _deleteEntry(entry),
-            icon: Icon(
-              Icons.delete_outline_rounded,
-              size: 18,
-              color: colorScheme.onSurfaceVariant,
-            ),
-            visualDensity: VisualDensity.compact,
-          ),
+        return DownloadRow(
+          nested: true,
+          active: _isActiveOffline(activeTrack, entry),
+          title: _entryTitle(AppLocalizations.of(context)!, entry),
+          subtitle: AudioDownloadService.formatBytes(entry.sizeBytes),
+          deleteTooltip: AppLocalizations.of(context)!.deleteDownload,
+          onDelete: () => _deleteEntry(entry),
         );
       },
     );
@@ -1033,17 +711,7 @@ class _DownloadsPageState extends State<DownloadsPage> {
     AudioDownloadsSummary summary,
     List<ReciterDownloadsGroup> groups,
   ) async {
-    final EquranColors colors = context.equranColors;
-    final ThemeData theme = Theme.of(context);
     final AppLocalizations localizations = AppLocalizations.of(context)!;
-
-    String pendingReciter = _selectedReciterFilter;
-    String pendingCategory = _selectedCategoryFilter;
-    int? pendingSurah = _selectedSurahFilter;
-    String pendingType = _selectedTypeFilter;
-    String pendingSort = _sortBy;
-    String pendingSearch = _searchQuery;
-    String pendingGroupBy = _groupBy;
 
     final Map<String, String> reciterNames = <String, String>{
       'all': localizations.allReciters,
@@ -1051,7 +719,6 @@ class _DownloadsPageState extends State<DownloadsPage> {
     for (final ReciterDownloadsGroup group in groups) {
       reciterNames[group.reciterCode] = reciterDisplayName(group.reciterCode);
     }
-    if (!reciterNames.containsKey(pendingReciter)) pendingReciter = 'all';
 
     final List<int> downloadedSurahs =
         summary.allDownloads.map((e) => e.surah).toSet().toList()..sort();
@@ -1059,8 +726,8 @@ class _DownloadsPageState extends State<DownloadsPage> {
     final List<DropdownMenuItem<int?>> surahItems = [
       DropdownMenuItem<int?>(
         value: null,
-        child: const Text(
-          'All Surahs',
+        child: Text(
+          localizations.downloadsAllSurahs,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -1077,702 +744,33 @@ class _DownloadsPageState extends State<DownloadsPage> {
       }),
     ];
 
-    final List<DropdownMenuItem<String>> categoryItems = [
-      DropdownMenuItem<String>(
-        value: 'all',
-        child: const Text('All', maxLines: 1, overflow: TextOverflow.ellipsis),
-      ),
-      DropdownMenuItem<String>(
-        value: 'makki',
-        child: const Text(
-          'Makki',
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
-      DropdownMenuItem<String>(
-        value: 'madani',
-        child: const Text(
-          'Madani',
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
-    ];
-
-    // sortOptions are dynamically built inside the stateful builder based on pendingGroupBy.
-
-    final List<Map<String, String>> typeOptions = <Map<String, String>>[
-      {'value': 'all', 'label': 'All'},
-      {'value': 'surahs', 'label': 'Surahs'},
-      {'value': 'ayahs', 'label': 'Ayahs'},
-    ];
-
-    final TextEditingController filterSearchController = TextEditingController(
-      text: pendingSearch,
-    );
-
-    try {
-      await showModalBottomSheet<void>(
-        context: context,
-        isScrollControlled: true,
-        backgroundColor: colors.surface,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        builder: (BuildContext sheetContext) {
-          return StatefulBuilder(
-            builder: (BuildContext _, StateSetter setModalState) {
-              final List<Map<String, dynamic>> sortOptions =
-                  pendingGroupBy == 'reciter'
-                  ? <Map<String, dynamic>>[
-                      {
-                        'value': 'reciterAsc',
-                        'label': 'Reciter (A → Z)',
-                        'icon': Icons.sort_by_alpha_rounded,
-                      },
-                      {
-                        'value': 'reciterDesc',
-                        'label': 'Reciter (Z → A)',
-                        'icon': Icons.sort_by_alpha_rounded,
-                      },
-                      {
-                        'value': 'sizeDesc',
-                        'label': 'Size (largest first)',
-                        'icon': Icons.storage_rounded,
-                      },
-                      {
-                        'value': 'sizeAsc',
-                        'label': 'Size (smallest first)',
-                        'icon': Icons.storage_rounded,
-                      },
-                    ]
-                  : <Map<String, dynamic>>[
-                      {
-                        'value': 'surahAsc',
-                        'label': 'Surah (1 → 114)',
-                        'icon': Icons.format_list_numbered_rounded,
-                      },
-                      {
-                        'value': 'surahDesc',
-                        'label': 'Surah (114 → 1)',
-                        'icon': Icons.format_list_numbered_rounded,
-                      },
-                      {
-                        'value': 'sizeDesc',
-                        'label': 'Size (largest first)',
-                        'icon': Icons.storage_rounded,
-                      },
-                      {
-                        'value': 'sizeAsc',
-                        'label': 'Size (smallest first)',
-                        'icon': Icons.storage_rounded,
-                      },
-                    ];
-              return SafeArea(
-                top: false,
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      // === STICKY HEADER ===
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Center(
-                              child: Container(
-                                width: 36,
-                                height: 4,
-                                decoration: BoxDecoration(
-                                  color: colors.border,
-                                  borderRadius: BorderRadius.circular(2),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              'Filter & Sort Downloads',
-                              style: theme.textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'More control over which recitations appear in your library',
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: colors.textSecondary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      // === SCROLLABLE MIDDLE ===
-                      Expanded(
-                        child: SingleChildScrollView(
-                          padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              // Search
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: colors.surfaceAlt,
-                                  borderRadius: BorderRadius.circular(
-                                    AppRadii.medium,
-                                  ),
-                                  border: Border.all(color: colors.border),
-                                ),
-                                child: TextField(
-                                  controller: filterSearchController,
-                                  onChanged: (value) {
-                                    setModalState(() {
-                                      pendingSearch = value.trim();
-                                    });
-                                  },
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: colors.textPrimary,
-                                  ),
-                                  decoration: InputDecoration(
-                                    hintText: 'Search recitations or surahs...',
-                                    hintStyle: theme.textTheme.bodyMedium
-                                        ?.copyWith(color: colors.textMuted),
-                                    prefixIcon: Icon(
-                                      Icons.search_rounded,
-                                      color: colors.primary,
-                                      size: 20,
-                                    ),
-                                    suffixIcon: pendingSearch.isNotEmpty
-                                        ? IconButton(
-                                            icon: Icon(
-                                              Icons.clear_rounded,
-                                              color: colors.textMuted,
-                                              size: 18,
-                                            ),
-                                            onPressed: () => setModalState(() {
-                                              pendingSearch = '';
-                                              filterSearchController.clear();
-                                            }),
-                                          )
-                                        : null,
-                                    border: InputBorder.none,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 14,
-                                      vertical: 12,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 18),
-
-                              // GROUP BY (Option C+)
-                              Text(
-                                'Group by',
-                                style: theme.textTheme.titleSmall?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: <Widget>[
-                                  Expanded(
-                                    child: InkWell(
-                                      onTap: () => setModalState(() {
-                                        pendingGroupBy = 'reciter';
-                                        if (pendingSort == 'surahAsc' ||
-                                            pendingSort == 'surahDesc') {
-                                          pendingSort = 'reciterAsc';
-                                        }
-                                      }),
-                                      borderRadius: BorderRadius.circular(
-                                        AppRadii.medium,
-                                      ),
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 11,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: pendingGroupBy == 'reciter'
-                                              ? colors.primary.withAlpha(15)
-                                              : colors.surfaceAlt,
-                                          borderRadius: BorderRadius.circular(
-                                            AppRadii.medium,
-                                          ),
-                                          border: Border.all(
-                                            color: pendingGroupBy == 'reciter'
-                                                ? colors.primary
-                                                : colors.border,
-                                            width: pendingGroupBy == 'reciter'
-                                                ? 1.5
-                                                : 1,
-                                          ),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            'Reciter',
-                                            style: TextStyle(
-                                              fontWeight:
-                                                  pendingGroupBy == 'reciter'
-                                                  ? FontWeight.w700
-                                                  : FontWeight.w600,
-                                              color: pendingGroupBy == 'reciter'
-                                                  ? colors.primary
-                                                  : colors.textPrimary,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: InkWell(
-                                      onTap: () => setModalState(() {
-                                        pendingGroupBy = 'surah';
-                                        if (pendingSort == 'reciterAsc' ||
-                                            pendingSort == 'reciterDesc') {
-                                          pendingSort = 'surahAsc';
-                                        }
-                                      }),
-                                      borderRadius: BorderRadius.circular(
-                                        AppRadii.medium,
-                                      ),
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 11,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: pendingGroupBy == 'surah'
-                                              ? colors.primary.withAlpha(15)
-                                              : colors.surfaceAlt,
-                                          borderRadius: BorderRadius.circular(
-                                            AppRadii.medium,
-                                          ),
-                                          border: Border.all(
-                                            color: pendingGroupBy == 'surah'
-                                                ? colors.primary
-                                                : colors.border,
-                                            width: pendingGroupBy == 'surah'
-                                                ? 1.5
-                                                : 1,
-                                          ),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            'Surah',
-                                            style: TextStyle(
-                                              fontWeight:
-                                                  pendingGroupBy == 'surah'
-                                                  ? FontWeight.w700
-                                                  : FontWeight.w600,
-                                              color: pendingGroupBy == 'surah'
-                                                  ? colors.primary
-                                                  : colors.textPrimary,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-
-                              const SizedBox(height: 16),
-
-                              // SORT
-                              Text(
-                                'Sort by',
-                                style: theme.textTheme.titleSmall?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              ...sortOptions.map<Widget>((opt) {
-                                final String val = opt['value'] as String;
-                                final bool sel = pendingSort == val;
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 6),
-                                  child: InkWell(
-                                    onTap: () =>
-                                        setModalState(() => pendingSort = val),
-                                    borderRadius: BorderRadius.circular(
-                                      AppRadii.medium,
-                                    ),
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 14,
-                                        vertical: 11,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: sel
-                                            ? colors.primary.withAlpha(15)
-                                            : colors.surfaceAlt,
-                                        borderRadius: BorderRadius.circular(
-                                          AppRadii.medium,
-                                        ),
-                                        border: Border.all(
-                                          color: sel
-                                              ? colors.primary
-                                              : colors.border,
-                                          width: sel ? 1.5 : 1,
-                                        ),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            opt['icon'] as IconData,
-                                            size: 18,
-                                            color: sel
-                                                ? colors.primary
-                                                : colors.textSecondary,
-                                          ),
-                                          const SizedBox(width: 10),
-                                          Expanded(
-                                            child: Text(
-                                              opt['label'] as String,
-                                              style: TextStyle(
-                                                fontWeight: sel
-                                                    ? FontWeight.w700
-                                                    : FontWeight.w500,
-                                                color: sel
-                                                    ? colors.primary
-                                                    : colors.textPrimary,
-                                              ),
-                                            ),
-                                          ),
-                                          if (sel)
-                                            Icon(
-                                              Icons.check_rounded,
-                                              size: 18,
-                                              color: colors.primary,
-                                            ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              }),
-
-                              const SizedBox(height: 16),
-
-                              // RECITER (as Dropdown)
-                              Text(
-                                'Reciter',
-                                style: theme.textTheme.titleSmall?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: colors.surfaceAlt,
-                                  borderRadius: BorderRadius.circular(
-                                    AppRadii.medium,
-                                  ),
-                                  border: Border.all(color: colors.border),
-                                ),
-                                child: DropdownButtonHideUnderline(
-                                  child: DropdownButton<String>(
-                                    value: pendingReciter,
-                                    isExpanded: true,
-                                    dropdownColor: colors.surface,
-                                    icon: Icon(
-                                      Icons.arrow_drop_down_rounded,
-                                      color: colors.primary,
-                                    ),
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      color: colors.textPrimary,
-                                    ),
-                                    onChanged: (value) {
-                                      if (value != null) {
-                                        setModalState(() {
-                                          pendingReciter = value;
-                                        });
-                                      }
-                                    },
-                                    items: reciterNames.entries.map((e) {
-                                      return DropdownMenuItem<String>(
-                                        value: e.key,
-                                        child: Text(
-                                          e.value,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      );
-                                    }).toList(),
-                                  ),
-                                ),
-                              ),
-
-                              const SizedBox(height: 16),
-
-                              // SURAH (as Dropdown)
-                              Text(
-                                'Surah',
-                                style: theme.textTheme.titleSmall?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: colors.surfaceAlt,
-                                  borderRadius: BorderRadius.circular(
-                                    AppRadii.medium,
-                                  ),
-                                  border: Border.all(color: colors.border),
-                                ),
-                                child: DropdownButtonHideUnderline(
-                                  child: DropdownButton<int?>(
-                                    value: pendingSurah,
-                                    isExpanded: true,
-                                    dropdownColor: colors.surface,
-                                    icon: Icon(
-                                      Icons.arrow_drop_down_rounded,
-                                      color: colors.primary,
-                                    ),
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      color: colors.textPrimary,
-                                    ),
-                                    onChanged: (value) {
-                                      setModalState(() {
-                                        pendingSurah = value;
-                                      });
-                                    },
-                                    items: surahItems,
-                                  ),
-                                ),
-                              ),
-
-                              const SizedBox(height: 16),
-
-                              // CATEGORY (as Dropdown)
-                              Text(
-                                'Category',
-                                style: theme.textTheme.titleSmall?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: colors.surfaceAlt,
-                                  borderRadius: BorderRadius.circular(
-                                    AppRadii.medium,
-                                  ),
-                                  border: Border.all(color: colors.border),
-                                ),
-                                child: DropdownButtonHideUnderline(
-                                  child: DropdownButton<String>(
-                                    value: pendingCategory,
-                                    isExpanded: true,
-                                    dropdownColor: colors.surface,
-                                    icon: Icon(
-                                      Icons.arrow_drop_down_rounded,
-                                      color: colors.primary,
-                                    ),
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      color: colors.textPrimary,
-                                    ),
-                                    onChanged: (value) {
-                                      if (value != null) {
-                                        setModalState(() {
-                                          pendingCategory = value;
-                                        });
-                                      }
-                                    },
-                                    items: categoryItems,
-                                  ),
-                                ),
-                              ),
-
-                              const SizedBox(height: 16),
-
-                              // CONTENT TYPE
-                              Text(
-                                'Content type',
-                                style: theme.textTheme.titleSmall?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: typeOptions.map((o) {
-                                  final bool sel = pendingType == o['value'];
-                                  final bool isLast = o == typeOptions.last;
-                                  return Expanded(
-                                    child: Padding(
-                                      padding: EdgeInsets.only(
-                                        right: isLast ? 0 : 8,
-                                      ),
-                                      child: InkWell(
-                                        onTap: () => setModalState(
-                                          () => pendingType = o['value']!,
-                                        ),
-                                        borderRadius: BorderRadius.circular(
-                                          AppRadii.medium,
-                                        ),
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 11,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: sel
-                                                ? colors.primary.withAlpha(15)
-                                                : colors.surfaceAlt,
-                                            borderRadius: BorderRadius.circular(
-                                              AppRadii.medium,
-                                            ),
-                                            border: Border.all(
-                                              color: sel
-                                                  ? colors.primary
-                                                  : colors.border,
-                                              width: sel ? 1.5 : 1,
-                                            ),
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              o['label']!,
-                                              style: TextStyle(
-                                                fontWeight: sel
-                                                    ? FontWeight.w700
-                                                    : FontWeight.w600,
-                                                color: sel
-                                                    ? colors.primary
-                                                    : colors.textPrimary,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                }).toList(),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      // === PINNED FOOTER ===
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-                        child: Row(
-                          children: <Widget>[
-                            TextButton(
-                              onPressed: () => setModalState(() {
-                                pendingReciter = pendingCategory = pendingType =
-                                    'all';
-                                pendingSurah = null;
-                                pendingSort = 'reciterAsc';
-                                pendingSearch = '';
-                                filterSearchController.clear();
-                                pendingGroupBy = 'reciter';
-                              }),
-                              style: TextButton.styleFrom(
-                                foregroundColor: colors.textSecondary,
-                              ),
-                              child: const Text(
-                                'Reset',
-                                style: TextStyle(fontWeight: FontWeight.w600),
-                              ),
-                            ),
-                            const Spacer(),
-                            TextButton(
-                              onPressed: () => Navigator.of(sheetContext).pop(),
-                              child: const Text(
-                                'Cancel',
-                                style: TextStyle(fontWeight: FontWeight.w600),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            FilledButton(
-                              onPressed: () {
-                                setState(() {
-                                  _selectedReciterFilter = pendingReciter;
-                                  _selectedCategoryFilter = pendingCategory;
-                                  _selectedSurahFilter = pendingSurah;
-                                  _selectedTypeFilter = pendingType;
-                                  _sortBy = pendingSort;
-                                  _searchQuery = pendingSearch;
-                                  _searchController.text = pendingSearch;
-                                  _groupBy = pendingGroupBy;
-                                });
-                                Navigator.of(sheetContext).pop();
-                              },
-                              style: FilledButton.styleFrom(
-                                backgroundColor: colors.primary,
-                                foregroundColor: colors.onPrimary,
-                              ),
-                              child: const Text(
-                                'Apply',
-                                style: TextStyle(fontWeight: FontWeight.w700),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
-        },
-      );
-    } finally {
-      filterSearchController.dispose();
-    }
-  }
-}
-
-class _CleanupPreviewRow extends StatelessWidget {
-  const _CleanupPreviewRow({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final EquranColors colors = context.equranColors;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: Text(
-              label,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: colors.textSecondary),
+    final DownloadsFilterResult? result =
+        await showReaderSheet<DownloadsFilterResult>(
+          context: context,
+          builder: (BuildContext sheetContext) => DownloadsFilterSheet(
+            initial: DownloadsFilterResult(
+              reciter: _selectedReciterFilter,
+              category: _selectedCategoryFilter,
+              surah: _selectedSurahFilter,
+              type: _selectedTypeFilter,
+              sort: _sortBy,
+              search: _searchQuery,
+              groupBy: _groupBy,
             ),
+            reciterNames: reciterNames,
+            surahItems: surahItems,
           ),
-          Text(
-            value,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: colors.textPrimary,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-        ],
-      ),
-    );
+        );
+    if (result == null || !mounted) return;
+    setState(() {
+      _selectedReciterFilter = result.reciter;
+      _selectedCategoryFilter = result.category;
+      _selectedSurahFilter = result.surah;
+      _selectedTypeFilter = result.type;
+      _sortBy = result.sort;
+      _searchQuery = result.search;
+      _searchController.text = result.search;
+      _groupBy = result.groupBy;
+    });
   }
 }

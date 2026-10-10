@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:equran/theme/equran_colors.dart';
+import 'package:equran/theme/inter_optical_size.dart';
 import 'package:flutter/material.dart';
 
 class SurahNumberBadge extends StatelessWidget {
@@ -91,7 +92,8 @@ class _DiamondNumberBadge extends StatelessWidget {
                       leadingDistribution: TextLeadingDistribution.even,
                       color: colors.textPrimary,
                     )
-                    .merge(textStyle),
+                    .merge(textStyle)
+                    .withInterOpticalSize(),
               ),
             ),
           ),

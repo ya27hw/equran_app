@@ -2,11 +2,16 @@ import 'package:intl/intl.dart';
 import 'dart:math' as math;
 
 import 'package:equran/backend/settings_db.dart';
-import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
-import 'package:equran/utils/app_radii.dart';
-import 'package:equran/widgets/common/equran_components.dart';
+import 'package:equran/widgets/app_selection_dialog.dart';
+import 'package:equran/widgets/reader_sheet_chrome.dart';
+import 'package:equran/widgets/settings_sheet_chrome.dart';
+import 'package:equran/widgets/redesign/design_icon.dart';
+import 'package:equran/widgets/redesign/icon_button44.dart';
+import 'package:equran/widgets/redesign/page_typography.dart';
+import 'package:equran/widgets/redesign/segmented_control.dart';
 import 'package:equran/zakat/zakat_db.dart';
+import 'package:equran/zakat/zakat_widgets.dart';
 import 'package:equran/zakat/metal_price_service.dart';
 import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/widgets/redesign/redesign_subpage.dart';
@@ -178,11 +183,6 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
   final Map<ZakatCategory, double> _categoryAmounts = <ZakatCategory, double>{
     for (final c in ZakatCategory.values) c: 0.0,
   };
-
-  // Livestock specific (more powerful than flat amount)
-  int _livestockSheep = 0;
-  int _livestockCows = 0;
-  int _livestockCamels = 0;
 
   // Manual price overrides (power user feature)
   double? _goldPriceOverride;
@@ -389,18 +389,6 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
       items.add(ZakatLineItem(category: ZakatCategory.business, amount: biz));
     }
 
-    // Livestock (special handling)
-    final double livestockValue = _computeLivestockValue();
-    if (livestockValue > 0) {
-      items.add(
-        ZakatLineItem(
-          category: ZakatCategory.livestock,
-          amount: livestockValue,
-          // Livestock often has different rates; we use flat 2.5% on value for simplicity here
-        ),
-      );
-    }
-
     // Agriculture + Other
     final double agri = _categoryAmounts[ZakatCategory.agriculture] ?? 0.0;
     if (agri > 0) {
@@ -461,18 +449,6 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
     );
   }
 
-  double _computeLivestockValue() {
-    // Very simplified: assign rough modern market values per head for demo power.
-    // In real use, user should prefer "Other" or adjust. This gives the *feeling* of power.
-    const double sheepValue = 180.0; // average ewe
-    const double cowValue = 850.0;
-    const double camelValue = 1800.0;
-
-    return (_livestockSheep * sheepValue) +
-        (_livestockCows * cowValue) +
-        (_livestockCamels * camelValue);
-  }
-
   // Legacy conversion (kept for old inputs)
   double _convertToGrams(double value, String unit) {
     if (unit == 'bhori') {
@@ -485,37 +461,38 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
 
   @override
   Widget build(BuildContext context) {
-    final EquranColors colors = context.equranColors;
-    final ThemeData theme = Theme.of(context);
-    final localizations = AppLocalizations.of(context)!;
+    final AppLocalizations l = AppLocalizations.of(context)!;
+    final EquranTokens tokens = context.equranTokens;
     return RedesignSubpage(
-      title: localizations.zakatCalculator,
+      title: l.zakatCalculator,
       child: Column(
         children: <Widget>[
-          TabBar(
-            controller: _tabController,
-            indicatorColor: context.equranTokens.emText,
-            labelColor: context.equranTokens.emText,
-            unselectedLabelColor: context.equranTokens.muted,
-            dividerColor: context.equranTokens.hair,
-            tabs: <Tab>[
-              Tab(
-                icon: const Icon(Icons.calculate_outlined),
-                text: localizations.calculatorTab,
-              ),
-              Tab(
-                icon: const Icon(Icons.history_toggle_off_rounded),
-                text: localizations.historyTab,
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              EquranSpacing.pagePadding,
+              0,
+              EquranSpacing.pagePadding,
+              12,
+            ),
+            child: ListenableBuilder(
+              listenable: _tabController,
+              builder: (BuildContext context, Widget? child) =>
+                  RedesignSegmentedControl(
+                    labels: <String>[l.calculatorTab, l.historyTab],
+                    icons: const <Widget?>[
+                      DesignIcon('calc', size: 18),
+                      DesignIcon('clock', size: 18),
+                    ],
+                    selectedIndex: _tabController.index,
+                    onChanged: _tabController.animateTo,
+                  ),
+            ),
           ),
+          Divider(height: 1, thickness: 1, color: tokens.hair),
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: <Widget>[
-                _buildCalculatorTab(theme, colors),
-                _buildHistoryTab(theme, colors),
-              ],
+              children: <Widget>[_buildCalculatorTab(), _buildHistoryTab()],
             ),
           ),
         ],
@@ -523,11 +500,23 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
     );
   }
 
-  Widget _buildCalculatorTab(ThemeData theme, EquranColors colors) {
-    final localizations = AppLocalizations.of(context)!;
+  Widget _sectionLabel(String text) => Padding(
+    padding: const EdgeInsetsDirectional.only(start: 4, bottom: 10),
+    child: RedesignEyebrow(text),
+  );
+
+  Widget _buildCalculatorTab() {
+    final AppLocalizations l = AppLocalizations.of(context)!;
+    final EquranTokens tokens = context.equranTokens;
     final _ZakatComputation comp = _computeZakat();
     final bool isEligible = comp.isEligible;
     final double zakatDue = comp.zakatDue;
+    final bool nisabKnown = comp.nisabThreshold.isFinite;
+    final TextStyle captionStyle = TextStyle(
+      fontSize: 12.5,
+      height: 1.4,
+      color: tokens.muted,
+    );
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(
@@ -538,567 +527,261 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
       ),
       physics: const BouncingScrollPhysics(),
       children: <Widget>[
-        // ==================== BEAUTIFUL HERO HEADER ====================
-        EquranGradientCard(
-          padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
+        ZakatIntroHero(
+          title: l.zakatAlMal,
+          arabicTitle: 'الزكاة',
+          rateLabel: '2.5%',
+          subtitle: l.purifyWealthSubtitle,
+        ),
+        const SizedBox(height: 16),
+
+        // Live market rates and manual overrides.
+        ZakatCard(
+          icon: const DesignIcon('bars'),
+          title: l.liveMarketRates,
+          trailing: _isLoadingPrice
+              ? const Padding(
+                  padding: EdgeInsets.all(14),
+                  child: SizedBox.square(
+                    dimension: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                )
+              : IconButton44(
+                  icon: Icons.refresh_rounded,
+                  tooltip: l.liveMarketRates,
+                  ghost: true,
+                  onPressed: _fetchLiveMetalPrices,
+                ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
+              ZakatCurrencyButton(
+                label: l.currency,
+                currency: _baseCurrency,
+                onPressed: _showCurrencyPicker,
+              ),
+              const SizedBox(height: 10),
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  EquranIconBadge(
-                    icon: Icons.volunteer_activism_rounded,
-                    backgroundColor: colors.onPrimary.withAlpha(38),
-                    foregroundColor: colors.onPrimary,
-                    size: 48,
-                  ),
-                  const SizedBox(width: 14),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          localizations.zakatAlMal,
-                          style: theme.textTheme.headlineSmall?.copyWith(
-                            color: colors.onPrimary,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: -0.3,
-                          ),
-                        ),
-                        Text(
-                          'الزكاة',
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            color: colors.onPrimary.withAlpha(220),
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
+                    child: ZakatRateTile(
+                      label: l.zakatCategoryGold,
+                      value:
+                          '$_currencySymbol${_effectiveGoldPrice.toStringAsFixed(2)}/g',
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colors.onPrimary.withAlpha(30),
-                      borderRadius: BorderRadius.circular(EquranRadii.pill),
-                    ),
-                    child: Text(
-                      '2.5%',
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        color: colors.onPrimary,
-                        fontWeight: FontWeight.w800,
-                      ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ZakatRateTile(
+                      label: l.zakatCategorySilver,
+                      value:
+                          '$_currencySymbol${_effectiveSilverPrice.toStringAsFixed(2)}/g',
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 12),
-              Text(
-                localizations.purifyWealthSubtitle,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colors.onPrimaryMuted,
-                  height: 1.3,
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        const SizedBox(height: 16),
-
-        // ==================== LIVE MARKET + OVERRIDES (POWER) ====================
-        EquranSurfaceCard(
-          padding: const EdgeInsets.all(14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  EquranIconBadge(icon: Icons.trending_up_rounded, size: 36),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      localizations.liveMarketRates,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        color: colors.textPrimary,
-                      ),
-                    ),
-                  ),
-                  if (_isLoadingPrice)
-                    const SizedBox.square(
-                      dimension: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  else
-                    IconButton(
-                      icon: const Icon(Icons.refresh_rounded, size: 18),
-                      onPressed: _fetchLiveMetalPrices,
-                      constraints: const BoxConstraints(),
-                      padding: EdgeInsets.zero,
-                    ),
-                ],
-              ),
-              const SizedBox(height: 8),
-
-              // Currency selector (changeable + persisted)
-              InkWell(
-                onTap: _showCurrencyPicker,
-                borderRadius: BorderRadius.circular(AppRadii.small),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: Row(
-                    children: <Widget>[
-                      Text(
-                        '${localizations.currency}: ',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colors.textMuted,
-                        ),
-                      ),
-                      Text(
-                        _baseCurrency,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: colors.primary,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Icon(
-                        Icons.arrow_drop_down,
-                        size: 18,
-                        color: colors.primary,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 8),
-              Text(
-                '${localizations.zakatCategoryGold}: $_currencySymbol${_effectiveGoldPrice.toStringAsFixed(2)}/g   •   ${localizations.zakatCategorySilver}: $_currencySymbol${_effectiveSilverPrice.toStringAsFixed(2)}/g',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: colors.primary,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                _priceStatus,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: colors.textMuted,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                localizations.zakatDisclaimer,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colors.textMuted,
-                ),
-              ),
-              const SizedBox(height: 10),
+              Text(_priceStatus, style: captionStyle),
+              const SizedBox(height: 4),
+              Text(l.zakatDisclaimer, style: captionStyle),
+              const SizedBox(height: 12),
               Row(
                 children: <Widget>[
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: () => _showPriceOverrideDialog(colors),
-                      icon: const Icon(Icons.edit_outlined, size: 16),
-                      label: Text(localizations.overridePrices),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: colors.primary,
-                        side: BorderSide(color: colors.primary.withAlpha(80)),
-                        padding: const EdgeInsets.symmetric(vertical: 10),
+                      onPressed: _showPriceOverrideDialog,
+                      icon: const DesignIcon('edit', size: 16),
+                      label: Text(l.overridePrices),
+                      style: readerOutlinedButtonStyle(context).copyWith(
+                        minimumSize: const WidgetStatePropertyAll<Size>(
+                          Size(0, 44),
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
                   if (_goldPriceOverride != null ||
-                      _silverPriceOverride != null)
+                      _silverPriceOverride != null) ...<Widget>[
+                    const SizedBox(width: 8),
                     TextButton(
+                      style: readerNoticeButtonStyle(context),
                       onPressed: () {
                         setState(() {
                           _goldPriceOverride = null;
                           _silverPriceOverride = null;
                         });
                       },
-                      child: Text(localizations.reset),
+                      child: Text(l.reset),
                     ),
+                  ],
                 ],
               ),
             ],
           ),
         ),
 
-        const SizedBox(height: 16),
+        const SizedBox(height: 24),
 
-        // ==================== NISAB CHOICE (MODERN) ====================
-        Text(
-          localizations.nisabThresholdLabel,
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: colors.primary,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 1.2,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: <Widget>[
-            Expanded(
-              child: _buildNisabChoice(
-                theme,
-                colors,
-                label: localizations.silverDefault,
-                value: 'silver',
-                threshold: silverNisabGrams * _effectiveSilverPrice,
-                isSelected: _nisabType == 'silver',
-                onTap: () => setState(() => _nisabType = 'silver'),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _buildNisabChoice(
-                theme,
-                colors,
-                label: localizations.gold,
-                value: 'gold',
-                threshold: goldNisabGrams * _effectiveGoldPrice,
-                isSelected: _nisabType == 'gold',
-                onTap: () => setState(() => _nisabType = 'gold'),
-              ),
-            ),
-          ],
-        ),
-
-        const SizedBox(height: 18),
-
-        // ==================== WEALTH CATEGORIES (THE POWER) ====================
-        Text(
-          localizations.yourWealth,
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: colors.primary,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 1.2,
-          ),
-        ),
-        const SizedBox(height: 8),
-
-        // Cash
-        _buildCategoryCard(
-          theme,
-          colors,
-          category: ZakatCategory.cash,
-          controller: _cashController,
-          hint: localizations.cashHint,
-        ),
-
-        // Gold
-        _buildCategoryCard(
-          theme,
-          colors,
-          category: ZakatCategory.gold,
-          controller: _goldController,
-          suffix: _buildUnitDropdown(
-            _goldUnit,
-            (v) => setState(() => _goldUnit = v),
-          ),
-          hint: localizations.goldHint,
-        ),
-
-        // Silver
-        _buildCategoryCard(
-          theme,
-          colors,
-          category: ZakatCategory.silver,
-          controller: _silverController,
-          suffix: _buildUnitDropdown(
-            _silverUnit,
-            (v) => setState(() => _silverUnit = v),
-          ),
-        ),
-
-        // Investments (Stocks, Crypto, etc)
-        _buildCategoryCard(
-          theme,
-          colors,
-          category: ZakatCategory.investments,
-          controller: _investmentsController,
-          hint: localizations.investmentsHint,
-        ),
-
-        // Business Inventory
-        _buildModernCategoryInput(
-          theme,
-          colors,
-          category: ZakatCategory.business,
-          hint: localizations.businessHint,
-        ),
-
-        // Livestock — the powerful one
-        _buildLivestockCard(theme, colors),
-
-        // Agriculture (simplified)
-        _buildModernCategoryInput(
-          theme,
-          colors,
-          category: ZakatCategory.agriculture,
-          hint: localizations.agricultureHint,
-        ),
-
-        // Other
-        _buildModernCategoryInput(
-          theme,
-          colors,
-          category: ZakatCategory.other,
-          hint: localizations.otherHint,
-        ),
-
-        const SizedBox(height: 8),
-
-        // Liabilities
-        _buildCategoryCard(
-          theme,
-          colors,
-          category: null, // special
-          controller: _liabilitiesController,
-          labelOverride: localizations.liabilitiesDeduct,
-          hint: localizations.liabilitiesHint,
-          isDeduction: true,
-        ),
-
-        const SizedBox(height: 20),
-
-        // ==================== STUNNING RESULT HERO ====================
-        EquranGradientCard(
-          padding: const EdgeInsets.all(20),
-          child: Column(
+        // Nisab choice.
+        _sectionLabel(l.nisabThresholdLabel),
+        IntrinsicHeight(
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    localizations.netZakatableWealth,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colors.onPrimaryMuted,
-                    ),
+              Expanded(
+                child: ZakatNisabChoice(
+                  label: l.silverDefault,
+                  amount: _formatAmount(
+                    silverNisabGrams * _effectiveSilverPrice,
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isEligible
-                          ? colors.onPrimary.withAlpha(30)
-                          : colors.onPrimary.withAlpha(18),
-                      borderRadius: BorderRadius.circular(EquranRadii.pill),
-                    ),
-                    child: Text(
-                      isEligible
-                          ? localizations.eligible
-                          : localizations.belowNisab,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: colors.onPrimary,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Text(
-                _formatAmount(comp.netWealth),
-                style: theme.textTheme.displaySmall?.copyWith(
-                  color: colors.onPrimary,
-                  fontWeight: FontWeight.w900,
-                  height: 1.05,
+                  selected: _nisabType == 'silver',
+                  onTap: () => setState(() => _nisabType = 'silver'),
                 ),
               ),
-              const SizedBox(height: 12),
-              Container(height: 1, color: colors.onPrimary.withAlpha(40)),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: <Widget>[
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        localizations.zakatDueLabel,
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: colors.onPrimaryMuted,
-                          letterSpacing: 1.1,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        _formatAmount(zakatDue),
-                        style: theme.textTheme.headlineMedium?.copyWith(
-                          color: colors.onPrimary,
-                          fontWeight: FontWeight.w900,
-                          height: 1.0,
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (isEligible && zakatDue > 0)
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: colors.onPrimary,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        Icons.favorite_rounded,
-                        color: colors.primary,
-                        size: 22,
-                      ),
-                    ),
-                ],
-              ),
-              if (!isEligible && comp.netWealth > 0) ...<Widget>[
-                const SizedBox(height: 10),
-                Text(
-                  localizations.zakatBelowNisabExplanation(
-                    _formatAmount(comp.nisabThreshold),
-                  ),
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colors.onPrimaryMuted,
-                    fontStyle: FontStyle.italic,
-                  ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: ZakatNisabChoice(
+                  label: l.gold,
+                  amount: _formatAmount(goldNisabGrams * _effectiveGoldPrice),
+                  selected: _nisabType == 'gold',
+                  onTap: () => setState(() => _nisabType = 'gold'),
                 ),
-              ],
+              ),
             ],
           ),
+        ),
+
+        const SizedBox(height: 24),
+
+        // Wealth categories.
+        _sectionLabel(l.yourWealth),
+        _buildCategoryCard(
+          category: ZakatCategory.cash,
+          controller: _cashController,
+          hint: l.cashHint,
+        ),
+        _buildCategoryCard(
+          category: ZakatCategory.gold,
+          controller: _goldController,
+          suffix: ZakatUnitPicker(
+            value: _goldUnit,
+            onChanged: (String v) => setState(() => _goldUnit = v),
+          ),
+          hint: l.goldHint,
+        ),
+        _buildCategoryCard(
+          category: ZakatCategory.silver,
+          controller: _silverController,
+          suffix: ZakatUnitPicker(
+            value: _silverUnit,
+            onChanged: (String v) => setState(() => _silverUnit = v),
+          ),
+        ),
+        _buildCategoryCard(
+          category: ZakatCategory.investments,
+          controller: _investmentsController,
+          hint: l.investmentsHint,
+        ),
+        _buildModernCategoryInput(
+          category: ZakatCategory.business,
+          hint: l.businessHint,
+        ),
+        _buildLivestockCard(),
+        _buildModernCategoryInput(
+          category: ZakatCategory.agriculture,
+          hint: l.agricultureHint,
+        ),
+        _buildModernCategoryInput(
+          category: ZakatCategory.other,
+          hint: l.otherHint,
+        ),
+        _buildCategoryCard(
+          category: null,
+          controller: _liabilitiesController,
+          labelOverride: l.liabilitiesDeduct,
+          hint: l.liabilitiesHint,
+          isDeduction: true,
         ),
 
         const SizedBox(height: 12),
 
-        // Simple breakdown chips
-        if (comp.items.isNotEmpty)
-          Wrap(
-            spacing: 6,
-            runSpacing: 6,
-            children: comp.items.map((item) {
-              return Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 5,
+        // Result.
+        ZakatResultHero(
+          netLabel: l.netZakatableWealth,
+          netAmount: _formatAmount(comp.netWealth),
+          // Without gold and silver rates there is no nisab figure (the
+          // threshold is infinite), so the verdict is unknown, not "below" and
+          // the due amount is not a result: show a neutral state and a dash.
+          statusLabel: !nisabKnown
+              ? l.zakatNisabNotChecked
+              : isEligible
+              ? l.eligible
+              : l.belowNisab,
+          eligible: nisabKnown && isEligible,
+          dueLabel: l.zakatDueLabel,
+          dueAmount: nisabKnown ? _formatAmount(zakatDue) : '\u2014',
+          showHeart: nisabKnown && isEligible && zakatDue > 0,
+          note: !nisabKnown
+              ? l.zakatNisabNeedsRates
+              : !isEligible && comp.netWealth > 0
+              ? l.zakatBelowNisabExplanation(_formatAmount(comp.nisabThreshold))
+              : null,
+        ),
+
+        if (comp.items.isNotEmpty) ...<Widget>[
+          const SizedBox(height: 12),
+          ZakatBreakdownList(
+            rows: <(String, String)>[
+              for (final ZakatLineItem item in comp.items)
+                (
+                  item.category.getLocalizedLabel(l),
+                  _formatAmount(item.amount),
                 ),
-                decoration: BoxDecoration(
-                  color: colors.surfaceAlt,
-                  borderRadius: BorderRadius.circular(EquranRadii.pill),
-                  border: Border.all(color: colors.border),
-                ),
-                child: Text(
-                  '${item.category.getLocalizedLabel(localizations)}: ${_formatAmount(item.amount)}',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: colors.textSecondary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              );
-            }).toList(),
+            ],
           ),
+        ],
 
         const SizedBox(height: 20),
 
-        // Save
         FilledButton.icon(
           onPressed: zakatDue > 0.01
               ? () => _saveCurrentCalculation(comp)
               : null,
-          style: FilledButton.styleFrom(
-            backgroundColor: colors.primary,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(EquranRadii.large),
-            ),
+          style: readerFilledButtonStyle(context).copyWith(
+            minimumSize: const WidgetStatePropertyAll<Size>(Size(0, 52)),
           ),
-          icon: const Icon(Icons.bookmark_added_rounded),
-          label: Text(
-            localizations.saveToHistory,
-            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
-          ),
+          icon: const DesignIcon('bookmark', size: 18),
+          label: Text(l.saveToHistory),
         ),
         const SizedBox(height: 8),
         Center(
           child: TextButton.icon(
             onPressed: _resetAll,
+            style: readerTextButtonStyle(context),
             icon: const Icon(Icons.refresh_rounded, size: 18),
-            label: Text(localizations.resetCalculator),
+            label: Text(l.resetCalculator),
           ),
         ),
       ],
     );
   }
 
-  // ==================== BEAUTIFUL HELPER WIDGETS ====================
+  // ==================== Presentation helpers ====================
 
-  Widget _buildNisabChoice(
-    ThemeData theme,
-    EquranColors colors, {
-    required String label,
-    required String value,
-    required double threshold,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(EquranRadii.large),
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: isSelected ? colors.primary.withAlpha(12) : colors.surface,
-          borderRadius: BorderRadius.circular(EquranRadii.large),
-          border: Border.all(
-            color: isSelected ? colors.primary : colors.border,
-            width: isSelected ? 1.5 : 1,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                Icon(
-                  isSelected
-                      ? Icons.check_circle_rounded
-                      : Icons.radio_button_unchecked_rounded,
-                  color: isSelected ? colors.primary : colors.textMuted,
-                  size: 18,
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  label,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: isSelected ? colors.primary : colors.textPrimary,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            Text(
-              _formatAmount(threshold),
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w800,
-                color: colors.textPrimary,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  /// The shared look of every amount field.
+  InputDecoration _amountDecoration({
+    required String hint,
+    String? prefixText,
+    String? suffixText,
+  }) => readerInputDecoration(
+    context,
+    hint: hint,
+    suffixText: suffixText,
+    radius: EquranRadii.large,
+  ).copyWith(prefixText: prefixText);
 
-  Widget _buildCategoryCard(
-    ThemeData theme,
-    EquranColors colors, {
+  Widget _buildCategoryCard({
     ZakatCategory? category,
     required TextEditingController controller,
     String? labelOverride,
@@ -1106,7 +789,8 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
     Widget? suffix,
     bool isDeduction = false,
   }) {
-    final String title = labelOverride ?? (category?.label ?? 'Amount');
+    final String title =
+        labelOverride ?? (category?.getLocalizedLabel(localizations) ?? '');
     final IconData icon =
         category?.icon ??
         (isDeduction
@@ -1115,255 +799,93 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
     final bool isWeight =
         category == ZakatCategory.gold || category == ZakatCategory.silver;
     final String? weightUnit = category == ZakatCategory.gold
-        ? (_goldUnit == 'grams' ? 'g' : 'tola')
+        ? (_goldUnit == 'grams' ? 'g' : localizations.unitTola)
         : (category == ZakatCategory.silver
-              ? (_silverUnit == 'grams' ? 'g' : 'tola')
+              ? (_silverUnit == 'grams' ? 'g' : localizations.unitTola)
               : null);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5),
-      child: EquranSurfaceCard(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                EquranIconBadge(icon: icon, size: 34),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ),
-                ?suffix,
-              ],
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: controller,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-              onChanged: (_) => setState(() {}),
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
-              ],
-              decoration: InputDecoration(
-                hintText:
-                    hint ??
-                    (isWeight
-                        ? localizations.enterWeight
-                        : localizations.enterAmountInCurrency(_baseCurrency)),
-                prefixText: isWeight ? null : _currencySymbol,
-                suffixText: weightUnit,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 14,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(EquranRadii.medium),
-                  borderSide: BorderSide(color: colors.border),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(EquranRadii.medium),
-                  borderSide: BorderSide(color: colors.border),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(EquranRadii.medium),
-                  borderSide: BorderSide(color: colors.primary, width: 1.5),
-                ),
-                filled: true,
-                fillColor: colors.surfaceAlt,
-              ),
-            ),
+      padding: const EdgeInsets.only(bottom: 12),
+      child: ZakatCard(
+        icon: Icon(icon),
+        title: title,
+        trailing: suffix,
+        child: TextField(
+          controller: controller,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          onChanged: (_) => setState(() {}),
+          inputFormatters: <TextInputFormatter>[
+            FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
           ],
+          style: const TextStyle(
+            fontSize: 16,
+            fontVariations: [FontVariation('opsz', 16)],
+          ),
+          decoration: _amountDecoration(
+            hint:
+                hint ??
+                (isWeight
+                    ? localizations.enterWeight
+                    : localizations.enterAmountInCurrency(_baseCurrency)),
+            prefixText: isWeight ? null : _currencySymbol,
+            suffixText: weightUnit,
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildModernCategoryInput(
-    ThemeData theme,
-    EquranColors colors, {
+  Widget _buildModernCategoryInput({
     required ZakatCategory category,
     String? hint,
   }) {
     final double current = _categoryAmounts[category] ?? 0.0;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5),
-      child: EquranSurfaceCard(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                EquranIconBadge(icon: category.icon, size: 34),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    category.label,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ),
-                if (current > 0)
-                  Text(
-                    _formatAmount(current),
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      color: colors.primary,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
-              ],
-              onChanged: (val) {
-                final double v = double.tryParse(val) ?? 0.0;
-                setState(() => _categoryAmounts[category] = v);
-              },
-              decoration: InputDecoration(
-                hintText: hint ?? localizations.amountInCurrency(_baseCurrency),
-                prefixText: _currencySymbol,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 14,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(EquranRadii.medium),
-                  borderSide: BorderSide(color: colors.border),
-                ),
-                filled: true,
-                fillColor: colors.surfaceAlt,
-              ),
-            ),
+      padding: const EdgeInsets.only(bottom: 12),
+      child: ZakatCard(
+        icon: Icon(category.icon),
+        title: category.getLocalizedLabel(localizations),
+        trailing: current > 0 ? ZakatAmountLabel(_formatAmount(current)) : null,
+        child: TextField(
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: <TextInputFormatter>[
+            FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
           ],
+          onChanged: (String val) {
+            final double v = double.tryParse(val) ?? 0.0;
+            setState(() => _categoryAmounts[category] = v);
+          },
+          style: const TextStyle(
+            fontSize: 16,
+            fontVariations: [FontVariation('opsz', 16)],
+          ),
+          decoration: _amountDecoration(
+            hint: hint ?? localizations.amountInCurrency(_baseCurrency),
+            prefixText: _currencySymbol,
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildLivestockCard(ThemeData theme, EquranColors colors) {
-    return EquranSurfaceCard(
-      padding: const EdgeInsets.all(14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              EquranIconBadge(icon: ZakatCategory.livestock.icon, size: 34),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  ZakatCategory.livestock.getLocalizedLabel(localizations),
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ),
-              if (_computeLivestockValue() > 0)
-                Text(
-                  _formatAmount(_computeLivestockValue()),
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    color: colors.primary,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(
-            localizations.livestockSubtitle,
-            style: theme.textTheme.bodySmall?.copyWith(color: colors.textMuted),
-          ),
-          const SizedBox(height: 12),
-          _buildLivestockRow(
-            localizations.livestockSheepGoats,
-            _livestockSheep,
-            (v) => setState(() => _livestockSheep = v),
-          ),
-          const SizedBox(height: 8),
-          _buildLivestockRow(
-            localizations.livestockCowsBuffalo,
-            _livestockCows,
-            (v) => setState(() => _livestockCows = v),
-          ),
-          const SizedBox(height: 8),
-          _buildLivestockRow(
-            localizations.livestockCamels,
-            _livestockCamels,
-            (v) => setState(() => _livestockCamels = v),
-          ),
-        ],
+  /// Livestock zakat follows count-based schedules per animal type, which this
+  /// calculator does not carry from a reviewed source. Rather than estimate a
+  /// value per head, it says so and leaves livestock out of the total.
+  Widget _buildLivestockCard() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: ZakatCard(
+        icon: Icon(ZakatCategory.livestock.icon),
+        title: ZakatCategory.livestock.getLocalizedLabel(localizations),
+        subtitle: localizations.zakatLivestockNotCalculated,
+        child: const SizedBox.shrink(),
       ),
     );
   }
 
-  Widget _buildLivestockRow(
-    String label,
-    int count,
-    ValueChanged<int> onChanged,
-  ) {
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: Text(
-            label,
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-        ),
-        IconButton(
-          icon: const Icon(Icons.remove_circle_outline),
-          onPressed: count > 0 ? () => onChanged(count - 1) : null,
-          visualDensity: VisualDensity.compact,
-        ),
-        Container(
-          width: 42,
-          alignment: Alignment.center,
-          child: Text(
-            '$count',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-          ),
-        ),
-        IconButton(
-          icon: const Icon(Icons.add_circle_outline),
-          onPressed: () => onChanged(count + 1),
-          visualDensity: VisualDensity.compact,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildUnitDropdown(String value, ValueChanged<String> onChanged) {
-    return DropdownButton<String>(
-      value: value,
-      onChanged: (v) {
-        if (v != null) onChanged(v);
-      },
-      items: const [
-        DropdownMenuItem(value: 'grams', child: Text('g')),
-        DropdownMenuItem(value: 'bhori', child: Text('tola')),
-      ],
-      underline: const SizedBox.shrink(),
-      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-    );
-  }
-
-  void _showPriceOverrideDialog(EquranColors colors) {
-    final localizations = AppLocalizations.of(context)!;
+  void _showPriceOverrideDialog() {
+    final AppLocalizations l = AppLocalizations.of(context)!;
     final TextEditingController goldCtrl = TextEditingController(
       text: _effectiveGoldPrice.toStringAsFixed(2),
     );
@@ -1371,38 +893,45 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
       text: _effectiveSilverPrice.toStringAsFixed(2),
     );
 
-    showDialog<void>(
+    showReaderDialog<void>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(localizations.overridePrices),
+      builder: (BuildContext ctx) => ReaderDialog(
+        title: l.overridePrices,
+        icon: const DesignIcon('edit'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            TextField(
-              controller: goldCtrl,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: localizations.goldPriceGram,
-                prefixText: _currencySymbol,
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: TextField(
+                controller: goldCtrl,
+                keyboardType: TextInputType.number,
+                decoration: readerInputDecoration(
+                  ctx,
+                  label: l.goldPriceGram(_baseCurrency),
+                ).copyWith(prefixText: _currencySymbol),
               ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: silverCtrl,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: localizations.silverPriceGram,
-                prefixText: _currencySymbol,
-              ),
+              decoration: readerInputDecoration(
+                ctx,
+                label: l.silverPriceGram(_baseCurrency),
+              ).copyWith(prefixText: _currencySymbol),
             ),
           ],
         ),
         actions: <Widget>[
           TextButton(
+            style: readerTextButtonStyle(ctx),
             onPressed: () => Navigator.pop(ctx),
-            child: Text(localizations.cancel),
+            child: Text(l.cancel),
           ),
           FilledButton(
+            style: readerFilledButtonStyle(ctx),
             onPressed: () {
               setState(() {
                 _goldPriceOverride = double.tryParse(goldCtrl.text);
@@ -1411,7 +940,7 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
               });
               Navigator.pop(ctx);
             },
-            child: Text(localizations.save),
+            child: Text(l.save),
           ),
         ],
       ),
@@ -1442,11 +971,6 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
       zakatDue: comp.zakatDue,
       detailsJson: <String, dynamic>{
         'richItems': comp.items.map((e) => e.toJson()).toList(),
-        'livestock': {
-          'sheep': _livestockSheep,
-          'cows': _livestockCows,
-          'camels': _livestockCamels,
-        },
         'currency': _baseCurrency,
       },
     );
@@ -1474,9 +998,6 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
       _liabilitiesController.clear();
 
       _categoryAmounts.updateAll((_, val) => 0.0);
-      _livestockSheep = 0;
-      _livestockCows = 0;
-      _livestockCamels = 0;
       _goldPriceOverride = null;
       _silverPriceOverride = null;
     });
@@ -1510,41 +1031,25 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
   }
 
   void _showCurrencyPicker() {
-    final localizations = AppLocalizations.of(context)!;
-    showDialog<void>(
+    final AppLocalizations l = AppLocalizations.of(context)!;
+    showReaderDialog<String>(
       context: context,
-      builder: (BuildContext ctx) => AlertDialog(
-        title: Text(localizations.selectCurrency),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: RadioGroup<String>(
-            groupValue: _baseCurrency,
-            onChanged: (String? val) {
-              if (val != null) {
-                Navigator.pop(ctx);
-                _changeBaseCurrency(val);
-              }
-            },
-            child: ListView(
-              shrinkWrap: true,
-              children: supportedZakatCurrencies.map((String c) {
-                return RadioListTile<String>(title: Text(c), value: c);
-              }).toList(),
-            ),
-          ),
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(localizations.cancel),
-          ),
+      builder: (BuildContext ctx) => ReaderChoiceDialog<String>(
+        title: l.selectCurrency,
+        icon: const DesignIcon('calc'),
+        selectedValue: _baseCurrency,
+        options: <AppSelectionOption<String>>[
+          for (final String c in supportedZakatCurrencies)
+            AppSelectionOption<String>(value: c, title: c),
         ],
       ),
-    );
+    ).then((String? val) {
+      if (val != null) _changeBaseCurrency(val);
+    });
   }
 
-  Widget _buildHistoryTab(ThemeData theme, EquranColors colors) {
-    final localizations = AppLocalizations.of(context)!;
+  Widget _buildHistoryTab() {
+    final AppLocalizations l = AppLocalizations.of(context)!;
     return ValueListenableBuilder<dynamic>(
       valueListenable: ZakatHistoryDB.instance.listener,
       builder: (BuildContext context, dynamic val, Widget? child) {
@@ -1552,158 +1057,50 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
             .getAllRecords();
 
         if (records.isEmpty) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Icon(
-                    Icons.history_toggle_off_rounded,
-                    size: 48,
-                    color: colors.textMuted,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    localizations.noHistoricalCalculations,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    localizations.savedRecordsAppearHere,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          return ZakatEmptyState(
+            title: l.noHistoricalCalculations,
+            hint: l.savedRecordsAppearHere,
           );
         }
 
-        return ListView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        return ListView.separated(
+          padding: const EdgeInsets.fromLTRB(
+            EquranSpacing.pagePadding,
+            16,
+            EquranSpacing.pagePadding,
+            32,
+          ),
           physics: const BouncingScrollPhysics(),
           itemCount: records.length,
+          separatorBuilder: (BuildContext context, int index) =>
+              const SizedBox(height: 12),
           itemBuilder: (BuildContext context, int index) {
             final ZakatRecord rec = records[index];
             final String dateStr =
                 '${rec.date.day}/${rec.date.month}/${rec.date.year}';
-
-            return Card(
-              margin: const EdgeInsets.symmetric(vertical: 6),
-              color: colors.surface,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppRadii.medium),
-                side: BorderSide(color: colors.border),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(14),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text(
-                          localizations.calculationOnDate(dateStr),
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: colors.textSecondary,
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.delete_outline_rounded,
-                            color: Colors.red,
-                            size: 20,
-                          ),
-                          onPressed: () async {
-                            await ZakatHistoryDB.instance.deleteRecord(rec.id);
-                          },
-                          constraints: const BoxConstraints(),
-                          padding: EdgeInsets.zero,
-                        ),
-                      ],
-                    ),
-                    const Divider(height: 14),
-                    _buildHistoryRow(
-                      localizations.historyLiquidCash,
-                      _formatAmount(rec.cash),
-                    ),
-                    _buildHistoryRow(
-                      localizations.historyInvestments,
-                      _formatAmount(rec.investments),
-                    ),
-                    _buildHistoryRow(
-                      localizations.historyGoldGrams(
-                        rec.goldGrams.toStringAsFixed(1),
-                      ),
-                      _formatAmount(rec.goldGrams * rec.goldPrice),
-                    ),
-                    _buildHistoryRow(
-                      localizations.historySilverGrams(
-                        rec.silverGrams.toStringAsFixed(1),
-                      ),
-                      _formatAmount(rec.silverGrams * rec.silverPrice),
-                    ),
-                    _buildHistoryRow(
-                      localizations.historyLiabilities,
-                      '-${_formatAmount(rec.liabilities)}',
-                    ),
-                    const SizedBox(height: 6),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text(
-                          localizations.historyZakatDue,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: colors.primary,
-                          ),
-                        ),
-                        Text(
-                          _formatAmount(rec.zakatDue),
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: colors.primary,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text(localizations.zakatPaidDistributed),
-                        Row(
-                          children: <Widget>[
-                            Text(
-                              _formatAmount(rec.zakatPaid),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            IconButton(
-                              icon: const Icon(
-                                Icons.edit_note_rounded,
-                                size: 20,
-                              ),
-                              onPressed: () =>
-                                  _showPaidAmountDialog(context, rec),
-                              constraints: const BoxConstraints(),
-                              padding: EdgeInsets.zero,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
+            return ZakatHistoryCard(
+              title: l.calculationOnDate(dateStr),
+              rows: <(String, String)>[
+                (l.historyLiquidCash, _formatAmount(rec.cash)),
+                (l.historyInvestments, _formatAmount(rec.investments)),
+                (
+                  l.historyGoldGrams(rec.goldGrams.toStringAsFixed(1)),
+                  _formatAmount(rec.goldGrams * rec.goldPrice),
                 ),
-              ),
+                (
+                  l.historySilverGrams(rec.silverGrams.toStringAsFixed(1)),
+                  _formatAmount(rec.silverGrams * rec.silverPrice),
+                ),
+                (l.historyLiabilities, '-${_formatAmount(rec.liabilities)}'),
+              ],
+              dueLabel: l.historyZakatDue,
+              dueAmount: _formatAmount(rec.zakatDue),
+              paidLabel: l.zakatPaidDistributed,
+              paidAmount: _formatAmount(rec.zakatPaid),
+              deleteTooltip: l.delete,
+              editTooltip: l.edit,
+              onDelete: () => _confirmDeleteRecord(rec),
+              onEditPaid: () => _showPaidAmountDialog(context, rec),
             );
           },
         );
@@ -1711,30 +1108,58 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
     );
   }
 
+  Future<void> _confirmDeleteRecord(ZakatRecord rec) async {
+    final bool? confirmed = await showReaderDialog<bool>(
+      context: context,
+      builder: (BuildContext ctx) {
+        final AppLocalizations l = AppLocalizations.of(ctx)!;
+        return ReaderConfirmDialog(
+          title: l.zakatDeleteRecordQuestion,
+          body: l.zakatDeleteRecordBody,
+          icon: const DesignIcon('trash'),
+          cancelLabel: l.cancel,
+          confirmLabel: l.delete,
+          destructive: true,
+        );
+      },
+    );
+    if (confirmed == true) {
+      await ZakatHistoryDB.instance.deleteRecord(rec.id);
+    }
+  }
+
   void _showPaidAmountDialog(BuildContext context, ZakatRecord record) {
-    final localizations = AppLocalizations.of(context)!;
+    final AppLocalizations l = AppLocalizations.of(context)!;
     final TextEditingController controller = TextEditingController(
       text: record.zakatPaid.toString(),
     );
-    showDialog<void>(
+    showReaderDialog<void>(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(localizations.updateZakatPaidAmount),
-          content: TextField(
-            controller: controller,
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: InputDecoration(
-              hintText: localizations.enterPaidAmountUsd,
-              prefixText: _currencySymbol,
+        return ReaderDialog(
+          title: l.updateZakatPaidAmount,
+          icon: const DesignIcon('edit'),
+          content: Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: TextField(
+              controller: controller,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              decoration: readerInputDecoration(
+                context,
+                hint: l.enterPaidAmountInCurrency(_baseCurrency),
+              ).copyWith(prefixText: _currencySymbol),
             ),
           ),
           actions: <Widget>[
             TextButton(
+              style: readerTextButtonStyle(context),
               onPressed: () => Navigator.pop(context),
-              child: Text(localizations.cancel),
+              child: Text(l.cancel),
             ),
-            TextButton(
+            FilledButton(
+              style: readerFilledButtonStyle(context),
               onPressed: () async {
                 final double? amount = double.tryParse(controller.text);
                 if (amount != null) {
@@ -1745,27 +1170,11 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
                 }
                 if (context.mounted) Navigator.pop(context);
               },
-              child: Text(localizations.save),
+              child: Text(l.save),
             ),
           ],
         );
       },
-    );
-  }
-
-  Widget _buildHistoryRow(String title, String val) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Text(title, style: const TextStyle(fontSize: 13)),
-          Text(
-            val,
-            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-          ),
-        ],
-      ),
     );
   }
 }

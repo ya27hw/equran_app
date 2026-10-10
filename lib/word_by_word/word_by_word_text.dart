@@ -1,6 +1,13 @@
 import 'dart:async' show unawaited;
 
 import 'package:equran/l10n/app_localizations.dart';
+import 'package:equran/theme/equran_colors.dart';
+import 'package:equran/theme/equran_text_styles.dart';
+import 'package:equran/theme/equran_tokens.dart';
+import 'package:equran/utils/text_direction.dart';
+import 'package:equran/widgets/reader_sheet_chrome.dart';
+import 'package:equran/widgets/redesign/page_typography.dart';
+import 'package:equran/widgets/redesign/redesign_widgets.dart';
 import 'package:equran/word_by_word/word_alignment.dart';
 import 'package:equran/word_by_word/word_by_word_pack.dart';
 import 'package:flutter/foundation.dart' show listEquals;
@@ -148,52 +155,70 @@ Future<void> showWordMeaningSheet(
   required TextStyle arabicStyle,
 }) {
   final AppLocalizations localizations = AppLocalizations.of(context)!;
-  return showModalBottomSheet<void>(
+  return showReaderSheet<void>(
     context: context,
-    showDragHandle: true,
     builder: (BuildContext context) {
-      final ThemeData theme = Theme.of(context);
-      final ColorScheme colors = theme.colorScheme;
-      return SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Text(
-                arabic,
-                textAlign: TextAlign.center,
-                textDirection: TextDirection.rtl,
-                style: arabicStyle.copyWith(
-                  fontSize: (arabicStyle.fontSize ?? 28).clamp(30.0, 44.0),
-                  height: 1.6,
-                  color: colors.onSurface,
+      final EquranTokens tokens = context.equranTokens;
+      return RedesignPageTypography(
+        child: SafeArea(
+          top: false,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                const ReaderSheetHandle(),
+                HairlineCard(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  child: Text(
+                    arabic,
+                    textAlign: TextAlign.center,
+                    textDirection: TextDirection.rtl,
+                    style: arabicStyle.copyWith(
+                      fontSize: (arabicStyle.fontSize ?? 28).clamp(30.0, 44.0),
+                      height: 1.6,
+                      color: context.equranColors.textPrimary,
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              _SheetField(
-                label: localizations.wordMeaning,
-                value: gloss.meaning,
-                valueStyle: theme.textTheme.titleLarge,
-              ),
-              if (gloss.transliteration.isNotEmpty) ...<Widget>[
-                const SizedBox(height: 12),
+                const SizedBox(height: 22),
                 _SheetField(
-                  label: localizations.wordTransliteration,
-                  value: gloss.transliteration,
-                  valueStyle: theme.textTheme.titleMedium,
+                  label: localizations.wordMeaning,
+                  value: gloss.meaning,
+                  valueStyle: redesignDisplayStyle(
+                    context,
+                    size: 26,
+                    height: 1.2,
+                  ),
+                ),
+                if (gloss.transliteration.isNotEmpty) ...<Widget>[
+                  const SizedBox(height: 18),
+                  _SheetField(
+                    label: localizations.wordTransliteration,
+                    value: gloss.transliteration,
+                    valueStyle: EquranTextStyles.displayTranslation(
+                      context,
+                      size: 20,
+                      color: tokens.text2,
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 22),
+                Text(
+                  localizations.wordByWordProvenance(meta.source, meta.license),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    height: 1.4,
+                    color: tokens.muted,
+                  ),
                 ),
               ],
-              const SizedBox(height: 18),
-              Text(
-                localizations.wordByWordProvenance(meta.source, meta.license),
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colors.onSurfaceVariant,
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       );
@@ -214,18 +239,16 @@ class _SheetField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
+        RedesignEyebrow(label),
+        const SizedBox(height: 8),
         Text(
-          label,
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
+          value,
+          textDirection: scriptDirectionIn(context, value),
+          style: valueStyle,
         ),
-        const SizedBox(height: 2),
-        Text(value, style: valueStyle),
       ],
     );
   }

@@ -183,6 +183,7 @@ class EquranSectionHeader extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.headlineSmall?.copyWith(
               fontSize: 18,
+              fontVariations: const [FontVariation('opsz', 18)],
               fontWeight: FontWeight.w800,
               color: colors.textPrimary,
             ),

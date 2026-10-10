@@ -83,7 +83,13 @@
   "yourQuran": "Your Quran",
   "beginQuranReading": "Begin with Quran",
   "startWithSurah": "Start with {surah}",
-  "@startWithSurah": {"placeholders": {"surah": {"type": "String"}}},
+  "@startWithSurah": {
+    "placeholders": {
+      "surah": {
+        "type": "String"
+      }
+    }
+  },
   "startReadingSubtitle": "Start reading and your place will appear here.",
   "startReading": "Start reading",
   "continueListening": "Continue Listening",
@@ -370,6 +376,7 @@
   "browseByJuz": "Browse by Juz",
   "browseByPage": "Browse by page",
   "closeSearch": "Close search",
+  "reverseOrder": "Reverse order",
   "noSurahsFound": "No surahs found.",
   "ayahRange": "Ayah {start}-{end}",
   "@ayahRange": {
@@ -2123,14 +2130,36 @@
   "netZakatableWealth": "Net Zakatable Wealth",
   "eligible": "ELIGIBLE",
   "belowNisab": "BELOW NISAB",
+  "zakatNisabNotChecked": "NISAB NOT CHECKED",
   "zakatDueLabel": "ZAKAT DUE (2.5%)",
   "resetCalculator": "Reset Calculator",
-  "goldPriceGram": "Gold price per gram (USD)",
-  "silverPriceGram": "Silver price per gram (USD)",
+  "goldPriceGram": "Gold price per gram ({currency})",
+  "@goldPriceGram": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "silverPriceGram": "Silver price per gram ({currency})",
+  "@silverPriceGram": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
   "zakatSavedLedger": "Zakat calculation saved to your personal ledger",
   "zakatPaidDistributed": "Zakat Paid/Distributed:",
   "updateZakatPaidAmount": "Update Zakat Paid Amount",
-  "enterPaidAmountUsd": "Enter paid amount in USD",
+  "enterPaidAmountInCurrency": "Enter paid amount in {currency}",
+  "@enterPaidAmountInCurrency": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
   "calculatorTab": "Calculator",
   "historyTab": "History",
   "fastingReminder": "Fasting Reminder",
@@ -2255,10 +2284,6 @@
       }
     }
   },
-  "livestockSubtitle": "Sheep/Goats, Cows, Camels — simplified modern values",
-  "livestockSheepGoats": "Sheep & Goats",
-  "livestockCowsBuffalo": "Cows / Buffalo",
-  "livestockCamels": "Camels",
   "noHistoricalCalculations": "No historical calculations",
   "savedRecordsAppearHere": "Saved records will appear here.",
   "calculationOnDate": "Calculation on {date}",
@@ -2518,5 +2543,189 @@
   "pureBlackBackground": "Pitch-black background",
   "pureBlackBackgroundSubtitle": "Use a pitch-black background in dark mode with any color palette.",
   "showSplashScreen": "Show startup animation",
-  "showSplashScreenSubtitle": "Play a short animation when the app opens."
+  "showSplashScreenSubtitle": "Play a short animation when the app opens.",
+  "savedFolderLabel": "Folder",
+  "savedManageFolders": "Manage folders",
+  "zakatNisabNeedsRates": "Add the gold and silver rates to check the Nisab. They could not be loaded, so enter them manually.",
+  "zakatDeleteRecordQuestion": "Delete this calculation?",
+  "zakatDeleteRecordBody": "This removes the saved calculation from your history.",
+  "unitTola": "tola",
+  "hifzRatingFail": "Fail",
+  "hifzRatingPass": "Pass",
+  "shareImageFormat": "Share image format",
+  "shareFormatStory": "Story 9:16",
+  "shareFormatSquare": "Square 1:1",
+  "shareFormatClassic": "Classic",
+  "unableToShareAyahImage": "Unable to share ayah image.",
+  "reciterGroupDownloaded": "Group Downloaded",
+  "reciterShowAlphabetical": "Show Alphabetical",
+  "audioConnectionInterrupted": "Audio connection was interrupted. Check your internet and try again.",
+  "offlineDownloadAyahOrReconnect": "You are offline. Download this ayah or reconnect to stream it.",
+  "unableToPlayAyahAudio": "Unable to play ayah audio.",
+  "repeatOnce": "Once",
+  "repeatTimes": "{count} times",
+  "@repeatTimes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "repeatInfinite": "Infinite",
+  "halfSecond": "0.5 seconds",
+  "resourceStateUpdateAvailable": "Update available",
+  "resourcePhaseStarting": "Starting",
+  "resourcePhaseVerifying": "Verifying",
+  "resourcePhaseExtracting": "Extracting",
+  "resourcePhaseInstalling": "Installing",
+  "resourcePhaseFailed": "Failed",
+  "resourceTypeGeneric": "Resource",
+  "translationBundled": "Bundled",
+  "translationDownloadUnavailable": "Download unavailable",
+  "navigationSettingsHint": "Drag tiles to rearrange. Drag an available item and drop it on an active tile to swap, or tap an item below to pin it (displaces least recently used).",
+  "navigationActiveSlots": "Active navbar slots ({count}/{max})",
+  "@navigationActiveSlots": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "navigationAvailableItems": "Available unpinned items",
+  "navigationSlot": "Slot {number}",
+  "@navigationSlot": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "navigationSlotLocked": "Slot {number} (Locked Hub)",
+  "@navigationSlotLocked": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "navigationSwapped": "Swapped {first} with {second}",
+  "@navigationSwapped": {
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "second": {
+        "type": "String"
+      }
+    }
+  },
+  "navigationRemoved": "Removed {item} from navbar",
+  "@navigationRemoved": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "navigationPinned": "Pinned {item}",
+  "@navigationPinned": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "navigationPinnedDisplaced": "Pinned {item} (displaced {displaced})",
+  "@navigationPinnedDisplaced": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      },
+      "displaced": {
+        "type": "String"
+      }
+    }
+  },
+  "navSubtitleHome": "Main Dashboard",
+  "navSubtitleQuran": "Read the Holy Quran",
+  "navSubtitlePrayer": "Prayer Times & Adhan",
+  "navSubtitleSettings": "System Preferences",
+  "dockZakat": "Zakat",
+  "dockCalendar": "Calendar",
+  "downloadsReciterCount": "{count, plural, =1{1 reciter} other{{count} reciters}}",
+  "@downloadsReciterCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "downloadsItemCount": "{count, plural, =1{1 item} other{{count} items}}",
+  "@downloadsItemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "downloadsDeleteReciterBody": "Remove all downloads for {reciter} on {surah}?",
+  "@downloadsDeleteReciterBody": {
+    "placeholders": {
+      "reciter": {
+        "type": "String"
+      },
+      "surah": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadsAllSurahs": "All Surahs",
+  "downloadsFilterTitle": "Filter & Sort Downloads",
+  "downloadsFilterSubtitle": "More control over which recitations appear in your library",
+  "downloadsFilterSearchHint": "Search recitations or surahs...",
+  "downloadsGroupBy": "Group by",
+  "downloadsSortBy": "Sort by",
+  "downloadsCategory": "Category",
+  "downloadsContentType": "Content type",
+  "downloadsSortReciterAsc": "Reciter (A → Z)",
+  "downloadsSortReciterDesc": "Reciter (Z → A)",
+  "downloadsSortSizeDesc": "Size (largest first)",
+  "downloadsSortSizeAsc": "Size (smallest first)",
+  "downloadsSortSurahAsc": "Surah (1 → 114)",
+  "downloadsSortSurahDesc": "Surah (114 → 1)",
+  "offsetSetPositive": "Set positive",
+  "offsetSetNegative": "Set negative",
+  "notificationPermissionCheckTimedOut": "Notification permission check timed out. Try reopening the app or enabling notifications in system settings.",
+  "notificationPermissionCheckFailed": "Could not check notification permission. Try again or enable notifications in system settings.",
+  "exactAlarmPermissionCheckTimedOut": "Exact alarm permission check timed out. Try reopening the app or enabling alarms & reminders in system settings.",
+  "exactAlarmPermissionCheckFailed": "Could not check exact alarm permission. Try again or enable alarms & reminders in system settings.",
+  "asrMethodHanafi": "Hanafi",
+  "highLatitudeRuleAutoTitle": "Auto",
+  "highLatitudeRuleNoneTitle": "None",
+  "highLatitudeRuleMiddleOfTheNightTitle": "Middle of the night",
+  "highLatitudeRuleOneSeventhTitle": "One seventh",
+  "highLatitudeRuleAngleBasedTitle": "Angle based",
+  "prayerMethodAuto": "Best for location",
+  "prayerMethodMuslimWorldLeague": "Muslim World League",
+  "prayerMethodEgyptian": "Egyptian",
+  "prayerMethodUmmAlQura": "Umm al-Qura",
+  "prayerMethodDubai": "Dubai / Gulf",
+  "prayerMethodKuwait": "Kuwait",
+  "prayerMethodQatar": "Qatar",
+  "prayerMethodKarachi": "Karachi",
+  "prayerMethodMoonsighting": "Moonsighting Committee",
+  "prayerMethodMorocco": "Morocco",
+  "prayerMethodSingapore": "Singapore",
+  "prayerMethodTehran": "Tehran",
+  "prayerMethodTurkey": "Turkey / Diyanet",
+  "prayerMethodShortAuto": "Auto",
+  "prayerMethodShortMwl": "MWL",
+  "prayerMethodShortDubai": "Dubai",
+  "prayerMethodShortMoonsighting": "Moonsighting",
+  "prayerMethodShortTurkey": "Turkey",
+  "dailyToolsKeepOnePinned": "At least one tool must remain pinned.",
+  "zakatLivestockNotCalculated": "Livestock is not calculated here, so it is left out of the total. Please ask a qualified scholar."
 }

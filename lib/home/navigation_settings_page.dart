@@ -1,33 +1,20 @@
+import 'package:equran/widgets/reader_sheet_chrome.dart';
+import 'package:equran/widgets/redesign/design_icon.dart';
+import 'package:equran/widgets/redesign/nav_item_icon.dart';
+import 'package:equran/widgets/redesign/page_typography.dart'
+    show RedesignEyebrow;
 import 'package:equran/widgets/redesign/redesign_widgets.dart'
-    show RedesignSubpage;
+    show IconButton44, RedesignSubpage;
+import 'package:equran/widgets/settings_sheet_chrome.dart';
 import 'package:flutter/material.dart';
 import 'package:equran/backend/library.dart';
 import 'package:equran/theme/equran_colors.dart';
-import 'package:equran/utils/app_radii.dart';
+import 'package:equran/theme/equran_spacing.dart';
+import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/l10n/app_localizations.dart';
 
 class NavigationSettingsPage extends StatelessWidget {
   const NavigationSettingsPage({super.key});
-
-  IconData _getModuleIcon(NavItem item) {
-    return switch (item) {
-      NavItem.home => Icons.home_rounded,
-      NavItem.quran => Icons.menu_book_rounded,
-      NavItem.prayer => Icons.schedule_rounded,
-      NavItem.duas => Icons.auto_stories_rounded,
-      NavItem.statistics => Icons.bar_chart_rounded,
-      NavItem.qibla => Icons.explore_rounded,
-      NavItem.downloads => Icons.download_rounded,
-      NavItem.readingPlans => Icons.route_rounded,
-      NavItem.hifz => Icons.bookmark_added_rounded,
-      NavItem.tasbih => Icons.auto_awesome_rounded,
-      NavItem.asmaUlHusna => Icons.diamond_rounded,
-      NavItem.settings => Icons.settings_rounded,
-      NavItem.zakat => Icons.calculate_rounded,
-      NavItem.calendar => Icons.calendar_month_rounded,
-      NavItem.more => Icons.grid_view_rounded,
-    };
-  }
 
   String _getModuleLabel(NavItem item, AppLocalizations l10n) {
     return switch (item) {
@@ -51,29 +38,29 @@ class NavigationSettingsPage extends StatelessWidget {
 
   String _getModuleSubtitle(NavItem item, AppLocalizations l10n) {
     return switch (item) {
-      NavItem.home => 'Main Dashboard',
-      NavItem.quran => 'Read the Holy Quran',
-      NavItem.prayer => 'Prayer Times & Adhan',
-      NavItem.duas => 'Dua & Supplications',
-      NavItem.statistics => 'Streaks & Worship Trends',
-      NavItem.qibla => 'Qibla Direction Compass',
-      NavItem.downloads => 'Offline Audio Cache Files',
-      NavItem.readingPlans => 'Reading Plans & Routines',
-      NavItem.hifz => 'Hifz Memorization Tasks',
-      NavItem.tasbih => 'Calm Dhikr Counter',
-      NavItem.asmaUlHusna => '99 Beautiful Names',
-      NavItem.settings => 'System Preferences',
-      NavItem.zakat => 'Advanced Nisab Calculator',
-      NavItem.calendar => 'Synchronized Hijri Timeline',
-      NavItem.more => 'Immutable Hub Platform',
+      NavItem.home => l10n.navSubtitleHome,
+      NavItem.quran => l10n.navSubtitleQuran,
+      NavItem.prayer => l10n.navSubtitlePrayer,
+      NavItem.duas => l10n.duasAndAzkar,
+      NavItem.statistics => l10n.worshipTrendsAndStreaks,
+      NavItem.qibla => l10n.compassAndDirection,
+      NavItem.downloads => l10n.offlineAudioAndCleanup,
+      NavItem.readingPlans => l10n.plansGoalsProgress,
+      NavItem.hifz => l10n.hifzSubtitle,
+      NavItem.tasbih => l10n.calmDhikrCounter,
+      NavItem.asmaUlHusna => l10n.the99BeautifulNames,
+      NavItem.settings => l10n.navSubtitleSettings,
+      NavItem.zakat => l10n.zakatCalculatorSubtitle,
+      NavItem.calendar => l10n.islamicCalendarSubtitle,
+      // The More hub is locked into the bar and never listed as available.
+      NavItem.more => l10n.more,
     };
   }
 
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context)!;
-    final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
+    final EquranTokens tokens = context.equranTokens;
 
     return RedesignSubpage(
       title: l10n.customizeNavigation,
@@ -84,52 +71,20 @@ class NavigationSettingsPage extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
             physics: const BouncingScrollPhysics(),
             children: <Widget>[
-              // Header Card Info
-              Card(
-                color: colors.primary.withAlpha(12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppRadii.large),
-                  side: BorderSide(color: colors.primary.withAlpha(32)),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    children: <Widget>[
-                      Icon(
-                        Icons.info_outline_rounded,
-                        color: colors.primary,
-                        size: 28,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'Drag tiles to rearrange. Drag an available item and drop it on an active tile to swap, or tap an item below to pin it (displaces least recently used).',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colors.textPrimary,
-                            height: 1.35,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+              ReaderNotice(
+                icon: const DesignIcon('info'),
+                text: l10n.navigationSettingsHint,
+              ),
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsetsDirectional.only(start: 4, bottom: 10),
+                child: RedesignEyebrow(
+                  l10n.navigationActiveSlots(state.activeNavbarItems.length, 5),
                 ),
               ),
-              const SizedBox(height: 20),
-
-              // Active Items Header
-              Text(
-                'ACTIVE NAVBAR SLOTS (${state.activeNavbarItems.length}/5)',
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: colors.primary,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 1.1,
-                ),
-              ),
-              const SizedBox(height: 8),
-
               // Reorderable list of active slots
               Theme(
-                data: theme.copyWith(
+                data: Theme.of(context).copyWith(
                   canvasColor: Colors.transparent,
                   shadowColor: Colors.transparent,
                 ),
@@ -154,7 +109,10 @@ class NavigationSettingsPage extends StatelessWidget {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
-                              'Swapped ${_getModuleLabel(item, l10n)} with ${_getModuleLabel(incoming, l10n)}',
+                              l10n.navigationSwapped(
+                                _getModuleLabel(item, l10n),
+                                _getModuleLabel(incoming, l10n),
+                              ),
                             ),
                             behavior: SnackBarBehavior.floating,
                             duration: const Duration(seconds: 2),
@@ -163,93 +121,59 @@ class NavigationSettingsPage extends StatelessWidget {
                       },
                       builder: (context, candidateData, rejectedData) {
                         final bool isHovered = candidateData.isNotEmpty;
-
-                        return Card(
-                          margin: const EdgeInsets.symmetric(vertical: 6),
-                          color: isHovered
-                              ? colors.primary.withAlpha(20)
-                              : (isMore ? colors.surfaceSoft : colors.surface),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              AppRadii.medium,
-                            ),
-                            side: BorderSide(
-                              color: isHovered
-                                  ? colors.primary
-                                  : (isMore
-                                        ? colors.border.withAlpha(120)
-                                        : colors.border),
-                              width: isHovered ? 1.8 : 1.0,
-                            ),
-                          ),
-                          child: ListTile(
-                            leading: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                Icon(
-                                  Icons.drag_handle_rounded,
-                                  color: colors.textMuted,
-                                ),
-                                const SizedBox(width: 8),
-                                Icon(
-                                  _getModuleIcon(item),
-                                  color: isMore
-                                      ? colors.textMuted
-                                      : colors.primary,
-                                ),
-                              ],
-                            ),
-                            title: Text(
-                              _getModuleLabel(item, l10n),
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w800,
-                                color: isMore
-                                    ? colors.textMuted
-                                    : colors.textPrimary,
+                        return _NavSlotCard(
+                          hovered: isHovered,
+                          muted: isMore,
+                          leading: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              DesignIcon('dots', size: 18, color: tokens.muted),
+                              const SizedBox(width: 10),
+                              ReaderIconWell(
+                                icon: DesignIcon(navItemDesignIcon(item)),
                               ),
-                            ),
-                            subtitle: Text(
-                              isMore
-                                  ? 'Slot ${index + 1} (Locked Hub)'
-                                  : 'Slot ${index + 1}',
-                              style: isMore
-                                  ? TextStyle(color: colors.textMuted)
-                                  : null,
-                            ),
-                            trailing: isMore
-                                ? Icon(
+                            ],
+                          ),
+                          title: _getModuleLabel(item, l10n),
+                          subtitle: isMore
+                              ? l10n.navigationSlotLocked(index + 1)
+                              : l10n.navigationSlot(index + 1),
+                          trailing: isMore
+                              ? Padding(
+                                  padding: const EdgeInsets.all(12),
+                                  child: Icon(
                                     Icons.lock_rounded,
-                                    color: colors.textMuted,
+                                    color: tokens.muted,
                                     size: 18,
-                                  )
-                                : (state.activeNavbarItems.length > 2
-                                      ? IconButton(
-                                          icon: Icon(
-                                            Icons.remove_circle_outline,
-                                            color: Colors.red,
-                                            size: 20,
-                                          ),
-                                          onPressed: () {
-                                            NavigationBloc.instance
-                                                .demoteToAvailable(item);
-                                            ScaffoldMessenger.of(
-                                              context,
-                                            ).showSnackBar(
-                                              SnackBar(
-                                                content: Text(
-                                                  'Removed ${_getModuleLabel(item, l10n)} from navbar',
-                                                ),
-                                                behavior:
-                                                    SnackBarBehavior.floating,
-                                                duration: const Duration(
-                                                  seconds: 2,
+                                  ),
+                                )
+                              : (state.activeNavbarItems.length > 2
+                                    ? IconButton44(
+                                        designIcon: 'x',
+                                        tooltip: l10n.remove,
+                                        ghost: true,
+                                        onPressed: () {
+                                          NavigationBloc.instance
+                                              .demoteToAvailable(item);
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                l10n.navigationRemoved(
+                                                  _getModuleLabel(item, l10n),
                                                 ),
                                               ),
-                                            );
-                                          },
-                                        )
-                                      : null),
-                          ),
+                                              behavior:
+                                                  SnackBarBehavior.floating,
+                                              duration: const Duration(
+                                                seconds: 2,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      )
+                                    : null),
                         );
                       },
                     );
@@ -257,18 +181,13 @@ class NavigationSettingsPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-
-              // Available Items Header
-              Text(
-                'AVAILABLE UNPINNED ITEMS',
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: colors.primary,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 1.1,
+              Padding(
+                padding: const EdgeInsetsDirectional.only(start: 4, bottom: 10),
+                child: RedesignEyebrow(
+                  l10n.navigationAvailableItems,
+                  color: tokens.goldText,
                 ),
               ),
-              const SizedBox(height: 10),
-
               // Grid/List of available items
               ListView.builder(
                 shrinkWrap: true,
@@ -282,125 +201,80 @@ class NavigationSettingsPage extends StatelessWidget {
                     data: item,
                     feedback: Material(
                       color: Colors.transparent,
-                      child: Container(
-                        width: MediaQuery.sizeOf(context).width - 32,
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: colors.surface.withAlpha(220),
-                          borderRadius: BorderRadius.circular(AppRadii.medium),
-                          border: Border.all(color: colors.primary),
-                          boxShadow: [
-                            BoxShadow(
-                              color: colors.primary.withAlpha(20),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          children: <Widget>[
-                            Icon(_getModuleIcon(item), color: colors.primary),
-                            const SizedBox(width: 12),
-                            Text(
-                              _getModuleLabel(item, l10n),
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w800,
-                                color: colors.textPrimary,
-                              ),
-                            ),
-                          ],
+                      child: SizedBox(
+                        width: MediaQuery.sizeOf(context).width - 40,
+                        child: _NavSlotCard(
+                          hovered: true,
+                          leading: ReaderIconWell(
+                            icon: DesignIcon(navItemDesignIcon(item)),
+                          ),
+                          title: _getModuleLabel(item, l10n),
+                          subtitle: _getModuleSubtitle(item, l10n),
                         ),
                       ),
                     ),
                     childWhenDragging: Opacity(
                       opacity: 0.35,
-                      child: Card(
-                        margin: const EdgeInsets.symmetric(vertical: 6),
-                        color: colors.surfaceSoft,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppRadii.medium),
-                          side: BorderSide(color: colors.border),
+                      child: _NavSlotCard(
+                        muted: true,
+                        leading: ReaderIconWell(
+                          icon: DesignIcon(navItemDesignIcon(item)),
                         ),
-                        child: ListTile(
-                          leading: Icon(
-                            _getModuleIcon(item),
-                            color: colors.textMuted,
-                          ),
-                          title: Text(
-                            _getModuleLabel(item, l10n),
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w800,
-                              color: colors.textMuted,
-                            ),
-                          ),
-                          subtitle: Text(_getModuleSubtitle(item, l10n)),
-                        ),
+                        title: _getModuleLabel(item, l10n),
+                        subtitle: _getModuleSubtitle(item, l10n),
                       ),
                     ),
-                    child: Card(
-                      margin: const EdgeInsets.symmetric(vertical: 6),
-                      color: colors.surface,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(AppRadii.medium),
-                        side: BorderSide(color: colors.border),
-                      ),
-                      child: ListTile(
-                        onTap: () {
-                          final List<NavItem> active = state.activeNavbarItems;
-                          final bool willDisplace = active.length == 5;
+                    child: _NavSlotCard(
+                      onTap: () {
+                        final List<NavItem> active = state.activeNavbarItems;
+                        final bool willDisplace = active.length == 5;
 
-                          NavItem? displaceCandidate;
-                          if (willDisplace) {
-                            for (final NavItem historic
-                                in NavigationBloc.instance.usageHistory) {
-                              if (historic != NavItem.more &&
-                                  active.contains(historic)) {
-                                displaceCandidate = historic;
-                                break;
-                              }
+                        NavItem? displaceCandidate;
+                        if (willDisplace) {
+                          for (final NavItem historic
+                              in NavigationBloc.instance.usageHistory) {
+                            if (historic != NavItem.more &&
+                                active.contains(historic)) {
+                              displaceCandidate = historic;
+                              break;
                             }
-                            displaceCandidate ??= active.firstWhere(
-                              (e) => e != NavItem.more,
-                            );
                           }
-
-                          NavigationBloc.instance.promoteToActive(item);
-
-                          final String message = willDisplace
-                              ? 'Pinned ${_getModuleLabel(item, l10n)} (displaced ${_getModuleLabel(displaceCandidate!, l10n)})'
-                              : 'Pinned ${_getModuleLabel(item, l10n)}';
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(message),
-                              behavior: SnackBarBehavior.floating,
-                              duration: const Duration(seconds: 2),
-                            ),
+                          displaceCandidate ??= active.firstWhere(
+                            (e) => e != NavItem.more,
                           );
-                        },
-                        leading: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: colors.primary.withAlpha(12),
-                            shape: BoxShape.circle,
+                        }
+
+                        NavigationBloc.instance.promoteToActive(item);
+
+                        final String message = willDisplace
+                            ? l10n.navigationPinnedDisplaced(
+                                _getModuleLabel(item, l10n),
+                                _getModuleLabel(displaceCandidate!, l10n),
+                              )
+                            : l10n.navigationPinned(
+                                _getModuleLabel(item, l10n),
+                              );
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(message),
+                            behavior: SnackBarBehavior.floating,
+                            duration: const Duration(seconds: 2),
                           ),
-                          child: Icon(
-                            _getModuleIcon(item),
-                            color: colors.primary,
-                          ),
-                        ),
-                        title: Text(
-                          _getModuleLabel(item, l10n),
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w800,
-                            color: colors.textPrimary,
-                          ),
-                        ),
-                        subtitle: Text(_getModuleSubtitle(item, l10n)),
-                        trailing: Icon(
-                          Icons.add_circle_outline_rounded,
-                          color: colors.primary,
+                        );
+                      },
+                      leading: ReaderIconWell(
+                        icon: DesignIcon(navItemDesignIcon(item)),
+                      ),
+                      title: _getModuleLabel(item, l10n),
+                      subtitle: _getModuleSubtitle(item, l10n),
+                      trailing: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: DesignIcon(
+                          'plus',
                           size: 20,
+                          strokeWidth: 1.8,
+                          color: tokens.emText,
                         ),
                       ),
                     ),
@@ -410,6 +284,90 @@ class NavigationSettingsPage extends StatelessWidget {
             ],
           );
         },
+      ),
+    );
+  }
+}
+
+/// One slot or available item: a hairline card with an icon well, a title and
+/// a caption. A hovered card (a drop target) takes the emerald wash.
+class _NavSlotCard extends StatelessWidget {
+  const _NavSlotCard({
+    required this.leading,
+    required this.title,
+    required this.subtitle,
+    this.trailing,
+    this.onTap,
+    this.hovered = false,
+    this.muted = false,
+  });
+
+  final Widget leading;
+  final String title;
+  final String subtitle;
+  final Widget? trailing;
+  final VoidCallback? onTap;
+  final bool hovered;
+  final bool muted;
+
+  @override
+  Widget build(BuildContext context) {
+    final EquranTokens tokens = context.equranTokens;
+    final EquranColors colors = context.equranColors;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Material(
+        color: hovered
+            ? tokens.emWash
+            : muted
+            ? colors.surfaceAlt
+            : colors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(EquranRadii.xl),
+          side: BorderSide(color: hovered ? tokens.emText : tokens.hair),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 64),
+            child: Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(14, 10, 6, 10),
+              child: Row(
+                children: <Widget>[
+                  leading,
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontVariations: const [FontVariation('opsz', 15)],
+                            fontWeight: FontWeight.w600,
+                            color: muted ? tokens.muted : colors.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          subtitle,
+                          style: TextStyle(
+                            fontSize: 12.5,
+                            height: 1.3,
+                            color: tokens.muted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  ?trailing,
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

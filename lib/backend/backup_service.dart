@@ -18,6 +18,7 @@ import 'package:equran/hifz/memory_twin.dart';
 import 'package:equran/hifz/memory_map.dart';
 import 'package:equran/utils/reciter.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:quran/quran.dart' as quran show Translation, getVerseCount;
 import 'package:equran/zakat/zakat_db.dart';
@@ -72,9 +73,15 @@ class BackupService {
     'viewMode',
     'enableTranslation',
     'showTransliteration',
-    'holographicCardsEnabled',
     'pureBlackBackground',
     'showSplash',
+  };
+
+  /// Settings that no longer have any effect. Old backups still contain them:
+  /// they are tolerated and ignored on restore (whatever their value) and never
+  /// written to new exports.
+  static const Set<String> _retiredSettings = <String>{
+    'holographicCardsEnabled',
   };
   static const Set<String> _allowedSettings = <String>{
     ..._boolSettings,
@@ -144,7 +151,24 @@ class BackupService {
       throw AppBackupException('The selected file is not a valid backup.');
     }
 
-    final Map<dynamic, dynamic> payload = decoded;
+    return _restoreFromPayload(decoded);
+  }
+
+  /// Restores an already decoded backup payload without a file picker.
+  @visibleForTesting
+  static Future<BackupRestoreResult> restoreFromPayloadForTesting(
+    Map<dynamic, dynamic> payload,
+  ) => _restoreFromPayload(payload);
+
+  /// Builds the export payload (including its integrity hash) without writing
+  /// a file.
+  @visibleForTesting
+  static Map<String, dynamic> buildBackupPayloadForTesting() =>
+      _buildBackupPayload();
+
+  static Future<BackupRestoreResult> _restoreFromPayload(
+    Map<dynamic, dynamic> payload,
+  ) async {
     final dynamic version = payload['schemaVersion'];
     if (version is! int || (version != 1 && version != _schemaVersion)) {
       throw AppBackupException('Unsupported backup version.');
@@ -204,10 +228,14 @@ class BackupService {
     final Map<String, dynamic> payload = <String, dynamic>{
       'schemaVersion': _schemaVersion,
       'exportedAt': DateTime.now().toUtc().toIso8601String(),
-      'settings': rawSettings.map((dynamic key, dynamic value) {
-        final String settingKey = key.toString();
-        return MapEntry(settingKey, _settingValueForBackup(settingKey, value));
-      }),
+      'settings': <String, dynamic>{
+        for (final MapEntry<dynamic, dynamic> entry in rawSettings.entries)
+          if (!_retiredSettings.contains(entry.key.toString()))
+            entry.key.toString(): _settingValueForBackup(
+              entry.key.toString(),
+              entry.value,
+            ),
+      },
       'favourites': rawFavourites.map(
         (dynamic key, dynamic value) => MapEntry(key.toString(), value),
       ),
@@ -558,7 +586,13 @@ class BackupService {
       final String name = section.key.toString();
       final Object? value = section.value;
       if (name == 'hifzEntries' || name == 'hifzLogs' || name == 'hifzUnits') {
-        final Box<dynamic> box = Hive.box<dynamic>(name);
+        // These boxes are opened with a value type (HifzDB.init), and Hive
+        // only returns a box for the exact type it was opened with.
+        final Box<dynamic> box = switch (name) {
+          'hifzEntries' => Hive.box<HifzEntry>(name),
+          'hifzLogs' => Hive.box<HifzReviewLog>(name),
+          _ => Hive.box<HifzUnit>(name),
+        };
         counts[name] = await _restoreRows(box, value, name);
       } else if (name == 'zakatHistory') {
         counts[name] = await _restoreRows(
@@ -897,6 +931,7 @@ class BackupService {
   static Map<String, dynamic> _validateSettings(Map<String, dynamic> settings) {
     final Map<String, dynamic> validated = <String, dynamic>{};
     for (final MapEntry<String, dynamic> entry in settings.entries) {
+      if (_retiredSettings.contains(entry.key)) continue;
       if (!_allowedSettings.contains(entry.key)) {
         // Unknown settings are optional extensions. Preserve only JSON-safe
         // values so newer versions can round-trip them safely.
@@ -909,7 +944,6 @@ class BackupService {
         'viewMode' ||
         'enableTranslation' ||
         'showTransliteration' ||
-        'holographicCardsEnabled' ||
         'pureBlackBackground' ||
         'showSplash' => _requireBool(entry.key, entry.value),
         'translation' => _requireIntInRange(
