@@ -1455,7 +1455,7 @@
   "zakatSavedLedger": "تم حفظ حساب الزكاة في سجلك الشخصي",
   "zakatPaidDistributed": "الزكاة المدفوعة/الموزعة:",
   "updateZakatPaidAmount": "تحديث مبلغ الزكاة المدفوع",
-  "enterPaidAmountUsd": "أدخل المبلغ المدفوع بالدولار الأمريكي",
+  "enterPaidAmountInCurrency": "أدخل المبلغ المدفوع بالـ {currency}",
   "calculatorTab": "الحاسبة",
   "historyTab": "السجل",
   "fastingReminder": "تنبيه الصيام",
@@ -1750,5 +1750,9 @@
   "pureBlackBackground": "خلفية سوداء تمامًا",
   "pureBlackBackgroundSubtitle": "استخدم خلفية سوداء تمامًا في الوضع الداكن مع أي لوحة ألوان.",
   "savedFolderLabel": "المجلد",
-  "savedManageFolders": "إدارة المجلدات"
+  "savedManageFolders": "إدارة المجلدات",
+  "zakatNisabNeedsRates": "أضف سعر الذهب والفضة لمعرفة النصاب. تعذّر تحميل الأسعار، لذا أدخلها يدويًا.",
+  "zakatDeleteRecordQuestion": "حذف هذا الحساب؟",
+  "zakatDeleteRecordBody": "سيؤدي هذا إلى إزالة الحساب المحفوظ من السجل.",
+  "unitTola": "تولة"
 }

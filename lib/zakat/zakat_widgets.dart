@@ -1,3 +1,4 @@
+import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/theme/equran_tokens.dart';
@@ -639,9 +640,12 @@ class ZakatUnitPicker extends StatelessWidget {
           onChanged: (String? v) {
             if (v != null) onChanged(v);
           },
-          items: const <DropdownMenuItem<String>>[
-            DropdownMenuItem<String>(value: 'grams', child: Text('g')),
-            DropdownMenuItem<String>(value: 'bhori', child: Text('tola')),
+          items: <DropdownMenuItem<String>>[
+            const DropdownMenuItem<String>(value: 'grams', child: Text('g')),
+            DropdownMenuItem<String>(
+              value: 'bhori',
+              child: Text(AppLocalizations.of(context)!.unitTola),
+            ),
           ],
           icon: DesignIcon('chevd', size: 16, color: tokens.muted),
           borderRadius: BorderRadius.circular(EquranRadii.large),
@@ -650,6 +654,7 @@ class ZakatUnitPicker extends StatelessWidget {
             fontSize: 13.5,
             fontWeight: FontWeight.w600,
             fontFamily: 'Inter',
+            fontFamilyFallback: const <String>['NotoNaskhArabic'],
             color: context.equranColors.textPrimary,
           ),
         ),

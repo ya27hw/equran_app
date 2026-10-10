@@ -744,7 +744,13 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
           dueAmount: _formatAmount(zakatDue),
           showHeart: isEligible && zakatDue > 0,
           note: !isEligible && comp.netWealth > 0
-              ? l.zakatBelowNisabExplanation(_formatAmount(comp.nisabThreshold))
+              // Without gold and silver rates there is no nisab figure to show
+              // (the threshold is infinite), so ask for rates instead.
+              ? (comp.nisabThreshold.isFinite
+                    ? l.zakatBelowNisabExplanation(
+                        _formatAmount(comp.nisabThreshold),
+                      )
+                    : l.zakatNisabNeedsRates)
               : null,
         ),
 
@@ -818,9 +824,9 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
     final bool isWeight =
         category == ZakatCategory.gold || category == ZakatCategory.silver;
     final String? weightUnit = category == ZakatCategory.gold
-        ? (_goldUnit == 'grams' ? 'g' : 'tola')
+        ? (_goldUnit == 'grams' ? 'g' : localizations.unitTola)
         : (category == ZakatCategory.silver
-              ? (_silverUnit == 'grams' ? 'g' : 'tola')
+              ? (_silverUnit == 'grams' ? 'g' : localizations.unitTola)
               : null);
 
     return Padding(
@@ -1153,15 +1159,33 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
               paidAmount: _formatAmount(rec.zakatPaid),
               deleteTooltip: l.delete,
               editTooltip: l.edit,
-              onDelete: () async {
-                await ZakatHistoryDB.instance.deleteRecord(rec.id);
-              },
+              onDelete: () => _confirmDeleteRecord(rec),
               onEditPaid: () => _showPaidAmountDialog(context, rec),
             );
           },
         );
       },
     );
+  }
+
+  Future<void> _confirmDeleteRecord(ZakatRecord rec) async {
+    final bool? confirmed = await showReaderDialog<bool>(
+      context: context,
+      builder: (BuildContext ctx) {
+        final AppLocalizations l = AppLocalizations.of(ctx)!;
+        return ReaderConfirmDialog(
+          title: l.zakatDeleteRecordQuestion,
+          body: l.zakatDeleteRecordBody,
+          icon: const DesignIcon('trash'),
+          cancelLabel: l.cancel,
+          confirmLabel: l.delete,
+          destructive: true,
+        );
+      },
+    );
+    if (confirmed == true) {
+      await ZakatHistoryDB.instance.deleteRecord(rec.id);
+    }
   }
 
   void _showPaidAmountDialog(BuildContext context, ZakatRecord record) {
@@ -1184,7 +1208,7 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
               ),
               decoration: readerInputDecoration(
                 context,
-                hint: l.enterPaidAmountUsd,
+                hint: l.enterPaidAmountInCurrency(_baseCurrency),
               ).copyWith(prefixText: _currencySymbol),
             ),
           ),

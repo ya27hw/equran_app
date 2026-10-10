@@ -1980,7 +1980,7 @@
   "zakatSavedLedger": "Perhitungan Zakat disimpan di buku kas pribadi Anda",
   "zakatPaidDistributed": "Zakat Terbayar/Terdistribusi:",
   "updateZakatPaidAmount": "Perbarui Jumlah Zakat Terbayar",
-  "enterPaidAmountUsd": "Masukkan jumlah terbayar dalam USD",
+  "enterPaidAmountInCurrency": "Masukkan jumlah terbayar dalam {currency}",
   "calculatorTab": "Kalkulator",
   "historyTab": "Riwayat",
   "fastingReminder": "Pengingat Puasa",
@@ -2284,5 +2284,9 @@
   "pureBlackBackground": "Latar belakang hitam pekat",
   "pureBlackBackgroundSubtitle": "Gunakan latar belakang hitam pekat dalam mode gelap dengan palet warna apa pun.",
   "savedFolderLabel": "Folder",
-  "savedManageFolders": "Kelola folder"
+  "savedManageFolders": "Kelola folder",
+  "zakatNisabNeedsRates": "Tambahkan harga emas dan perak untuk memeriksa nisab. Harga tidak dapat dimuat, jadi masukkan secara manual.",
+  "zakatDeleteRecordQuestion": "Hapus perhitungan ini?",
+  "zakatDeleteRecordBody": "Perhitungan tersimpan ini akan dihapus dari riwayat.",
+  "unitTola": "tola"
 }

@@ -2130,7 +2130,14 @@
   "zakatSavedLedger": "Zakat calculation saved to your personal ledger",
   "zakatPaidDistributed": "Zakat Paid/Distributed:",
   "updateZakatPaidAmount": "Update Zakat Paid Amount",
-  "enterPaidAmountUsd": "Enter paid amount in USD",
+  "enterPaidAmountInCurrency": "Enter paid amount in {currency}",
+  "@enterPaidAmountInCurrency": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
   "calculatorTab": "Calculator",
   "historyTab": "History",
   "fastingReminder": "Fasting Reminder",
@@ -2518,5 +2525,9 @@
   "pureBlackBackground": "Pitch-black background",
   "pureBlackBackgroundSubtitle": "Use a pitch-black background in dark mode with any color palette.",
   "savedFolderLabel": "Folder",
-  "savedManageFolders": "Manage folders"
+  "savedManageFolders": "Manage folders",
+  "zakatNisabNeedsRates": "Add the gold and silver rates to check the Nisab. They could not be loaded, so enter them manually.",
+  "zakatDeleteRecordQuestion": "Delete this calculation?",
+  "zakatDeleteRecordBody": "This removes the saved calculation from your history.",
+  "unitTola": "tola"
 }

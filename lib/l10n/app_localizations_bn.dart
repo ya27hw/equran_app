@@ -4116,7 +4116,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get updateZakatPaidAmount => 'পরিশোধিত যাকাতের পরিমাণ আপডেট করুন';
 
   @override
-  String get enterPaidAmountUsd => 'ইউএসডিতে পরিশোধিত পরিমাণ লিখুন';
+  String enterPaidAmountInCurrency(String currency) {
+    return '$currency-এ পরিশোধিত পরিমাণ লিখুন';
+  }
 
   @override
   String get calculatorTab => 'ক্যালকুলেটর';
@@ -4683,4 +4685,18 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get savedManageFolders => 'ফোল্ডার পরিচালনা';
+
+  @override
+  String get zakatNisabNeedsRates =>
+      'নিসাব যাচাই করতে সোনা ও রুপার দাম যোগ করুন। দাম লোড করা যায়নি, তাই নিজে লিখুন।';
+
+  @override
+  String get zakatDeleteRecordQuestion => 'এই হিসাব মুছবেন?';
+
+  @override
+  String get zakatDeleteRecordBody =>
+      'এতে সংরক্ষিত হিসাবটি ইতিহাস থেকে মুছে যাবে।';
+
+  @override
+  String get unitTola => 'ভরি';
 }

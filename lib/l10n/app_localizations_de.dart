@@ -4184,7 +4184,9 @@ class AppLocalizationsDe extends AppLocalizations {
       'Aktualisieren Sie den gezahlten Zakat-Betrag';
 
   @override
-  String get enterPaidAmountUsd => 'Geben Sie den gezahlten Betrag in USD ein';
+  String enterPaidAmountInCurrency(String currency) {
+    return 'Gezahlten Betrag in $currency eingeben';
+  }
 
   @override
   String get calculatorTab => 'Kalkulator';
@@ -4761,4 +4763,18 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get savedManageFolders => 'Ordner verwalten';
+
+  @override
+  String get zakatNisabNeedsRates =>
+      'Gib die Gold- und Silberpreise ein, um den Nisab zu prüfen. Sie konnten nicht geladen werden, bitte manuell eintragen.';
+
+  @override
+  String get zakatDeleteRecordQuestion => 'Diese Berechnung löschen?';
+
+  @override
+  String get zakatDeleteRecordBody =>
+      'Die gespeicherte Berechnung wird aus dem Verlauf entfernt.';
+
+  @override
+  String get unitTola => 'Tola';
 }

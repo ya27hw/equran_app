@@ -4134,7 +4134,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get updateZakatPaidAmount => 'Perbarui Jumlah Zakat Terbayar';
 
   @override
-  String get enterPaidAmountUsd => 'Masukkan jumlah terbayar dalam USD';
+  String enterPaidAmountInCurrency(String currency) {
+    return 'Masukkan jumlah terbayar dalam $currency';
+  }
 
   @override
   String get calculatorTab => 'Kalkulator';
@@ -4704,4 +4706,18 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get savedManageFolders => 'Kelola folder';
+
+  @override
+  String get zakatNisabNeedsRates =>
+      'Tambahkan harga emas dan perak untuk memeriksa nisab. Harga tidak dapat dimuat, jadi masukkan secara manual.';
+
+  @override
+  String get zakatDeleteRecordQuestion => 'Hapus perhitungan ini?';
+
+  @override
+  String get zakatDeleteRecordBody =>
+      'Perhitungan tersimpan ini akan dihapus dari riwayat.';
+
+  @override
+  String get unitTola => 'tola';
 }

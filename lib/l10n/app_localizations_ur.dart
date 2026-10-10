@@ -4118,7 +4118,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get updateZakatPaidAmount => 'ادا شدہ زکوٰۃ کی رقم اپ ڈیٹ کریں';
 
   @override
-  String get enterPaidAmountUsd => 'ادا شدہ رقم USD میں درج کریں';
+  String enterPaidAmountInCurrency(String currency) {
+    return 'ادا شدہ رقم $currency میں درج کریں';
+  }
 
   @override
   String get calculatorTab => 'کیلکولیٹر';
@@ -4685,4 +4687,18 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get savedManageFolders => 'فولڈرز کا انتظام';
+
+  @override
+  String get zakatNisabNeedsRates =>
+      'نصاب جانچنے کے لیے سونے اور چاندی کے ریٹ درج کریں۔ ریٹ لوڈ نہیں ہو سکے، اس لیے خود درج کریں۔';
+
+  @override
+  String get zakatDeleteRecordQuestion => 'یہ حساب حذف کریں؟';
+
+  @override
+  String get zakatDeleteRecordBody =>
+      'محفوظ شدہ حساب آپ کی تاریخ سے ہٹا دیا جائے گا۔';
+
+  @override
+  String get unitTola => 'تولہ';
 }

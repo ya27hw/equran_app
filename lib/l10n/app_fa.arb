@@ -2095,7 +2095,7 @@
   "zakatSavedLedger": "محاسبه زکات در دفتر ثبت شخصی شما ذخیره شد",
   "zakatPaidDistributed": "زکات پرداخت شده/توزیع شده:",
   "updateZakatPaidAmount": "بروزرسانی مبلغ زکات پرداخت شده",
-  "enterPaidAmountUsd": "مبلغ پرداخت شده را به دلار (USD) وارد کنید",
+  "enterPaidAmountInCurrency": "مبلغ پرداخت‌شده را به {currency} وارد کنید",
   "calculatorTab": "محاسبه‌گر",
   "historyTab": "تاریخچه",
   "fastingReminder": "یادآور روزه",
@@ -2399,5 +2399,9 @@
   "pureBlackBackground": "پس‌زمینهٔ کاملاً سیاه",
   "pureBlackBackgroundSubtitle": "در حالت تیره با هر پالت رنگ از پس‌زمینهٔ کاملاً سیاه استفاده کنید.",
   "savedFolderLabel": "پوشه",
-  "savedManageFolders": "مدیریت پوشه‌ها"
+  "savedManageFolders": "مدیریت پوشه‌ها",
+  "zakatNisabNeedsRates": "برای بررسی نصاب، قیمت طلا و نقره را وارد کنید. بارگذاری قیمت‌ها ممکن نشد؛ آن‌ها را دستی وارد کنید.",
+  "zakatDeleteRecordQuestion": "این محاسبه حذف شود؟",
+  "zakatDeleteRecordBody": "محاسبهٔ ذخیره‌شده از تاریخچه حذف می‌شود.",
+  "unitTola": "تولا"
 }

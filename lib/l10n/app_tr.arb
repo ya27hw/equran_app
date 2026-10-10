@@ -1980,7 +1980,7 @@
   "zakatSavedLedger": "Zekat hesabı kişisel defterinize kaydedildi",
   "zakatPaidDistributed": "Ödenen/Dağıtılan Zekat:",
   "updateZakatPaidAmount": "Ödenen Zekat Miktarını Güncelle",
-  "enterPaidAmountUsd": "Ödenen miktarı USD olarak girin",
+  "enterPaidAmountInCurrency": "Ödenen miktarı {currency} cinsinden girin",
   "calculatorTab": "Hesaplayıcı",
   "historyTab": "Geçmiş",
   "fastingReminder": "Oruç Hatırlatıcısı",
@@ -2284,5 +2284,9 @@
   "pureBlackBackground": "Tam siyah arka plan",
   "pureBlackBackgroundSubtitle": "Karanlık modda her renk paletiyle tam siyah arka plan kullanın.",
   "savedFolderLabel": "Klasör",
-  "savedManageFolders": "Klasörleri yönet"
+  "savedManageFolders": "Klasörleri yönet",
+  "zakatNisabNeedsRates": "Nisabı kontrol etmek için altın ve gümüş fiyatlarını ekleyin. Fiyatlar yüklenemedi, bu yüzden elle girin.",
+  "zakatDeleteRecordQuestion": "Bu hesaplama silinsin mi?",
+  "zakatDeleteRecordBody": "Kayıtlı hesaplama geçmişinizden kaldırılır.",
+  "unitTola": "tola"
 }

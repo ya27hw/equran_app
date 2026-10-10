@@ -1980,7 +1980,7 @@
   "zakatSavedLedger": "زکوٰۃ کا حساب آپ کے ذاتی لیجر میں محفوظ کر لیا گیا ہے",
   "zakatPaidDistributed": "ادا شدہ/تقسیم شدہ زکوٰۃ:",
   "updateZakatPaidAmount": "ادا شدہ زکوٰۃ کی رقم اپ ڈیٹ کریں",
-  "enterPaidAmountUsd": "ادا شدہ رقم USD میں درج کریں",
+  "enterPaidAmountInCurrency": "ادا شدہ رقم {currency} میں درج کریں",
   "calculatorTab": "کیلکولیٹر",
   "historyTab": "ہسٹری",
   "fastingReminder": "روزے کا یاد دہانی کنندہ",
@@ -2284,5 +2284,9 @@
   "pureBlackBackground": "بالکل سیاہ پس منظر",
   "pureBlackBackgroundSubtitle": "ڈارک موڈ میں کسی بھی رنگ کی تھیم کے ساتھ بالکل سیاہ پس منظر استعمال کریں۔",
   "savedFolderLabel": "فولڈر",
-  "savedManageFolders": "فولڈرز کا انتظام"
+  "savedManageFolders": "فولڈرز کا انتظام",
+  "zakatNisabNeedsRates": "نصاب جانچنے کے لیے سونے اور چاندی کے ریٹ درج کریں۔ ریٹ لوڈ نہیں ہو سکے، اس لیے خود درج کریں۔",
+  "zakatDeleteRecordQuestion": "یہ حساب حذف کریں؟",
+  "zakatDeleteRecordBody": "محفوظ شدہ حساب آپ کی تاریخ سے ہٹا دیا جائے گا۔",
+  "unitTola": "تولہ"
 }

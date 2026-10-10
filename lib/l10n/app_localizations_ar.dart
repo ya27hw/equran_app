@@ -4038,7 +4038,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get updateZakatPaidAmount => 'تحديث مبلغ الزكاة المدفوع';
 
   @override
-  String get enterPaidAmountUsd => 'أدخل المبلغ المدفوع بالدولار الأمريكي';
+  String enterPaidAmountInCurrency(String currency) {
+    return 'أدخل المبلغ المدفوع بالـ $currency';
+  }
 
   @override
   String get calculatorTab => 'الحاسبة';
@@ -4606,4 +4608,18 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get savedManageFolders => 'إدارة المجلدات';
+
+  @override
+  String get zakatNisabNeedsRates =>
+      'أضف سعر الذهب والفضة لمعرفة النصاب. تعذّر تحميل الأسعار، لذا أدخلها يدويًا.';
+
+  @override
+  String get zakatDeleteRecordQuestion => 'حذف هذا الحساب؟';
+
+  @override
+  String get zakatDeleteRecordBody =>
+      'سيؤدي هذا إلى إزالة الحساب المحفوظ من السجل.';
+
+  @override
+  String get unitTola => 'تولة';
 }

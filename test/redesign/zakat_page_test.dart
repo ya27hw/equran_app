@@ -274,9 +274,64 @@ void main() {
     await tester.pumpAndSettle();
     final ZakatRecord newest = ZakatHistoryDB.instance.getAllRecords().first;
     expect(newest.zakatPaid, 150);
+    // Deleting asks first; Cancel keeps the record, Delete removes it.
     await tester.tap(find.byTooltip(l10n(tester).delete).first);
     await tester.pumpAndSettle();
+    expect(find.text(l10n(tester).zakatDeleteRecordQuestion), findsOneWidget);
+    expect(ZakatHistoryDB.instance.getAllRecords(), hasLength(2));
+    await tester.tap(find.widgetWithText(TextButton, l10n(tester).cancel));
+    await tester.pumpAndSettle();
+    expect(ZakatHistoryDB.instance.getAllRecords(), hasLength(2));
+    await tester.tap(find.byTooltip(l10n(tester).delete).first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(TextButton, l10n(tester).delete));
+    await tester.pumpAndSettle();
     expect(ZakatHistoryDB.instance.getAllRecords(), hasLength(1));
+  });
+
+  testWidgets('the paid-amount hint follows the currency, not USD', (
+    tester,
+  ) async {
+    await SettingsDB().put('zakat_currency', 'EUR');
+    await seedHistory();
+    await pump(tester, height: 1300);
+    await tester.tap(find.text(l10n(tester).historyTab));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip(l10n(tester).edit).first);
+    await tester.pumpAndSettle();
+    expect(find.text('Enter paid amount in EUR'), findsOneWidget);
+    expect(find.textContaining('USD'), findsNothing);
+  });
+
+  testWidgets('without metal rates the nisab message shows no number', (
+    tester,
+  ) async {
+    // Cached rates in another currency cannot be used, and the live request
+    // is blocked in the test binding: no nisab figure exists.
+    await SettingsDB().put(
+      'zakat_metal_rates',
+      MetalRateSnapshot(
+        goldPricePerGram: 70,
+        silverPricePerGram: 0.9,
+        source: 'Metals.Live',
+        fetchedAt: DateTime(2026, 10, 1, 9, 30),
+        currency: 'EUR',
+      ).toMap(),
+    );
+    await pump(tester);
+    await tester.enterText(find.byType(TextField).at(0), '100');
+    await tester.pumpAndSettle();
+    expect(find.text(l10n(tester).zakatNisabNeedsRates), findsOneWidget);
+    expect(find.textContaining('Infinity'), findsNothing);
+    expect(find.textContaining('∞'), findsNothing);
+  });
+
+  testWidgets('the tola unit label is localized', (tester) async {
+    await pump(tester, locale: const Locale('ar'));
+    await tester.tap(find.byType(DropdownButton<String>).first);
+    await tester.pumpAndSettle();
+    expect(find.text('تولة'), findsWidgets);
+    expect(find.text('tola'), findsNothing);
   });
 
   final List<(String, EquranColors, Locale)> dialogVariants =

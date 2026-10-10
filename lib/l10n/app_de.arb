@@ -2095,7 +2095,7 @@
   "zakatSavedLedger": "Die Zakat-Berechnung wird in Ihrem persönlichen Hauptbuch gespeichert",
   "zakatPaidDistributed": "Bezahlte/verteilte Zakat:",
   "updateZakatPaidAmount": "Aktualisieren Sie den gezahlten Zakat-Betrag",
-  "enterPaidAmountUsd": "Geben Sie den gezahlten Betrag in USD ein",
+  "enterPaidAmountInCurrency": "Gezahlten Betrag in {currency} eingeben",
   "calculatorTab": "Kalkulator",
   "historyTab": "Geschichte",
   "fastingReminder": "Fasten-Erinnerung",
@@ -2319,5 +2319,9 @@
   "pureBlackBackground": "Tiefschwarzer Hintergrund",
   "pureBlackBackgroundSubtitle": "Im Dunkelmodus einen tiefschwarzen Hintergrund mit jeder Farbpalette verwenden.",
   "savedFolderLabel": "Ordner",
-  "savedManageFolders": "Ordner verwalten"
+  "savedManageFolders": "Ordner verwalten",
+  "zakatNisabNeedsRates": "Gib die Gold- und Silberpreise ein, um den Nisab zu prüfen. Sie konnten nicht geladen werden, bitte manuell eintragen.",
+  "zakatDeleteRecordQuestion": "Diese Berechnung löschen?",
+  "zakatDeleteRecordBody": "Die gespeicherte Berechnung wird aus dem Verlauf entfernt.",
+  "unitTola": "Tola"
 }

@@ -4122,7 +4122,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get updateZakatPaidAmount => 'Ödenen Zekat Miktarını Güncelle';
 
   @override
-  String get enterPaidAmountUsd => 'Ödenen miktarı USD olarak girin';
+  String enterPaidAmountInCurrency(String currency) {
+    return 'Ödenen miktarı $currency cinsinden girin';
+  }
 
   @override
   String get calculatorTab => 'Hesaplayıcı';
@@ -4693,4 +4695,18 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get savedManageFolders => 'Klasörleri yönet';
+
+  @override
+  String get zakatNisabNeedsRates =>
+      'Nisabı kontrol etmek için altın ve gümüş fiyatlarını ekleyin. Fiyatlar yüklenemedi, bu yüzden elle girin.';
+
+  @override
+  String get zakatDeleteRecordQuestion => 'Bu hesaplama silinsin mi?';
+
+  @override
+  String get zakatDeleteRecordBody =>
+      'Kayıtlı hesaplama geçmişinizden kaldırılır.';
+
+  @override
+  String get unitTola => 'tola';
 }

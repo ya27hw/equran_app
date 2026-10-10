@@ -7197,11 +7197,11 @@ abstract class AppLocalizations {
   /// **'Update Zakat Paid Amount'**
   String get updateZakatPaidAmount;
 
-  /// No description provided for @enterPaidAmountUsd.
+  /// No description provided for @enterPaidAmountInCurrency.
   ///
   /// In en, this message translates to:
-  /// **'Enter paid amount in USD'**
-  String get enterPaidAmountUsd;
+  /// **'Enter paid amount in {currency}'**
+  String enterPaidAmountInCurrency(String currency);
 
   /// No description provided for @calculatorTab.
   ///
@@ -8198,6 +8198,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Manage folders'**
   String get savedManageFolders;
+
+  /// No description provided for @zakatNisabNeedsRates.
+  ///
+  /// In en, this message translates to:
+  /// **'Add the gold and silver rates to check the Nisab. They could not be loaded, so enter them manually.'**
+  String get zakatNisabNeedsRates;
+
+  /// No description provided for @zakatDeleteRecordQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this calculation?'**
+  String get zakatDeleteRecordQuestion;
+
+  /// No description provided for @zakatDeleteRecordBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This removes the saved calculation from your history.'**
+  String get zakatDeleteRecordBody;
+
+  /// No description provided for @unitTola.
+  ///
+  /// In en, this message translates to:
+  /// **'tola'**
+  String get unitTola;
 }
 
 class _AppLocalizationsDelegate

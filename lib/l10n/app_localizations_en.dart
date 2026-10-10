@@ -4104,7 +4104,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get updateZakatPaidAmount => 'Update Zakat Paid Amount';
 
   @override
-  String get enterPaidAmountUsd => 'Enter paid amount in USD';
+  String enterPaidAmountInCurrency(String currency) {
+    return 'Enter paid amount in $currency';
+  }
 
   @override
   String get calculatorTab => 'Calculator';
@@ -4673,4 +4675,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get savedManageFolders => 'Manage folders';
+
+  @override
+  String get zakatNisabNeedsRates =>
+      'Add the gold and silver rates to check the Nisab. They could not be loaded, so enter them manually.';
+
+  @override
+  String get zakatDeleteRecordQuestion => 'Delete this calculation?';
+
+  @override
+  String get zakatDeleteRecordBody =>
+      'This removes the saved calculation from your history.';
+
+  @override
+  String get unitTola => 'tola';
 }
