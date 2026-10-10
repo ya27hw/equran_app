@@ -83,7 +83,13 @@
   "yourQuran": "Your Quran",
   "beginQuranReading": "Begin with Quran",
   "startWithSurah": "Start with {surah}",
-  "@startWithSurah": {"placeholders": {"surah": {"type": "String"}}},
+  "@startWithSurah": {
+    "placeholders": {
+      "surah": {
+        "type": "String"
+      }
+    }
+  },
   "startReadingSubtitle": "Start reading and your place will appear here.",
   "startReading": "Start reading",
   "continueListening": "Continue Listening",
@@ -2278,10 +2284,6 @@
       }
     }
   },
-  "livestockSubtitle": "Sheep/Goats, Cows, Camels — simplified modern values",
-  "livestockSheepGoats": "Sheep & Goats",
-  "livestockCowsBuffalo": "Cows / Buffalo",
-  "livestockCamels": "Camels",
   "noHistoricalCalculations": "No historical calculations",
   "savedRecordsAppearHere": "Saved records will appear here.",
   "calculationOnDate": "Calculation on {date}",
@@ -2722,5 +2724,6 @@
   "prayerMethodShortDubai": "Dubai",
   "prayerMethodShortMoonsighting": "Moonsighting",
   "prayerMethodShortTurkey": "Turkey",
-  "dailyToolsKeepOnePinned": "At least one tool must remain pinned."
+  "dailyToolsKeepOnePinned": "At least one tool must remain pinned.",
+  "zakatLivestockNotCalculated": "Livestock is not calculated here, so it is left out of the total. Please ask a qualified scholar."
 }

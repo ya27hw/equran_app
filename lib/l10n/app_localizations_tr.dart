@@ -4342,19 +4342,6 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get livestockSubtitle =>
-      'Koyun/Keçi, Sığır, Deve — basitleştirilmiş modern değerler';
-
-  @override
-  String get livestockSheepGoats => 'Koyun & Keçi';
-
-  @override
-  String get livestockCowsBuffalo => 'Sığır / Manda';
-
-  @override
-  String get livestockCamels => 'Deve';
-
-  @override
   String get noHistoricalCalculations => 'Geçmiş hesaplama bulunmuyor';
 
   @override
@@ -5014,4 +5001,8 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get dailyToolsKeepOnePinned =>
       'En az bir araç sabitlenmiş kalmalıdır.';
+
+  @override
+  String get zakatLivestockNotCalculated =>
+      'Hayvan zekâtı burada hesaplanmaz, bu yüzden toplama dahil edilmedi. Lütfen yetkin bir âlime danışın.';
 }

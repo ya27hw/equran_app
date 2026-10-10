@@ -4336,18 +4336,6 @@ class AppLocalizationsBn extends AppLocalizations {
   }
 
   @override
-  String get livestockSubtitle => 'ভেড়া/ছাগল, গরু, উট — সরলীকৃত আধুনিক মূল্য';
-
-  @override
-  String get livestockSheepGoats => 'ভেড়া ও ছাগল';
-
-  @override
-  String get livestockCowsBuffalo => 'গরু / মহিষ';
-
-  @override
-  String get livestockCamels => 'উট';
-
-  @override
   String get noHistoricalCalculations => 'কোনো অতীত হিসাব নেই';
 
   @override
@@ -5003,4 +4991,8 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get dailyToolsKeepOnePinned => 'অন্তত একটি টুল পিন করা থাকতে হবে।';
+
+  @override
+  String get zakatLivestockNotCalculated =>
+      'গবাদি পশুর যাকাত এখানে হিসাব করা হয় না, তাই মোট অঙ্কে ধরা হয়নি। অনুগ্রহ করে একজন যোগ্য আলেমকে জিজ্ঞাসা করুন।';
 }

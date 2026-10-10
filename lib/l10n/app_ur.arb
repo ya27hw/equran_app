@@ -2166,10 +2166,6 @@
   "enterWeight": "وزن درج کریں",
   "enterAmountInCurrency": "{currency} میں رقم درج کریں",
   "amountInCurrency": "{currency} میں رقم",
-  "livestockSubtitle": "بھیڑ/بکریاں، گائے، اونٹ — آسان جدید قیمتیں",
-  "livestockSheepGoats": "بھیڑ اور بکریاں",
-  "livestockCowsBuffalo": "گائے / بھینس",
-  "livestockCamels": "اونٹ",
   "noHistoricalCalculations": "کوئی ماضی کا حساب نہیں ہے",
   "savedRecordsAppearHere": "محفوظ کردہ ریکارڈز یہاں ظاہر ہوں گے۔",
   "calculationOnDate": "{date} پر حساب",
@@ -2378,5 +2374,6 @@
   "prayerMethodShortDubai": "دبئی",
   "prayerMethodShortMoonsighting": "رویتِ ہلال",
   "prayerMethodShortTurkey": "ترکی",
-  "dailyToolsKeepOnePinned": "کم از کم ایک ٹول پن شدہ رہنا چاہیے۔"
+  "dailyToolsKeepOnePinned": "کم از کم ایک ٹول پن شدہ رہنا چاہیے۔",
+  "zakatLivestockNotCalculated": "مویشیوں کی زکوٰۃ یہاں شمار نہیں کی جاتی، اس لیے کل میں شامل نہیں۔ براہِ کرم کسی مستند عالم سے پوچھیں۔"
 }

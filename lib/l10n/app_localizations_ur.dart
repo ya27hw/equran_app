@@ -4338,18 +4338,6 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
-  String get livestockSubtitle => 'بھیڑ/بکریاں، گائے، اونٹ — آسان جدید قیمتیں';
-
-  @override
-  String get livestockSheepGoats => 'بھیڑ اور بکریاں';
-
-  @override
-  String get livestockCowsBuffalo => 'گائے / بھینس';
-
-  @override
-  String get livestockCamels => 'اونٹ';
-
-  @override
   String get noHistoricalCalculations => 'کوئی ماضی کا حساب نہیں ہے';
 
   @override
@@ -5017,4 +5005,8 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get dailyToolsKeepOnePinned => 'کم از کم ایک ٹول پن شدہ رہنا چاہیے۔';
+
+  @override
+  String get zakatLivestockNotCalculated =>
+      'مویشیوں کی زکوٰۃ یہاں شمار نہیں کی جاتی، اس لیے کل میں شامل نہیں۔ براہِ کرم کسی مستند عالم سے پوچھیں۔';
 }

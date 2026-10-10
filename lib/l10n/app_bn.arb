@@ -2166,10 +2166,6 @@
   "enterWeight": "ওজন লিখুন",
   "enterAmountInCurrency": "{currency}-এ পরিমাণ লিখুন",
   "amountInCurrency": "{currency}-এ পরিমাণ",
-  "livestockSubtitle": "ভেড়া/ছাগল, গরু, উট — সরলীকৃত আধুনিক মূল্য",
-  "livestockSheepGoats": "ভেড়া ও ছাগল",
-  "livestockCowsBuffalo": "গরু / মহিষ",
-  "livestockCamels": "উট",
   "noHistoricalCalculations": "কোনো অতীত হিসাব নেই",
   "savedRecordsAppearHere": "সংরক্ষিত তথ্য এখানে প্রদর্শিত হবে।",
   "calculationOnDate": "{date} তারিখের হিসাব",
@@ -2378,5 +2374,6 @@
   "prayerMethodShortDubai": "দুবাই",
   "prayerMethodShortMoonsighting": "চাঁদ দেখা",
   "prayerMethodShortTurkey": "তুরস্ক",
-  "dailyToolsKeepOnePinned": "অন্তত একটি টুল পিন করা থাকতে হবে।"
+  "dailyToolsKeepOnePinned": "অন্তত একটি টুল পিন করা থাকতে হবে।",
+  "zakatLivestockNotCalculated": "গবাদি পশুর যাকাত এখানে হিসাব করা হয় না, তাই মোট অঙ্কে ধরা হয়নি। অনুগ্রহ করে একজন যোগ্য আলেমকে জিজ্ঞাসা করুন।"
 }

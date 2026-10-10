@@ -4258,19 +4258,6 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get livestockSubtitle =>
-      'الأغنام/الماعز، الأبقار، الإبل — قيم حديثة مبسطة';
-
-  @override
-  String get livestockSheepGoats => 'الأغنام والماعز';
-
-  @override
-  String get livestockCowsBuffalo => 'الأبقار / الجواميس';
-
-  @override
-  String get livestockCamels => 'الإبل';
-
-  @override
   String get noHistoricalCalculations => 'لا توجد عمليات حسابية سابقة';
 
   @override
@@ -4949,4 +4936,8 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get dailyToolsKeepOnePinned =>
       'يجب أن تظل أداة واحدة على الأقل مثبتة.';
+
+  @override
+  String get zakatLivestockNotCalculated =>
+      'لا تُحتسب زكاة الأنعام هنا، لذا لا تدخل في المجموع. يُرجى سؤال أحد أهل العلم.';
 }

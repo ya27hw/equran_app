@@ -2166,10 +2166,6 @@
   "enterWeight": "Ağırlık girin",
   "enterAmountInCurrency": "{currency} cinsinden miktar girin",
   "amountInCurrency": "{currency} cinsinden miktar",
-  "livestockSubtitle": "Koyun/Keçi, Sığır, Deve — basitleştirilmiş modern değerler",
-  "livestockSheepGoats": "Koyun & Keçi",
-  "livestockCowsBuffalo": "Sığır / Manda",
-  "livestockCamels": "Deve",
   "noHistoricalCalculations": "Geçmiş hesaplama bulunmuyor",
   "savedRecordsAppearHere": "Kaydedilen hesaplamalar burada görünecektir.",
   "calculationOnDate": "{date} Tarihli Hesaplama",
@@ -2378,5 +2374,6 @@
   "prayerMethodShortDubai": "Dubai",
   "prayerMethodShortMoonsighting": "Hilal",
   "prayerMethodShortTurkey": "Türkiye",
-  "dailyToolsKeepOnePinned": "En az bir araç sabitlenmiş kalmalıdır."
+  "dailyToolsKeepOnePinned": "En az bir araç sabitlenmiş kalmalıdır.",
+  "zakatLivestockNotCalculated": "Hayvan zekâtı burada hesaplanmaz, bu yüzden toplama dahil edilmedi. Lütfen yetkin bir âlime danışın."
 }

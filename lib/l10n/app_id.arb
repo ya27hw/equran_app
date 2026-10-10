@@ -2166,10 +2166,6 @@
   "enterWeight": "Masukkan berat",
   "enterAmountInCurrency": "Masukkan jumlah dalam {currency}",
   "amountInCurrency": "Jumlah dalam {currency}",
-  "livestockSubtitle": "Domba/Kambing, Sapi, Unta — nilai modern disederhanakan",
-  "livestockSheepGoats": "Domba & Kambing",
-  "livestockCowsBuffalo": "Sapi / Kerbau",
-  "livestockCamels": "Unta",
   "noHistoricalCalculations": "Tidak ada riwayat perhitungan",
   "savedRecordsAppearHere": "Catatan yang disimpan akan muncul di sini.",
   "calculationOnDate": "Perhitungan pada {date}",
@@ -2378,5 +2374,6 @@
   "prayerMethodShortDubai": "Dubai",
   "prayerMethodShortMoonsighting": "Rukyat",
   "prayerMethodShortTurkey": "Turki",
-  "dailyToolsKeepOnePinned": "Setidaknya satu alat harus tetap disematkan."
+  "dailyToolsKeepOnePinned": "Setidaknya satu alat harus tetap disematkan.",
+  "zakatLivestockNotCalculated": "Zakat ternak tidak dihitung di sini, sehingga tidak termasuk dalam total. Silakan tanyakan kepada ulama yang berkompeten."
 }

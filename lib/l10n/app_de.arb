@@ -2201,10 +2201,6 @@
   "enterWeight": "Gewicht eingeben",
   "enterAmountInCurrency": "Betrag in {currency} eingeben",
   "amountInCurrency": "Betrag in {currency}",
-  "livestockSubtitle": "Schafe/Ziegen, Rinder, Kamele — vereinfachte moderne Werte",
-  "livestockSheepGoats": "Schafe & Ziegen",
-  "livestockCowsBuffalo": "Rinder / Büffel",
-  "livestockCamels": "Kamele",
   "noHistoricalCalculations": "Keine historischen Berechnungen",
   "savedRecordsAppearHere": "Gespeicherte Daten werden hier angezeigt.",
   "calculationOnDate": "Berechnung vom {date}",
@@ -2413,5 +2409,6 @@
   "prayerMethodShortDubai": "Dubai",
   "prayerMethodShortMoonsighting": "Mondsichtung",
   "prayerMethodShortTurkey": "Türkei",
-  "dailyToolsKeepOnePinned": "Mindestens ein Werkzeug muss angeheftet bleiben."
+  "dailyToolsKeepOnePinned": "Mindestens ein Werkzeug muss angeheftet bleiben.",
+  "zakatLivestockNotCalculated": "Die Zakat auf Vieh wird hier nicht berechnet und fehlt daher in der Summe. Bitte fragen Sie einen qualifizierten Gelehrten."
 }

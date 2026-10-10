@@ -1641,10 +1641,6 @@
   "enterWeight": "أدخل الوزن",
   "enterAmountInCurrency": "أدخل المبلغ بالـ {currency}",
   "amountInCurrency": "المبلغ بالـ {currency}",
-  "livestockSubtitle": "الأغنام/الماعز، الأبقار، الإبل — قيم حديثة مبسطة",
-  "livestockSheepGoats": "الأغنام والماعز",
-  "livestockCowsBuffalo": "الأبقار / الجواميس",
-  "livestockCamels": "الإبل",
   "noHistoricalCalculations": "لا توجد عمليات حسابية سابقة",
   "savedRecordsAppearHere": "ستظهر السجلات المحفوظة هنا.",
   "calculationOnDate": "حساب في {date}",
@@ -1844,5 +1840,6 @@
   "prayerMethodShortDubai": "دبي",
   "prayerMethodShortMoonsighting": "رؤية الهلال",
   "prayerMethodShortTurkey": "تركيا",
-  "dailyToolsKeepOnePinned": "يجب أن تظل أداة واحدة على الأقل مثبتة."
+  "dailyToolsKeepOnePinned": "يجب أن تظل أداة واحدة على الأقل مثبتة.",
+  "zakatLivestockNotCalculated": "لا تُحتسب زكاة الأنعام هنا، لذا لا تدخل في المجموع. يُرجى سؤال أحد أهل العلم."
 }

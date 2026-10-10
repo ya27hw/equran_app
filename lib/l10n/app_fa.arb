@@ -2222,10 +2222,6 @@
       }
     }
   },
-  "livestockSubtitle": "گوسفند/بز، گاو، شتر — ارزش‌های ساده‌شده مدرن",
-  "livestockSheepGoats": "گوسفند و بز",
-  "livestockCowsBuffalo": "گاو / گاومیش",
-  "livestockCamels": "شتر",
   "noHistoricalCalculations": "هیچ محاسبات قبلی یافت نشد",
   "savedRecordsAppearHere": "سوابق ذخیره شده در اینجا ظاهر می‌شوند.",
   "calculationOnDate": "محاسبه در تاریخ {date}",
@@ -2493,5 +2489,6 @@
   "prayerMethodShortDubai": "دبی",
   "prayerMethodShortMoonsighting": "رؤیت هلال",
   "prayerMethodShortTurkey": "ترکیه",
-  "dailyToolsKeepOnePinned": "حداقل یک ابزار باید سنجاق شده باقی بماند."
+  "dailyToolsKeepOnePinned": "حداقل یک ابزار باید سنجاق شده باقی بماند.",
+  "zakatLivestockNotCalculated": "زکات دام در اینجا محاسبه نمی‌شود و در مجموع نیامده است. لطفاً از یک عالم صلاحیت‌دار بپرسید."
 }

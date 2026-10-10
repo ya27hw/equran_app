@@ -4355,19 +4355,6 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get livestockSubtitle =>
-      'Domba/Kambing, Sapi, Unta — nilai modern disederhanakan';
-
-  @override
-  String get livestockSheepGoats => 'Domba & Kambing';
-
-  @override
-  String get livestockCowsBuffalo => 'Sapi / Kerbau';
-
-  @override
-  String get livestockCamels => 'Unta';
-
-  @override
   String get noHistoricalCalculations => 'Tidak ada riwayat perhitungan';
 
   @override
@@ -5025,4 +5012,8 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get dailyToolsKeepOnePinned =>
       'Setidaknya satu alat harus tetap disematkan.';
+
+  @override
+  String get zakatLivestockNotCalculated =>
+      'Zakat ternak tidak dihitung di sini, sehingga tidak termasuk dalam total. Silakan tanyakan kepada ulama yang berkompeten.';
 }

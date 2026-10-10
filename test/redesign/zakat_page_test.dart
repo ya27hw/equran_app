@@ -87,20 +87,13 @@ void main() {
   AppLocalizations l10n(WidgetTester tester) =>
       AppLocalizations.of(tester.element(find.byType(ZakatCalculatorPage)))!;
 
-  /// Cash, gold grams and liabilities, plus two sheep: an eligible case.
+  /// Cash, gold grams and liabilities: an eligible case.
   Future<void> fill(WidgetTester tester) async {
     final Finder fields = find.byType(TextField);
     await tester.enterText(fields.at(0), '12000'); // cash
     await tester.enterText(fields.at(1), '40'); // gold grams
     await tester.enterText(fields.at(7), '500'); // liabilities
     await tester.pumpAndSettle();
-    final Finder plus = find.byTooltip(
-      l10n(tester).increaseLabel(l10n(tester).livestockSheepGoats),
-    );
-    await tester.ensureVisible(plus);
-    await tester.tap(plus);
-    await tester.pump();
-    await tester.tap(plus);
     await tester.pumpAndSettle();
   }
 
@@ -139,14 +132,15 @@ void main() {
     expect(find.text('\$75.80/g'), findsOneWidget);
     expect(find.text('\$0.95/g'), findsOneWidget);
     await fill(tester);
-    // 12000 cash + 40 g gold + 2 sheep, less 500 liabilities.
-    expect(find.text('\$14892.00'), findsOneWidget);
-    expect(find.text('\$372.30'), findsOneWidget);
+    // 12000 cash + 40 g gold, less 500 liabilities. Livestock is never counted.
+    expect(find.text('\$14532.00'), findsOneWidget);
+    expect(find.text('\$363.30'), findsOneWidget);
     expect(find.text(l10n(tester).eligible), findsOneWidget);
-    // Cash, gold and livestock show as breakdown rows.
+    // Cash and gold show as breakdown rows.
     expect(find.text('\$12000.00'), findsWidgets);
     expect(find.text('\$3032.00'), findsWidgets);
-    expect(find.text('\$360.00'), findsWidgets);
+    expect(find.text(l10n(tester).zakatLivestockNotCalculated), findsOneWidget);
+    expect(find.text('\$360.00'), findsNothing);
   });
 
   testWidgets('below the nisab shows the explanation and no heart', (
@@ -194,7 +188,7 @@ void main() {
     await tester.tap(save);
     await tester.pumpAndSettle();
     expect(ZakatHistoryDB.instance.getAllRecords(), hasLength(1));
-    expect(ZakatHistoryDB.instance.getAllRecords().single.zakatDue, 372.30);
+    expect(ZakatHistoryDB.instance.getAllRecords().single.zakatDue, 363.30);
     expect(find.text(l10n(tester).zakatPaidDistributed), findsOneWidget);
   });
 

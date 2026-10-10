@@ -184,11 +184,6 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
     for (final c in ZakatCategory.values) c: 0.0,
   };
 
-  // Livestock specific (more powerful than flat amount)
-  int _livestockSheep = 0;
-  int _livestockCows = 0;
-  int _livestockCamels = 0;
-
   // Manual price overrides (power user feature)
   double? _goldPriceOverride;
   double? _silverPriceOverride;
@@ -394,18 +389,6 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
       items.add(ZakatLineItem(category: ZakatCategory.business, amount: biz));
     }
 
-    // Livestock (special handling)
-    final double livestockValue = _computeLivestockValue();
-    if (livestockValue > 0) {
-      items.add(
-        ZakatLineItem(
-          category: ZakatCategory.livestock,
-          amount: livestockValue,
-          // Livestock often has different rates; we use flat 2.5% on value for simplicity here
-        ),
-      );
-    }
-
     // Agriculture + Other
     final double agri = _categoryAmounts[ZakatCategory.agriculture] ?? 0.0;
     if (agri > 0) {
@@ -464,18 +447,6 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
       goldPrice: _effectiveGoldPrice,
       silverPrice: _effectiveSilverPrice,
     );
-  }
-
-  double _computeLivestockValue() {
-    // Very simplified: assign rough modern market values per head for demo power.
-    // In real use, user should prefer "Other" or adjust. This gives the *feeling* of power.
-    const double sheepValue = 180.0; // average ewe
-    const double cowValue = 850.0;
-    const double camelValue = 1800.0;
-
-    return (_livestockSheep * sheepValue) +
-        (_livestockCows * cowValue) +
-        (_livestockCamels * camelValue);
   }
 
   // Legacy conversion (kept for old inputs)
@@ -898,44 +869,17 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
     );
   }
 
+  /// Livestock zakat follows count-based schedules per animal type, which this
+  /// calculator does not carry from a reviewed source. Rather than estimate a
+  /// value per head, it says so and leaves livestock out of the total.
   Widget _buildLivestockCard() {
-    final double value = _computeLivestockValue();
-    Widget row(String label, int count, ValueChanged<int> onChanged) =>
-        ZakatStepperRow(
-          label: label,
-          count: count,
-          onChanged: onChanged,
-          decreaseTooltip: localizations.decreaseLabel(label),
-          increaseTooltip: localizations.increaseLabel(label),
-        );
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: ZakatCard(
         icon: Icon(ZakatCategory.livestock.icon),
         title: ZakatCategory.livestock.getLocalizedLabel(localizations),
-        trailing: value > 0 ? ZakatAmountLabel(_formatAmount(value)) : null,
-        subtitle: localizations.livestockSubtitle,
-        child: Column(
-          children: <Widget>[
-            row(
-              localizations.livestockSheepGoats,
-              _livestockSheep,
-              (int v) => setState(() => _livestockSheep = v),
-            ),
-            const SizedBox(height: 8),
-            row(
-              localizations.livestockCowsBuffalo,
-              _livestockCows,
-              (int v) => setState(() => _livestockCows = v),
-            ),
-            const SizedBox(height: 8),
-            row(
-              localizations.livestockCamels,
-              _livestockCamels,
-              (int v) => setState(() => _livestockCamels = v),
-            ),
-          ],
-        ),
+        subtitle: localizations.zakatLivestockNotCalculated,
+        child: const SizedBox.shrink(),
       ),
     );
   }
@@ -1027,11 +971,6 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
       zakatDue: comp.zakatDue,
       detailsJson: <String, dynamic>{
         'richItems': comp.items.map((e) => e.toJson()).toList(),
-        'livestock': {
-          'sheep': _livestockSheep,
-          'cows': _livestockCows,
-          'camels': _livestockCamels,
-        },
         'currency': _baseCurrency,
       },
     );
@@ -1059,9 +998,6 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
       _liabilitiesController.clear();
 
       _categoryAmounts.updateAll((_, val) => 0.0);
-      _livestockSheep = 0;
-      _livestockCows = 0;
-      _livestockCamels = 0;
       _goldPriceOverride = null;
       _silverPriceOverride = null;
     });

@@ -4324,19 +4324,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get livestockSubtitle =>
-      'Sheep/Goats, Cows, Camels — simplified modern values';
-
-  @override
-  String get livestockSheepGoats => 'Sheep & Goats';
-
-  @override
-  String get livestockCowsBuffalo => 'Cows / Buffalo';
-
-  @override
-  String get livestockCamels => 'Camels';
-
-  @override
   String get noHistoricalCalculations => 'No historical calculations';
 
   @override
@@ -5005,4 +4992,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dailyToolsKeepOnePinned => 'At least one tool must remain pinned.';
+
+  @override
+  String get zakatLivestockNotCalculated =>
+      'Livestock is not calculated here, so it is left out of the total. Please ask a qualified scholar.';
 }

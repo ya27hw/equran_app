@@ -349,7 +349,6 @@ class ZakatNisabChoice extends StatelessWidget {
   }
 }
 
-/// A minus, count and plus row for the livestock heads.
 class ZakatStepperRow extends StatelessWidget {
   const ZakatStepperRow({
     super.key,

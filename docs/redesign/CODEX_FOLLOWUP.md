@@ -172,10 +172,12 @@ Settings landing, floating dock, player bar, playback options sheet.
   counted as a broken streak and the chip vanished (a real wall-clock dependency, fixed in the app). The rest was stale Inter `opsz` text
   from `144ac99`, which regenerated only the fresh goldens.
 - **(e) Zakat leftovers:** (`fix/followups`: with no usable gold/silver rates the result card now shows a neutral "Nisab not checked" pill, a dash for the due amount and the add-rates note, instead of "Below Nisab"; the maths is unchanged, new key `zakatNisabNotChecked`.) ~~`$Infinity` message~~, ~~USD wording in `enterPaidAmountUsd`~~, ~~no delete confirmation~~, ~~hard-coded
-  "tola"~~ all done in `5e253a9` (the history tab has no streak suffix; there was no "d" to move). Still open, owner decision: the
-  demo livestock constants (`_computeLivestockValue` in `lib/zakat/zakat_page.dart`: 180 / 850 / 1800 per sheep-goat / cow-buffalo /
-  camel, in whatever currency is selected with no conversion, added as a wealth line item at a flat 2.5% instead of the Shari'a livestock
-  schedule), and ~~`goldPriceGram` / `silverPriceGram` in the override dialog said "(USD)" in all 8 ARBs~~ (done in `fix/followups`: an override is saved in the selected currency with no conversion, `_ratesCurrency = _baseCurrency`, so both keys now take a `{currency}` placeholder).
+  "tola"~~ all done in `5e253a9` (the history tab has no streak suffix; there was no "d" to move). ~~The
+  demo livestock constants (180 / 850 / 1800 per head at a flat 2.5%)~~ removed (`fix/followups`, owner chose to hide livestock until
+  sourced schedules exist, per `docs/roadmap/RELIGIOUS_CONTENT_POLICY.md`): the livestock steppers, line item and saved head counts are
+  gone, the card now says livestock is not calculated and is left out of the total (new key `zakatLivestockNotCalculated`; the four old
+  `livestock*` input keys are removed). Old history records that contain a livestock line still read and display. Re-enabling it needs
+  reviewed, sourced count schedules per animal type. And ~~`goldPriceGram` / `silverPriceGram` in the override dialog said "(USD)" in all 8 ARBs~~ (done in `fix/followups`: an override is saved in the selected currency with no conversion, `_ratesCurrency = _baseCurrency`, so both keys now take a `{currency}` placeholder).
 - ~~**(f) Reader card header action buttons are 34 px,**~~ Done (`polish/design-completions`): each action (play, tafsir, favourite) now takes
   hits in a 44 x 44 layout box; the visible button is still 34 px (38 px wide). The header is still 44 px high (the badge). The visual
   gap between buttons grows from 6 to 10 px on phones (wide screens keep 10), so the action group is about 18 px wider. The favourite's

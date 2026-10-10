@@ -7581,30 +7581,6 @@ abstract class AppLocalizations {
   /// **'Amount in {currency}'**
   String amountInCurrency(String currency);
 
-  /// No description provided for @livestockSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Sheep/Goats, Cows, Camels — simplified modern values'**
-  String get livestockSubtitle;
-
-  /// No description provided for @livestockSheepGoats.
-  ///
-  /// In en, this message translates to:
-  /// **'Sheep & Goats'**
-  String get livestockSheepGoats;
-
-  /// No description provided for @livestockCowsBuffalo.
-  ///
-  /// In en, this message translates to:
-  /// **'Cows / Buffalo'**
-  String get livestockCowsBuffalo;
-
-  /// No description provided for @livestockCamels.
-  ///
-  /// In en, this message translates to:
-  /// **'Camels'**
-  String get livestockCamels;
-
   /// No description provided for @noHistoricalCalculations.
   ///
   /// In en, this message translates to:
@@ -8762,6 +8738,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'At least one tool must remain pinned.'**
   String get dailyToolsKeepOnePinned;
+
+  /// No description provided for @zakatLivestockNotCalculated.
+  ///
+  /// In en, this message translates to:
+  /// **'Livestock is not calculated here, so it is left out of the total. Please ask a qualified scholar.'**
+  String get zakatLivestockNotCalculated;
 }
 
 class _AppLocalizationsDelegate

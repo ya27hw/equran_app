@@ -4333,19 +4333,6 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get livestockSubtitle =>
-      'گوسفند/بز، گاو، شتر — ارزش‌های ساده‌شده مدرن';
-
-  @override
-  String get livestockSheepGoats => 'گوسفند و بز';
-
-  @override
-  String get livestockCowsBuffalo => 'گاو / گاومیش';
-
-  @override
-  String get livestockCamels => 'شتر';
-
-  @override
   String get noHistoricalCalculations => 'هیچ محاسبات قبلی یافت نشد';
 
   @override
@@ -5002,4 +4989,8 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get dailyToolsKeepOnePinned =>
       'حداقل یک ابزار باید سنجاق شده باقی بماند.';
+
+  @override
+  String get zakatLivestockNotCalculated =>
+      'زکات دام در اینجا محاسبه نمی‌شود و در مجموع نیامده است. لطفاً از یک عالم صلاحیت‌دار بپرسید.';
 }

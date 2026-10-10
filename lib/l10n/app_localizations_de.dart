@@ -4407,19 +4407,6 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get livestockSubtitle =>
-      'Schafe/Ziegen, Rinder, Kamele — vereinfachte moderne Werte';
-
-  @override
-  String get livestockSheepGoats => 'Schafe & Ziegen';
-
-  @override
-  String get livestockCowsBuffalo => 'Rinder / Büffel';
-
-  @override
-  String get livestockCamels => 'Kamele';
-
-  @override
   String get noHistoricalCalculations => 'Keine historischen Berechnungen';
 
   @override
@@ -5097,4 +5084,8 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get dailyToolsKeepOnePinned =>
       'Mindestens ein Werkzeug muss angeheftet bleiben.';
+
+  @override
+  String get zakatLivestockNotCalculated =>
+      'Die Zakat auf Vieh wird hier nicht berechnet und fehlt daher in der Summe. Bitte fragen Sie einen qualifizierten Gelehrten.';
 }

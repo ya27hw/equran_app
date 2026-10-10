@@ -67,6 +67,7 @@ File: `lib/l10n/app_ar.arb`. 97 new keys, 1 re-drafted, the 4 older drafts (`pra
 |---|---|---|---|---|
 | `reverseOrder` | Reverse order | عكس الترتيب | `lib/home/main_page.dart` |  |
 | `zakatNisabNotChecked` | NISAB NOT CHECKED | النصاب غير محدد | `lib/zakat/zakat_page.dart` |  |
+| `zakatLivestockNotCalculated` | Livestock is not calculated here, so it is left out of the total. Please ask a qualified scholar. | لا تُحتسب زكاة الأنعام هنا، لذا لا تدخل في المجموع. يُرجى سؤال أحد أهل العلم. | `lib/zakat/zakat_page.dart` (Livestock card) |  |
 | `enterPaidAmountInCurrency` | Enter paid amount in {currency} | أدخل المبلغ المدفوع بالـ {currency} | `lib/zakat/zakat_page.dart` | placeholders: `{currency}` |
 | `savedFolderLabel` | Folder | المجلد | `lib/widgets/favourites_list.dart` |  |
 | `savedManageFolders` | Manage folders | إدارة المجلدات | `lib/widgets/favourites_list.dart` |  |
@@ -176,6 +177,7 @@ File: `lib/l10n/app_bn.arb`. 97 new keys, 1 re-drafted, the 4 older drafts (`pra
 |---|---|---|---|---|
 | `reverseOrder` | Reverse order | ক্রম উল্টান | `lib/home/main_page.dart` |  |
 | `zakatNisabNotChecked` | NISAB NOT CHECKED | নিসাব যাচাই হয়নি | `lib/zakat/zakat_page.dart` |  |
+| `zakatLivestockNotCalculated` | Livestock is not calculated here, so it is left out of the total. Please ask a qualified scholar. | গবাদি পশুর যাকাত এখানে হিসাব করা হয় না, তাই মোট অঙ্কে ধরা হয়নি। অনুগ্রহ করে একজন যোগ্য আলেমকে জিজ্ঞাসা করুন। | `lib/zakat/zakat_page.dart` (Livestock card) |  |
 | `enterPaidAmountInCurrency` | Enter paid amount in {currency} | {currency}-এ পরিশোধিত পরিমাণ লিখুন | `lib/zakat/zakat_page.dart` | placeholders: `{currency}` |
 | `savedFolderLabel` | Folder | ফোল্ডার | `lib/widgets/favourites_list.dart` |  |
 | `savedManageFolders` | Manage folders | ফোল্ডার পরিচালনা | `lib/widgets/favourites_list.dart` |  |
@@ -285,6 +287,7 @@ File: `lib/l10n/app_de.arb`. 97 new keys, 1 re-drafted, the 4 older drafts (`pra
 |---|---|---|---|---|
 | `reverseOrder` | Reverse order | Reihenfolge umkehren | `lib/home/main_page.dart` |  |
 | `zakatNisabNotChecked` | NISAB NOT CHECKED | NISAB NICHT GEPRÜFT | `lib/zakat/zakat_page.dart` |  |
+| `zakatLivestockNotCalculated` | Livestock is not calculated here, so it is left out of the total. Please ask a qualified scholar. | Die Zakat auf Vieh wird hier nicht berechnet und fehlt daher in der Summe. Bitte fragen Sie einen qualifizierten Gelehrten. | `lib/zakat/zakat_page.dart` (Livestock card) |  |
 | `enterPaidAmountInCurrency` | Enter paid amount in {currency} | Gezahlten Betrag in {currency} eingeben | `lib/zakat/zakat_page.dart` | placeholders: `{currency}` |
 | `savedFolderLabel` | Folder | Ordner | `lib/widgets/favourites_list.dart` |  |
 | `savedManageFolders` | Manage folders | Ordner verwalten | `lib/widgets/favourites_list.dart` |  |
@@ -394,6 +397,7 @@ File: `lib/l10n/app_fa.arb`. 97 new keys, 1 re-drafted, the 4 older drafts (`pra
 |---|---|---|---|---|
 | `reverseOrder` | Reverse order | معکوس کردن ترتیب | `lib/home/main_page.dart` |  |
 | `zakatNisabNotChecked` | NISAB NOT CHECKED | حد نصاب نامشخص | `lib/zakat/zakat_page.dart` |  |
+| `zakatLivestockNotCalculated` | Livestock is not calculated here, so it is left out of the total. Please ask a qualified scholar. | زکات دام در اینجا محاسبه نمی‌شود و در مجموع نیامده است. لطفاً از یک عالم صلاحیت‌دار بپرسید. | `lib/zakat/zakat_page.dart` (Livestock card) |  |
 | `enterPaidAmountInCurrency` | Enter paid amount in {currency} | مبلغ پرداخت‌شده را به {currency} وارد کنید | `lib/zakat/zakat_page.dart` | placeholders: `{currency}` |
 | `savedFolderLabel` | Folder | پوشه | `lib/widgets/favourites_list.dart` |  |
 | `savedManageFolders` | Manage folders | مدیریت پوشه‌ها | `lib/widgets/favourites_list.dart` |  |
@@ -503,6 +507,7 @@ File: `lib/l10n/app_id.arb`. 97 new keys, 1 re-drafted, the 4 older drafts (`pra
 |---|---|---|---|---|
 | `reverseOrder` | Reverse order | Balik urutan | `lib/home/main_page.dart` |  |
 | `zakatNisabNotChecked` | NISAB NOT CHECKED | NISAB BELUM DICEK | `lib/zakat/zakat_page.dart` |  |
+| `zakatLivestockNotCalculated` | Livestock is not calculated here, so it is left out of the total. Please ask a qualified scholar. | Zakat ternak tidak dihitung di sini, sehingga tidak termasuk dalam total. Silakan tanyakan kepada ulama yang berkompeten. | `lib/zakat/zakat_page.dart` (Livestock card) |  |
 | `enterPaidAmountInCurrency` | Enter paid amount in {currency} | Masukkan jumlah terbayar dalam {currency} | `lib/zakat/zakat_page.dart` | placeholders: `{currency}` |
 | `savedFolderLabel` | Folder | Folder | `lib/widgets/favourites_list.dart` |  |
 | `savedManageFolders` | Manage folders | Kelola folder | `lib/widgets/favourites_list.dart` |  |
@@ -612,6 +617,7 @@ File: `lib/l10n/app_tr.arb`. 97 new keys, 1 re-drafted, the 4 older drafts (`pra
 |---|---|---|---|---|
 | `reverseOrder` | Reverse order | Sırayı ters çevir | `lib/home/main_page.dart` |  |
 | `zakatNisabNotChecked` | NISAB NOT CHECKED | NİSAP KONTROL EDİLMEDİ | `lib/zakat/zakat_page.dart` |  |
+| `zakatLivestockNotCalculated` | Livestock is not calculated here, so it is left out of the total. Please ask a qualified scholar. | Hayvan zekâtı burada hesaplanmaz, bu yüzden toplama dahil edilmedi. Lütfen yetkin bir âlime danışın. | `lib/zakat/zakat_page.dart` (Livestock card) |  |
 | `enterPaidAmountInCurrency` | Enter paid amount in {currency} | Ödenen miktarı {currency} cinsinden girin | `lib/zakat/zakat_page.dart` | placeholders: `{currency}` |
 | `savedFolderLabel` | Folder | Klasör | `lib/widgets/favourites_list.dart` |  |
 | `savedManageFolders` | Manage folders | Klasörleri yönet | `lib/widgets/favourites_list.dart` |  |
@@ -721,6 +727,7 @@ File: `lib/l10n/app_ur.arb`. 97 new keys, 1 re-drafted, the 4 older drafts (`pra
 |---|---|---|---|---|
 | `reverseOrder` | Reverse order | ترتیب الٹیں | `lib/home/main_page.dart` |  |
 | `zakatNisabNotChecked` | NISAB NOT CHECKED | نصاب کی جانچ نہیں ہوئی | `lib/zakat/zakat_page.dart` |  |
+| `zakatLivestockNotCalculated` | Livestock is not calculated here, so it is left out of the total. Please ask a qualified scholar. | مویشیوں کی زکوٰۃ یہاں شمار نہیں کی جاتی، اس لیے کل میں شامل نہیں۔ براہِ کرم کسی مستند عالم سے پوچھیں۔ | `lib/zakat/zakat_page.dart` (Livestock card) |  |
 | `enterPaidAmountInCurrency` | Enter paid amount in {currency} | ادا شدہ رقم {currency} میں درج کریں | `lib/zakat/zakat_page.dart` | placeholders: `{currency}` |
 | `savedFolderLabel` | Folder | فولڈر | `lib/widgets/favourites_list.dart` |  |
 | `savedManageFolders` | Manage folders | فولڈرز کا انتظام | `lib/widgets/favourites_list.dart` |  |
