@@ -129,7 +129,11 @@ Settings landing, floating dock, player bar, playback options sheet.
   algorithm is the approximate civil one and can differ from Umm al-Qura by a day (for example 1 Muharram 1447); the moon-sighting offset
   covers that.
 - ~~**(b) Home header Hijri date**~~ Done in `79aa5f6`: `toLocalizedDateString` for the app language, Western digits, no new keys.
-- **(c) Looping animations kept on purpose:** splash pulse and particles, and the map marker pulse.
+- ~~**(c) Looping animations kept on purpose:**~~ Made finite (`polish/design-completions`). Splash: the glow/particle pulse runs one
+  breath (2 x 2.4 s, same phase as before, so the splash goldens are unchanged) and then rests; with reduce motion it never starts
+  and the glow sits at its resting size. The main intro controller (3.2 s, gates the hand-off to Home) is untouched. Map marker:
+  `PrayerUserLocationMarker` pulses 3 x 2 s when it first appears and whenever the location changes, then rests (no ring); never
+  with reduce motion. Tests: `test/redesign/looping_animations_test.dart`.
 - ~~**(d) Pre-existing failures on `beta`:** 6 `home_page_test.dart` "Home rich" goldens fail.~~ Done in `3512d6c`. Root cause: the Journey
   card's streak chip used `DateTime.now()` instead of the page's injected clock, so against the real date the seeded 4 Oct 2026 activity
   counted as a broken streak and the chip vanished (a real wall-clock dependency, fixed in the app). The rest was stale Inter `opsz` text

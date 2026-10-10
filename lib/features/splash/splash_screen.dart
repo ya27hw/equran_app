@@ -9,13 +9,22 @@ import 'package:equran/theme/equran_tokens.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  const SplashScreen({
+    super.key,
+    @visibleForTesting this.pulsePeriod = const Duration(milliseconds: 2400),
+  });
+
+  /// One half-breath of the glow and particle drift. The pulse runs
+  /// [pulseHalfBreaths] of these (one full breath) and then rests, so it never
+  /// loops for as long as the app takes to start.
+  final Duration pulsePeriod;
+  static const int pulseHalfBreaths = 2;
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  State<SplashScreen> createState() => SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
+class SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
   late AnimationController _mainController;
   late AnimationController _pulseController;
@@ -43,8 +52,8 @@ class _SplashScreenState extends State<SplashScreen>
 
     _pulseController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2400),
-    )..repeat(reverse: true);
+      duration: widget.pulsePeriod,
+    );
 
     // 2. Setup Staggered Animations
     _drawingAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
@@ -82,6 +91,27 @@ class _SplashScreenState extends State<SplashScreen>
     // Particles repaint themselves via ParticlePainter(repaint:), so no
     // setState is needed (that would rebuild the whole splash every frame).
     _pulseController.addListener(_updateParticles);
+  }
+
+  bool _pulseStarted = false;
+
+  /// True while the glow and particles are still moving.
+  @visibleForTesting
+  bool get isPulsing => _pulseController.isAnimating;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_pulseStarted) return;
+    _pulseStarted = true;
+    // Reduce motion: the glow rests at its smallest size, particles stay
+    // where they were placed. Otherwise one breath (up and down), then rest.
+    if (!MediaQuery.disableAnimationsOf(context)) {
+      _pulseController.repeat(
+        reverse: true,
+        count: SplashScreen.pulseHalfBreaths,
+      );
+    }
   }
 
   void _initializeParticles() {

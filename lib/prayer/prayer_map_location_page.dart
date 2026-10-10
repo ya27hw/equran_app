@@ -328,7 +328,8 @@ class _PrayerMapLocationPageState extends State<PrayerMapLocationPage> {
                       point: _userLocation!,
                       width: 40,
                       height: 40,
-                      child: _UserLocationMarker(
+                      child: PrayerUserLocationMarker(
+                        location: _userLocation!,
                         qiblaBearing: _calculateQiblaBearing(),
                       ),
                     ),
@@ -538,26 +539,72 @@ String prayerMapCoordinatePreview(double latitude, double longitude) {
   return '${latitude.toStringAsFixed(5)}, ${longitude.toStringAsFixed(5)}';
 }
 
-class _UserLocationMarker extends StatefulWidget {
-  const _UserLocationMarker({required this.qiblaBearing});
+/// The "you are here" dot. Its ring pulses [pulseCycles] times when it first
+/// appears and whenever [location] changes, then rests; with reduced motion
+/// it never pulses. It does not loop.
+class PrayerUserLocationMarker extends StatefulWidget {
+  const PrayerUserLocationMarker({
+    super.key,
+    required this.location,
+    required this.qiblaBearing,
+    @visibleForTesting this.pulsePeriod = const Duration(seconds: 2),
+  });
 
+  final LatLng location;
   final double? qiblaBearing;
+  final Duration pulsePeriod;
+  static const int pulseCycles = 3;
 
   @override
-  State<_UserLocationMarker> createState() => _UserLocationMarkerState();
+  State<PrayerUserLocationMarker> createState() =>
+      PrayerUserLocationMarkerState();
 }
 
-class _UserLocationMarkerState extends State<_UserLocationMarker>
+class PrayerUserLocationMarkerState extends State<PrayerUserLocationMarker>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
+  bool _started = false;
+
+  /// True while the ring is still pulsing.
+  @visibleForTesting
+  bool get isPulsing => _controller.isAnimating;
 
   @override
   void initState() {
     super.initState();
+    // At 1 the ring is fully faded: the resting state shows just the dot.
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
-    )..repeat();
+      duration: widget.pulsePeriod,
+      value: 1,
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _controller.value = 1;
+    } else if (!_started) {
+      _started = true;
+      _pulse();
+    }
+  }
+
+  @override
+  void didUpdateWidget(PrayerUserLocationMarker oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.location != widget.location &&
+        !MediaQuery.disableAnimationsOf(context)) {
+      _pulse();
+    }
+  }
+
+  void _pulse() {
+    _controller.value = 0;
+    _controller.repeat(count: PrayerUserLocationMarker.pulseCycles).then((_) {
+      if (mounted) _controller.value = 1;
+    });
   }
 
   @override
