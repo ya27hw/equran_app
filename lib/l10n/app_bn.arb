@@ -946,6 +946,7 @@
   "browseByJuz": "Juz দ্বারা ব্রাউজ করুন",
   "browseByPage": "পৃষ্ঠা দ্বারা ব্রাউজ করুন",
   "closeSearch": "অনুসন্ধান বন্ধ করুন",
+  "reverseOrder": "ক্রম উল্টান",
   "noSurahsFound": "কোন সূরা পাওয়া যায়নি।",
   "ayahRange": "আয়াহ {start}-{end}",
   "juzNumber": "জুজ {number}",

@@ -832,6 +832,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get closeSearch => 'Tutup pencarian';
 
   @override
+  String get reverseOrder => 'Balik urutan';
+
+  @override
   String get noSurahsFound => 'Tidak ada surat yang ditemukan.';
 
   @override

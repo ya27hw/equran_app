@@ -946,6 +946,7 @@
   "browseByJuz": "Juz کے ذریعے براؤز کریں۔",
   "browseByPage": "صفحہ کے لحاظ سے براؤز کریں۔",
   "closeSearch": "تلاش بند کریں۔",
+  "reverseOrder": "ترتیب الٹیں",
   "noSurahsFound": "کوئی سورت نہیں ملی۔",
   "ayahRange": "آیت {start}-{end}",
   "juzNumber": "Juz {number}",

@@ -844,6 +844,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get closeSearch => 'Suche schließen';
 
   @override
+  String get reverseOrder => 'Reihenfolge umkehren';
+
+  @override
   String get noSurahsFound => 'Keine Suren gefunden.';
 
   @override

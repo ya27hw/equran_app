@@ -946,6 +946,7 @@
   "browseByJuz": "Telusuri berdasarkan Juz",
   "browseByPage": "Jelajahi berdasarkan halaman",
   "closeSearch": "Tutup pencarian",
+  "reverseOrder": "Balik urutan",
   "noSurahsFound": "Tidak ada surat yang ditemukan.",
   "ayahRange": "Ayah {start}-{end}",
   "juzNumber": "Juz {number}",

@@ -185,10 +185,9 @@ class _QuranCardListState extends State<QuranCardList>
           );
         }
 
-        return AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          child: childList,
-        );
+        // No cross-fade: while both lists are mounted they would share one
+        // PrimaryScrollController, which Flutter rejects in debug builds.
+        return childList;
       },
     );
   }

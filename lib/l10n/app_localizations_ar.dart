@@ -822,6 +822,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get closeSearch => 'إغلاق البحث';
 
   @override
+  String get reverseOrder => 'عكس الترتيب';
+
+  @override
   String get noSurahsFound => 'لم يتم العثور على سور.';
 
   @override

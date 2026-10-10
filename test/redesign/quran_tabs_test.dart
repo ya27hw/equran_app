@@ -159,6 +159,58 @@ void main() {
     expect(find.textContaining('Fatiha'), findsWidgets);
   });
 
+  testWidgets('order chip shows numerals for the active tab and reverses it', (
+    tester,
+  ) async {
+    await pump(tester);
+    final l = AppLocalizations.of(tester.element(find.byType(MainPage)))!;
+    expect(find.byTooltip(l.reverseOrder), findsOneWidget);
+    expect(find.text('1\u2013114'), findsOneWidget);
+    expect(find.textContaining('Fatiha'), findsWidgets);
+    await tester.tap(find.text('1\u2013114'));
+    await tester.pumpAndSettle();
+    expect(find.text('114\u20131'), findsOneWidget);
+    expect(find.textContaining('Nas'), findsWidgets);
+    expect(find.textContaining('Fatiha'), findsNothing);
+    // The same flag drives the other tabs, so the label follows the tab.
+    await tester.tap(
+      find.descendant(
+        of: find.byType(SavedQuranHeader),
+        matching: find.text(l.juz),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('30\u20131'), findsOneWidget);
+    await tester.tap(
+      find.descendant(
+        of: find.byType(SavedQuranHeader),
+        matching: find.text(l.pages),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('${quran.totalPagesCount}\u20131'), findsOneWidget);
+    await tester.tap(find.text('${quran.totalPagesCount}\u20131'));
+    await tester.pumpAndSettle();
+    expect(find.text('1\u2013${quran.totalPagesCount}'), findsOneWidget);
+    // Saved has no order to reverse.
+    await tester.tap(
+      find.descendant(
+        of: find.byType(SavedQuranHeader),
+        matching: find.text(l.saved),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byTooltip(l.reverseOrder), findsNothing);
+  });
+
+  testWidgets('order chip numerals stay left-to-right in Arabic', (
+    tester,
+  ) async {
+    await pump(tester, locale: const Locale('ar'));
+    final label = tester.widget<Text>(find.text('1\u2013114'));
+    expect(label.textDirection, TextDirection.ltr);
+  });
+
   testWidgets('first-read hero opens Al Fatiha at ayah one', (tester) async {
     await SettingsDB().put('showLastRead', true);
     final observer = _ReadingObserver();

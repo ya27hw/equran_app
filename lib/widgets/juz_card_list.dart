@@ -63,7 +63,7 @@ class _JuzCardListState extends State<JuzCardList>
     final double headerExtent = 76 * textScale;
     final double tileExtent = 122 * textScale;
 
-    Widget child = Scrollbar(
+    final Widget child = Scrollbar(
       key: ValueKey<bool>(widget.ascending),
       controller: scrollController,
       thumbVisibility: true,
@@ -113,10 +113,7 @@ class _JuzCardListState extends State<JuzCardList>
       ),
     );
 
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 300),
-      child: child,
-    );
+    return child;
   }
 
   @override

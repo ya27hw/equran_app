@@ -829,6 +829,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get closeSearch => 'Aramayı kapat';
 
   @override
+  String get reverseOrder => 'Sırayı ters çevir';
+
+  @override
   String get noSurahsFound => 'Hiç sure bulunamadı.';
 
   @override

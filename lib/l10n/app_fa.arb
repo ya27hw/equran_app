@@ -360,6 +360,7 @@
   "browseByJuz": "پیمایش بر اساس جزء",
   "browseByPage": "پیمایش بر اساس صفحه",
   "closeSearch": "بستن جستجو",
+  "reverseOrder": "معکوس کردن ترتیب",
   "noSurahsFound": "هیچ سوره‌ای پیدا نشد.",
   "ayahRange": "آیه {start} تا {end}",
   "@ayahRange": {

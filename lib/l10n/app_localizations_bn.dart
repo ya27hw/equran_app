@@ -827,6 +827,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get closeSearch => 'অনুসন্ধান বন্ধ করুন';
 
   @override
+  String get reverseOrder => 'ক্রম উল্টান';
+
+  @override
   String get noSurahsFound => 'কোন সূরা পাওয়া যায়নি।';
 
   @override

@@ -5,6 +5,7 @@ import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/widgets/redesign/design_icon.dart';
+import 'package:equran/widgets/redesign/pill_tag.dart' show ChipButton;
 import 'package:equran/utils/app_radii.dart';
 import 'package:equran/hifz/hifz.dart';
 import 'package:equran/utils/debouncer.dart';
@@ -91,7 +92,6 @@ class _MainPageState extends State<MainPage>
 
   @override
   Widget build(BuildContext context) {
-    final EquranColors colors = context.equranColors;
     final double width = MediaQuery.of(context).size.width;
     final double horizontalPadding = width >= 1400
         ? 36
@@ -125,31 +125,55 @@ class _MainPageState extends State<MainPage>
           Expanded(child: _buildSegmentPager(horizontalPadding)),
         ],
       ),
-      floatingActionButton: _selectedSegment == 3
-          ? null
-          : FloatingActionButton(
-              onPressed: () {
-                setState(() {
-                  _ascending = !_ascending;
-                });
-              },
-              backgroundColor: colors.surface,
-              foregroundColor: colors.primary,
-              shape: CircleBorder(
-                side: BorderSide(color: context.equranTokens.hair2),
-              ),
-              elevation: 0,
-              highlightElevation: 0,
-              child: AnimatedRotation(
-                duration: const Duration(milliseconds: 250),
-                turns: _ascending ? 0.0 : 0.5,
-                child: Icon(
-                  Icons.arrow_downward_rounded,
-                  color: colors.primary,
-                  size: 24,
-                ),
+      floatingActionButton: _showsOrderChip ? _buildOrderChip() : null,
+    );
+  }
+
+  bool get _showsOrderChip =>
+      _selectedSegment != 3 &&
+      !(_showSearch &&
+          _activeSearchMode == QuranSearchMode.quranText &&
+          _selectedSegment == 0);
+
+  /// Flat chip that reverses the order of the active list. It shows the order
+  /// as numerals only (so it needs no per-language text); the reading
+  /// direction of the numerals is pinned to left-to-right.
+  Widget _buildOrderChip() {
+    final EquranColors colors = context.equranColors;
+    final EquranTokens tokens = context.equranTokens;
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
+    final int last = switch (_selectedSegment) {
+      0 => quran.totalSurahCount,
+      1 => 30,
+      _ => quran.totalPagesCount,
+    };
+    final String label = _ascending ? '1\u2013$last' : '$last\u20131';
+    void reverse() => setState(() => _ascending = !_ascending);
+    return Tooltip(
+      message: localizations.reverseOrder,
+      child: GestureDetector(
+        // The chip is 36 px high; this widens the touch area to 44 px.
+        behavior: HitTestBehavior.translucent,
+        excludeFromSemantics: true,
+        onTap: reverse,
+        child: SizedBox(
+          height: 44,
+          child: Center(
+            widthFactor: 1,
+            child: Material(
+              color: colors.surface,
+              shape: StadiumBorder(side: BorderSide(color: tokens.hair2)),
+              clipBehavior: Clip.antiAlias,
+              child: ChipButton(
+                label,
+                icon: Icons.swap_vert_rounded,
+                labelDirection: TextDirection.ltr,
+                onPressed: reverse,
               ),
             ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -559,7 +583,7 @@ class _QuranPageList extends StatelessWidget {
 
     final List<int> pages = ascending ? rawPages : rawPages.reversed.toList();
 
-    Widget child = GridView.builder(
+    final Widget child = GridView.builder(
       key: ValueKey<bool>(ascending),
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.only(bottom: 28),
@@ -580,10 +604,7 @@ class _QuranPageList extends StatelessWidget {
       },
     );
 
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 300),
-      child: child,
-    );
+    return child;
   }
 }
 

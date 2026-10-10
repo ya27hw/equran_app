@@ -946,6 +946,7 @@
   "browseByJuz": "Juz'a göre göz at",
   "browseByPage": "Sayfaya göre göz at",
   "closeSearch": "Aramayı kapat",
+  "reverseOrder": "Sırayı ters çevir",
   "noSurahsFound": "Hiç sure bulunamadı.",
   "ayahRange": "Ayah {start}-{end}",
   "juzNumber": "Cüz {number}",

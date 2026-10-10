@@ -826,6 +826,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get closeSearch => 'تلاش بند کریں۔';
 
   @override
+  String get reverseOrder => 'ترتیب الٹیں';
+
+  @override
   String get noSurahsFound => 'کوئی سورت نہیں ملی۔';
 
   @override

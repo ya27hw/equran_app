@@ -252,6 +252,7 @@
   "browseByJuz": "تصفح حسب الجزء",
   "browseByPage": "تصفح حسب الصفحة",
   "closeSearch": "إغلاق البحث",
+  "reverseOrder": "عكس الترتيب",
   "noSurahsFound": "لم يتم العثور على سور.",
   "ayahRange": "الآيات {start}-{end}",
   "juzNumber": "الجزء {number}",

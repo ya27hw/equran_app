@@ -91,6 +91,7 @@ class ChipButton extends StatelessWidget {
     this.designIcon,
     this.dashed = false,
     this.count,
+    this.labelDirection,
   });
   final String label;
   final VoidCallback? onPressed;
@@ -103,6 +104,10 @@ class ChipButton extends StatelessWidget {
   /// Draws a dashed hairline instead of a solid one (the "New folder" chip).
   final bool dashed;
   final String? count;
+
+  /// Overrides the label's script-derived direction; for numeral runs such as
+  /// "1-114" that must not flip in right-to-left layouts.
+  final TextDirection? labelDirection;
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +153,10 @@ class ChipButton extends StatelessWidget {
             Icon(icon, size: 16),
             const SizedBox(width: 6),
           ],
-          Text(label, textDirection: scriptDirectionIn(context, label)),
+          Text(
+            label,
+            textDirection: labelDirection ?? scriptDirectionIn(context, label),
+          ),
           if (count != null) ...[
             const SizedBox(width: 6),
             Text(count!, style: TextStyle(color: tokens.muted, fontSize: 12)),

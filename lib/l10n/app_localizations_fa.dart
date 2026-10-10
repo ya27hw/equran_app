@@ -826,6 +826,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get closeSearch => 'بستن جستجو';
 
   @override
+  String get reverseOrder => 'معکوس کردن ترتیب';
+
+  @override
   String get noSurahsFound => 'هیچ سوره‌ای پیدا نشد.';
 
   @override

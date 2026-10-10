@@ -1626,6 +1626,12 @@ abstract class AppLocalizations {
   /// **'Close search'**
   String get closeSearch;
 
+  /// No description provided for @reverseOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Reverse order'**
+  String get reverseOrder;
+
   /// No description provided for @noSurahsFound.
   ///
   /// In en, this message translates to:

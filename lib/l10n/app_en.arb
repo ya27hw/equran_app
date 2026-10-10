@@ -370,6 +370,7 @@
   "browseByJuz": "Browse by Juz",
   "browseByPage": "Browse by page",
   "closeSearch": "Close search",
+  "reverseOrder": "Reverse order",
   "noSurahsFound": "No surahs found.",
   "ayahRange": "Ayah {start}-{end}",
   "@ayahRange": {

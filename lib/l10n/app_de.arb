@@ -360,6 +360,7 @@
   "browseByJuz": "Durchsuchen nach Juz",
   "browseByPage": "Nach Seite durchsuchen",
   "closeSearch": "Suche schließen",
+  "reverseOrder": "Reihenfolge umkehren",
   "noSurahsFound": "Keine Suren gefunden.",
   "ayahRange": "Ayah {start}-{end}",
   "@ayahRange": {

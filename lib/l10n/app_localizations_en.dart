@@ -825,6 +825,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get closeSearch => 'Close search';
 
   @override
+  String get reverseOrder => 'Reverse order';
+
+  @override
   String get noSurahsFound => 'No surahs found.';
 
   @override
