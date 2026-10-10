@@ -1,3 +1,5 @@
+import 'package:equran/backend/settings_db.dart';
+import 'package:equran/prayer/hijri_calendar.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/widgets/redesign/design_icon.dart';
@@ -10,191 +12,15 @@ import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 
-class HijriCalendar {
-  final int year;
-  final int month;
-  final int day;
-
-  HijriCalendar(this.year, this.month, this.day);
-
-  static const List<String> monthNamesEn = <String>[
-    'Muharram',
-    'Safar',
-    'Rabi\' al-Awwal',
-    'Rabi\' al-Thani',
-    'Jumada al-Awwal',
-    'Jumada al-Thani',
-    'Rajab',
-    'Sha\'ban',
-    'Ramadan',
-    'Shawwal',
-    'Dhu al-Qa\'dah',
-    'Dhu al-Hijjah',
-  ];
-
-  static const List<String> monthNamesAr = <String>[
-    'محرم',
-    'صفر',
-    'ربيع الأول',
-    'ربيع الآخر',
-    'جمادى الأولى',
-    'جمادى الآخرة',
-    'رجب',
-    'شعبان',
-    'رمضان',
-    'شوال',
-    'ذو القعدة',
-    'ذو الحجة',
-  ];
-
-  static const List<String> monthNamesTr = <String>[
-    'Muharrem',
-    'Safer',
-    'Rebiülevvel',
-    'Rebiülahir',
-    'Cemaziyelevvel',
-    'Cemaziyelahir',
-    'Recep',
-    'Şaban',
-    'Ramazan',
-    'Şevval',
-    'Zilkade',
-    'Zilhicce',
-  ];
-
-  static const List<String> monthNamesId = <String>[
-    'Muharram',
-    'Safar',
-    'Rabiul Awal',
-    'Rabiul Akhir',
-    'Jumadil Awal',
-    'Jumadil Akhir',
-    'Rajab',
-    'Sya\'ban',
-    'Ramadhan',
-    'Syawal',
-    'Zulkaidah',
-    'Zulhijah',
-  ];
-
-  static const List<String> monthNamesBn = <String>[
-    'মহররম',
-    'সফর',
-    'রবিউল আউয়াল',
-    'রবিউস সানি',
-    'জমাদিউল আউয়াল',
-    'জমাদিউস সানি',
-    'রজব',
-    'শাবান',
-    'রমজান',
-    'শাওয়াল',
-    'জিলকদ',
-    'জিলহজ',
-  ];
-
-  static const List<String> monthNamesDe = <String>[
-    'Muharram',
-    'Safar',
-    'Rabi\' al-Awwal',
-    'Rabi\' ath-Thani',
-    'Dschumada al-Ula',
-    'Dschumada ath-Thaniya',
-    'Radschab',
-    'Scha\'ban',
-    'Ramadan',
-    'Schawwal',
-    'Dhu l-qa\'da',
-    'Dhu l-hidschdscha',
-  ];
-
-  static bool isLeapYear(int hYear) {
-    final int remainder = hYear % 30;
-    return const <int>[
-      2,
-      5,
-      7,
-      10,
-      13,
-      16,
-      18,
-      21,
-      24,
-      26,
-      29,
-    ].contains(remainder);
-  }
-
-  static int daysInMonth(int hYear, int hMonth) {
-    if (hMonth < 1 || hMonth > 12) return 30;
-    if (hMonth == 12) {
-      return isLeapYear(hYear) ? 30 : 29;
-    }
-    return hMonth % 2 == 1 ? 30 : 29;
-  }
-
-  static HijriCalendar fromGregorian(DateTime date) {
-    int gYear = date.year;
-    int gMonth = date.month;
-    int gDay = date.day;
-
-    if (gMonth < 3) {
-      gYear -= 1;
-      gMonth += 12;
-    }
-
-    final double a = (gYear / 100).floorToDouble();
-    final double b = (a / 4).floorToDouble();
-    final double c = 2.0 - a + b;
-    final double e = (365.25 * (gYear + 4716)).floorToDouble();
-    final double f = (30.6001 * (gMonth + 1)).floorToDouble();
-    final double jd = c + gDay + e + f - 1524.5;
-
-    final double l = jd - 1948440.0 + 10632.0;
-    final double n = ((l - 1.0) / 10631.0).floorToDouble();
-    double rem = l - 10631.0 * n;
-
-    final double j =
-        ((10985.0 - rem) / 5316.0).floorToDouble() *
-            ((50.0 - rem) / 36.0).floorToDouble() +
-        ((rem - 2.0) / 30.0).floorToDouble() *
-            ((rem - 2800.0) / 29.0).floorToDouble() *
-            ((rem - 2828.0) / 30.0).floorToDouble();
-    rem =
-        rem +
-        j -
-        ((10985.0 - j) / 5316.0).floorToDouble() *
-            ((50.0 - j) / 36.0).floorToDouble();
-
-    final double y = (30.0 * n + (rem - 15.0) / 10631.0).floorToDouble();
-    rem = rem - (10631.0 * (y - 30.0 * n) / 30.0).floorToDouble() + 354.0;
-
-    double m = ((rem - 1.0) / 29.5).floorToDouble();
-    if (m > 12) m = 12;
-    if (m < 1) m = 1;
-    final double d = rem - (29.5 * m).floorToDouble() - 17.0;
-
-    return HijriCalendar(y.toInt(), m.toInt(), d.toInt() + 1);
-  }
-
-  String getMonthName(String locale) {
-    final List<String> list = switch (locale) {
-      'ar' || 'fa' || 'ur' => monthNamesAr,
-      'tr' => monthNamesTr,
-      'id' => monthNamesId,
-      'bn' => monthNamesBn,
-      'de' => monthNamesDe,
-      _ => monthNamesEn,
-    };
-    if (month < 1 || month > 12) return '';
-    return list[month - 1];
-  }
-}
-
 class HijriCalendarPage extends StatefulWidget {
-  const HijriCalendarPage({super.key, this.now});
+  const HijriCalendarPage({super.key, this.now, this.hijriOffset});
 
   /// The clock for today; tests pass a fixed one.
   final DateTime Function()? now;
+
+  /// Moon-sighting offset in days. Defaults to the `hijri_offset` setting, the
+  /// same one the prayer times and the Islamic calendar use.
+  final int? hijriOffset;
 
   @override
   State<HijriCalendarPage> createState() => _HijriCalendarPageState();
@@ -203,6 +29,7 @@ class HijriCalendarPage extends StatefulWidget {
 class _HijriCalendarPageState extends State<HijriCalendarPage> {
   late DateTime _today;
   late HijriCalendar _todayHijri;
+  late int _offset;
   late int _viewingYear;
   late int _viewingMonth;
 
@@ -210,37 +37,12 @@ class _HijriCalendarPageState extends State<HijriCalendarPage> {
   void initState() {
     super.initState();
     _today = widget.now?.call() ?? DateTime.now();
-    _todayHijri = HijriCalendar.fromGregorian(_today);
-    _viewingYear = _todayHijri.year;
-    _viewingMonth = _todayHijri.month;
-  }
-
-  DateTime _getFirstDayOfHijriMonth(int hYear, int hMonth) {
-    final double daysSinceEpoch =
-        (hYear - 1) * 354.367 + (hMonth - 1) * 29.53 + 1;
-    DateTime approxDate = DateTime(
-      622,
-      7,
-      16,
-    ).add(Duration(days: daysSinceEpoch.round()));
-
-    HijriCalendar cal = HijriCalendar.fromGregorian(approxDate);
-    int difference = cal.day - 1;
-    DateTime firstDay = approxDate.subtract(Duration(days: difference));
-
-    cal = HijriCalendar.fromGregorian(firstDay);
-    int iterations = 0;
-    while ((cal.month != hMonth || cal.year != hYear || cal.day != 1) &&
-        iterations < 30) {
-      if (cal.year < hYear || (cal.year == hYear && cal.month < hMonth)) {
-        firstDay = firstDay.add(const Duration(days: 1));
-      } else {
-        firstDay = firstDay.subtract(const Duration(days: 1));
-      }
-      cal = HijriCalendar.fromGregorian(firstDay);
-      iterations++;
-    }
-    return firstDay;
+    _offset =
+        widget.hijriOffset ??
+        (SettingsDB().get('hijri_offset', defaultValue: 0) as int);
+    _todayHijri = HijriCalendar.fromDate(_today, offset: _offset);
+    _viewingYear = _todayHijri.hYear;
+    _viewingMonth = _todayHijri.hMonth;
   }
 
   void _nextMonth() {
@@ -325,26 +127,26 @@ class _HijriCalendarPageState extends State<HijriCalendarPage> {
     final MaterialLocalizations material = MaterialLocalizations.of(context);
 
     // Current Hijri Month Info
-    final String monthName = HijriCalendar(
-      _viewingYear,
-      _viewingMonth,
-      1,
-    ).getMonthName(lang);
+    final String monthName = HijriCalendar.monthNameFor(_viewingMonth, lang);
     final int daysCount = HijriCalendar.daysInMonth(
       _viewingYear,
       _viewingMonth,
+      offset: _offset,
     );
 
     // First Day Gregorian to find start weekday
-    final DateTime firstDayGregorian = _getFirstDayOfHijriMonth(
+    final DateTime firstDayGregorian = HijriCalendar.firstGregorianDayOf(
       _viewingYear,
       _viewingMonth,
+      offset: _offset,
     );
     final int startWeekdayOffset = firstDayGregorian.weekday % 7; // Sunday is 0
 
     // Gregorian range of the Hijri month
-    final DateTime lastDayGregorian = firstDayGregorian.add(
-      Duration(days: daysCount - 1),
+    final DateTime lastDayGregorian = DateTime(
+      firstDayGregorian.year,
+      firstDayGregorian.month,
+      firstDayGregorian.day + daysCount - 1,
     );
     final DateFormat rangeFormat = DateFormat(
       'MMM d, yyyy',
@@ -362,8 +164,8 @@ class _HijriCalendarPageState extends State<HijriCalendarPage> {
           tooltip: _translateToday(lang),
           onPressed: () {
             setState(() {
-              _viewingYear = _todayHijri.year;
-              _viewingMonth = _todayHijri.month;
+              _viewingYear = _todayHijri.hYear;
+              _viewingMonth = _todayHijri.hMonth;
             });
           },
         ),
@@ -466,8 +268,10 @@ class _HijriCalendarPageState extends State<HijriCalendarPage> {
                           }
 
                           final int dayNumber = index - startWeekdayOffset + 1;
-                          final DateTime cellGregorian = firstDayGregorian.add(
-                            Duration(days: dayNumber - 1),
+                          final DateTime cellGregorian = DateTime(
+                            firstDayGregorian.year,
+                            firstDayGregorian.month,
+                            firstDayGregorian.day + dayNumber - 1,
                           );
                           final bool isCurrentToday =
                               cellGregorian.year == _today.year &&
@@ -536,7 +340,7 @@ class _HijriCalendarPageState extends State<HijriCalendarPage> {
     final EquranTokens tokens = context.equranTokens;
     final Color gold = heroGoldOf(context);
     final String todayHijriStr =
-        '${_todayHijri.day} ${_todayHijri.getMonthName(lang)} ${_todayHijri.year}';
+        '${_todayHijri.hDay} ${_todayHijri.getLocalizedMonthName(lang)} ${_todayHijri.hYear}';
     final DateFormat formatter = DateFormat('EEEE, MMMM d, yyyy', lang);
     final String todayGregorianStr = formatter.format(_today);
 

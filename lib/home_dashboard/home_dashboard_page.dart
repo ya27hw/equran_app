@@ -39,7 +39,7 @@ import 'package:equran/duas/hisn_al_muslim_repository.dart';
 import 'package:equran/duas/hisn_al_muslim_models.dart';
 import 'package:equran/duas/duas_category_page.dart';
 import 'package:equran/backend/daily_tools_config.dart';
-import 'package:equran/home/hijri_calendar_page.dart' hide HijriCalendar;
+import 'package:equran/home/hijri_calendar_page.dart';
 import 'package:equran/hifz/hifz.dart';
 import 'package:equran/duas/asma_ul_husna_page.dart';
 
