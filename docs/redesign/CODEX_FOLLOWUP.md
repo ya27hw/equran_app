@@ -54,6 +54,31 @@ Use `DesignIcon` (`lib/widgets/redesign/design_icon.dart`) for icons, never Mate
   `saveDuasHere` ("Saved for quick access") was drafted in the same seven languages this round to match the new English caption
     (it is only used as the Duas tile caption). `loggedToday` ("Counted today") keeps its existing translations, which read as
     "recorded today". Have native speakers review all of them.
+    `polish/strings` added 88 more keys, machine-drafted in ar, bn, de, fa, id, tr, ur (English in brackets where short): `hifzRatingFail`,
+    `hifzRatingPass`, `shareImageFormat`, `shareFormatStory`, `shareFormatSquare`, `shareFormatClassic`, `unableToShareAyahImage`,
+    `reciterGroupDownloaded`, `reciterShowAlphabetical`, `audioConnectionInterrupted`, `offlineDownloadAyahOrReconnect`,
+    `unableToPlayAyahAudio`, `repeatOnce`, `repeatTimes` (Arabic plural forms), `repeatInfinite`, `halfSecond`,
+    `resourceStateUpdateAvailable`, `resourcePhaseStarting`, `resourcePhaseVerifying`, `resourcePhaseExtracting`,
+    `resourcePhaseInstalling`, `resourcePhaseFailed`, `resourceTypeGeneric`, `translationBundled`, `translationDownloadUnavailable`,
+    `navigationSettingsHint`, `navigationActiveSlots`, `navigationAvailableItems`, `navigationSlot`, `navigationSlotLocked`,
+    `navigationSwapped`, `navigationRemoved`, `navigationPinned`, `navigationPinnedDisplaced`, `navSubtitleHome`, `navSubtitleQuran`,
+    `navSubtitlePrayer`, `navSubtitleSettings`, `dockZakat`, `dockCalendar`, `downloadsReciterCount`, `downloadsItemCount`,
+    `downloadsDeleteReciterBody`, `downloadsAllSurahs`, `downloadsFilterTitle`, `downloadsFilterSubtitle`, `downloadsFilterSearchHint`,
+    `downloadsGroupBy`, `downloadsSortBy`, `downloadsCategory`, `downloadsContentType`, `downloadsSortReciterAsc`,
+    `downloadsSortReciterDesc`, `downloadsSortSizeDesc`, `downloadsSortSizeAsc`, `downloadsSortSurahAsc`, `downloadsSortSurahDesc`
+    (Arabic, Persian and Urdu use a left arrow so it points in reading direction), `offsetSetPositive`, `offsetSetNegative`,
+    `notificationPermissionCheckTimedOut`, `notificationPermissionCheckFailed`, `exactAlarmPermissionCheckTimedOut`,
+    `exactAlarmPermissionCheckFailed`, `asrMethodHanafi`, `highLatitudeRuleAutoTitle`, `highLatitudeRuleNoneTitle`,
+    `highLatitudeRuleMiddleOfTheNightTitle`, `highLatitudeRuleOneSeventhTitle`, `highLatitudeRuleAngleBasedTitle`,
+    `prayerMethodAuto`, `prayerMethodMuslimWorldLeague`, `prayerMethodEgyptian`, `prayerMethodUmmAlQura`, `prayerMethodDubai`,
+    `prayerMethodKuwait`, `prayerMethodQatar`, `prayerMethodKarachi`, `prayerMethodMoonsighting`, `prayerMethodMorocco`,
+    `prayerMethodSingapore`, `prayerMethodTehran`, `prayerMethodTurkey`, `prayerMethodShortAuto`, `prayerMethodShortMwl`,
+    `prayerMethodShortDubai`, `prayerMethodShortMoonsighting`, `prayerMethodShortTurkey`, `dailyToolsKeepOnePinned` (ar and fa reuse the
+    wording that was already inline). Existing translations that look weak and were reused: `reciter` in Indonesian ("Tukang
+    deklamasi"), `cancel` in German ("Stornieren"), `clear` in German/Indonesian, `worshipTrendsAndStreaks` in German/Indonesian/Bengali.
+    Wording that shifted in English: Navigation subtitles now reuse existing keys ("Duas & Azkar", "Compass and direction",
+    "Wealth & Nisab evaluations"...), the Downloads filter shows "Meccan"/"Medinan" instead of "Makki"/"Madani", and "Word by Word" is
+    "Word by word".
 
 ## Parked until the hero round
 The Home, Quran and More PR left every hero card as it was. Status after the approved Quran landscape hero (`060a2c4`) and the
@@ -120,6 +145,7 @@ Settings landing, floating dock, player bar, playback options sheet.
   re-renders every hero golden.
 - **Native review of machine-drafted translations:** `prayerNextIn`, `showMore`, `prayersCount`, `note`, `saveDuasHere`, and in the
   polish stack `savedFolderLabel` and `savedManageFolders` (plus any other keys those branches added in ar, bn, de, fa, id, tr, ur).
+  `polish/strings` adds the 88 keys listed under item 11.
 
 ### New findings
 - ~~**(a) Wrong Hijri dates.**~~ Done in `9c3f556`. The duplicate `HijriCalendar` in `lib/home/hijri_calendar_page.dart` is gone; the page
@@ -148,8 +174,25 @@ Settings landing, floating dock, player bar, playback options sheet.
   gap between buttons grows from 6 to 10 px on phones (wide screens keep 10), so the action group is about 18 px wider. The favourite's
   real tap area used to be its 20 px icon (not 34); it now fills 44 px. The Material play/pause icons remain because the design has no
   matching icon. The `shareImageMode` branch is untouched (actions are not drawn there).
-- **(g) Legacy English-only strings:** share-format labels, reciter tooltips, Hifz Fail/Pass, Navigation settings hints, Downloads
-  filter sheet.
+- ~~**(g) Legacy English-only strings:**~~ Done (`polish/strings`): Hifz Fail/Pass (`hifzRatingFail`/`hifzRatingPass`; "Try again"/"Got it" are
+  different buttons on the same row), share-image format sheet, reciter picker tooltips, reader audio messages, repeat choices ("Once",
+  "N times", "Infinite" were Arabic-only) and "0.5 seconds", Navigation settings (hint, headings, slot, snackbar and subtitle text), Downloads page and
+  filter sheet (counts use ICU plurals, so "1 surah" is now correct), prayer settings (calculation method, Asr, high-latitude rule,
+  prayer names, 12/24-hour, permission messages, offset sign tooltip), dock labels for Zakat and Calendar, the "keep one tool pinned"
+  message, "Juz N" on the Hifz screens, and resource/translation status labels ("Verifying", "Bundled", "Update available"...).
+  Backend enum labels (`ResourceInstallState.label`, `PrayerCalculationMethod.label`, `AudioDownloadEntry.title`...) stay English for logs;
+  screens use `lib/utils/resource_labels.dart` and `lib/prayer/prayer_localizations.dart`. `test/localization_strings_test.dart` checks every
+  key above in all 8 locales (present, same placeholders, not the English text). The Downloads filter sheet footer is now a `Wrap`
+  because German at text scale 1.3 overflowed the old `Row`.
+  **Deliberately left English** (not presentation, or no context): `ResumeStateEntry.subtitle` ("Ayah n", stored and backed up); the
+  `'Default'`/`'Unsorted'` folder names and the `'Backup cancelled.'`/`'Restore cancelled.'` sentinels; `PrayerTimeKind.label` and other
+  strings used by notifications and the widget worker; `prayer_location_service.dart` and `resource_download_service.dart` error messages
+  (shown as-is by the map picker and download rows); `MediaItem` titles ("Ayah delay"); the share-image header `'Ayah n - Story 9:16'`
+  (drawn into the image, share branch is off limits); the More page easter-egg snackbars; Tasbih `sequenceHint` (unused); the dead
+  `home_dashboard_page.dart` cards ("Reading plan", "Bookmarks and notes"... no longer built); Arabic-only `_localizedDhikrStatsLabel`;
+  the per-language inline maps in `daily_tools_config.dart`, `daily_tools_edit_sheet.dart` and `hijri_calendar_page.dart` (already
+  translated into every language); AM/PM suffix switches; reciter names (`AppReciter.displayName`).
+  Also noted, not changed: `RedesignEyebrow` upper-cases with `toUpperCase()`, which gives "I" for Turkish "i" (should be "İ").
 - **(h) Arabic test goldens** show tofu for `ChipButton` text in places (test font fallback).
   Three Arabic goldens also fail on a clean checkout of the stack on the machine this round ran on (`reader_chrome_test` note editor
   `arabic-rtl`; `saved_tab_test` `arabic-rtl` and `arabic-text-1.3`), identical with and without the cleanup commit; likely the same font
