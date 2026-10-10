@@ -63,9 +63,25 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    // Decode the hero artwork before the golden, so the first test does not
+    // race the image and later ones do not differ from it.
+    await tester.runAsync(() async {
+      final context = tester.element(find.byType(MorePage));
+      for (final image in tester.widgetList<Image>(find.byType(Image))) {
+        await precacheImage(image.image, context);
+      }
+    });
+    await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
     return log;
   }
+
+  testWidgets('the hero opens the reading routine', (tester) async {
+    final taps = <String>[];
+    await pump(tester, taps: taps);
+    await tester.tap(find.byKey(const Key('more-hero')));
+    expect(taps, ['plans']);
+  });
 
   testWidgets('every shortcut stays reachable and fires its callback', (
     tester,
