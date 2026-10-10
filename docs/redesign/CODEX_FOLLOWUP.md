@@ -49,7 +49,9 @@ Use `DesignIcon` (`lib/widgets/redesign/design_icon.dart`) for icons, never Mate
       "Favourite"), the "New folder" chip should have a dashed border, the tags row should be one inline field with a placeholder instead
       of chips plus a second text field, and Save has a check icon the design lacks. Not checked in every palette.
 11. **Translations.** `prayerNextIn`, `showMore`, `prayersCount`, `note` are machine-drafted in ar, bn, de, fa, id, tr, ur.
-    `saveDuasHere` ("Saved for quick access") was drafted in the same seven languages this round to match the new English caption
+    `enterPaidAmountInCurrency`, `zakatNisabNeedsRates`, `zakatDeleteRecordQuestion`, `zakatDeleteRecordBody` and `unitTola` (Zakat) are
+  machine-drafted in the same seven languages too.
+  `saveDuasHere` ("Saved for quick access") was drafted in the same seven languages this round to match the new English caption
     (it is only used as the Duas tile caption). `loggedToday` ("Counted today") keeps its existing translations, which read as
     "recorded today". Have native speakers review all of them.
 
@@ -60,7 +62,7 @@ Home hero update (2026-10-04):
   `PrayerArcHero`.
 - ~~`EquranResumeImageCard` (`lib/widgets/last_read_cards.dart`) and the default branch of `LastReadCard`.~~ Deleted in the cleanup
   commit (`LastReadCard.cardBuilder` is now required). `AppSelectionDialog` went with them; `AppSelectionOption` stays because
-  Settings, Prayer settings and the reader still use it. `lib/widgets/holographic_card.dart` is now unreferenced (see Open items).
+  Settings, Prayer settings and the reader still use it. `lib/widgets/holographic_card.dart` was unreferenced and is now deleted.
 - **More hero** (`_MoreHero`): still the old one; needs an approved design. (Owner-blocked, see Open items.)
 - **Prayer page no-location setup screen** (`_buildSetupState`): still the old design (the Home/Prayer hero card is done, see item 10).
   (Owner-blocked, see Open items.)
@@ -121,14 +123,23 @@ Settings landing, floating dock, player bar, playback options sheet.
   polish stack `savedFolderLabel` and `savedManageFolders` (plus any other keys those branches added in ar, bn, de, fa, id, tr, ur).
 
 ### New findings
-- **(a) Wrong Hijri dates.** `HijriCalendar.fromGregorian` in `lib/home/hijri_calendar_page.dart` computes wrong dates (for example
-  7 Oct 2026 shows year 1470). The correct algorithm is `lib/prayer/hijri_calendar.dart`. The Hijri calendar golden encodes the wrong
-  figures, so fixing the code means regenerating that golden.
-- **(b) Home header Hijri date** still uses the English-only `HijriCalendar.toString()`.
+- ~~**(a) Wrong Hijri dates.**~~ Done in `9c3f556`. The duplicate `HijriCalendar` in `lib/home/hijri_calendar_page.dart` is gone; the page
+  uses `lib/prayer/hijri_calendar.dart` (new `firstGregorianDayOf`, `daysInMonth`, `monthNameFor`) and honours `hijri_offset`. 7 Oct 2026 is
+  now 24 Rabi' al-Thani 1448 (month 14 Sep to 12 Oct 2026). The offset is applied as whole calendar days (it used a 24 h `Duration`, which
+  is wrong across a DST change). Unit tests in `test/hijri_calendar_test.dart`; the six Hijri calendar goldens are regenerated. The
+  algorithm is the approximate civil one and can differ from Umm al-Qura by a day (for example 1 Muharram 1447); the moon-sighting offset
+  covers that.
+- ~~**(b) Home header Hijri date**~~ Done in `79aa5f6`: `toLocalizedDateString` for the app language, Western digits, no new keys.
 - **(c) Looping animations kept on purpose:** splash pulse and particles, and the map marker pulse.
-- **(d) Pre-existing failures on `beta`:** 6 `home_page_test.dart` "Home rich" goldens fail.
-- **(e) Zakat leftovers:** `$Infinity` in the below-nisab message when there are no rates; demo livestock constants; hard-coded USD
-  wording in `enterPaidAmountUsd`; no confirmation before deleting a history entry; hard-coded "tola".
+- ~~**(d) Pre-existing failures on `beta`:** 6 `home_page_test.dart` "Home rich" goldens fail.~~ Done in `3512d6c`. Root cause: the Journey
+  card's streak chip used `DateTime.now()` instead of the page's injected clock, so against the real date the seeded 4 Oct 2026 activity
+  counted as a broken streak and the chip vanished (a real wall-clock dependency, fixed in the app). The rest was stale Inter `opsz` text
+  from `144ac99`, which regenerated only the fresh goldens.
+- **(e) Zakat leftovers:** ~~`$Infinity` message~~, ~~USD wording in `enterPaidAmountUsd`~~, ~~no delete confirmation~~, ~~hard-coded
+  "tola"~~ all done in `5e253a9` (the history tab has no streak suffix; there was no "d" to move). Still open, owner decision: the
+  demo livestock constants (`_computeLivestockValue` in `lib/zakat/zakat_page.dart`: 180 / 850 / 1800 per sheep-goat / cow-buffalo /
+  camel, in whatever currency is selected with no conversion, added as a wealth line item at a flat 2.5% instead of the Shari'a livestock
+  schedule), and `goldPriceGram` / `silverPriceGram` in the override dialog still say "(USD)" in all 8 ARBs.
 - **(f) Reader card header action buttons are 34 px,** below the 44 px target. The Material play/pause icons remain because the design
   has no matching icon.
 - **(g) Legacy English-only strings:** share-format labels, reciter tooltips, Hifz Fail/Pass, Navigation settings hints, Downloads
@@ -138,8 +149,9 @@ Settings landing, floating dock, player bar, playback options sheet.
   `arabic-rtl`; `saved_tab_test` `arabic-rtl` and `arabic-text-1.3`), identical with and without the cleanup commit; likely the same font
   fallback, unconfirmed.
 - **(i) Inter `opsz` (item 6)** remains open; it is being handled separately.
-- **(j) Unreferenced after the cleanup:** `lib/widgets/holographic_card.dart` (`HolographicCardWrapper`) has no remaining users. It was
-  left in place; delete it in a later cleanup if no one needs it.
+- ~~**(j) Unreferenced after the cleanup:** `lib/widgets/holographic_card.dart`~~ Deleted in `5297dca`. The `foil` dependency in
+  `pubspec.yaml` (vendored in `third_party/foil`) is now unused, and the `holographicCardsEnabled` setting (More page easter egg, backup
+  key) no longer has any effect; both were left alone.
 
 ## Design file
 The Prayer hero in the canvas still has the Sunrise/Maghrib labels touching the arc end (fixed in the app, not in the design).
