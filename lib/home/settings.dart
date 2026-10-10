@@ -159,6 +159,12 @@ class _SettingsPageState extends State<SettingsPage> {
                 onTap: () => DailyToolsEditSheet.show(context),
               ),
               SettingsSwitch(
+                leading: const Icon(Icons.auto_awesome_rounded),
+                title: localizations.showSplashScreen,
+                subtitle: localizations.showSplashScreenSubtitle,
+                settingsKey: "showSplash",
+              ),
+              SettingsSwitch(
                 leading: const Icon(Icons.history_rounded),
                 title: localizations.showReadingHistory,
                 settingsKey: "showLastRead",

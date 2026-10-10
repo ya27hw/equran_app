@@ -8186,6 +8186,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Use a pitch-black background in dark mode with any color palette.'**
   String get pureBlackBackgroundSubtitle;
+
+  /// No description provided for @showSplashScreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Show startup animation'**
+  String get showSplashScreen;
+
+  /// No description provided for @showSplashScreenSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Play a short animation when the app opens.'**
+  String get showSplashScreenSubtitle;
 }
 
 class _AppLocalizationsDelegate

@@ -1748,5 +1748,7 @@
   "notLogged": "لم يُسجّل",
   "mostReadSurah": "السورة الأكثر قراءة",
   "pureBlackBackground": "خلفية سوداء تمامًا",
-  "pureBlackBackgroundSubtitle": "استخدم خلفية سوداء تمامًا في الوضع الداكن مع أي لوحة ألوان."
+  "pureBlackBackgroundSubtitle": "استخدم خلفية سوداء تمامًا في الوضع الداكن مع أي لوحة ألوان.",
+  "showSplashScreen": "عرض حركة البدء",
+  "showSplashScreenSubtitle": "تشغيل حركة قصيرة عند فتح التطبيق."
 }

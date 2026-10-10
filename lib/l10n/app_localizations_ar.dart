@@ -4600,4 +4600,10 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get pureBlackBackgroundSubtitle =>
       'استخدم خلفية سوداء تمامًا في الوضع الداكن مع أي لوحة ألوان.';
+
+  @override
+  String get showSplashScreen => 'عرض حركة البدء';
+
+  @override
+  String get showSplashScreenSubtitle => 'تشغيل حركة قصيرة عند فتح التطبيق.';
 }

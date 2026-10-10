@@ -4687,4 +4687,11 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get pureBlackBackgroundSubtitle =>
       'Karanlık modda her renk paletiyle tam siyah arka plan kullanın.';
+
+  @override
+  String get showSplashScreen => 'Açılış animasyonunu göster';
+
+  @override
+  String get showSplashScreenSubtitle =>
+      'Uygulama açılırken kısa bir animasyon oynat.';
 }

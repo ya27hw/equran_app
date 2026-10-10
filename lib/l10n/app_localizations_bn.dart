@@ -4677,4 +4677,11 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get pureBlackBackgroundSubtitle =>
       'ডার্ক মোডে যেকোনো রঙের থিমের সঙ্গে সম্পূর্ণ কালো পটভূমি ব্যবহার করুন।';
+
+  @override
+  String get showSplashScreen => 'স্টার্টআপ অ্যানিমেশন দেখান';
+
+  @override
+  String get showSplashScreenSubtitle =>
+      'অ্যাপ খোলার সময় একটি ছোট অ্যানিমেশন চালান।';
 }

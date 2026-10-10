@@ -2282,5 +2282,7 @@
   "notLogged": "Kaydedilmedi",
   "mostReadSurah": "En çok okunan sure",
   "pureBlackBackground": "Tam siyah arka plan",
-  "pureBlackBackgroundSubtitle": "Karanlık modda her renk paletiyle tam siyah arka plan kullanın."
+  "pureBlackBackgroundSubtitle": "Karanlık modda her renk paletiyle tam siyah arka plan kullanın.",
+  "showSplashScreen": "Açılış animasyonunu göster",
+  "showSplashScreenSubtitle": "Uygulama açılırken kısa bir animasyon oynat."
 }

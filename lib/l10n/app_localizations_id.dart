@@ -4698,4 +4698,11 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get pureBlackBackgroundSubtitle =>
       'Gunakan latar belakang hitam pekat dalam mode gelap dengan palet warna apa pun.';
+
+  @override
+  String get showSplashScreen => 'Tampilkan animasi pembuka';
+
+  @override
+  String get showSplashScreenSubtitle =>
+      'Putar animasi singkat saat aplikasi dibuka.';
 }

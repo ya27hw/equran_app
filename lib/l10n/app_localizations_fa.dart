@@ -4675,4 +4675,11 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get pureBlackBackgroundSubtitle =>
       'در حالت تیره با هر پالت رنگ از پس‌زمینهٔ کاملاً سیاه استفاده کنید.';
+
+  @override
+  String get showSplashScreen => 'نمایش انیمیشن شروع';
+
+  @override
+  String get showSplashScreenSubtitle =>
+      'هنگام باز شدن برنامه یک انیمیشن کوتاه پخش شود.';
 }

@@ -28,6 +28,10 @@ class SettingsDB extends BaseDB {
     return saved is bool ? saved : get('themeScheme') == 'black';
   }
 
+  /// Whether the short startup animation plays. On unless the user turned it
+  /// off; only takes effect on the next launch.
+  bool get showSplashScreen => get('showSplash', defaultValue: true) != false;
+
   /// Getter for tracking the script style preference key
   String get quranScriptStyle {
     final dynamic raw = get('quran_script_style', defaultValue: 'qpc-hafs');

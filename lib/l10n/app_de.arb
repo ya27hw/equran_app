@@ -2317,5 +2317,7 @@
   "notLogged": "Nicht erfasst",
   "mostReadSurah": "Meistgelesene Sure",
   "pureBlackBackground": "Tiefschwarzer Hintergrund",
-  "pureBlackBackgroundSubtitle": "Im Dunkelmodus einen tiefschwarzen Hintergrund mit jeder Farbpalette verwenden."
+  "pureBlackBackgroundSubtitle": "Im Dunkelmodus einen tiefschwarzen Hintergrund mit jeder Farbpalette verwenden.",
+  "showSplashScreen": "Startanimation anzeigen",
+  "showSplashScreenSubtitle": "Beim Öffnen der App eine kurze Animation abspielen."
 }

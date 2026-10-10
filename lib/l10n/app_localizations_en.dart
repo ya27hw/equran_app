@@ -4667,4 +4667,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get pureBlackBackgroundSubtitle =>
       'Use a pitch-black background in dark mode with any color palette.';
+
+  @override
+  String get showSplashScreen => 'Show startup animation';
+
+  @override
+  String get showSplashScreenSubtitle =>
+      'Play a short animation when the app opens.';
 }

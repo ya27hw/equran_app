@@ -2282,5 +2282,7 @@
   "notLogged": "Belum dicatat",
   "mostReadSurah": "Surah yang paling sering dibaca",
   "pureBlackBackground": "Latar belakang hitam pekat",
-  "pureBlackBackgroundSubtitle": "Gunakan latar belakang hitam pekat dalam mode gelap dengan palet warna apa pun."
+  "pureBlackBackgroundSubtitle": "Gunakan latar belakang hitam pekat dalam mode gelap dengan palet warna apa pun.",
+  "showSplashScreen": "Tampilkan animasi pembuka",
+  "showSplashScreenSubtitle": "Putar animasi singkat saat aplikasi dibuka."
 }

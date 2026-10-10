@@ -2397,5 +2397,7 @@
   "notLogged": "ثبت نشده",
   "mostReadSurah": "سوره با بیشترین خواندن",
   "pureBlackBackground": "پس‌زمینهٔ کاملاً سیاه",
-  "pureBlackBackgroundSubtitle": "در حالت تیره با هر پالت رنگ از پس‌زمینهٔ کاملاً سیاه استفاده کنید."
+  "pureBlackBackgroundSubtitle": "در حالت تیره با هر پالت رنگ از پس‌زمینهٔ کاملاً سیاه استفاده کنید.",
+  "showSplashScreen": "نمایش انیمیشن شروع",
+  "showSplashScreenSubtitle": "هنگام باز شدن برنامه یک انیمیشن کوتاه پخش شود."
 }

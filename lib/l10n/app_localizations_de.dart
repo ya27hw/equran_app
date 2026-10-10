@@ -4755,4 +4755,11 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get pureBlackBackgroundSubtitle =>
       'Im Dunkelmodus einen tiefschwarzen Hintergrund mit jeder Farbpalette verwenden.';
+
+  @override
+  String get showSplashScreen => 'Startanimation anzeigen';
+
+  @override
+  String get showSplashScreenSubtitle =>
+      'Beim Öffnen der App eine kurze Animation abspielen.';
 }
