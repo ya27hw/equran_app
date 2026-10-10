@@ -139,8 +139,11 @@ Settings landing, floating dock, player bar, playback options sheet.
   demo livestock constants (`_computeLivestockValue` in `lib/zakat/zakat_page.dart`: 180 / 850 / 1800 per sheep-goat / cow-buffalo /
   camel, in whatever currency is selected with no conversion, added as a wealth line item at a flat 2.5% instead of the Shari'a livestock
   schedule), and `goldPriceGram` / `silverPriceGram` in the override dialog still say "(USD)" in all 8 ARBs.
-- **(f) Reader card header action buttons are 34 px,** below the 44 px target. The Material play/pause icons remain because the design
-  has no matching icon.
+- ~~**(f) Reader card header action buttons are 34 px,**~~ Done (`polish/design-completions`): each action (play, tafsir, favourite) now takes
+  hits in a 44 x 44 layout box; the visible button is still 34 px (38 px wide). The header is still 44 px high (the badge). The visual
+  gap between buttons grows from 6 to 10 px on phones (wide screens keep 10), so the action group is about 18 px wider. The favourite's
+  real tap area used to be its 20 px icon (not 34); it now fills 44 px. The Material play/pause icons remain because the design has no
+  matching icon. The `shareImageMode` branch is untouched (actions are not drawn there).
 - **(g) Legacy English-only strings:** share-format labels, reciter tooltips, Hifz Fail/Pass, Navigation settings hints, Downloads
   filter sheet.
 - **(h) Arabic test goldens** show tofu for `ChipButton` text in places (test font fallback).

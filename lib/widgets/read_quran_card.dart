@@ -283,6 +283,11 @@ class ReadQuranCard extends StatelessWidget {
     );
   }
 
+  /// Minimum touch target of a header action. The visible button stays 34 px
+  /// (38 px on wide screens); the layout box is this size so the whole box
+  /// takes hits.
+  static const double _actionTarget = 44;
+
   Widget _buildActionButton({
     required BuildContext context,
     required Widget child,
@@ -294,19 +299,31 @@ class ReadQuranCard extends StatelessWidget {
     final double actionSize = wideActions ? 38 : 34;
     final BorderRadius radius = BorderRadius.circular(10);
 
-    return Material(
-      color: isPrimary ? context.equranTokens.emWash : Colors.transparent,
-      borderRadius: radius,
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: radius,
-        child: Tooltip(
-          message: tooltip,
-          child: SizedBox(
-            height: actionSize,
-            width: actionSize,
-            child: Center(child: child),
+    return GestureDetector(
+      // Catches taps in the ring around the visible button; the button's own
+      // InkWell wins inside it.
+      behavior: HitTestBehavior.translucent,
+      excludeFromSemantics: true,
+      onTap: onPressed,
+      child: SizedBox.square(
+        dimension: _actionTarget,
+        child: Center(
+          child: Material(
+            color: isPrimary ? context.equranTokens.emWash : Colors.transparent,
+            borderRadius: radius,
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: onPressed,
+              borderRadius: radius,
+              child: Tooltip(
+                message: tooltip,
+                child: SizedBox(
+                  height: actionSize,
+                  width: actionSize,
+                  child: Center(child: child),
+                ),
+              ),
+            ),
           ),
         ),
       ),
@@ -323,7 +340,9 @@ class ReadQuranCard extends StatelessWidget {
           currentVerse,
         );
         final bool wideActions = MediaQuery.sizeOf(context).width >= 700;
-        final double actionGap = wideActions ? 10 : 6;
+        // The targets are 44 px wide, so the gap shrinks by the same amount
+        // the buttons' boxes grew: wide screens keep their 48 px pitch.
+        final double actionGap = wideActions ? 4 : 0;
         final double playIconSize = wideActions ? 23 : 21;
         final double actionIconSize = wideActions ? 20 : 18;
 
@@ -368,17 +387,21 @@ class ReadQuranCard extends StatelessWidget {
   }) {
     final AppLocalizations localizations = AppLocalizations.of(context)!;
     final bool wideActions = MediaQuery.sizeOf(context).width >= 700;
-    final double buttonSize = wideActions ? 38 : 34;
     final double iconSize = wideActions ? 22 : 20;
 
     return Tooltip(
       message: isFavourite ? localizations.remove : localizations.favourites,
       child: SizedBox(
-        height: buttonSize,
-        width: buttonSize,
+        height: _actionTarget,
+        width: _actionTarget,
         child: Center(
           child: LikeButton(
             size: iconSize,
+            // LikeButton's own tap area is its icon plus this padding: fill
+            // the 44 px target.
+            padding: EdgeInsets.all((_actionTarget - iconSize) / 2),
+            // The default 3 px count gap would push the box past 44 px.
+            likeCountPadding: EdgeInsets.zero,
             isLiked: isFavourite,
             circleColor: CircleColor(
               start: context.equranTokens.filled.withAlpha(180),
