@@ -4091,10 +4091,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resetCalculator => 'Reset Calculator';
 
   @override
-  String get goldPriceGram => 'Gold price per gram (USD)';
+  String goldPriceGram(String currency) {
+    return 'Gold price per gram ($currency)';
+  }
 
   @override
-  String get silverPriceGram => 'Silver price per gram (USD)';
+  String silverPriceGram(String currency) {
+    return 'Silver price per gram ($currency)';
+  }
 
   @override
   String get zakatSavedLedger =>

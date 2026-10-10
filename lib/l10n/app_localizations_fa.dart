@@ -4101,10 +4101,14 @@ class AppLocalizationsFa extends AppLocalizations {
   String get resetCalculator => 'بازنشانی محاسبه‌گر';
 
   @override
-  String get goldPriceGram => 'قیمت هر گرم طلا (USD)';
+  String goldPriceGram(String currency) {
+    return 'قیمت هر گرم طلا ($currency)';
+  }
 
   @override
-  String get silverPriceGram => 'قیمت هر گرم نقره (USD)';
+  String silverPriceGram(String currency) {
+    return 'قیمت هر گرم نقره ($currency)';
+  }
 
   @override
   String get zakatSavedLedger => 'محاسبه زکات در دفتر ثبت شخصی شما ذخیره شد';

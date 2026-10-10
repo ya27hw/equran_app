@@ -2126,8 +2126,22 @@
   "belowNisab": "BELOW NISAB",
   "zakatDueLabel": "ZAKAT DUE (2.5%)",
   "resetCalculator": "Reset Calculator",
-  "goldPriceGram": "Gold price per gram (USD)",
-  "silverPriceGram": "Silver price per gram (USD)",
+  "goldPriceGram": "Gold price per gram ({currency})",
+  "@goldPriceGram": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "silverPriceGram": "Silver price per gram ({currency})",
+  "@silverPriceGram": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
   "zakatSavedLedger": "Zakat calculation saved to your personal ledger",
   "zakatPaidDistributed": "Zakat Paid/Distributed:",
   "updateZakatPaidAmount": "Update Zakat Paid Amount",

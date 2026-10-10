@@ -303,6 +303,30 @@ void main() {
     expect(find.textContaining('USD'), findsNothing);
   });
 
+  testWidgets('the price override labels name the selected currency', (
+    tester,
+  ) async {
+    await SettingsDB().put('zakat_currency', 'EUR');
+    await SettingsDB().put(
+      'zakat_metal_rates',
+      MetalRateSnapshot(
+        goldPricePerGram: 70,
+        silverPricePerGram: 0.9,
+        source: 'Metals.Live',
+        fetchedAt: DateTime(2026, 10, 1, 9, 30),
+        currency: 'EUR',
+      ).toMap(),
+    );
+    await pump(tester);
+    final Finder button = find.text(l10n(tester).overridePrices);
+    await tester.ensureVisible(button);
+    await tester.tap(button);
+    await tester.pumpAndSettle();
+    expect(find.text('Gold price per gram (EUR)'), findsOneWidget);
+    expect(find.text('Silver price per gram (EUR)'), findsOneWidget);
+    expect(find.textContaining('USD'), findsNothing);
+  });
+
   testWidgets('without metal rates the nisab message shows no number', (
     tester,
   ) async {

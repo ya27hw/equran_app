@@ -961,7 +961,7 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
                 keyboardType: TextInputType.number,
                 decoration: readerInputDecoration(
                   ctx,
-                  label: l.goldPriceGram,
+                  label: l.goldPriceGram(_baseCurrency),
                 ).copyWith(prefixText: _currencySymbol),
               ),
             ),
@@ -971,7 +971,7 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage>
               keyboardType: TextInputType.number,
               decoration: readerInputDecoration(
                 ctx,
-                label: l.silverPriceGram,
+                label: l.silverPriceGram(_baseCurrency),
               ).copyWith(prefixText: _currencySymbol),
             ),
           ],

@@ -4103,10 +4103,14 @@ class AppLocalizationsBn extends AppLocalizations {
   String get resetCalculator => 'ক্যালকুলেটর রিসেট করুন';
 
   @override
-  String get goldPriceGram => 'প্রতি গ্রাম স্বর্ণের মূল্য (USD)';
+  String goldPriceGram(String currency) {
+    return 'প্রতি গ্রাম স্বর্ণের মূল্য ($currency)';
+  }
 
   @override
-  String get silverPriceGram => 'প্রতি গ্রাম রৌপ্যের মূল্য (USD)';
+  String silverPriceGram(String currency) {
+    return 'প্রতি গ্রাম রৌপ্যের মূল্য ($currency)';
+  }
 
   @override
   String get zakatSavedLedger =>

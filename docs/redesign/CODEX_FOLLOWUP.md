@@ -168,7 +168,7 @@ Settings landing, floating dock, player bar, playback options sheet.
   "tola"~~ all done in `5e253a9` (the history tab has no streak suffix; there was no "d" to move). Still open, owner decision: the
   demo livestock constants (`_computeLivestockValue` in `lib/zakat/zakat_page.dart`: 180 / 850 / 1800 per sheep-goat / cow-buffalo /
   camel, in whatever currency is selected with no conversion, added as a wealth line item at a flat 2.5% instead of the Shari'a livestock
-  schedule), and `goldPriceGram` / `silverPriceGram` in the override dialog still say "(USD)" in all 8 ARBs.
+  schedule), and ~~`goldPriceGram` / `silverPriceGram` in the override dialog said "(USD)" in all 8 ARBs~~ (done in `fix/followups`: an override is saved in the selected currency with no conversion, `_ratesCurrency = _baseCurrency`, so both keys now take a `{currency}` placeholder).
 - ~~**(f) Reader card header action buttons are 34 px,**~~ Done (`polish/design-completions`): each action (play, tafsir, favourite) now takes
   hits in a 44 x 44 layout box; the visible button is still 34 px (38 px wide). The header is still 44 px high (the badge). The visual
   gap between buttons grows from 6 to 10 px on phones (wide screens keep 10), so the action group is about 18 px wider. The favourite's

@@ -4121,10 +4121,14 @@ class AppLocalizationsId extends AppLocalizations {
   String get resetCalculator => 'Reset Kalkulator';
 
   @override
-  String get goldPriceGram => 'Harga emas per gram (USD)';
+  String goldPriceGram(String currency) {
+    return 'Harga emas per gram ($currency)';
+  }
 
   @override
-  String get silverPriceGram => 'Harga perak per gram (USD)';
+  String silverPriceGram(String currency) {
+    return 'Harga perak per gram ($currency)';
+  }
 
   @override
   String get zakatSavedLedger =>

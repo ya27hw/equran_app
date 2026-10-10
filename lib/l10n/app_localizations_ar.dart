@@ -4026,10 +4026,14 @@ class AppLocalizationsAr extends AppLocalizations {
   String get resetCalculator => 'إعادة ضبط الحاسبة';
 
   @override
-  String get goldPriceGram => 'سعر الذهب للجرام (بالدولار)';
+  String goldPriceGram(String currency) {
+    return 'سعر الذهب للجرام ($currency)';
+  }
 
   @override
-  String get silverPriceGram => 'سعر الفضة للجرام (بالدولار)';
+  String silverPriceGram(String currency) {
+    return 'سعر الفضة للجرام ($currency)';
+  }
 
   @override
   String get zakatSavedLedger => 'تم حفظ حساب الزكاة في سجلك الشخصي';

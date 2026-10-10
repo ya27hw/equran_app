@@ -7176,14 +7176,14 @@ abstract class AppLocalizations {
   /// No description provided for @goldPriceGram.
   ///
   /// In en, this message translates to:
-  /// **'Gold price per gram (USD)'**
-  String get goldPriceGram;
+  /// **'Gold price per gram ({currency})'**
+  String goldPriceGram(String currency);
 
   /// No description provided for @silverPriceGram.
   ///
   /// In en, this message translates to:
-  /// **'Silver price per gram (USD)'**
-  String get silverPriceGram;
+  /// **'Silver price per gram ({currency})'**
+  String silverPriceGram(String currency);
 
   /// No description provided for @zakatSavedLedger.
   ///

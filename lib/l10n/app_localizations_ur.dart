@@ -4105,10 +4105,14 @@ class AppLocalizationsUr extends AppLocalizations {
   String get resetCalculator => 'کیلکولیٹر ری سیٹ کریں';
 
   @override
-  String get goldPriceGram => 'سونے کی قیمت فی گرام (USD)';
+  String goldPriceGram(String currency) {
+    return 'سونے کی قیمت فی گرام ($currency)';
+  }
 
   @override
-  String get silverPriceGram => 'چاندی کی قیمت فی گرام (USD)';
+  String silverPriceGram(String currency) {
+    return 'چاندی کی قیمت فی گرام ($currency)';
+  }
 
   @override
   String get zakatSavedLedger =>

@@ -4110,10 +4110,14 @@ class AppLocalizationsTr extends AppLocalizations {
   String get resetCalculator => 'Hesaplayıcıyı Sıfırla';
 
   @override
-  String get goldPriceGram => 'Gram altın fiyatı (USD)';
+  String goldPriceGram(String currency) {
+    return 'Gram altın fiyatı ($currency)';
+  }
 
   @override
-  String get silverPriceGram => 'Gram gümüş fiyatı (USD)';
+  String silverPriceGram(String currency) {
+    return 'Gram gümüş fiyatı ($currency)';
+  }
 
   @override
   String get zakatSavedLedger => 'Zekat hesabı kişisel defterinize kaydedildi';

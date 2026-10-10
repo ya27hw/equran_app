@@ -4170,10 +4170,14 @@ class AppLocalizationsDe extends AppLocalizations {
   String get resetCalculator => 'Rechner zurücksetzen';
 
   @override
-  String get goldPriceGram => 'Goldpreis pro Gramm (USD)';
+  String goldPriceGram(String currency) {
+    return 'Goldpreis pro Gramm ($currency)';
+  }
 
   @override
-  String get silverPriceGram => 'Silberpreis pro Gramm (USD)';
+  String silverPriceGram(String currency) {
+    return 'Silberpreis pro Gramm ($currency)';
+  }
 
   @override
   String get zakatSavedLedger =>
