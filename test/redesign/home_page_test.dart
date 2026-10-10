@@ -208,7 +208,7 @@ void main() {
     await pump(tester, rich: true, locale: const Locale('ar'));
     expect(find.text('الأحد · 21 رَبِيع الثَّانِي 1448'), findsOneWidget);
     await pump(tester, rich: true, locale: const Locale('tr'));
-    expect(find.text('PAZAR · 21 REBIÜLAHIR 1448'), findsOneWidget);
+    expect(find.text('PAZAR · 21 REBİÜLAHİR 1448'), findsOneWidget);
     await pump(tester, rich: true, locale: const Locale('ur'));
     expect(find.text('اتوار · 21 ربیع الثانی 1448'), findsOneWidget);
   });

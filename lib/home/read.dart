@@ -100,6 +100,7 @@ import 'package:quran/quran.dart' as quran;
 import 'package:share_plus/share_plus.dart';
 import 'package:vibration/vibration.dart';
 import 'package:equran/l10n/app_localizations.dart';
+import 'package:equran/utils/text_case.dart';
 
 class _OfflineAudioPlaybackException implements Exception {
   const _OfflineAudioPlaybackException();
@@ -6859,7 +6860,9 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
 
   String _localizedRevelationPlace(AppLocalizations localizations) {
     final String place = quran.getPlaceOfRevelation(_currentChapter);
-    if (!isArabicLocalizations(localizations)) return place.toUpperCase();
+    if (!isArabicLocalizations(localizations)) {
+      return upperCaseFor(localizations.localeName, place);
+    }
     return place.toLowerCase() == 'makkah'
         ? localizations.makkah
         : localizations.madinah;

@@ -8,6 +8,7 @@ import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/utils/quran_display.dart';
 import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
+import 'package:equran/utils/text_case.dart';
 
 class PrayerTimeThumbCard extends StatelessWidget {
   const PrayerTimeThumbCard({
@@ -235,7 +236,7 @@ class _PrayerTimeRow extends StatelessWidget {
                           ),
                           if (isActive)
                             PillTag(
-                              l.countdownNow.toUpperCase(),
+                              upperCaseIn(context, l.countdownNow),
                               gold: true,
                               compact: true,
                             ),

@@ -2,6 +2,7 @@ import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_text_styles.dart';
 import 'package:equran/theme/equran_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:equran/utils/text_case.dart';
 
 /// Font scope for redesigned interface chrome. Reader typography stays separate.
 class RedesignPageTypography extends StatelessWidget {
@@ -77,7 +78,7 @@ class RedesignEyebrow extends StatelessWidget {
       'ur',
     ].contains(Localizations.localeOf(context).languageCode);
     return Text(
-      arabic ? text : text.toUpperCase(),
+      arabic ? text : upperCaseIn(context, text),
       style: EquranTextStyles.eyebrow(context).copyWith(
         color: color,
         fontFamily: arabic ? 'NotoNaskhArabic' : 'Inter',

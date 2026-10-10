@@ -15,6 +15,7 @@ import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/widgets/redesign/redesign_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:timezone/timezone.dart' as timezone;
+import 'package:equran/utils/text_case.dart';
 
 String duaGroupName(AppLocalizations l, DuaGroup group) => switch (group) {
   DuaGroup.dailyAthkar => l.duaGroupDailyAthkar,
@@ -146,7 +147,7 @@ class DuaEyebrow extends StatelessWidget {
       'ur',
     ].contains(Localizations.localeOf(context).languageCode);
     return Text(
-      arabic ? text : text.toUpperCase(),
+      arabic ? text : upperCaseIn(context, text),
       style: EquranTextStyles.eyebrow(context).copyWith(
         color: color,
         fontFamily: arabic ? 'NotoNaskhArabic' : 'Inter',

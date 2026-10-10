@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:equran/theme/inter_optical_size.dart';
+import 'package:equran/utils/text_case.dart';
 
 /// A critically damped follower for an angle in degrees.
 ///
@@ -440,7 +441,7 @@ class _Hub extends StatelessWidget {
               ),
               SizedBox(height: diameter * 0.05),
               Text(
-                (value == null ? l.qibla : l.heading).toUpperCase(),
+                upperCaseIn(context, value == null ? l.qibla : l.heading),
                 textScaler: TextScaler.noScaling,
                 maxLines: 1,
                 style: TextStyle(
