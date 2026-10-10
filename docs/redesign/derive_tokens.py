@@ -1,4 +1,4 @@
-"""Reference implementation. Run: python3 docs/redesign/derive_tokens.py
+"""Reference implementation. Run: python3 docs/redesign/derive_tokens.py [--write]  (--write regenerates tokens.json)
 
 Derive every redesign token from the app's existing EquranColors fields.
 
@@ -81,10 +81,21 @@ def derive(pal, mode, p):
     t['goldText'] = ensure(goldtext, [p['surface'], wash_bg, p['background']], 4.5, white if dark else black)
     t['goldWash'] = rgba(p['accentGold'], gw)
     t['danger'] = ensure('#E69A8B' if dark else '#B04B38', [p['surface'], p['surfaceAlt']], 4.5, white if dark else black)
+    # Hero panel ("bright heroes", ported from the design canvas, verified exact to +-0 per channel on all 11 palettes).
+    # featA: primaryGradientStart. featB: primaryGradientEnd, pulled toward featA only as far as needed for white
+    # text to reach 4.5:1 on it (so it is as bright as the palette allows; red-dark and AMOLED need no pull).
     t['featA'] = p['primaryGradientStart']
-    t['featB'] = mix(p['primaryGradientStart'], black, .45)
-    t['featText2'] = ensure('#C5D5CD', [t['featA'], t['featB']], 4.5, white)
-    t['glow'] = 'rgba(0,0,0,0)' if pal == 'black' else rgba(p['primary'], .20 if dark else .09)
+    t['featB'] = ensure(p['primaryGradientEnd'], [white], 4.5, t['featA'])
+    t['onFeat'] = white
+    # Caption/eyebrow text: onPrimaryMuted nudged toward white until 4.5:1 on both panel colours.
+    t['featText2'] = ensure(p['onPrimaryMuted'], [t['featA'], t['featB']], 4.5, white)
+    # Gold on the panel: accentGold lightened until 3:1 (large text, ornament, fill) on both panel colours.
+    t['featGold'] = ensure(p['accentGold'], [t['featA'], t['featB']], 3.0, white)
+    t['featRule'] = rgba(t['featGold'], .30)
+    # Dark ink for text on any gold fill (hero action button, gold button elsewhere).
+    t['onGold'] = '#1B1406'
+    t['onFeatGold'] = t['onGold']
+    t['glow'] = 'rgba(0,0,0,0)' if pal == 'black' else rgba(p['primary'], .28 if dark else .12)
     t['shadow'] = '0 14px 34px rgba(0,0,0,.40)' if dark else f'0 10px 26px {rgba(p["shadow"], .10)}'
     t['dock'] = rgba(p['surface'], .84 if dark else .88)
     t['scrim'] = 'rgba(0,0,0,.62)' if dark else rgba(p['shadow'], .42)
@@ -104,9 +115,14 @@ def report(pal, mode, p, t):
         ('goldText on surface', contrast(t['goldText'], p['surface']), 4.5),
         ('goldText on goldWash', contrast(t['goldText'], wash_surface), 4.5),
         ('danger on surface', contrast(t['danger'], p['surface']), 4.5),
-        ('hero text #F3F7F4 on featA', contrast('#F3F7F4', featA), 4.5),
-        ('hero caption on featA', contrast(t['featText2'], featA), 4.5),
-        ('hero gold #E2BC6B on featB', contrast('#E2BC6B', featB), 4.5),
+        ('onFeat on featA', contrast(t['onFeat'], featA), 4.5),
+        ('onFeat on featB', contrast(t['onFeat'], featB), 4.5),
+        ('featText2 on featA', contrast(t['featText2'], featA), 4.5),
+        ('featText2 on featB', contrast(t['featText2'], featB), 4.5),
+        ('featGold on featA', contrast(t['featGold'], featA), 3.0),
+        ('featGold on featB', contrast(t['featGold'], featB), 3.0),
+        ('onFeatGold on featGold', contrast(t['onFeatGold'], t['featGold']), 4.5),
+        ('onGold on gold', contrast(t['onGold'], t['gold']), 4.5),
         ('gold hairline/graphics on surface', contrast(t['gold'], p['surface']), 3.0),
     ]
     return [(n, round(r, 2), need, r >= need) for n, r, need in rows]
@@ -122,7 +138,8 @@ def build():
         v = {'bg': t['bg'], 'surface': t['surface'], 'surface2': t['surface2'], 'hair': t['hair'], 'hair2': t['hair2'], 'text': t['text'],
              'text2': t['text2'], 'muted': t['muted'], 'em': t['em'], 'em-text': t['emText'], 'em-wash': t['emWash'], 'gold': t['gold'],
              'gold-text': t['goldText'], 'gold-wash': t['goldWash'], 'danger': t['danger'], 'feat-a': t['featA'], 'feat-b': t['featB'], 'feat-text2': t['featText2'],
-             'glow': t['glow'], 'shadow': t['shadow'], 'dock': t['dock'], 'scrim': t['scrim']}
+             'on-feat': t['onFeat'], 'feat-gold': t['featGold'], 'feat-rule': t['featRule'], 'on-gold': t['onGold'],
+             'on-feat-gold': t['onFeatGold'], 'glow': t['glow'], 'shadow': t['shadow'], 'dock': t['dock'], 'scrim': t['scrim']}
         css.append(f'.root.pal-{pal}.{mode}{{' + ';'.join(f'--{k}:{val}' for k, val in v.items()) + '}')
     return '\n'.join(css), tokens, rep
 
@@ -134,3 +151,7 @@ if __name__ == '__main__':
         bad += len(fails)
         print(k, 'OK' if not fails else fails)
     print('failing pairs:', bad)
+    import sys
+    if '--write' in sys.argv:  # regenerate tokens.json (the Flutter test parses it)
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tokens.json'), 'w') as f:
+            f.write(json.dumps(tokens, indent=1))

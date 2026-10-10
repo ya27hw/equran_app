@@ -19,6 +19,11 @@ class EquranTokens extends ThemeExtension<EquranTokens> {
     required this.featA,
     required this.featB,
     required this.featText2,
+    required this.onFeat,
+    required this.featGold,
+    required this.featRule,
+    required this.onGold,
+    required this.onFeatGold,
     required this.glow,
     required this.dock,
     required this.scrim,
@@ -39,6 +44,21 @@ class EquranTokens extends ThemeExtension<EquranTokens> {
   final Color featA;
   final Color featB;
   final Color featText2;
+
+  /// Text on a hero panel ([featA] to [featB]); white, 4.5:1 on both.
+  final Color onFeat;
+
+  /// Gold on a hero panel: ornament, ring, fill. At least 3:1 on both colours.
+  final Color featGold;
+
+  /// Hairline around a hero panel ([featGold] at 30%).
+  final Color featRule;
+
+  /// Dark ink for text on a gold fill ([gold] buttons).
+  final Color onGold;
+
+  /// Dark ink for text on a [featGold] fill (the hero action button).
+  final Color onFeatGold;
   final Color glow;
   final Color dock;
   final Color scrim;
@@ -87,8 +107,22 @@ class EquranTokens extends ThemeExtension<EquranTokens> {
     );
     final double goldAlpha = dark ? 0.12 : 0.14;
     final Color washSurface = mix(colors.surface, colors.accentGold, goldAlpha);
+    // Bright heroes: featB is primaryGradientEnd, pulled toward featA only as
+    // far as white text needs for 4.5:1 (red-dark and AMOLED need no pull).
     final Color featA = colors.primaryGradientStart;
-    final Color featB = mix(featA, Colors.black, 0.45);
+    final Color featB = ensure(
+      colors.primaryGradientEnd,
+      against: [Colors.white],
+      target: 4.5,
+      toward: featA,
+    );
+    final Color featGold = ensure(
+      colors.accentGold,
+      against: [featA, featB],
+      target: 3.0,
+      toward: Colors.white,
+    );
+    const Color onGold = Color(0xFF1B1406);
     return EquranTokens(
       text2: text2,
       muted: muted,
@@ -123,14 +157,19 @@ class EquranTokens extends ThemeExtension<EquranTokens> {
       featA: featA,
       featB: featB,
       featText2: ensure(
-        const Color(0xFFC5D5CD),
+        colors.onPrimaryMuted,
         against: [featA, featB],
         target: 4.5,
         toward: Colors.white,
       ),
+      onFeat: Colors.white,
+      featGold: featGold,
+      featRule: featGold.withValues(alpha: 0.30),
+      onGold: onGold,
+      onFeatGold: onGold,
       glow: colors.background == Colors.black
           ? Colors.transparent
-          : colors.primary.withValues(alpha: dark ? 0.20 : 0.09),
+          : colors.primary.withValues(alpha: dark ? 0.28 : 0.12),
       dock: colors.surface.withValues(alpha: dark ? 0.84 : 0.88),
       scrim: (dark ? Colors.black : colors.shadow).withValues(
         alpha: dark ? 0.62 : 0.42,
@@ -199,6 +238,11 @@ class EquranTokens extends ThemeExtension<EquranTokens> {
     Color? featA,
     Color? featB,
     Color? featText2,
+    Color? onFeat,
+    Color? featGold,
+    Color? featRule,
+    Color? onGold,
+    Color? onFeatGold,
     Color? glow,
     Color? dock,
     Color? scrim,
@@ -218,6 +262,11 @@ class EquranTokens extends ThemeExtension<EquranTokens> {
     featA: featA ?? this.featA,
     featB: featB ?? this.featB,
     featText2: featText2 ?? this.featText2,
+    onFeat: onFeat ?? this.onFeat,
+    featGold: featGold ?? this.featGold,
+    featRule: featRule ?? this.featRule,
+    onGold: onGold ?? this.onGold,
+    onFeatGold: onFeatGold ?? this.onFeatGold,
     glow: glow ?? this.glow,
     dock: dock ?? this.dock,
     scrim: scrim ?? this.scrim,
@@ -242,6 +291,11 @@ class EquranTokens extends ThemeExtension<EquranTokens> {
       featA: Color.lerp(featA, other.featA, t)!,
       featB: Color.lerp(featB, other.featB, t)!,
       featText2: Color.lerp(featText2, other.featText2, t)!,
+      onFeat: Color.lerp(onFeat, other.onFeat, t)!,
+      featGold: Color.lerp(featGold, other.featGold, t)!,
+      featRule: Color.lerp(featRule, other.featRule, t)!,
+      onGold: Color.lerp(onGold, other.onGold, t)!,
+      onFeatGold: Color.lerp(onFeatGold, other.onFeatGold, t)!,
       glow: Color.lerp(glow, other.glow, t)!,
       dock: Color.lerp(dock, other.dock, t)!,
       scrim: Color.lerp(scrim, other.scrim, t)!,

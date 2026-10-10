@@ -32,7 +32,7 @@ Create `lib/theme/equran_tokens.dart`: a `ThemeExtension<EquranTokens>` built fr
 by fixed rules. **There are no per-palette constants.** [`derive_tokens.py`](derive_tokens.py) is the reference
 implementation (run `python3 docs/redesign/derive_tokens.py`; it reads `equran_colors.dart` and prints a contrast report).
 
-Fields: `text2, muted, hair, hair2, filled, emText, emWash, gold, goldText, goldWash, danger, featA, featB, featText2,
+Fields: `text2, muted, hair, hair2, filled, emText, emWash, gold, goldText, goldWash, danger, featA, featB, featText2, onFeat, featGold, featRule, onGold, onFeatGold,
 glow, dock, scrim, shadow` (colour names in `tokens.json` are `em` = `filled`).
 
 Helpers to port exactly:
@@ -52,7 +52,7 @@ Add radius 28 to `EquranRadii`.
 **Tests (required to merge Phase 0):**
 1. For every palette in `tokens.json`, build `EquranTokens` from the Dart `EquranColors` constant and assert each derived colour equals
    the JSON value within ±1 per channel. Parse `tokens.json` in the test; do not copy numbers into the test.
-2. Assert the 13 contrast pairs from `derive_tokens.py` (`report()`) pass for all 11 palettes.
+2. Assert the contrast pairs from `derive_tokens.py` (`report()`) pass for all 11 palettes.
 
 ## Phase 1: shared widgets (`lib/widgets/redesign/` or the nearest existing folder)
 
