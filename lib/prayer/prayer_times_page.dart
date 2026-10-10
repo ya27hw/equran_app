@@ -6,6 +6,7 @@ import 'package:equran/prayer/manual_prayer_location_page.dart';
 import 'package:equran/prayer/prayer_map_location_page.dart';
 import 'package:equran/prayer/prayer_location_service.dart';
 import 'package:equran/prayer/prayer_localizations.dart';
+import 'package:equran/prayer/prayer_arc_hero.dart' show PrayerArcSetupHero;
 import 'package:equran/prayer/prayer_hero_card.dart';
 import 'package:equran/prayer/prayer_models.dart';
 import 'package:equran/prayer/prayer_notification_service.dart';
@@ -20,6 +21,8 @@ import 'package:equran/widgets/redesign/page_typography.dart';
 import 'package:equran/prayer/qibla_page.dart';
 import 'package:equran/utils/app_radii.dart';
 import 'package:equran/utils/quran_display.dart';
+import 'package:equran/widgets/reader_sheet_chrome.dart'
+    show ReaderIconWell, readerFilledButtonStyle;
 import 'package:equran/widgets/prayer_widget_service.dart';
 import 'package:equran/prayer/hijri_calendar.dart';
 import 'package:flutter/material.dart';
@@ -272,111 +275,134 @@ class _PrayerTimesPageState extends State<PrayerTimesPage>
     );
   }
 
+  /// No location saved yet: the Prayer page frame with the setup sky hero, a
+  /// card explaining why a location is needed, and the one action (the map
+  /// picker, where the device location and the manual entry also live).
   Widget _buildSetupState(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
+    final AppLocalizations l = AppLocalizations.of(context)!;
+    final EquranTokens tokens = context.equranTokens;
     final EquranColors colors = context.equranColors;
-    final localizations = AppLocalizations.of(context)!;
-    final TextStyle? buttonTextStyle = theme.textTheme.titleSmall?.copyWith(
-      fontWeight: FontWeight.w700,
-      letterSpacing: 0,
-    );
 
-    return LayoutBuilder(
-      builder: (BuildContext context, BoxConstraints constraints) {
-        return SingleChildScrollView(
+    return RedesignPageTypography(
+      child: SafeArea(
+        bottom: false,
+        child: ListView(
           physics: const BouncingScrollPhysics(),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: constraints.maxHeight),
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 420),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      Align(
-                        alignment: Alignment.center,
-                        child: Container(
-                          width: 72,
-                          height: 72,
-                          decoration: BoxDecoration(
-                            color: colors.mint,
-                            borderRadius: BorderRadius.circular(AppRadii.pill),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
+          children: <Widget>[
+            Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 820),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    Text(l.prayer, style: redesignDisplayStyle(context)),
+                    const SizedBox(height: 20),
+                    PrayerArcSetupHero(onTap: () => _chooseOnMap(null)),
+                    const SizedBox(height: 20),
+                    HairlineCard(
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                        18,
+                        18,
+                        18,
+                        18,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              const ReaderIconWell(icon: DesignIcon('pin')),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      l.prayerTimesNeedLocation,
+                                      style: TextStyle(
+                                        fontSize: 15.5,
+                                        fontVariations: const [
+                                          FontVariation('opsz', 15.5),
+                                        ],
+                                        fontWeight: FontWeight.w600,
+                                        height: 1.3,
+                                        color: colors.textPrimary,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      l.prayerTimesLocationSubtitle,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        height: 1.45,
+                                        color: tokens.text2,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                          child: Icon(
-                            Icons.add_location_alt_outlined,
-                            color: colors.primary,
-                            size: 32,
+                          const SizedBox(height: 14),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.only(top: 1),
+                                child: DesignIcon(
+                                  'shield',
+                                  size: 16,
+                                  strokeWidth: 1.7,
+                                  color: tokens.muted,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  l.locationUseNotice,
+                                  style: TextStyle(
+                                    fontSize: 12.5,
+                                    height: 1.4,
+                                    color: tokens.muted,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      Text(
-                        localizations.prayerTimesNeedLocation,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.headlineMedium?.copyWith(
-                          color: colors.textPrimary,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 0,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        localizations.prayerTimesLocationSubtitle,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: colors.textSecondary,
-                          height: 1.6,
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-                      Text(
-                        localizations.locationUseNotice,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: colors.textMuted,
-                          fontStyle: FontStyle.italic,
-                          letterSpacing: 0,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        width: double.infinity,
-                        child: FilledButton.icon(
-                          onPressed: () => _chooseOnMap(null),
-                          style: FilledButton.styleFrom(
-                            backgroundColor: colors.primary,
-                            foregroundColor: colors.onPrimary,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                AppRadii.pill,
+                          const SizedBox(height: 18),
+                          FilledButton.icon(
+                            key: const Key('prayer-setup-location'),
+                            onPressed: () => _chooseOnMap(null),
+                            style: readerFilledButtonStyle(context).copyWith(
+                              minimumSize: const WidgetStatePropertyAll(
+                                Size(0, 52),
                               ),
                             ),
-                            textStyle: buttonTextStyle,
+                            icon: const DesignIcon('pin', size: 18),
+                            label: Text(l.setUpLocation),
                           ),
-                          icon: const Icon(Icons.map_outlined),
-                          label: Text(localizations.setUpLocation),
-                        ),
+                        ],
                       ),
-                      const SizedBox(height: 28),
-                      Text(
-                        localizations.timesCalculatedLocally,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: colors.textMuted,
-                          letterSpacing: 0,
-                        ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      l.timesCalculatedLocally,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 12,
+                        height: 1.4,
+                        color: tokens.muted,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 

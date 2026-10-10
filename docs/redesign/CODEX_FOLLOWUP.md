@@ -113,10 +113,9 @@ Settings landing, floating dock, player bar, playback options sheet.
 
 ### Blocked on the owner
 - **More hero** (`_MoreHero`): needs an approved design.
-- **Prayer page full setup screen** (`_buildSetupState`, no location): still the old design; no spec.
-- **Surah list sort chip label:** the control reverses surah order (1 to 114), so the design's "A to Z" label does not fit; needs a
-  decision on the label and any new strings.
-- **Juz and Pages grouped card:** rows are restyled cards, not the single grouped card in the design; no spec in the repo.
+- ~~**Prayer page full setup screen** (`_buildSetupState`, no location)~~ Done (`polish/design-completions`, owner delegated the design): page frame + `PrayerArcSetupHero` + one hairline card (why a location is needed, privacy notice, the single "Set up location" action) + the "calculated locally" caption. Device location and manual entry live inside the map picker, as before. Goldens: `test/redesign/goldens/prayer_setup/`.
+- ~~**Surah list sort chip label**~~ Done (owner delegated): flat `ChipButton` showing the order as numerals (1-114 / 114-1, 1-30 for Juz, 1-604 for Pages, pinned LTR), tooltip `reverseOrder` (new key, machine-drafted in 7 languages). It stays in the floating-button slot; to move it into the list header, relocate `_buildOrderChip` in `lib/home/main_page.dart`.
+- ~~**Juz and Pages grouped card**~~ Done (owner delegated): one hairline card per juz (heading above it) and one card for Pages, via the shared `GroupedCardSliver`. Wide screens cap the card at 760 px; the Surahs tab still switches to a card grid from 700 px.
 - **Bright hero tokens** (`featA`/`featB`, `onFeat`, `featGold`, `featRule`, `onGold`, `onFeatGold`, stronger `glow`): not in code; it
   re-renders every hero golden.
 - **Native review of machine-drafted translations:** `prayerNextIn`, `showMore`, `prayersCount`, `note`, `saveDuasHere`, and in the
