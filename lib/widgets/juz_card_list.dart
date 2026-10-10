@@ -1,4 +1,3 @@
-import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/theme/equran_text_styles.dart';
 import 'package:equran/theme/equran_tokens.dart';
@@ -6,7 +5,8 @@ import 'package:equran/utils/juz_search.dart';
 import 'package:equran/utils/quran_display.dart';
 import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
-import 'package:flutter/rendering.dart';
+import 'package:equran/widgets/grouped_card_sliver.dart';
+import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 
 import 'juz_card.dart';
 
@@ -56,72 +56,73 @@ class _JuzCardListState extends State<JuzCardList>
             );
           }).toList();
 
-    final List<JuzListItem> items = buildJuzListItems(juzGroups);
-    final double textScale = MediaQuery.textScalerOf(
-      context,
-    ).scale(1.0).clamp(1.0, 1.2).toDouble();
-    final double headerExtent = 76 * textScale;
-    final double tileExtent = 122 * textScale;
-
-    final Widget child = Scrollbar(
-      key: ValueKey<bool>(widget.ascending),
-      controller: scrollController,
-      thumbVisibility: true,
-      interactive: true,
-      child: ListView.builder(
-        scrollCacheExtent: ScrollCacheExtent.pixels(tileExtent * 8),
-        controller: scrollController,
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsetsDirectional.only(end: 2, bottom: 24),
-        itemCount: items.length,
-        itemExtentBuilder: (int index, _) {
-          return items[index].group != null ? headerExtent : tileExtent;
-        },
-        itemBuilder: (BuildContext context, int index) {
-          final JuzListItem item = items[index];
-          final JuzGroup? group = item.group;
-          if (group != null) {
-            return SizedBox(
-              key: ValueKey<String>('juz-header-${group.juzNumber}'),
-              height: headerExtent,
-              child: Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(0, 6, 0, 12),
-                child: _JuzSectionHeader(
-                  juzNumber: group.juzNumber,
-                  arabicName: group.arabicName,
-                  surahCount: group.entries.length,
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        // The grouped card keeps a readable width on tablets and desktops.
+        final double width = constraints.maxWidth;
+        final double sideInset = width > 760 ? (width - 760) / 2 : 0;
+        return Scrollbar(
+          key: ValueKey<bool>(widget.ascending),
+          controller: scrollController,
+          thumbVisibility: true,
+          interactive: true,
+          child: CustomScrollView(
+            controller: scrollController,
+            physics: const BouncingScrollPhysics(),
+            scrollCacheExtent: const ScrollCacheExtent.pixels(900),
+            slivers: <Widget>[
+              for (final JuzGroup group in juzGroups) ...<Widget>[
+                SliverPadding(
+                  padding: EdgeInsets.symmetric(horizontal: sideInset),
+                  sliver: SliverToBoxAdapter(
+                    child: _JuzSectionHeader(
+                      key: ValueKey<String>('juz-header-${group.juzNumber}'),
+                      juzNumber: group.juzNumber,
+                      arabicName: group.arabicName,
+                      surahCount: group.entries.length,
+                    ),
+                  ),
                 ),
-              ),
-            );
-          }
-
-          final JuzEntry entry = item.entry!;
-          return SizedBox(
-            key: ValueKey<String>(
-              'juz-${entry.surahId}-${entry.startVerse}-${entry.endVerse}',
-            ),
-            height: tileExtent,
-            child: QuranJuzTile(
-              id: entry.surahId,
-              transliteration: entry.transliteration,
-              name: entry.name,
-              startVerse: entry.startVerse,
-              endVerse: entry.endVerse,
-            ),
-          );
-        },
-      ),
+                SliverPadding(
+                  padding: EdgeInsets.symmetric(horizontal: sideInset),
+                  sliver: GroupedCardSliver(
+                    itemCount: group.entries.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final JuzEntry entry = group.entries[index];
+                      return QuranJuzTile(
+                        key: ValueKey<String>(
+                          'juz-${entry.surahId}-${entry.startVerse}-${entry.endVerse}',
+                        ),
+                        id: entry.surahId,
+                        transliteration: entry.transliteration,
+                        name: entry.name,
+                        startVerse: entry.startVerse,
+                        endVerse: entry.endVerse,
+                        inkRadius: groupedInkRadius(
+                          index,
+                          group.entries.length,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+              const SliverToBoxAdapter(child: SizedBox(height: 24)),
+            ],
+          ),
+        );
+      },
     );
-
-    return child;
   }
 
   @override
   bool get wantKeepAlive => true;
 }
 
+/// The juz' heading above its card: number pill, Arabic name, surah count.
 class _JuzSectionHeader extends StatelessWidget {
   const _JuzSectionHeader({
+    super.key,
     required this.juzNumber,
     required this.arabicName,
     required this.surahCount,
@@ -134,21 +135,15 @@ class _JuzSectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
     final EquranTokens tokens = context.equranTokens;
-    final localizations = AppLocalizations.of(context)!;
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(EquranRadii.large),
-        border: Border.all(color: tokens.hair),
-      ),
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(4, 18, 14, 10),
       child: Row(
         children: <Widget>[
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
               color: tokens.emWash,
               borderRadius: BorderRadius.circular(EquranRadii.pill),
@@ -156,7 +151,7 @@ class _JuzSectionHeader extends StatelessWidget {
             child: Text(
               localizedJuzLabel(localizations, juzNumber),
               style: theme.textTheme.labelLarge?.copyWith(
-                fontWeight: FontWeight.w900,
+                fontWeight: FontWeight.w700,
                 color: tokens.emText,
                 letterSpacing: 0,
               ),
@@ -183,7 +178,7 @@ class _JuzSectionHeader extends StatelessWidget {
           ),
           const SizedBox(width: 10),
           Text(
-            _surahCountLabel(surahCount, localizations),
+            localizations.surahCount(surahCount),
             style: theme.textTheme.labelLarge?.copyWith(
               color: tokens.muted,
               fontWeight: FontWeight.w600,
@@ -192,9 +187,5 @@ class _JuzSectionHeader extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  String _surahCountLabel(int count, AppLocalizations localizations) {
-    return localizations.surahCount(count);
   }
 }

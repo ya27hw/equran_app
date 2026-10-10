@@ -1,9 +1,7 @@
 import 'package:dynamic_height_grid_view/dynamic_height_grid_view.dart';
 import 'package:equran/backend/surah_db.dart';
 import 'package:equran/backend/surah_model.dart';
-import 'package:equran/theme/equran_colors.dart';
-import 'package:equran/theme/equran_spacing.dart';
-import 'package:equran/theme/equran_tokens.dart';
+import 'package:equran/widgets/grouped_card_sliver.dart';
 import 'package:equran/widgets/quran_card.dart';
 import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
@@ -98,8 +96,6 @@ class _QuranCardListState extends State<QuranCardList>
 
         Widget childList;
         if (columns == 1) {
-          final EquranTokens tokens = context.equranTokens;
-          const double outer = EquranRadii.xl;
           childList = Scrollbar(
             key: ValueKey<bool>(widget.ascending),
             controller: scrollController,
@@ -118,30 +114,16 @@ class _QuranCardListState extends State<QuranCardList>
                   ),
                 SliverPadding(
                   padding: const EdgeInsets.only(bottom: 30),
-                  sliver: DecoratedSliver(
-                    decoration: BoxDecoration(
-                      color: context.equranColors.surface,
-                      borderRadius: BorderRadius.circular(outer),
-                      border: Border.all(color: tokens.hair),
-                    ),
-                    sliver: SliverList.separated(
-                      itemCount: data.length,
-                      separatorBuilder: (BuildContext context, int index) =>
-                          Divider(height: 1, thickness: 1, color: tokens.hair),
-                      itemBuilder: (BuildContext context, int index) {
-                        return QuranCard(
-                          surah: data[index],
-                          compact: false,
-                          grouped: true,
-                          inkRadius: BorderRadius.vertical(
-                            top: Radius.circular(index == 0 ? outer : 0),
-                            bottom: Radius.circular(
-                              index == data.length - 1 ? outer : 0,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                  sliver: GroupedCardSliver(
+                    itemCount: data.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return QuranCard(
+                        surah: data[index],
+                        compact: false,
+                        grouped: true,
+                        inkRadius: groupedInkRadius(index, data.length),
+                      );
+                    },
                   ),
                 ),
               ],

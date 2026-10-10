@@ -11,9 +11,11 @@ import 'package:equran/hifz/hifz.dart';
 import 'package:equran/utils/debouncer.dart';
 import 'package:equran/utils/quran_display.dart';
 import 'package:equran/widgets/quran_reading_hero.dart';
+import 'package:equran/widgets/grouped_card_sliver.dart';
 import 'package:equran/widgets/library.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:quran/quran.dart' as quran;
@@ -582,50 +584,70 @@ class _QuranPageList extends StatelessWidget {
         }).toList();
 
     final List<int> pages = ascending ? rawPages : rawPages.reversed.toList();
+    final ScrollController? controller = PrimaryScrollController.maybeOf(
+      context,
+    );
 
-    final Widget child = GridView.builder(
-      key: ValueKey<bool>(ascending),
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.only(bottom: 28),
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 520,
-        mainAxisExtent:
-            76 * MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 1.3),
-        mainAxisSpacing: 8,
-        crossAxisSpacing: 10,
-      ),
-      itemCount: pages.length,
-      itemBuilder: (context, index) {
-        final int page = pages[index];
-        return _QuranPageTile(
-          page: page,
-          summary: _pageSummary(page, localizations),
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        // The grouped card keeps a readable width on tablets and desktops.
+        final double sideInset = constraints.maxWidth > 760
+            ? (constraints.maxWidth - 760) / 2
+            : 0;
+        return Scrollbar(
+          key: ValueKey<bool>(ascending),
+          controller: controller,
+          thumbVisibility: true,
+          interactive: true,
+          child: CustomScrollView(
+            controller: controller,
+            physics: const BouncingScrollPhysics(),
+            scrollCacheExtent: const ScrollCacheExtent.pixels(900),
+            slivers: <Widget>[
+              SliverPadding(
+                padding: EdgeInsets.fromLTRB(sideInset, 0, sideInset, 30),
+                sliver: GroupedCardSliver(
+                  itemCount: pages.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final int page = pages[index];
+                    return _QuranPageTile(
+                      page: page,
+                      summary: _pageSummary(page, localizations),
+                      inkRadius: groupedInkRadius(index, pages.length),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         );
       },
     );
-
-    return child;
   }
 }
 
+/// One page of the Pages tab: a row of the grouped card.
 class _QuranPageTile extends StatelessWidget {
-  const _QuranPageTile({required this.page, required this.summary});
+  const _QuranPageTile({
+    required this.page,
+    required this.summary,
+    required this.inkRadius,
+  });
 
   final int page;
   final _PageSummary summary;
+  final BorderRadius inkRadius;
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final EquranColors colors = context.equranColors;
     final EquranTokens tokens = context.equranTokens;
-    final BorderRadius radius = BorderRadius.circular(EquranRadii.large);
 
     return Material(
-      color: colors.surface,
-      borderRadius: radius,
+      color: Colors.transparent,
       child: InkWell(
-        borderRadius: radius,
+        borderRadius: inkRadius,
         onTap: () => Navigator.of(context).push(
           MaterialPageRoute<void>(
             builder: (context) => ReadPage(
@@ -634,12 +656,8 @@ class _QuranPageTile extends StatelessWidget {
             ),
           ),
         ),
-        child: Ink(
-          decoration: BoxDecoration(
-            borderRadius: radius,
-            border: Border.all(color: tokens.hair),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Row(
             children: <Widget>[
               NumberBadge(label: page.toString(), size: 40),
@@ -660,7 +678,7 @@ class _QuranPageTile extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 3),
                     Text(
                       summary.rangeLabel,
                       maxLines: 1,
