@@ -48,7 +48,7 @@ Use `DesignIcon` (`lib/widgets/redesign/design_icon.dart`) for icons, never Mate
     - ~~Saved edit sheet against `saved-sheet.dark.html`~~ (aligned in `80e43d2`; the list below is the original diff): wording differs ("Folders"/"Manage" vs "Folder"/"Manage folders", "Favourites" vs
       "Favourite"), the "New folder" chip should have a dashed border, the tags row should be one inline field with a placeholder instead
       of chips plus a second text field, and Save has a check icon the design lacks. Not checked in every palette.
-11. **Translations.** `prayerNextIn`, `showMore`, `prayersCount`, `note` are machine-drafted in ar, bn, de, fa, id, tr, ur.
+11. **Translations.** The full hand-off list for native reviewers (every key, English, draft, where it appears, per language) is `docs/translation_review.md`, generated from the ARB diff. `fix/followups` also changed German `cancel` ("Stornieren" to "Abbrechen") and Indonesian `reciter` ("Tukang deklamasi" to "Qari"); German `hifzExitCancel` and Indonesian `reciterOption` still carry the old wording. `zakatNisabNotChecked` was added (machine-drafted in 7 languages) and `goldPriceGram` / `silverPriceGram` now take `{currency}`. `prayerNextIn`, `showMore`, `prayersCount`, `note` are machine-drafted in ar, bn, de, fa, id, tr, ur.
     `enterPaidAmountInCurrency`, `zakatNisabNeedsRates`, `zakatDeleteRecordQuestion`, `zakatDeleteRecordBody` and `unitTola` (Zakat) are
   machine-drafted in the same seven languages too.
   `saveDuasHere` ("Saved for quick access") was drafted in the same seven languages this round to match the new English caption

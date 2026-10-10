@@ -214,7 +214,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Entfernt gespeicherte Ayahs, Ordner, Notizen, Tags und Favoriten.';
 
   @override
-  String get cancel => 'Stornieren';
+  String get cancel => 'Abbrechen';
 
   @override
   String get save => 'Speichern';

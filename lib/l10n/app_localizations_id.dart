@@ -145,7 +145,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get translation => 'Terjemahan';
 
   @override
-  String get reciter => 'Tukang deklamasi';
+  String get reciter => 'Qari';
 
   @override
   String get audio => 'Audio';
