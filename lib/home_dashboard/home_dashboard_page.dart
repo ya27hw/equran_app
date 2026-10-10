@@ -170,10 +170,11 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
       _now,
       offset: hijriOffset,
     );
-    final String weekday = DateFormat(
-      'EEEE',
-      Localizations.localeOf(context).toString(),
-    ).format(_now);
+    final String localeName = Localizations.localeOf(context).toString();
+    final String weekday = DateFormat('EEEE', localeName).format(_now);
+    // Month name in the app language and Western digits (the app-wide policy);
+    // the bidi algorithm puts the day first under right-to-left scripts.
+    final String hijriDate = hijri.toLocalizedDateString(localeName);
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
@@ -187,7 +188,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
         children: <Widget>[
           Expanded(
             child: RedesignEyebrow(
-              '$weekday \u00B7 ${hijri.toString()}',
+              '$weekday \u00B7 $hijriDate',
               color: tokens.goldText,
             ),
           ),
