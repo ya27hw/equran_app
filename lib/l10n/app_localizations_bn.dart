@@ -4702,4 +4702,298 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get unitTola => 'ভরি';
+
+  @override
+  String get hifzRatingFail => 'ব্যর্থ';
+
+  @override
+  String get hifzRatingPass => 'উত্তীর্ণ';
+
+  @override
+  String get shareImageFormat => 'শেয়ার করা ছবির ফরম্যাট';
+
+  @override
+  String get shareFormatStory => 'স্টোরি 9:16';
+
+  @override
+  String get shareFormatSquare => 'বর্গাকার 1:1';
+
+  @override
+  String get shareFormatClassic => 'ক্লাসিক';
+
+  @override
+  String get unableToShareAyahImage => 'আয়াতের ছবি শেয়ার করা যায়নি।';
+
+  @override
+  String get reciterGroupDownloaded => 'ডাউনলোড করাগুলো একসাথে দেখান';
+
+  @override
+  String get reciterShowAlphabetical => 'বর্ণানুক্রমে দেখান';
+
+  @override
+  String get audioConnectionInterrupted =>
+      'অডিও সংযোগ বিচ্ছিন্ন হয়েছে। আপনার ইন্টারনেট পরীক্ষা করে আবার চেষ্টা করুন।';
+
+  @override
+  String get offlineDownloadAyahOrReconnect =>
+      'আপনি অফলাইনে আছেন। এই আয়াতটি ডাউনলোড করুন অথবা স্ট্রিম করতে আবার সংযুক্ত হন।';
+
+  @override
+  String get unableToPlayAyahAudio => 'আয়াতের অডিও চালানো যায়নি।';
+
+  @override
+  String get repeatOnce => 'একবার';
+
+  @override
+  String repeatTimes(int count) {
+    return '$count বার';
+  }
+
+  @override
+  String get repeatInfinite => 'অসীম';
+
+  @override
+  String get halfSecond => '0.5 সেকেন্ড';
+
+  @override
+  String get resourceStateUpdateAvailable => 'আপডেট উপলব্ধ';
+
+  @override
+  String get resourcePhaseStarting => 'শুরু হচ্ছে';
+
+  @override
+  String get resourcePhaseVerifying => 'যাচাই করা হচ্ছে';
+
+  @override
+  String get resourcePhaseExtracting => 'এক্সট্র্যাক্ট করা হচ্ছে';
+
+  @override
+  String get resourcePhaseInstalling => 'ইনস্টল হচ্ছে';
+
+  @override
+  String get resourcePhaseFailed => 'ব্যর্থ হয়েছে';
+
+  @override
+  String get resourceTypeGeneric => 'রিসোর্স';
+
+  @override
+  String get translationBundled => 'অন্তর্ভুক্ত';
+
+  @override
+  String get translationDownloadUnavailable => 'ডাউনলোড পাওয়া যাচ্ছে না';
+
+  @override
+  String get navigationSettingsHint =>
+      'পুনর্বিন্যাস করতে টাইলগুলো টেনে আনুন। কোনো উপলব্ধ আইটেম টেনে একটি সক্রিয় টাইলের ওপর ছেড়ে দিলে দুটি অদলবদল হবে, অথবা নিচের কোনো আইটেমে ট্যাপ করে সেটি পিন করুন (সবচেয়ে কম সম্প্রতি ব্যবহৃত আইটেমটি সরে যাবে)।';
+
+  @override
+  String navigationActiveSlots(int count, int max) {
+    return 'সক্রিয় নেভবার স্লট ($count/$max)';
+  }
+
+  @override
+  String get navigationAvailableItems => 'উপলব্ধ আনপিন করা আইটেম';
+
+  @override
+  String navigationSlot(int number) {
+    return 'স্লট $number';
+  }
+
+  @override
+  String navigationSlotLocked(int number) {
+    return 'স্লট $number (লক করা হাব)';
+  }
+
+  @override
+  String navigationSwapped(String first, String second) {
+    return '$first ও $second অদলবদল করা হয়েছে';
+  }
+
+  @override
+  String navigationRemoved(String item) {
+    return 'নেভবার থেকে $item সরানো হয়েছে';
+  }
+
+  @override
+  String navigationPinned(String item) {
+    return '$item পিন করা হয়েছে';
+  }
+
+  @override
+  String navigationPinnedDisplaced(String item, String displaced) {
+    return '$item পিন করা হয়েছে ($displaced সরে গেছে)';
+  }
+
+  @override
+  String get navSubtitleHome => 'প্রধান ড্যাশবোর্ড';
+
+  @override
+  String get navSubtitleQuran => 'পবিত্র কুরআন পড়ুন';
+
+  @override
+  String get navSubtitlePrayer => 'নামাজের সময় ও আজান';
+
+  @override
+  String get navSubtitleSettings => 'সিস্টেম পছন্দসমূহ';
+
+  @override
+  String get dockZakat => 'যাকাত';
+
+  @override
+  String get dockCalendar => 'ক্যালেন্ডার';
+
+  @override
+  String downloadsReciterCount(int count) {
+    return '$count জন আবৃত্তিকারী';
+  }
+
+  @override
+  String downloadsItemCount(int count) {
+    return '$countটি আইটেম';
+  }
+
+  @override
+  String downloadsDeleteReciterBody(String reciter, String surah) {
+    return '$surah-এর জন্য $reciter-এর সব ডাউনলোড সরাবেন?';
+  }
+
+  @override
+  String get downloadsAllSurahs => 'সব সূরা';
+
+  @override
+  String get downloadsFilterTitle => 'ডাউনলোড ফিল্টার ও সাজান';
+
+  @override
+  String get downloadsFilterSubtitle =>
+      'আপনার লাইব্রেরিতে কোন তিলাওয়াতগুলো দেখা যাবে তার ওপর আরও নিয়ন্ত্রণ';
+
+  @override
+  String get downloadsFilterSearchHint => 'তিলাওয়াত বা সূরা খুঁজুন...';
+
+  @override
+  String get downloadsGroupBy => 'গ্রুপ করুন';
+
+  @override
+  String get downloadsSortBy => 'সাজানোর ধরন';
+
+  @override
+  String get downloadsCategory => 'ক্যাটাগরি';
+
+  @override
+  String get downloadsContentType => 'কনটেন্টের ধরন';
+
+  @override
+  String get downloadsSortReciterAsc => 'আবৃত্তিকারী (অ → হ)';
+
+  @override
+  String get downloadsSortReciterDesc => 'আবৃত্তিকারী (হ → অ)';
+
+  @override
+  String get downloadsSortSizeDesc => 'আকার (বড় আগে)';
+
+  @override
+  String get downloadsSortSizeAsc => 'আকার (ছোট আগে)';
+
+  @override
+  String get downloadsSortSurahAsc => 'সূরা (1 → 114)';
+
+  @override
+  String get downloadsSortSurahDesc => 'সূরা (114 → 1)';
+
+  @override
+  String get offsetSetPositive => 'ধনাত্মক করুন';
+
+  @override
+  String get offsetSetNegative => 'ঋণাত্মক করুন';
+
+  @override
+  String get notificationPermissionCheckTimedOut =>
+      'বিজ্ঞপ্তির অনুমতি যাচাই করতে সময় শেষ হয়ে গেছে। অ্যাপটি আবার খুলুন অথবা সিস্টেম সেটিংসে বিজ্ঞপ্তি চালু করুন।';
+
+  @override
+  String get notificationPermissionCheckFailed =>
+      'বিজ্ঞপ্তির অনুমতি যাচাই করা যায়নি। আবার চেষ্টা করুন অথবা সিস্টেম সেটিংসে বিজ্ঞপ্তি চালু করুন।';
+
+  @override
+  String get exactAlarmPermissionCheckTimedOut =>
+      'সঠিক অ্যালার্মের অনুমতি যাচাই করতে সময় শেষ হয়ে গেছে। অ্যাপটি আবার খুলুন অথবা সিস্টেম সেটিংসে অ্যালার্ম ও রিমাইন্ডার চালু করুন।';
+
+  @override
+  String get exactAlarmPermissionCheckFailed =>
+      'সঠিক অ্যালার্মের অনুমতি যাচাই করা যায়নি। আবার চেষ্টা করুন অথবা সিস্টেম সেটিংসে অ্যালার্ম ও রিমাইন্ডার চালু করুন।';
+
+  @override
+  String get asrMethodHanafi => 'হানাফি';
+
+  @override
+  String get highLatitudeRuleAutoTitle => 'স্বয়ংক্রিয়';
+
+  @override
+  String get highLatitudeRuleNoneTitle => 'কোনোটিই নয়';
+
+  @override
+  String get highLatitudeRuleMiddleOfTheNightTitle => 'মধ্যরাত';
+
+  @override
+  String get highLatitudeRuleOneSeventhTitle => 'এক-সপ্তমাংশ';
+
+  @override
+  String get highLatitudeRuleAngleBasedTitle => 'কোণভিত্তিক';
+
+  @override
+  String get prayerMethodAuto => 'অবস্থানের জন্য সেরা';
+
+  @override
+  String get prayerMethodMuslimWorldLeague => 'মুসলিম ওয়ার্ল্ড লীগ';
+
+  @override
+  String get prayerMethodEgyptian => 'মিশরীয়';
+
+  @override
+  String get prayerMethodUmmAlQura => 'উম্মুল কুরা';
+
+  @override
+  String get prayerMethodDubai => 'দুবাই / উপসাগরীয়';
+
+  @override
+  String get prayerMethodKuwait => 'কুয়েত';
+
+  @override
+  String get prayerMethodQatar => 'কাতার';
+
+  @override
+  String get prayerMethodKarachi => 'করাচি';
+
+  @override
+  String get prayerMethodMoonsighting => 'চাঁদ দেখা কমিটি';
+
+  @override
+  String get prayerMethodMorocco => 'মরক্কো';
+
+  @override
+  String get prayerMethodSingapore => 'সিঙ্গাপুর';
+
+  @override
+  String get prayerMethodTehran => 'তেহরান';
+
+  @override
+  String get prayerMethodTurkey => 'তুরস্ক / দিয়ানেত';
+
+  @override
+  String get prayerMethodShortAuto => 'স্বয়ংক্রিয়';
+
+  @override
+  String get prayerMethodShortMwl => 'MWL';
+
+  @override
+  String get prayerMethodShortDubai => 'দুবাই';
+
+  @override
+  String get prayerMethodShortMoonsighting => 'চাঁদ দেখা';
+
+  @override
+  String get prayerMethodShortTurkey => 'তুরস্ক';
+
+  @override
+  String get dailyToolsKeepOnePinned => 'অন্তত একটি টুল পিন করা থাকতে হবে।';
 }

@@ -1,3 +1,4 @@
+import 'package:equran/utils/resource_labels.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
@@ -269,14 +270,10 @@ enum RepeatChoice {
   int get storageValue => count ?? 0;
 
   String localizedLabel(AppLocalizations localizations) {
-    final bool arabic = isArabicLocalizations(localizations);
     return switch (this) {
-      RepeatChoice.one => arabic ? 'مرة واحدة' : label,
-      RepeatChoice.three => arabic ? '3 مرات' : label,
-      RepeatChoice.five => arabic ? '5 مرات' : label,
-      RepeatChoice.eleven => arabic ? '11 مرة' : label,
-      RepeatChoice.nineteen => arabic ? '19 مرة' : label,
-      RepeatChoice.infinite => arabic ? 'بلا حد' : label,
+      RepeatChoice.one => localizations.repeatOnce,
+      RepeatChoice.infinite => localizations.repeatInfinite,
+      _ => localizations.repeatTimes(count!),
     };
   }
 
@@ -307,8 +304,15 @@ enum _ShareImageMode {
 
   const _ShareImageMode(this.label, this.size);
 
+  /// English label drawn into the shared image itself (not localized).
   final String label;
   final Size size;
+
+  String localizedLabel(AppLocalizations l10n) => switch (this) {
+    _ShareImageMode.story => l10n.shareFormatStory,
+    _ShareImageMode.square => l10n.shareFormatSquare,
+    _ShareImageMode.classic => l10n.shareFormatClassic,
+  };
 }
 
 enum _ShareImageContentTier { compact, medium, long, veryLong }
@@ -2294,7 +2298,7 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
       unawaited(AndroidAudioDisplayMode.setAudioPlaybackActive(false));
       reconnectFailed = true;
       _showAudioPlaybackMessage(
-        'Audio connection was interrupted. Check your internet and try again.',
+        (AppLocalizations l) => l.audioConnectionInterrupted,
       );
       if (kDebugMode) {
         debugPrint('ReadPage audio reconnect failed: $lastError');
@@ -2332,12 +2336,15 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     return position;
   }
 
-  void _showAudioPlaybackMessage(String message) {
+  void _showAudioPlaybackMessage(
+    String Function(AppLocalizations l10n) message,
+  ) {
     if (!mounted || !_isReadPageForeground) return;
     final ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
+    final String text = message(AppLocalizations.of(context)!);
     messenger.hideCurrentSnackBar();
     messenger.showSnackBar(
-      SnackBar(content: Text(message), duration: const Duration(seconds: 4)),
+      SnackBar(content: Text(text), duration: const Duration(seconds: 4)),
     );
   }
 
@@ -2789,12 +2796,14 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     } on _OfflineAudioPlaybackException {
       if (mounted) {
         _showAudioPlaybackMessage(
-          'You are offline. Download this ayah or reconnect to stream it.',
+          (AppLocalizations l) => l.offlineDownloadAyahOrReconnect,
         );
       }
     } catch (_) {
       if (mounted) {
-        _showAudioPlaybackMessage('Unable to play ayah audio.');
+        _showAudioPlaybackMessage(
+          (AppLocalizations l) => l.unableToPlayAyahAudio,
+        );
       }
     } finally {
       if (requestId == _playbackRequestId) {
@@ -5974,7 +5983,7 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
           content: Text(
             kDebugMode
                 ? 'Unable to share ayah image while $shareStep: $error'
-                : 'Unable to share ayah image.',
+                : AppLocalizations.of(context)!.unableToShareAyahImage,
           ),
         ),
       );
@@ -5990,7 +5999,7 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
         return SafeArea(
           top: false,
           child: ReaderChoiceSheet(
-            title: 'Share image format',
+            title: AppLocalizations.of(context)!.shareImageFormat,
             items: <ReaderChoiceItem>[
               for (final _ShareImageMode mode in _ShareImageMode.values)
                 ReaderChoiceItem(
@@ -6002,7 +6011,7 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
                         ? Icons.crop_square_rounded
                         : Icons.image_outlined,
                   ),
-                  title: mode.label,
+                  title: mode.localizedLabel(AppLocalizations.of(context)!),
                   subtitle:
                       '${mode.size.width.toInt()} x ${mode.size.height.toInt()}',
                   onTap: () => Navigator.of(context).pop(mode),
@@ -7364,8 +7373,8 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
             return ReciterPickerDialog(
               groupByDownloaded: groupByDownloaded,
               groupTooltip: groupByDownloaded
-                  ? 'Show Alphabetical'
-                  : 'Group Downloaded',
+                  ? AppLocalizations.of(context)!.reciterShowAlphabetical
+                  : AppLocalizations.of(context)!.reciterGroupDownloaded,
               onToggleGroup: () {
                 setDialogState(() {
                   groupByDownloaded = !groupByDownloaded;
@@ -7445,7 +7454,7 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
   String _delayLabel(double seconds) {
     final AppLocalizations localizations = AppLocalizations.of(context)!;
     if (seconds <= 0) return localizations.noDelay;
-    if (seconds == 0.5) return '0.5 seconds';
+    if (seconds == 0.5) return localizations.halfSecond;
     return localizations.secondsCount(seconds.toInt());
   }
 
@@ -7544,7 +7553,7 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
                     value: entry.key,
                     title:
                         '${translationDisplayName(entry.value)} • '
-                        '${QuranTranslationService.instance.availabilityLabel(entry.value, manifest)}',
+                        '${translationAvailabilityLabel(AppLocalizations.of(context)!, entry.value, manifest)}',
                   ),
                 )
                 .toList()
@@ -7776,7 +7785,9 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
       onCancel: onCancel,
       downloading: downloading,
       downloadLabel: downloading
-          ? progress?.phase.label ?? localizations.downloading
+          ? progress == null
+                ? localizations.downloading
+                : resourceDownloadPhaseLabel(localizations, progress.phase)
           : localizations.download,
       onDownload: () => unawaited(onDownload()),
     );
@@ -7867,12 +7878,14 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     return ReaderSourceRow(
       title: resource.name,
       subtitle:
-          '${resource.language?.toUpperCase() ?? resource.typeLabel} • ${state.label} • ${prettyBytes(getResourceSize(resource))}',
+          '${resource.language?.toUpperCase() ?? resourceTypeLabel(localizations, resource)} • ${resourceInstallStateLabel(localizations, state)} • ${prettyBytes(getResourceSize(resource))}',
       selected: selected,
       installed: state == ResourceInstallState.installed,
       downloading: downloading,
       downloadTooltip: downloading
-          ? progress?.phase.label ?? localizations.downloading
+          ? progress == null
+                ? localizations.downloading
+                : resourceDownloadPhaseLabel(localizations, progress.phase)
           : localizations.download,
       onDownload: () => _downloadDownloadableResource(resource),
       onToggle: () => _setTafsirSourceSelected(

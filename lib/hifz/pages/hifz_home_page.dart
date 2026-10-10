@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:equran/hifz/hifz_unit_labels.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/theme/equran_tokens.dart';
@@ -1057,7 +1058,7 @@ class _UnitProgressCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      unit.displayName,
+                      hifzUnitLabel(unit, l10n),
                       style: TextStyle(
                         fontSize: 16,
                         fontVariations: const [FontVariation('opsz', 16)],

@@ -1,3 +1,4 @@
+import 'package:equran/utils/resource_labels.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'appearance_settings_page.dart';
@@ -312,7 +313,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       value: entry.key,
                       title:
                           '${translationDisplayName(entry.value)} • '
-                          '${QuranTranslationService.instance.availabilityLabel(entry.value, manifest)}',
+                          '${translationAvailabilityLabel(localizations, entry.value, manifest)}',
                     ),
                   )
                   .toList()
@@ -638,7 +639,7 @@ class _SettingsPageState extends State<SettingsPage> {
           : const DesignIcon('headphones'),
       title: resource.name,
       details: _resourceSubtitle(resource),
-      statusLabel: installState.label,
+      statusLabel: resourceInstallStateLabel(localizations, installState),
       installed: installState == ResourceInstallState.installed,
       updateAvailable: installState == ResourceInstallState.updateAvailable,
       selected: selected,

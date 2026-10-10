@@ -213,7 +213,9 @@ class _PrayerSteppedIntDialogState extends State<PrayerSteppedIntDialog> {
           decoration: readerInputDecoration(context).copyWith(
             prefixIcon: widget.min < 0
                 ? IconButton(
-                    tooltip: _isNegative ? 'Set positive' : 'Set negative',
+                    tooltip: _isNegative
+                        ? l.offsetSetPositive
+                        : l.offsetSetNegative,
                     onPressed: _toggleSign,
                     icon: Text(
                       _isNegative ? '−' : '+',

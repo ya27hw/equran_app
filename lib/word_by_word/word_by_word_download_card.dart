@@ -1,3 +1,5 @@
+import 'package:equran/utils/resource_labels.dart';
+import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/backend/resource_models.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
@@ -156,7 +158,10 @@ class _PackRow extends StatelessWidget {
                 const SizedBox(height: 8),
                 // Shape and wording carry the state, not colour alone.
                 PillTag(
-                  state.label,
+                  resourceInstallStateLabel(
+                    AppLocalizations.of(context)!,
+                    state,
+                  ),
                   selected: state == ResourceInstallState.installed,
                   gold: state == ResourceInstallState.updateAvailable,
                   compact: true,

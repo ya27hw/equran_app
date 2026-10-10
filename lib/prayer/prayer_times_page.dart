@@ -447,7 +447,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage>
                           const SizedBox(width: 6),
                           Flexible(
                             child: Text(
-                              '${location.cityLabel} · ${hijri.toLocalizedDateString(l.localeName)}',
+                              '${localizedCityLabel(l, location)} · ${hijri.toLocalizedDateString(l.localeName)}',
                               style: TextStyle(
                                 fontSize: 14,
                                 color: context.equranTokens.muted,
@@ -1454,7 +1454,7 @@ class _SavedLocationPanel extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    location.displayLabel,
+                    localizedLocationLabel(localizations, location),
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w900,
                       height: 1.15,
@@ -1620,7 +1620,10 @@ class _LocationSummaryRow extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      location.displayLabel,
+                      localizedLocationLabel(
+                        AppLocalizations.of(context)!,
+                        location,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.bodyMedium?.copyWith(

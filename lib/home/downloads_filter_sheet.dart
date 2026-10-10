@@ -1,3 +1,4 @@
+import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/widgets/reader_sheet_chrome.dart';
 import 'package:equran/widgets/redesign/design_icon.dart';
@@ -73,18 +74,35 @@ class _DownloadsFilterSheetState extends State<DownloadsFilterSheet> {
     super.dispose();
   }
 
-  List<(String, String, IconData)> get _sortOptions => _groupBy == 'reciter'
-      ? const <(String, String, IconData)>[
-          ('reciterAsc', 'Reciter (A → Z)', Icons.sort_by_alpha_rounded),
-          ('reciterDesc', 'Reciter (Z → A)', Icons.sort_by_alpha_rounded),
-          ('sizeDesc', 'Size (largest first)', Icons.storage_rounded),
-          ('sizeAsc', 'Size (smallest first)', Icons.storage_rounded),
+  List<(String, String, IconData)> _sortOptions(AppLocalizations l10n) =>
+      _groupBy == 'reciter'
+      ? <(String, String, IconData)>[
+          (
+            'reciterAsc',
+            l10n.downloadsSortReciterAsc,
+            Icons.sort_by_alpha_rounded,
+          ),
+          (
+            'reciterDesc',
+            l10n.downloadsSortReciterDesc,
+            Icons.sort_by_alpha_rounded,
+          ),
+          ('sizeDesc', l10n.downloadsSortSizeDesc, Icons.storage_rounded),
+          ('sizeAsc', l10n.downloadsSortSizeAsc, Icons.storage_rounded),
         ]
-      : const <(String, String, IconData)>[
-          ('surahAsc', 'Surah (1 → 114)', Icons.format_list_numbered_rounded),
-          ('surahDesc', 'Surah (114 → 1)', Icons.format_list_numbered_rounded),
-          ('sizeDesc', 'Size (largest first)', Icons.storage_rounded),
-          ('sizeAsc', 'Size (smallest first)', Icons.storage_rounded),
+      : <(String, String, IconData)>[
+          (
+            'surahAsc',
+            l10n.downloadsSortSurahAsc,
+            Icons.format_list_numbered_rounded,
+          ),
+          (
+            'surahDesc',
+            l10n.downloadsSortSurahDesc,
+            Icons.format_list_numbered_rounded,
+          ),
+          ('sizeDesc', l10n.downloadsSortSizeDesc, Icons.storage_rounded),
+          ('sizeAsc', l10n.downloadsSortSizeAsc, Icons.storage_rounded),
         ];
 
   void _reset() {
@@ -132,6 +150,7 @@ class _DownloadsFilterSheetState extends State<DownloadsFilterSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
     final EquranTokens tokens = context.equranTokens;
     final double keyboard = MediaQuery.viewInsetsOf(context).bottom;
     return Padding(
@@ -145,9 +164,8 @@ class _DownloadsFilterSheetState extends State<DownloadsFilterSheet> {
           children: <Widget>[
             Flexible(
               child: ReaderSheetFrame(
-                title: 'Filter & Sort Downloads',
-                subtitle:
-                    'More control over which recitations appear in your library',
+                title: l10n.downloadsFilterTitle,
+                subtitle: l10n.downloadsFilterSubtitle,
                 bottomInset: 0,
                 children: <Widget>[
                   TextField(
@@ -157,7 +175,7 @@ class _DownloadsFilterSheetState extends State<DownloadsFilterSheet> {
                     decoration:
                         readerInputDecoration(
                           context,
-                          hint: 'Search recitations or surahs...',
+                          hint: l10n.downloadsFilterSearchHint,
                         ).copyWith(
                           prefixIcon: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -189,11 +207,11 @@ class _DownloadsFilterSheetState extends State<DownloadsFilterSheet> {
                         ),
                   ),
                   const SizedBox(height: 22),
-                  const ReaderFieldLabel('Group by'),
+                  ReaderFieldLabel(l10n.downloadsGroupBy),
                   _chips(
-                    const <(String, String)>[
-                      ('reciter', 'Reciter'),
-                      ('surah', 'Surah'),
+                    <(String, String)>[
+                      ('reciter', l10n.reciter),
+                      ('surah', l10n.surahOption),
                     ],
                     _groupBy,
                     (String value) => setState(() {
@@ -209,9 +227,9 @@ class _DownloadsFilterSheetState extends State<DownloadsFilterSheet> {
                     }),
                   ),
                   const SizedBox(height: 22),
-                  const ReaderFieldLabel('Sort by'),
+                  ReaderFieldLabel(l10n.downloadsSortBy),
                   for (final (String value, String label, IconData icon)
-                      in _sortOptions)
+                      in _sortOptions(l10n))
                     ReaderChoiceTile(
                       title: label,
                       leading: Icon(icon),
@@ -219,7 +237,7 @@ class _DownloadsFilterSheetState extends State<DownloadsFilterSheet> {
                       onTap: () => setState(() => _sort = value),
                     ),
                   const SizedBox(height: 18),
-                  const ReaderFieldLabel('Reciter'),
+                  ReaderFieldLabel(l10n.reciter),
                   ReaderDropdownField<String>(
                     value: _reciter,
                     onChanged: (String? value) {
@@ -239,24 +257,24 @@ class _DownloadsFilterSheetState extends State<DownloadsFilterSheet> {
                     ],
                   ),
                   const SizedBox(height: 22),
-                  const ReaderFieldLabel('Surah'),
+                  ReaderFieldLabel(l10n.surahOption),
                   ReaderDropdownField<int?>(
                     value: _surah,
                     onChanged: (int? value) => setState(() => _surah = value),
                     items: widget.surahItems,
                   ),
                   const SizedBox(height: 22),
-                  const ReaderFieldLabel('Category'),
+                  ReaderFieldLabel(l10n.downloadsCategory),
                   ReaderDropdownField<String>(
                     value: _category,
                     onChanged: (String? value) {
                       if (value != null) setState(() => _category = value);
                     },
-                    items: const <DropdownMenuItem<String>>[
+                    items: <DropdownMenuItem<String>>[
                       DropdownMenuItem<String>(
                         value: 'all',
                         child: Text(
-                          'All',
+                          l10n.all,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -264,7 +282,7 @@ class _DownloadsFilterSheetState extends State<DownloadsFilterSheet> {
                       DropdownMenuItem<String>(
                         value: 'makki',
                         child: Text(
-                          'Makki',
+                          l10n.meccan,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -272,7 +290,7 @@ class _DownloadsFilterSheetState extends State<DownloadsFilterSheet> {
                       DropdownMenuItem<String>(
                         value: 'madani',
                         child: Text(
-                          'Madani',
+                          l10n.medinan,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -280,12 +298,12 @@ class _DownloadsFilterSheetState extends State<DownloadsFilterSheet> {
                     ],
                   ),
                   const SizedBox(height: 22),
-                  const ReaderFieldLabel('Content type'),
+                  ReaderFieldLabel(l10n.downloadsContentType),
                   _chips(
-                    const <(String, String)>[
-                      ('all', 'All'),
-                      ('surahs', 'Surahs'),
-                      ('ayahs', 'Ayahs'),
+                    <(String, String)>[
+                      ('all', l10n.all),
+                      ('surahs', l10n.surahs),
+                      ('ayahs', l10n.ayahs),
                     ],
                     _type,
                     (String value) => setState(() => _type = value),
@@ -300,26 +318,37 @@ class _DownloadsFilterSheetState extends State<DownloadsFilterSheet> {
               ),
               child: SafeArea(
                 top: false,
-                child: Row(
-                  children: <Widget>[
-                    TextButton(
-                      style: readerTextButtonStyle(context),
-                      onPressed: _reset,
-                      child: const Text('Reset'),
-                    ),
-                    const Spacer(),
-                    TextButton(
-                      style: readerTextButtonStyle(context),
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('Cancel'),
-                    ),
-                    const SizedBox(width: 8),
-                    FilledButton(
-                      style: readerFilledButtonStyle(context),
-                      onPressed: _apply,
-                      child: const Text('Apply'),
-                    ),
-                  ],
+                // A Wrap, not a Row: long translations at a large text scale
+                // drop the Reset button to its own line instead of overflowing.
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: <Widget>[
+                      TextButton(
+                        style: readerTextButtonStyle(context),
+                        onPressed: _reset,
+                        child: Text(l10n.reset),
+                      ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          TextButton(
+                            style: readerTextButtonStyle(context),
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: Text(l10n.cancel),
+                          ),
+                          const SizedBox(width: 8),
+                          FilledButton(
+                            style: readerFilledButtonStyle(context),
+                            onPressed: _apply,
+                            child: Text(l10n.apply),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

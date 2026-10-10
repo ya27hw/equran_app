@@ -2,6 +2,7 @@ import 'package:equran/backend/library.dart'
     show
         AudioDownloadEntry,
         AudioDownloadService,
+        AudioDownloadType,
         AudioDownloadsSummary,
         DownloadMetadataService;
 import 'package:equran/home/downloads_filter_sheet.dart';
@@ -19,6 +20,29 @@ import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/backend/playback_cache_service.dart';
 import 'package:quran/quran.dart' as quran;
+
+/// Row title for a download: the surah name, or "Surah • Ayah n" for a loose
+/// ayah. [AudioDownloadEntry.title] is English only and stays for search.
+String _entryTitle(AppLocalizations l10n, AudioDownloadEntry entry) {
+  return switch (entry.type) {
+    AudioDownloadType.ayah => localizedSurahAyahLabel(
+      l10n,
+      entry.surah,
+      entry.ayah ?? 0,
+    ),
+    _ => localizedSurahName(l10n, entry.surah),
+  };
+}
+
+String _entrySubtitle(AppLocalizations l10n, AudioDownloadEntry entry) {
+  return switch (entry.type) {
+    AudioDownloadType.surah => '',
+    AudioDownloadType.ayahSurah => l10n.ayahsCount(
+      quran.getVerseCount(entry.surah),
+    ),
+    AudioDownloadType.ayah => localizedAyahReference(l10n, entry.ayah ?? 0),
+  };
+}
 
 class _SurahAyahDownloadsGroup {
   const _SurahAyahDownloadsGroup({required this.surah, required this.entries});
@@ -132,7 +156,7 @@ class _DownloadsPageState extends State<DownloadsPage> {
         final AppLocalizations l = AppLocalizations.of(context)!;
         return ReaderConfirmDialog(
           title: l.deleteDownloadQuestion,
-          body: l.removeDownloadFromOffline(entry.title),
+          body: l.removeDownloadFromOffline(_entryTitle(l, entry)),
           icon: const DesignIcon('trash'),
           cancelLabel: l.cancel,
           confirmLabel: l.delete,
@@ -148,7 +172,9 @@ class _DownloadsPageState extends State<DownloadsPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            AppLocalizations.of(context)!.deletedDownload(entry.title),
+            AppLocalizations.of(context)!.deletedDownload(
+              _entryTitle(AppLocalizations.of(context)!, entry),
+            ),
           ),
         ),
       );
@@ -382,7 +408,7 @@ class _DownloadsPageState extends State<DownloadsPage> {
             TextButton(
               onPressed: _resetAllFilters,
               style: readerTextButtonStyle(context, color: tokens.emText),
-              child: const Text('Clear'),
+              child: Text(AppLocalizations.of(context)!.clear),
             ),
           const SizedBox(width: 4),
           Stack(
@@ -391,7 +417,7 @@ class _DownloadsPageState extends State<DownloadsPage> {
               IconButton44(
                 onPressed: () => _showFilterSortSheet(summary, originalGroups),
                 designIcon: 'sliders',
-                tooltip: 'Filter & sort',
+                tooltip: AppLocalizations.of(context)!.filterAndSort,
               ),
               if (activeCount > 0)
                 PositionedDirectional(
@@ -517,7 +543,7 @@ class _DownloadsPageState extends State<DownloadsPage> {
       leading: const DesignIcon('quran'),
       title: localizedSurahName(localizations, group.surah),
       subtitle:
-          '${byReciter.length} reciter${byReciter.length == 1 ? '' : 's'}  •  ${AudioDownloadService.formatBytes(group.sizeBytes)}',
+          '${localizations.downloadsReciterCount(byReciter.length)}  •  ${AudioDownloadService.formatBytes(group.sizeBytes)}',
       collapsed: isCollapsed,
       onToggle: () => _toggleSurahSection(group.surah),
       children: <Widget>[
@@ -533,7 +559,7 @@ class _DownloadsPageState extends State<DownloadsPage> {
             icon: const DesignIcon('headphones'),
             title: reciterDisplayName(reciterCode),
             subtitle:
-                '${reciterEntries.length} item${reciterEntries.length == 1 ? '' : 's'}  •  ${AudioDownloadService.formatBytes(reciterSize)}',
+                '${localizations.downloadsItemCount(reciterEntries.length)}  •  ${AudioDownloadService.formatBytes(reciterSize)}',
             deleteTooltip: localizations.deleteDownload,
             onDelete: () async {
               // Single confirmation for the whole reciter+surah batch
@@ -541,11 +567,13 @@ class _DownloadsPageState extends State<DownloadsPage> {
                 context: context,
                 builder: (context) => ReaderConfirmDialog(
                   icon: const DesignIcon('trash'),
-                  title: 'Delete downloads?',
-                  body:
-                      'Remove all downloads for ${reciterDisplayName(reciterCode)} on ${localizedSurahName(localizations, group.surah)}?',
-                  cancelLabel: 'Cancel',
-                  confirmLabel: 'Delete',
+                  title: localizations.deleteDownloadsQuestion,
+                  body: localizations.downloadsDeleteReciterBody(
+                    reciterDisplayName(reciterCode),
+                    localizedSurahName(localizations, group.surah),
+                  ),
+                  cancelLabel: localizations.cancel,
+                  confirmLabel: localizations.delete,
                   destructive: true,
                 ),
               );
@@ -582,7 +610,7 @@ class _DownloadsPageState extends State<DownloadsPage> {
     return DownloadsSection(
       title: reciterDisplayName(group.reciterCode),
       subtitle:
-          '${surahs.length} surahs  •  ${group.ayahCount} ayahs  •  ${AudioDownloadService.formatBytes(group.sizeBytes)}',
+          '${localizations.surahCount(surahs.length)}  •  ${localizations.ayahsCount(group.ayahCount)}  •  ${AudioDownloadService.formatBytes(group.sizeBytes)}',
       collapsed: isCollapsed,
       onToggle: () => _toggleReciterSection(group.reciterCode),
       children: <Widget>[
@@ -628,7 +656,7 @@ class _DownloadsPageState extends State<DownloadsPage> {
     return DownloadsFolder(
       title: localizedSurahName(localizations, group.surah),
       subtitle:
-          '${group.ayahCount} ayahs  •  ${AudioDownloadService.formatBytes(group.sizeBytes)}',
+          '${localizations.ayahsCount(group.ayahCount)}  •  ${AudioDownloadService.formatBytes(group.sizeBytes)}',
       children: group.entries
           .map((entry) => _buildNestedDownloadTile(entry))
           .toList(growable: false),
@@ -649,13 +677,14 @@ class _DownloadsPageState extends State<DownloadsPage> {
     return ValueListenableBuilder<ActivePlaybackTrack?>(
       valueListenable: PlaybackCacheService.instance.activeTrackNotifier,
       builder: (context, activeTrack, child) {
+        final AppLocalizations l10n = AppLocalizations.of(context)!;
+        final String detail = _entrySubtitle(l10n, entry);
+        final String size = AudioDownloadService.formatBytes(entry.sizeBytes);
         return DownloadRow(
           active: _isActiveOffline(activeTrack, entry),
-          title: entry.title,
-          subtitle: entry.subtitle.isNotEmpty
-              ? '${entry.subtitle}  •  ${AudioDownloadService.formatBytes(entry.sizeBytes)}'
-              : AudioDownloadService.formatBytes(entry.sizeBytes),
-          deleteTooltip: AppLocalizations.of(context)!.deleteDownload,
+          title: _entryTitle(l10n, entry),
+          subtitle: detail.isNotEmpty ? '$detail  •  $size' : size,
+          deleteTooltip: l10n.deleteDownload,
           onDelete: () => _deleteEntry(entry),
         );
       },
@@ -669,7 +698,7 @@ class _DownloadsPageState extends State<DownloadsPage> {
         return DownloadRow(
           nested: true,
           active: _isActiveOffline(activeTrack, entry),
-          title: entry.title,
+          title: _entryTitle(AppLocalizations.of(context)!, entry),
           subtitle: AudioDownloadService.formatBytes(entry.sizeBytes),
           deleteTooltip: AppLocalizations.of(context)!.deleteDownload,
           onDelete: () => _deleteEntry(entry),
@@ -695,9 +724,13 @@ class _DownloadsPageState extends State<DownloadsPage> {
         summary.allDownloads.map((e) => e.surah).toSet().toList()..sort();
 
     final List<DropdownMenuItem<int?>> surahItems = [
-      const DropdownMenuItem<int?>(
+      DropdownMenuItem<int?>(
         value: null,
-        child: Text('All Surahs', maxLines: 1, overflow: TextOverflow.ellipsis),
+        child: Text(
+          localizations.downloadsAllSurahs,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
       ),
       ...downloadedSurahs.map((surahNum) {
         return DropdownMenuItem<int?>(

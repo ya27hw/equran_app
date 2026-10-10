@@ -88,15 +88,7 @@ class _DailyToolsEditSheetState extends State<DailyToolsEditSheet> {
     if (isCurrentlyVisible && _visibleTools.length <= 1) {
       // Prevent disabling the last tool
       final AppLocalizations localizations = AppLocalizations.of(context)!;
-      final String locale = localizations.localeName
-          .split('_')
-          .first
-          .toLowerCase();
-      final String msg = locale == 'ar'
-          ? 'يجب أن تظل أداة واحدة على الأقل مثبتة.'
-          : locale == 'fa'
-          ? 'حداقل یک ابزار باید سنجاق شده باقی بماند.'
-          : 'At least one tool must remain pinned.';
+      final String msg = localizations.dailyToolsKeepOnePinned;
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(msg), behavior: SnackBarBehavior.floating),

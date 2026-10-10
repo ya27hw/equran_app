@@ -2,6 +2,7 @@ import 'package:equran/backend/settings_db.dart';
 import 'package:equran/debug/prayer_preview_main.dart' show seedPrayerPreview;
 import 'package:equran/debug/saved_preview_main.dart' show savedPreviewTheme;
 import 'package:equran/l10n/app_localizations.dart';
+import 'package:equran/prayer/prayer_localizations.dart';
 import 'package:equran/prayer/prayer_models.dart';
 import 'package:equran/prayer/prayer_settings_dialogs.dart';
 import 'package:equran/prayer/prayer_settings_store.dart';
@@ -156,7 +157,7 @@ void main() {
   final Map<String, String Function(AppLocalizations)> dialogs =
       <String, String Function(AppLocalizations)>{
         'method': (l) => l.calculationMethod,
-        'offset': (l) => 'Fajr',
+        'offset': (l) => localizedPrayerName(l, PrayerTimeKind.fajr),
         'angle': (l) => l.fajrAngle,
         'sunrise-minutes': (l) => l.sunriseProhibitedTime,
       };

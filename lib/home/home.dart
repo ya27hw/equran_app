@@ -101,10 +101,10 @@ class _HomePageState extends State<HomePage> {
         label = localizations.qibla;
         showAppBar = false;
       } else if (T == ZakatCalculatorPage) {
-        label = 'Zakat';
+        label = localizations.zakatCalculator;
         showAppBar = false;
       } else if (T == IslamicCalendarPage) {
-        label = 'Calendar';
+        label = localizations.islamicCalendar;
         showAppBar = false;
       }
 
@@ -238,14 +238,14 @@ class _HomePageState extends State<HomePage> {
         );
       case NavItem.zakat:
         return Destinations(
-          'Zakat',
+          localizations.dockZakat,
           const Icon(Icons.calculate_outlined),
           const Icon(Icons.calculate_rounded),
           const ZakatCalculatorPage(showAppBar: false),
         );
       case NavItem.calendar:
         return Destinations(
-          'Calendar',
+          localizations.dockCalendar,
           const Icon(Icons.calendar_month_outlined),
           const Icon(Icons.calendar_month_rounded),
           const IslamicCalendarPage(),

@@ -4692,4 +4692,310 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unitTola => 'tola';
+
+  @override
+  String get hifzRatingFail => 'Fail';
+
+  @override
+  String get hifzRatingPass => 'Pass';
+
+  @override
+  String get shareImageFormat => 'Share image format';
+
+  @override
+  String get shareFormatStory => 'Story 9:16';
+
+  @override
+  String get shareFormatSquare => 'Square 1:1';
+
+  @override
+  String get shareFormatClassic => 'Classic';
+
+  @override
+  String get unableToShareAyahImage => 'Unable to share ayah image.';
+
+  @override
+  String get reciterGroupDownloaded => 'Group Downloaded';
+
+  @override
+  String get reciterShowAlphabetical => 'Show Alphabetical';
+
+  @override
+  String get audioConnectionInterrupted =>
+      'Audio connection was interrupted. Check your internet and try again.';
+
+  @override
+  String get offlineDownloadAyahOrReconnect =>
+      'You are offline. Download this ayah or reconnect to stream it.';
+
+  @override
+  String get unableToPlayAyahAudio => 'Unable to play ayah audio.';
+
+  @override
+  String get repeatOnce => 'Once';
+
+  @override
+  String repeatTimes(int count) {
+    return '$count times';
+  }
+
+  @override
+  String get repeatInfinite => 'Infinite';
+
+  @override
+  String get halfSecond => '0.5 seconds';
+
+  @override
+  String get resourceStateUpdateAvailable => 'Update available';
+
+  @override
+  String get resourcePhaseStarting => 'Starting';
+
+  @override
+  String get resourcePhaseVerifying => 'Verifying';
+
+  @override
+  String get resourcePhaseExtracting => 'Extracting';
+
+  @override
+  String get resourcePhaseInstalling => 'Installing';
+
+  @override
+  String get resourcePhaseFailed => 'Failed';
+
+  @override
+  String get resourceTypeGeneric => 'Resource';
+
+  @override
+  String get translationBundled => 'Bundled';
+
+  @override
+  String get translationDownloadUnavailable => 'Download unavailable';
+
+  @override
+  String get navigationSettingsHint =>
+      'Drag tiles to rearrange. Drag an available item and drop it on an active tile to swap, or tap an item below to pin it (displaces least recently used).';
+
+  @override
+  String navigationActiveSlots(int count, int max) {
+    return 'Active navbar slots ($count/$max)';
+  }
+
+  @override
+  String get navigationAvailableItems => 'Available unpinned items';
+
+  @override
+  String navigationSlot(int number) {
+    return 'Slot $number';
+  }
+
+  @override
+  String navigationSlotLocked(int number) {
+    return 'Slot $number (Locked Hub)';
+  }
+
+  @override
+  String navigationSwapped(String first, String second) {
+    return 'Swapped $first with $second';
+  }
+
+  @override
+  String navigationRemoved(String item) {
+    return 'Removed $item from navbar';
+  }
+
+  @override
+  String navigationPinned(String item) {
+    return 'Pinned $item';
+  }
+
+  @override
+  String navigationPinnedDisplaced(String item, String displaced) {
+    return 'Pinned $item (displaced $displaced)';
+  }
+
+  @override
+  String get navSubtitleHome => 'Main Dashboard';
+
+  @override
+  String get navSubtitleQuran => 'Read the Holy Quran';
+
+  @override
+  String get navSubtitlePrayer => 'Prayer Times & Adhan';
+
+  @override
+  String get navSubtitleSettings => 'System Preferences';
+
+  @override
+  String get dockZakat => 'Zakat';
+
+  @override
+  String get dockCalendar => 'Calendar';
+
+  @override
+  String downloadsReciterCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reciters',
+      one: '1 reciter',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String downloadsItemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items',
+      one: '1 item',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String downloadsDeleteReciterBody(String reciter, String surah) {
+    return 'Remove all downloads for $reciter on $surah?';
+  }
+
+  @override
+  String get downloadsAllSurahs => 'All Surahs';
+
+  @override
+  String get downloadsFilterTitle => 'Filter & Sort Downloads';
+
+  @override
+  String get downloadsFilterSubtitle =>
+      'More control over which recitations appear in your library';
+
+  @override
+  String get downloadsFilterSearchHint => 'Search recitations or surahs...';
+
+  @override
+  String get downloadsGroupBy => 'Group by';
+
+  @override
+  String get downloadsSortBy => 'Sort by';
+
+  @override
+  String get downloadsCategory => 'Category';
+
+  @override
+  String get downloadsContentType => 'Content type';
+
+  @override
+  String get downloadsSortReciterAsc => 'Reciter (A → Z)';
+
+  @override
+  String get downloadsSortReciterDesc => 'Reciter (Z → A)';
+
+  @override
+  String get downloadsSortSizeDesc => 'Size (largest first)';
+
+  @override
+  String get downloadsSortSizeAsc => 'Size (smallest first)';
+
+  @override
+  String get downloadsSortSurahAsc => 'Surah (1 → 114)';
+
+  @override
+  String get downloadsSortSurahDesc => 'Surah (114 → 1)';
+
+  @override
+  String get offsetSetPositive => 'Set positive';
+
+  @override
+  String get offsetSetNegative => 'Set negative';
+
+  @override
+  String get notificationPermissionCheckTimedOut =>
+      'Notification permission check timed out. Try reopening the app or enabling notifications in system settings.';
+
+  @override
+  String get notificationPermissionCheckFailed =>
+      'Could not check notification permission. Try again or enable notifications in system settings.';
+
+  @override
+  String get exactAlarmPermissionCheckTimedOut =>
+      'Exact alarm permission check timed out. Try reopening the app or enabling alarms & reminders in system settings.';
+
+  @override
+  String get exactAlarmPermissionCheckFailed =>
+      'Could not check exact alarm permission. Try again or enable alarms & reminders in system settings.';
+
+  @override
+  String get asrMethodHanafi => 'Hanafi';
+
+  @override
+  String get highLatitudeRuleAutoTitle => 'Auto';
+
+  @override
+  String get highLatitudeRuleNoneTitle => 'None';
+
+  @override
+  String get highLatitudeRuleMiddleOfTheNightTitle => 'Middle of the night';
+
+  @override
+  String get highLatitudeRuleOneSeventhTitle => 'One seventh';
+
+  @override
+  String get highLatitudeRuleAngleBasedTitle => 'Angle based';
+
+  @override
+  String get prayerMethodAuto => 'Best for location';
+
+  @override
+  String get prayerMethodMuslimWorldLeague => 'Muslim World League';
+
+  @override
+  String get prayerMethodEgyptian => 'Egyptian';
+
+  @override
+  String get prayerMethodUmmAlQura => 'Umm al-Qura';
+
+  @override
+  String get prayerMethodDubai => 'Dubai / Gulf';
+
+  @override
+  String get prayerMethodKuwait => 'Kuwait';
+
+  @override
+  String get prayerMethodQatar => 'Qatar';
+
+  @override
+  String get prayerMethodKarachi => 'Karachi';
+
+  @override
+  String get prayerMethodMoonsighting => 'Moonsighting Committee';
+
+  @override
+  String get prayerMethodMorocco => 'Morocco';
+
+  @override
+  String get prayerMethodSingapore => 'Singapore';
+
+  @override
+  String get prayerMethodTehran => 'Tehran';
+
+  @override
+  String get prayerMethodTurkey => 'Turkey / Diyanet';
+
+  @override
+  String get prayerMethodShortAuto => 'Auto';
+
+  @override
+  String get prayerMethodShortMwl => 'MWL';
+
+  @override
+  String get prayerMethodShortDubai => 'Dubai';
+
+  @override
+  String get prayerMethodShortMoonsighting => 'Moonsighting';
+
+  @override
+  String get prayerMethodShortTurkey => 'Turkey';
+
+  @override
+  String get dailyToolsKeepOnePinned => 'At least one tool must remain pinned.';
 }

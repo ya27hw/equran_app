@@ -4780,4 +4780,314 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get unitTola => 'Tola';
+
+  @override
+  String get hifzRatingFail => 'Nicht bestanden';
+
+  @override
+  String get hifzRatingPass => 'Bestanden';
+
+  @override
+  String get shareImageFormat => 'Bildformat zum Teilen';
+
+  @override
+  String get shareFormatStory => 'Story 9:16';
+
+  @override
+  String get shareFormatSquare => 'Quadrat 1:1';
+
+  @override
+  String get shareFormatClassic => 'Klassisch';
+
+  @override
+  String get unableToShareAyahImage =>
+      'Das Ayah-Bild konnte nicht geteilt werden.';
+
+  @override
+  String get reciterGroupDownloaded => 'Heruntergeladene gruppieren';
+
+  @override
+  String get reciterShowAlphabetical => 'Alphabetisch anzeigen';
+
+  @override
+  String get audioConnectionInterrupted =>
+      'Die Audioverbindung wurde unterbrochen. Prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.';
+
+  @override
+  String get offlineDownloadAyahOrReconnect =>
+      'Sie sind offline. Laden Sie diesen Ayah herunter oder stellen Sie die Verbindung wieder her, um ihn zu streamen.';
+
+  @override
+  String get unableToPlayAyahAudio =>
+      'Die Ayah-Audiodatei konnte nicht abgespielt werden.';
+
+  @override
+  String get repeatOnce => 'Einmal';
+
+  @override
+  String repeatTimes(int count) {
+    return '$count-mal';
+  }
+
+  @override
+  String get repeatInfinite => 'Unbegrenzt';
+
+  @override
+  String get halfSecond => '0,5 Sekunden';
+
+  @override
+  String get resourceStateUpdateAvailable => 'Update verfügbar';
+
+  @override
+  String get resourcePhaseStarting => 'Wird gestartet';
+
+  @override
+  String get resourcePhaseVerifying => 'Wird überprüft';
+
+  @override
+  String get resourcePhaseExtracting => 'Wird entpackt';
+
+  @override
+  String get resourcePhaseInstalling => 'Wird installiert';
+
+  @override
+  String get resourcePhaseFailed => 'Fehlgeschlagen';
+
+  @override
+  String get resourceTypeGeneric => 'Ressource';
+
+  @override
+  String get translationBundled => 'Enthalten';
+
+  @override
+  String get translationDownloadUnavailable => 'Download nicht verfügbar';
+
+  @override
+  String get navigationSettingsHint =>
+      'Ziehen Sie die Kacheln, um sie neu anzuordnen. Ziehen Sie ein verfügbares Element auf eine aktive Kachel, um sie zu tauschen, oder tippen Sie unten auf ein Element, um es anzuheften (ersetzt das am längsten nicht genutzte).';
+
+  @override
+  String navigationActiveSlots(int count, int max) {
+    return 'Aktive Navigationsplätze ($count/$max)';
+  }
+
+  @override
+  String get navigationAvailableItems =>
+      'Verfügbare nicht angeheftete Elemente';
+
+  @override
+  String navigationSlot(int number) {
+    return 'Platz $number';
+  }
+
+  @override
+  String navigationSlotLocked(int number) {
+    return 'Platz $number (gesperrter Hub)';
+  }
+
+  @override
+  String navigationSwapped(String first, String second) {
+    return '$first mit $second getauscht';
+  }
+
+  @override
+  String navigationRemoved(String item) {
+    return '$item aus der Navigationsleiste entfernt';
+  }
+
+  @override
+  String navigationPinned(String item) {
+    return '$item angeheftet';
+  }
+
+  @override
+  String navigationPinnedDisplaced(String item, String displaced) {
+    return '$item angeheftet ($displaced ersetzt)';
+  }
+
+  @override
+  String get navSubtitleHome => 'Haupt-Dashboard';
+
+  @override
+  String get navSubtitleQuran => 'Den Heiligen Koran lesen';
+
+  @override
+  String get navSubtitlePrayer => 'Gebetszeiten & Adhan';
+
+  @override
+  String get navSubtitleSettings => 'Systemeinstellungen';
+
+  @override
+  String get dockZakat => 'Zakat';
+
+  @override
+  String get dockCalendar => 'Kalender';
+
+  @override
+  String downloadsReciterCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Rezitatoren',
+      one: '1 Rezitator',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String downloadsItemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Elemente',
+      one: '1 Element',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String downloadsDeleteReciterBody(String reciter, String surah) {
+    return 'Alle Downloads von $reciter für $surah entfernen?';
+  }
+
+  @override
+  String get downloadsAllSurahs => 'Alle Suren';
+
+  @override
+  String get downloadsFilterTitle => 'Downloads filtern und sortieren';
+
+  @override
+  String get downloadsFilterSubtitle =>
+      'Mehr Kontrolle darüber, welche Rezitationen in Ihrer Bibliothek erscheinen';
+
+  @override
+  String get downloadsFilterSearchHint => 'Rezitationen oder Suren suchen ...';
+
+  @override
+  String get downloadsGroupBy => 'Gruppieren nach';
+
+  @override
+  String get downloadsSortBy => 'Sortieren nach';
+
+  @override
+  String get downloadsCategory => 'Kategorie';
+
+  @override
+  String get downloadsContentType => 'Inhaltstyp';
+
+  @override
+  String get downloadsSortReciterAsc => 'Rezitator (A → Z)';
+
+  @override
+  String get downloadsSortReciterDesc => 'Rezitator (Z → A)';
+
+  @override
+  String get downloadsSortSizeDesc => 'Größe (größte zuerst)';
+
+  @override
+  String get downloadsSortSizeAsc => 'Größe (kleinste zuerst)';
+
+  @override
+  String get downloadsSortSurahAsc => 'Sure (1 → 114)';
+
+  @override
+  String get downloadsSortSurahDesc => 'Sure (114 → 1)';
+
+  @override
+  String get offsetSetPositive => 'Positiv setzen';
+
+  @override
+  String get offsetSetNegative => 'Negativ setzen';
+
+  @override
+  String get notificationPermissionCheckTimedOut =>
+      'Die Prüfung der Benachrichtigungsberechtigung hat zu lange gedauert. Öffnen Sie die App erneut oder aktivieren Sie Benachrichtigungen in den Systemeinstellungen.';
+
+  @override
+  String get notificationPermissionCheckFailed =>
+      'Die Benachrichtigungsberechtigung konnte nicht geprüft werden. Versuchen Sie es erneut oder aktivieren Sie Benachrichtigungen in den Systemeinstellungen.';
+
+  @override
+  String get exactAlarmPermissionCheckTimedOut =>
+      'Die Prüfung der Berechtigung für exakte Alarme hat zu lange gedauert. Öffnen Sie die App erneut oder aktivieren Sie „Alarme & Erinnerungen“ in den Systemeinstellungen.';
+
+  @override
+  String get exactAlarmPermissionCheckFailed =>
+      'Die Berechtigung für exakte Alarme konnte nicht geprüft werden. Versuchen Sie es erneut oder aktivieren Sie „Alarme & Erinnerungen“ in den Systemeinstellungen.';
+
+  @override
+  String get asrMethodHanafi => 'Hanafitisch';
+
+  @override
+  String get highLatitudeRuleAutoTitle => 'Automatisch';
+
+  @override
+  String get highLatitudeRuleNoneTitle => 'Keine';
+
+  @override
+  String get highLatitudeRuleMiddleOfTheNightTitle => 'Mitte der Nacht';
+
+  @override
+  String get highLatitudeRuleOneSeventhTitle => 'Ein Siebtel';
+
+  @override
+  String get highLatitudeRuleAngleBasedTitle => 'Winkelbasiert';
+
+  @override
+  String get prayerMethodAuto => 'Beste für den Standort';
+
+  @override
+  String get prayerMethodMuslimWorldLeague => 'Islamische Weltliga';
+
+  @override
+  String get prayerMethodEgyptian => 'Ägyptisch';
+
+  @override
+  String get prayerMethodUmmAlQura => 'Umm al-Qura';
+
+  @override
+  String get prayerMethodDubai => 'Dubai / Golfregion';
+
+  @override
+  String get prayerMethodKuwait => 'Kuwait';
+
+  @override
+  String get prayerMethodQatar => 'Katar';
+
+  @override
+  String get prayerMethodKarachi => 'Karatschi';
+
+  @override
+  String get prayerMethodMoonsighting => 'Mondsichtungs-Komitee';
+
+  @override
+  String get prayerMethodMorocco => 'Marokko';
+
+  @override
+  String get prayerMethodSingapore => 'Singapur';
+
+  @override
+  String get prayerMethodTehran => 'Teheran';
+
+  @override
+  String get prayerMethodTurkey => 'Türkei / Diyanet';
+
+  @override
+  String get prayerMethodShortAuto => 'Automatisch';
+
+  @override
+  String get prayerMethodShortMwl => 'MWL';
+
+  @override
+  String get prayerMethodShortDubai => 'Dubai';
+
+  @override
+  String get prayerMethodShortMoonsighting => 'Mondsichtung';
+
+  @override
+  String get prayerMethodShortTurkey => 'Türkei';
+
+  @override
+  String get dailyToolsKeepOnePinned =>
+      'Mindestens ein Werkzeug muss angeheftet bleiben.';
 }

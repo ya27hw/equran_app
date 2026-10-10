@@ -195,7 +195,10 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
           if (location != null) ...<Widget>[
             const SizedBox(width: 12),
             _LocationPill(
-              label: location.cityLabel,
+              label: localizedCityLabel(
+                AppLocalizations.of(context)!,
+                location,
+              ),
               onTap: widget.onOpenPrayerTimes,
             ),
           ],

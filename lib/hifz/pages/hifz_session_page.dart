@@ -7,6 +7,7 @@ import 'package:quran/quran.dart' as quran;
 import 'package:equran/utils/quran_text.dart';
 
 import '../models/hifz_entry.dart';
+import 'package:equran/hifz/hifz_unit_labels.dart';
 import '../models/hifz_unit.dart';
 import '../hifz_limits.dart';
 import '../hifz_surah_data.dart';
@@ -519,7 +520,7 @@ class _HifzSessionPageState extends State<HifzSessionPage>
 
     if (_queue.isEmpty) {
       return RedesignSubpage(
-        title: _unit.displayName,
+        title: hifzUnitLabel(_unit, l10n),
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
@@ -549,7 +550,7 @@ class _HifzSessionPageState extends State<HifzSessionPage>
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  l10n.hifzEmptySessionBody(_unit.displayName),
+                  l10n.hifzEmptySessionBody(hifzUnitLabel(_unit, l10n)),
                   style: TextStyle(
                     fontSize: 15,
                     fontVariations: const [FontVariation('opsz', 15)],
@@ -581,7 +582,7 @@ class _HifzSessionPageState extends State<HifzSessionPage>
         child: Column(
           children: [
             HifzSessionTopBar(
-              title: _unit.displayName,
+              title: hifzUnitLabel(_unit, l10n),
               closeTooltip: l10n.close,
               onClose: _confirmExit,
               trackLabel: switch (currentCard.track) {
@@ -908,13 +909,12 @@ class _HifzSessionPageState extends State<HifzSessionPage>
   }
 
   Widget _buildRatingButtons() {
-    const failLabel = 'Fail';
-    const passLabel = 'Pass';
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
 
     return Row(
       children: [
         HifzRatingButton(
-          label: failLabel,
+          label: l10n.hifzRatingFail,
           interval: HifzScheduler.formatInterval(
             _projectedIntervals['fail'] ?? 1,
           ),
@@ -922,7 +922,7 @@ class _HifzSessionPageState extends State<HifzSessionPage>
         ),
         const SizedBox(width: 12),
         HifzRatingButton(
-          label: passLabel,
+          label: l10n.hifzRatingPass,
           emphasis: true,
           interval: HifzScheduler.formatInterval(
             _projectedIntervals['pass'] ?? 4,

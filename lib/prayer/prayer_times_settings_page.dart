@@ -126,21 +126,26 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
               ReaderOptionRow(
                 leading: const DesignIcon('sun'),
                 title: localizations.asrMethod,
-                subtitle: _settings.asrMethod.label,
+                subtitle: localizedAsrMethod(
+                  localizations,
+                  _settings.asrMethod,
+                ),
                 onTap: _selectAsrMethod,
               ),
               ReaderOptionRow(
                 leading: const Icon(Icons.public_rounded),
                 title: localizations.highLatitudeAdjustment,
                 subtitle:
-                    '${_settings.highLatitudeRule.label}\n${localizations.highLatitudeAdjustmentSubtitle}',
+                    '${localizedHighLatitudeRule(localizations, _settings.highLatitudeRule)}\n${localizations.highLatitudeAdjustmentSubtitle}',
                 subtitleMaxLines: 4,
                 onTap: _selectHighLatitudeRule,
               ),
               ReaderOptionRow(
                 leading: const DesignIcon('clock'),
                 title: localizations.timeFormat,
-                subtitle: _settings.use24HourFormat ? '24-hour' : '12-hour',
+                subtitle: _settings.use24HourFormat
+                    ? localizations.twentyFourHour
+                    : localizations.twelveHour,
                 onTap: _selectTimeFormat,
               ),
               ReaderSwitchRow(
@@ -177,7 +182,7 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
               for (final PrayerTimeKind prayer in PrayerTimeKind.displayOrder)
                 ReaderOptionRow(
                   leading: const DesignIcon('clock'),
-                  title: prayer.label,
+                  title: localizedPrayerName(localizations, prayer),
                   subtitle: _offsetLabel(_settings.offsets.forPrayer(prayer)),
                   onTap: () => _editOffset(prayer),
                 ),
@@ -348,7 +353,7 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
           for (final PrayerTimeKind prayer in PrayerTimeKind.reminderOrder)
             ReaderSwitchRow(
               leading: const DesignIcon('bell'),
-              title: prayer.label,
+              title: localizedPrayerName(localizations, prayer),
               subtitle: localizations.notifyAtSavedPrayerTime,
               value: reminders.prayerToggleFor(prayer),
               onChanged: _isUpdatingReminders
@@ -673,7 +678,7 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
                 (PrayerCalculationMethod method) =>
                     AppSelectionOption<PrayerCalculationMethod>(
                       value: method,
-                      title: method.label,
+                      title: localizedCalculationMethod(localizations, method),
                       subtitle: method == PrayerCalculationMethod.auto
                           ? localizations.bestMethodSubtitle
                           : null,
@@ -695,7 +700,7 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
               .map(
                 (PrayerAsrMethod method) => AppSelectionOption<PrayerAsrMethod>(
                   value: method,
-                  title: method.label,
+                  title: localizedAsrMethod(localizations, method),
                 ),
               )
               .toList(),
@@ -716,7 +721,7 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
                   PrayerHighLatitudeRule rule,
                 ) => AppSelectionOption<PrayerHighLatitudeRule>(
                   value: rule,
-                  title: rule.label,
+                  title: localizedHighLatitudeRule(localizations, rule),
                   subtitle: switch (rule) {
                     PrayerHighLatitudeRule.auto =>
                       localizations.highLatitudeRuleAutoSubtitle,
@@ -1414,9 +1419,7 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
       if (mounted) {
         setState(() {
           _exactAlarmPermission = PrayerExactAlarmPermissionStatus.denied;
-          _exactAlarmMessage =
-              reminderResult.message ??
-              localizations.exactAlarmPermissionOffWarning;
+          _exactAlarmMessage = localizations.exactAlarmPermissionDisabled;
         });
         _showMessage(_exactAlarmMessage!);
       }
@@ -1473,9 +1476,7 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
         _exactAlarmMessage = null;
       }
       if (result.status == PrayerNotificationScheduleStatus.exactAlarmDenied) {
-        _exactAlarmMessage =
-            result.message ??
-            'Exact alarm permission is disabled. Prayer reminders may be delayed.';
+        _exactAlarmMessage = localizations.exactAlarmPermissionDisabled;
       }
     });
   }
@@ -1519,14 +1520,13 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
       setState(() {
         _notificationPermissionHasError = true;
         _notificationMessage =
-            'Notification permission check timed out. Try reopening the app or enabling notifications in system settings.';
+            localizations.notificationPermissionCheckTimedOut;
       });
     } catch (_) {
       if (!mounted) return;
       setState(() {
         _notificationPermissionHasError = true;
-        _notificationMessage =
-            'Could not check notification permission. Try again or enable notifications in system settings.';
+        _notificationMessage = localizations.notificationPermissionCheckFailed;
       });
     } finally {
       if (mounted) {
@@ -1559,15 +1559,13 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
       if (!mounted) return;
       setState(() {
         _exactAlarmPermissionHasError = true;
-        _exactAlarmMessage =
-            'Exact alarm permission check timed out. Try reopening the app or enabling alarms & reminders in system settings.';
+        _exactAlarmMessage = localizations.exactAlarmPermissionCheckTimedOut;
       });
     } catch (_) {
       if (!mounted) return;
       setState(() {
         _exactAlarmPermissionHasError = true;
-        _exactAlarmMessage =
-            'Could not check exact alarm permission. Try again or enable alarms & reminders in system settings.';
+        _exactAlarmMessage = localizations.exactAlarmPermissionCheckFailed;
       });
     } finally {
       if (mounted) {
@@ -1588,7 +1586,7 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
     final AppLocalizations localizations = AppLocalizations.of(context)!;
     final PrayerLocation? location = _location;
     if (location == null) return localizations.chooseLocationBeforeCalculating;
-    return location.displayLabel;
+    return localizedLocationLabel(localizations, location);
   }
 
   String get _calculationSubtitle {
@@ -1699,7 +1697,8 @@ class _PrayerTimesSettingsPageState extends State<PrayerTimesSettingsPage>
         _settings.method == PrayerCalculationMethod.auto && location != null
         ? _service.effectiveMethodFor(location: location, settings: _settings)
         : _settings.method;
-    return prayerMethodDisplayLabel(
+    return localizedPrayerMethodDisplayLabel(
+      localizations,
       settings: _settings,
       effectiveMethod: effectiveMethod,
     );

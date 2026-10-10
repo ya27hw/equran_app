@@ -4625,4 +4625,321 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get unitTola => 'تولة';
+
+  @override
+  String get hifzRatingFail => 'فشل';
+
+  @override
+  String get hifzRatingPass => 'نجاح';
+
+  @override
+  String get shareImageFormat => 'تنسيق صورة المشاركة';
+
+  @override
+  String get shareFormatStory => 'قصة 9:16';
+
+  @override
+  String get shareFormatSquare => 'مربع 1:1';
+
+  @override
+  String get shareFormatClassic => 'كلاسيكي';
+
+  @override
+  String get unableToShareAyahImage => 'تعذّرت مشاركة صورة الآية.';
+
+  @override
+  String get reciterGroupDownloaded => 'تجميع المنزَّلة';
+
+  @override
+  String get reciterShowAlphabetical => 'عرض بالترتيب الأبجدي';
+
+  @override
+  String get audioConnectionInterrupted =>
+      'انقطع اتصال الصوت. تحقق من الإنترنت وحاول مرة أخرى.';
+
+  @override
+  String get offlineDownloadAyahOrReconnect =>
+      'أنت غير متصل بالإنترنت. نزّل هذه الآية أو أعد الاتصال لبثّها.';
+
+  @override
+  String get unableToPlayAyahAudio => 'تعذّر تشغيل صوت الآية.';
+
+  @override
+  String get repeatOnce => 'مرة واحدة';
+
+  @override
+  String repeatTimes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count مرة',
+      few: '$count مرات',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get repeatInfinite => 'بلا حد';
+
+  @override
+  String get halfSecond => '0.5 ثانية';
+
+  @override
+  String get resourceStateUpdateAvailable => 'تحديث متاح';
+
+  @override
+  String get resourcePhaseStarting => 'جارٍ البدء';
+
+  @override
+  String get resourcePhaseVerifying => 'جارٍ التحقق';
+
+  @override
+  String get resourcePhaseExtracting => 'جارٍ الاستخراج';
+
+  @override
+  String get resourcePhaseInstalling => 'جارٍ التثبيت';
+
+  @override
+  String get resourcePhaseFailed => 'فشل';
+
+  @override
+  String get resourceTypeGeneric => 'مورد';
+
+  @override
+  String get translationBundled => 'مضمّنة';
+
+  @override
+  String get translationDownloadUnavailable => 'التنزيل غير متاح';
+
+  @override
+  String get navigationSettingsHint =>
+      'اسحب البطاقات لإعادة ترتيبها. اسحب عنصرًا متاحًا وأفلته على بطاقة نشطة لتبديلهما، أو اضغط على عنصر أدناه لتثبيته (يحلّ محل العنصر الأقل استخدامًا مؤخرًا).';
+
+  @override
+  String navigationActiveSlots(int count, int max) {
+    return 'خانات شريط التنقل النشطة ($count/$max)';
+  }
+
+  @override
+  String get navigationAvailableItems => 'العناصر المتاحة غير المثبّتة';
+
+  @override
+  String navigationSlot(int number) {
+    return 'الخانة $number';
+  }
+
+  @override
+  String navigationSlotLocked(int number) {
+    return 'الخانة $number (مركز مقفل)';
+  }
+
+  @override
+  String navigationSwapped(String first, String second) {
+    return 'تم تبديل $first بـ$second';
+  }
+
+  @override
+  String navigationRemoved(String item) {
+    return 'تمت إزالة $item من شريط التنقل';
+  }
+
+  @override
+  String navigationPinned(String item) {
+    return 'تم تثبيت $item';
+  }
+
+  @override
+  String navigationPinnedDisplaced(String item, String displaced) {
+    return 'تم تثبيت $item (حلّ محل $displaced)';
+  }
+
+  @override
+  String get navSubtitleHome => 'لوحة التحكم الرئيسية';
+
+  @override
+  String get navSubtitleQuran => 'اقرأ القرآن الكريم';
+
+  @override
+  String get navSubtitlePrayer => 'مواقيت الصلاة والأذان';
+
+  @override
+  String get navSubtitleSettings => 'تفضيلات النظام';
+
+  @override
+  String get dockZakat => 'الزكاة';
+
+  @override
+  String get dockCalendar => 'التقويم';
+
+  @override
+  String downloadsReciterCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count قارئًا',
+      few: '$count قرّاء',
+      two: 'قارئان',
+      one: 'قارئ واحد',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String downloadsItemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count عنصرًا',
+      few: '$count عناصر',
+      two: 'عنصران',
+      one: 'عنصر واحد',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String downloadsDeleteReciterBody(String reciter, String surah) {
+    return 'هل تريد إزالة جميع تنزيلات $reciter الخاصة بـ$surah؟';
+  }
+
+  @override
+  String get downloadsAllSurahs => 'كل السور';
+
+  @override
+  String get downloadsFilterTitle => 'تصفية التنزيلات وفرزها';
+
+  @override
+  String get downloadsFilterSubtitle =>
+      'تحكّم أكبر في التلاوات التي تظهر في مكتبتك';
+
+  @override
+  String get downloadsFilterSearchHint => 'ابحث عن تلاوات أو سور...';
+
+  @override
+  String get downloadsGroupBy => 'تجميع حسب';
+
+  @override
+  String get downloadsSortBy => 'الفرز حسب';
+
+  @override
+  String get downloadsCategory => 'التصنيف';
+
+  @override
+  String get downloadsContentType => 'نوع المحتوى';
+
+  @override
+  String get downloadsSortReciterAsc => 'القارئ (أ ← ي)';
+
+  @override
+  String get downloadsSortReciterDesc => 'القارئ (ي ← أ)';
+
+  @override
+  String get downloadsSortSizeDesc => 'الحجم (الأكبر أولًا)';
+
+  @override
+  String get downloadsSortSizeAsc => 'الحجم (الأصغر أولًا)';
+
+  @override
+  String get downloadsSortSurahAsc => 'السورة (1 ← 114)';
+
+  @override
+  String get downloadsSortSurahDesc => 'السورة (114 ← 1)';
+
+  @override
+  String get offsetSetPositive => 'تعيين قيمة موجبة';
+
+  @override
+  String get offsetSetNegative => 'تعيين قيمة سالبة';
+
+  @override
+  String get notificationPermissionCheckTimedOut =>
+      'انتهت مهلة التحقق من إذن الإشعارات. جرّب إعادة فتح التطبيق أو تفعيل الإشعارات من إعدادات النظام.';
+
+  @override
+  String get notificationPermissionCheckFailed =>
+      'تعذّر التحقق من إذن الإشعارات. حاول مرة أخرى أو فعّل الإشعارات من إعدادات النظام.';
+
+  @override
+  String get exactAlarmPermissionCheckTimedOut =>
+      'انتهت مهلة التحقق من إذن المنبّه الدقيق. جرّب إعادة فتح التطبيق أو تفعيل «المنبهات والتذكيرات» من إعدادات النظام.';
+
+  @override
+  String get exactAlarmPermissionCheckFailed =>
+      'تعذّر التحقق من إذن المنبّه الدقيق. حاول مرة أخرى أو فعّل «المنبهات والتذكيرات» من إعدادات النظام.';
+
+  @override
+  String get asrMethodHanafi => 'الحنفي';
+
+  @override
+  String get highLatitudeRuleAutoTitle => 'تلقائي';
+
+  @override
+  String get highLatitudeRuleNoneTitle => 'بدون';
+
+  @override
+  String get highLatitudeRuleMiddleOfTheNightTitle => 'منتصف الليل';
+
+  @override
+  String get highLatitudeRuleOneSeventhTitle => 'سُبع الليل';
+
+  @override
+  String get highLatitudeRuleAngleBasedTitle => 'حسب الزاوية';
+
+  @override
+  String get prayerMethodAuto => 'الأنسب للموقع';
+
+  @override
+  String get prayerMethodMuslimWorldLeague => 'رابطة العالم الإسلامي';
+
+  @override
+  String get prayerMethodEgyptian => 'المصرية';
+
+  @override
+  String get prayerMethodUmmAlQura => 'أم القرى';
+
+  @override
+  String get prayerMethodDubai => 'دبي / الخليج';
+
+  @override
+  String get prayerMethodKuwait => 'الكويت';
+
+  @override
+  String get prayerMethodQatar => 'قطر';
+
+  @override
+  String get prayerMethodKarachi => 'كراتشي';
+
+  @override
+  String get prayerMethodMoonsighting => 'لجنة رؤية الهلال';
+
+  @override
+  String get prayerMethodMorocco => 'المغرب';
+
+  @override
+  String get prayerMethodSingapore => 'سنغافورة';
+
+  @override
+  String get prayerMethodTehran => 'طهران';
+
+  @override
+  String get prayerMethodTurkey => 'تركيا / ديانت';
+
+  @override
+  String get prayerMethodShortAuto => 'تلقائي';
+
+  @override
+  String get prayerMethodShortMwl => 'الرابطة';
+
+  @override
+  String get prayerMethodShortDubai => 'دبي';
+
+  @override
+  String get prayerMethodShortMoonsighting => 'رؤية الهلال';
+
+  @override
+  String get prayerMethodShortTurkey => 'تركيا';
+
+  @override
+  String get dailyToolsKeepOnePinned =>
+      'يجب أن تظل أداة واحدة على الأقل مثبتة.';
 }

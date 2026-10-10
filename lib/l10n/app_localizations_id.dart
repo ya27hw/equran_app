@@ -4723,4 +4723,299 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get unitTola => 'tola';
+
+  @override
+  String get hifzRatingFail => 'Gagal';
+
+  @override
+  String get hifzRatingPass => 'Lulus';
+
+  @override
+  String get shareImageFormat => 'Format gambar untuk dibagikan';
+
+  @override
+  String get shareFormatStory => 'Story 9:16';
+
+  @override
+  String get shareFormatSquare => 'Persegi 1:1';
+
+  @override
+  String get shareFormatClassic => 'Klasik';
+
+  @override
+  String get unableToShareAyahImage => 'Gambar ayah tidak dapat dibagikan.';
+
+  @override
+  String get reciterGroupDownloaded => 'Kelompokkan yang diunduh';
+
+  @override
+  String get reciterShowAlphabetical => 'Tampilkan urut abjad';
+
+  @override
+  String get audioConnectionInterrupted =>
+      'Koneksi audio terputus. Periksa internet Anda dan coba lagi.';
+
+  @override
+  String get offlineDownloadAyahOrReconnect =>
+      'Anda sedang offline. Unduh ayah ini atau sambungkan kembali untuk memutarnya secara streaming.';
+
+  @override
+  String get unableToPlayAyahAudio => 'Audio ayah tidak dapat diputar.';
+
+  @override
+  String get repeatOnce => 'Sekali';
+
+  @override
+  String repeatTimes(int count) {
+    return '$count kali';
+  }
+
+  @override
+  String get repeatInfinite => 'Tanpa batas';
+
+  @override
+  String get halfSecond => '0,5 detik';
+
+  @override
+  String get resourceStateUpdateAvailable => 'Pembaruan tersedia';
+
+  @override
+  String get resourcePhaseStarting => 'Memulai';
+
+  @override
+  String get resourcePhaseVerifying => 'Memverifikasi';
+
+  @override
+  String get resourcePhaseExtracting => 'Mengekstrak';
+
+  @override
+  String get resourcePhaseInstalling => 'Memasang';
+
+  @override
+  String get resourcePhaseFailed => 'Gagal';
+
+  @override
+  String get resourceTypeGeneric => 'Sumber daya';
+
+  @override
+  String get translationBundled => 'Bawaan';
+
+  @override
+  String get translationDownloadUnavailable => 'Unduhan tidak tersedia';
+
+  @override
+  String get navigationSettingsHint =>
+      'Seret kartu untuk mengatur ulang. Seret item yang tersedia lalu lepaskan di kartu aktif untuk menukar, atau ketuk item di bawah untuk menyematkannya (menggantikan yang paling lama tidak dipakai).';
+
+  @override
+  String navigationActiveSlots(int count, int max) {
+    return 'Slot bilah navigasi aktif ($count/$max)';
+  }
+
+  @override
+  String get navigationAvailableItems => 'Item tersedia yang belum disematkan';
+
+  @override
+  String navigationSlot(int number) {
+    return 'Slot $number';
+  }
+
+  @override
+  String navigationSlotLocked(int number) {
+    return 'Slot $number (hub terkunci)';
+  }
+
+  @override
+  String navigationSwapped(String first, String second) {
+    return '$first ditukar dengan $second';
+  }
+
+  @override
+  String navigationRemoved(String item) {
+    return '$item dihapus dari bilah navigasi';
+  }
+
+  @override
+  String navigationPinned(String item) {
+    return '$item disematkan';
+  }
+
+  @override
+  String navigationPinnedDisplaced(String item, String displaced) {
+    return '$item disematkan (menggantikan $displaced)';
+  }
+
+  @override
+  String get navSubtitleHome => 'Dasbor utama';
+
+  @override
+  String get navSubtitleQuran => 'Baca Al-Quran';
+
+  @override
+  String get navSubtitlePrayer => 'Waktu salat & azan';
+
+  @override
+  String get navSubtitleSettings => 'Preferensi sistem';
+
+  @override
+  String get dockZakat => 'Zakat';
+
+  @override
+  String get dockCalendar => 'Kalender';
+
+  @override
+  String downloadsReciterCount(int count) {
+    return '$count qari';
+  }
+
+  @override
+  String downloadsItemCount(int count) {
+    return '$count item';
+  }
+
+  @override
+  String downloadsDeleteReciterBody(String reciter, String surah) {
+    return 'Hapus semua unduhan $reciter untuk $surah?';
+  }
+
+  @override
+  String get downloadsAllSurahs => 'Semua surat';
+
+  @override
+  String get downloadsFilterTitle => 'Filter & urutkan unduhan';
+
+  @override
+  String get downloadsFilterSubtitle =>
+      'Kendali lebih atas lantunan yang tampil di pustaka Anda';
+
+  @override
+  String get downloadsFilterSearchHint => 'Cari lantunan atau surat...';
+
+  @override
+  String get downloadsGroupBy => 'Kelompokkan menurut';
+
+  @override
+  String get downloadsSortBy => 'Urutkan menurut';
+
+  @override
+  String get downloadsCategory => 'Kategori';
+
+  @override
+  String get downloadsContentType => 'Jenis konten';
+
+  @override
+  String get downloadsSortReciterAsc => 'Qari (A → Z)';
+
+  @override
+  String get downloadsSortReciterDesc => 'Qari (Z → A)';
+
+  @override
+  String get downloadsSortSizeDesc => 'Ukuran (terbesar dulu)';
+
+  @override
+  String get downloadsSortSizeAsc => 'Ukuran (terkecil dulu)';
+
+  @override
+  String get downloadsSortSurahAsc => 'Surat (1 → 114)';
+
+  @override
+  String get downloadsSortSurahDesc => 'Surat (114 → 1)';
+
+  @override
+  String get offsetSetPositive => 'Jadikan positif';
+
+  @override
+  String get offsetSetNegative => 'Jadikan negatif';
+
+  @override
+  String get notificationPermissionCheckTimedOut =>
+      'Pemeriksaan izin notifikasi melewati batas waktu. Coba buka ulang aplikasi atau aktifkan notifikasi di pengaturan sistem.';
+
+  @override
+  String get notificationPermissionCheckFailed =>
+      'Tidak dapat memeriksa izin notifikasi. Coba lagi atau aktifkan notifikasi di pengaturan sistem.';
+
+  @override
+  String get exactAlarmPermissionCheckTimedOut =>
+      'Pemeriksaan izin alarm yang tepat melewati batas waktu. Coba buka ulang aplikasi atau aktifkan alarm & pengingat di pengaturan sistem.';
+
+  @override
+  String get exactAlarmPermissionCheckFailed =>
+      'Tidak dapat memeriksa izin alarm yang tepat. Coba lagi atau aktifkan alarm & pengingat di pengaturan sistem.';
+
+  @override
+  String get asrMethodHanafi => 'Hanafi';
+
+  @override
+  String get highLatitudeRuleAutoTitle => 'Otomatis';
+
+  @override
+  String get highLatitudeRuleNoneTitle => 'Tidak ada';
+
+  @override
+  String get highLatitudeRuleMiddleOfTheNightTitle => 'Tengah malam';
+
+  @override
+  String get highLatitudeRuleOneSeventhTitle => 'Sepertujuh';
+
+  @override
+  String get highLatitudeRuleAngleBasedTitle => 'Berbasis sudut';
+
+  @override
+  String get prayerMethodAuto => 'Terbaik untuk lokasi';
+
+  @override
+  String get prayerMethodMuslimWorldLeague => 'Liga Muslim Dunia';
+
+  @override
+  String get prayerMethodEgyptian => 'Mesir';
+
+  @override
+  String get prayerMethodUmmAlQura => 'Umm al-Qura';
+
+  @override
+  String get prayerMethodDubai => 'Dubai / Teluk';
+
+  @override
+  String get prayerMethodKuwait => 'Kuwait';
+
+  @override
+  String get prayerMethodQatar => 'Qatar';
+
+  @override
+  String get prayerMethodKarachi => 'Karachi';
+
+  @override
+  String get prayerMethodMoonsighting => 'Komite Rukyat Hilal';
+
+  @override
+  String get prayerMethodMorocco => 'Maroko';
+
+  @override
+  String get prayerMethodSingapore => 'Singapura';
+
+  @override
+  String get prayerMethodTehran => 'Teheran';
+
+  @override
+  String get prayerMethodTurkey => 'Turki / Diyanet';
+
+  @override
+  String get prayerMethodShortAuto => 'Otomatis';
+
+  @override
+  String get prayerMethodShortMwl => 'MWL';
+
+  @override
+  String get prayerMethodShortDubai => 'Dubai';
+
+  @override
+  String get prayerMethodShortMoonsighting => 'Rukyat';
+
+  @override
+  String get prayerMethodShortTurkey => 'Turki';
+
+  @override
+  String get dailyToolsKeepOnePinned =>
+      'Setidaknya satu alat harus tetap disematkan.';
 }

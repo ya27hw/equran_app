@@ -84,6 +84,7 @@ void main() {
         ('red-dark', EquranColors.redDark, 1.0, const Locale('en')),
         ('text-1.3', EquranColors.dark, 1.3, const Locale('en')),
         ('arabic-rtl', EquranColors.dark, 1.0, const Locale('ar')),
+        ('german-1.3', EquranColors.dark, 1.3, const Locale('de')),
       ];
 
   for (final (String name, EquranColors colors, double scale, Locale locale)

@@ -105,6 +105,7 @@ void main() {
         ('red-dark', EquranColors.redDark, 1.0, const Locale('en')),
         ('text-1.3', EquranColors.dark, 1.3, const Locale('en')),
         ('arabic-rtl', EquranColors.dark, 1.0, const Locale('ar')),
+        ('german-1.3', EquranColors.dark, 1.3, const Locale('de')),
       ];
   for (final (String name, EquranColors colors, double scale, Locale locale)
       in variants) {
@@ -160,6 +161,7 @@ void main() {
         ('emerald-light', EquranColors.light, 1.0, const Locale('en')),
         ('text-1.3', EquranColors.dark, 1.3, const Locale('en')),
         ('arabic-rtl', EquranColors.dark, 1.0, const Locale('ar')),
+        ('german-1.3', EquranColors.dark, 1.3, const Locale('de')),
       ];
   for (final (String name, EquranColors colors, double scale, Locale locale)
       in sheetVariants) {
@@ -171,9 +173,9 @@ void main() {
         locale: locale,
         height: 900,
       );
-      await tester.tap(find.byTooltip('Filter & sort'));
+      await tester.tap(find.byTooltip(l10n(tester).filterAndSort));
       await tester.pumpAndSettle();
-      expect(find.text('Filter & Sort Downloads'), findsOneWidget);
+      expect(find.text(l10n(tester).downloadsFilterTitle), findsOneWidget);
       await expectLater(
         find.byType(MaterialApp),
         matchesGoldenFile('goldens/downloads/sheet-$name.png'),
@@ -202,7 +204,7 @@ void main() {
     tester,
   ) async {
     await pump(tester, height: 900);
-    await tester.tap(find.byTooltip('Filter & sort'));
+    await tester.tap(find.byTooltip(l10n(tester).filterAndSort));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Surah').first);
     await tester.pumpAndSettle();
@@ -210,7 +212,7 @@ void main() {
     expect(find.text('Surah (1 → 114)'), findsOneWidget);
     await tester.tap(find.text('Apply'));
     await tester.pumpAndSettle();
-    expect(find.text('Filter & Sort Downloads'), findsNothing);
+    expect(find.text(l10n(tester).downloadsFilterTitle), findsNothing);
     // A filter is active, so the Clear button and the count badge show.
     expect(find.text('Clear'), findsOneWidget);
     await tester.tap(find.text('Clear'));

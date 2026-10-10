@@ -38,21 +38,22 @@ class NavigationSettingsPage extends StatelessWidget {
 
   String _getModuleSubtitle(NavItem item, AppLocalizations l10n) {
     return switch (item) {
-      NavItem.home => 'Main Dashboard',
-      NavItem.quran => 'Read the Holy Quran',
-      NavItem.prayer => 'Prayer Times & Adhan',
-      NavItem.duas => 'Dua & Supplications',
-      NavItem.statistics => 'Streaks & Worship Trends',
-      NavItem.qibla => 'Qibla Direction Compass',
-      NavItem.downloads => 'Offline Audio Cache Files',
-      NavItem.readingPlans => 'Reading Plans & Routines',
-      NavItem.hifz => 'Hifz Memorization Tasks',
-      NavItem.tasbih => 'Calm Dhikr Counter',
-      NavItem.asmaUlHusna => '99 Beautiful Names',
-      NavItem.settings => 'System Preferences',
-      NavItem.zakat => 'Advanced Nisab Calculator',
-      NavItem.calendar => 'Synchronized Hijri Timeline',
-      NavItem.more => 'Immutable Hub Platform',
+      NavItem.home => l10n.navSubtitleHome,
+      NavItem.quran => l10n.navSubtitleQuran,
+      NavItem.prayer => l10n.navSubtitlePrayer,
+      NavItem.duas => l10n.duasAndAzkar,
+      NavItem.statistics => l10n.worshipTrendsAndStreaks,
+      NavItem.qibla => l10n.compassAndDirection,
+      NavItem.downloads => l10n.offlineAudioAndCleanup,
+      NavItem.readingPlans => l10n.plansGoalsProgress,
+      NavItem.hifz => l10n.hifzSubtitle,
+      NavItem.tasbih => l10n.calmDhikrCounter,
+      NavItem.asmaUlHusna => l10n.the99BeautifulNames,
+      NavItem.settings => l10n.navSubtitleSettings,
+      NavItem.zakat => l10n.zakatCalculatorSubtitle,
+      NavItem.calendar => l10n.islamicCalendarSubtitle,
+      // The More hub is locked into the bar and never listed as available.
+      NavItem.more => l10n.more,
     };
   }
 
@@ -70,16 +71,15 @@ class NavigationSettingsPage extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
             physics: const BouncingScrollPhysics(),
             children: <Widget>[
-              const ReaderNotice(
-                icon: DesignIcon('info'),
-                text:
-                    'Drag tiles to rearrange. Drag an available item and drop it on an active tile to swap, or tap an item below to pin it (displaces least recently used).',
+              ReaderNotice(
+                icon: const DesignIcon('info'),
+                text: l10n.navigationSettingsHint,
               ),
               const SizedBox(height: 24),
               Padding(
                 padding: const EdgeInsetsDirectional.only(start: 4, bottom: 10),
                 child: RedesignEyebrow(
-                  'ACTIVE NAVBAR SLOTS (${state.activeNavbarItems.length}/5)',
+                  l10n.navigationActiveSlots(state.activeNavbarItems.length, 5),
                 ),
               ),
               // Reorderable list of active slots
@@ -109,7 +109,10 @@ class NavigationSettingsPage extends StatelessWidget {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
-                              'Swapped ${_getModuleLabel(item, l10n)} with ${_getModuleLabel(incoming, l10n)}',
+                              l10n.navigationSwapped(
+                                _getModuleLabel(item, l10n),
+                                _getModuleLabel(incoming, l10n),
+                              ),
                             ),
                             behavior: SnackBarBehavior.floating,
                             duration: const Duration(seconds: 2),
@@ -133,8 +136,8 @@ class NavigationSettingsPage extends StatelessWidget {
                           ),
                           title: _getModuleLabel(item, l10n),
                           subtitle: isMore
-                              ? 'Slot ${index + 1} (Locked Hub)'
-                              : 'Slot ${index + 1}',
+                              ? l10n.navigationSlotLocked(index + 1)
+                              : l10n.navigationSlot(index + 1),
                           trailing: isMore
                               ? Padding(
                                   padding: const EdgeInsets.all(12),
@@ -157,7 +160,9 @@ class NavigationSettingsPage extends StatelessWidget {
                                           ).showSnackBar(
                                             SnackBar(
                                               content: Text(
-                                                'Removed ${_getModuleLabel(item, l10n)} from navbar',
+                                                l10n.navigationRemoved(
+                                                  _getModuleLabel(item, l10n),
+                                                ),
                                               ),
                                               behavior:
                                                   SnackBarBehavior.floating,
@@ -179,7 +184,7 @@ class NavigationSettingsPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsetsDirectional.only(start: 4, bottom: 10),
                 child: RedesignEyebrow(
-                  'AVAILABLE UNPINNED ITEMS',
+                  l10n.navigationAvailableItems,
                   color: tokens.goldText,
                 ),
               ),
@@ -242,8 +247,13 @@ class NavigationSettingsPage extends StatelessWidget {
                         NavigationBloc.instance.promoteToActive(item);
 
                         final String message = willDisplace
-                            ? 'Pinned ${_getModuleLabel(item, l10n)} (displaced ${_getModuleLabel(displaceCandidate!, l10n)})'
-                            : 'Pinned ${_getModuleLabel(item, l10n)}';
+                            ? l10n.navigationPinnedDisplaced(
+                                _getModuleLabel(item, l10n),
+                                _getModuleLabel(displaceCandidate!, l10n),
+                              )
+                            : l10n.navigationPinned(
+                                _getModuleLabel(item, l10n),
+                              );
 
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(

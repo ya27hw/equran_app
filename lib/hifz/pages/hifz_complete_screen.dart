@@ -7,6 +7,7 @@ import 'package:equran/widgets/reader_sheet_chrome.dart';
 import 'package:equran/widgets/redesign/page_typography.dart';
 import 'package:equran/widgets/redesign/redesign_widgets.dart';
 import 'package:equran/hifz/hifz_db.dart';
+import 'package:equran/hifz/hifz_unit_labels.dart';
 import 'package:equran/hifz/models/hifz_unit.dart';
 import 'hifz_session_page.dart';
 import 'package:equran/l10n/app_localizations.dart';
@@ -191,7 +192,9 @@ class _HifzCompleteScreenState extends State<HifzCompleteScreen>
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          l10n.hifzUnitCompleteTitle(widget.unit.displayName),
+                          l10n.hifzUnitCompleteTitle(
+                            hifzUnitLabel(widget.unit, l10n),
+                          ),
                           style: redesignDisplayStyle(context, size: 22),
                           textAlign: TextAlign.center,
                         ),
@@ -240,17 +243,15 @@ class _HifzCompleteScreenState extends State<HifzCompleteScreen>
                                 textColor: tokens.emText,
                               ),
                               const SizedBox(width: 8),
-                              // Fail and Pass are English-only in the
-                              // original screen; there is no key for them yet.
                               _StatTile(
-                                label: 'Fail',
+                                label: l10n.hifzRatingFail,
                                 count: widget.ratingCounts['fail'] ?? 0,
                                 bgColor: tokens.goldWash,
                                 textColor: tokens.goldText,
                               ),
                               const SizedBox(width: 8),
                               _StatTile(
-                                label: 'Pass',
+                                label: l10n.hifzRatingPass,
                                 count: widget.ratingCounts['pass'] ?? 0,
                                 bgColor: tokens.emWash,
                                 textColor: tokens.emText,
