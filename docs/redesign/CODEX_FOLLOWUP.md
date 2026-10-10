@@ -141,8 +141,15 @@ Settings landing, floating dock, player bar, playback options sheet.
 - ~~**Prayer page full setup screen** (`_buildSetupState`, no location)~~ Done (`polish/design-completions`, owner delegated the design): page frame + `PrayerArcSetupHero` + one hairline card (why a location is needed, privacy notice, the single "Set up location" action) + the "calculated locally" caption. Device location and manual entry live inside the map picker, as before. Goldens: `test/redesign/goldens/prayer_setup/`.
 - ~~**Surah list sort chip label**~~ Done (owner delegated): flat `ChipButton` showing the order as numerals (1-114 / 114-1, 1-30 for Juz, 1-604 for Pages, pinned LTR), tooltip `reverseOrder` (new key, machine-drafted in 7 languages). It stays in the floating-button slot; to move it into the list header, relocate `_buildOrderChip` in `lib/home/main_page.dart`.
 - ~~**Juz and Pages grouped card**~~ Done (owner delegated): one hairline card per juz (heading above it) and one card for Pages, via the shared `GroupedCardSliver`. Wide screens cap the card at 760 px; the Surahs tab still switches to a card grid from 700 px.
-- **Bright hero tokens** (`featA`/`featB`, `onFeat`, `featGold`, `featRule`, `onGold`, `onFeatGold`, stronger `glow`): not in code; it
-  re-renders every hero golden.
+- ~~**Bright hero tokens**~~ Done in code on `fix/followups`, **owner has not seen it** (it makes every hero brighter than the one approved on
+  Oct 4). `EquranTokens` now has `onFeat`, `featGold`, `featRule`, `onGold`, `onFeatGold`; `featB`, `featText2` and `glow` changed. The rule
+  reproduces every hero variable of the canvas exactly (0 per channel, 11 palettes), no per-palette constants: `featB` = `primaryGradientEnd`
+  pulled toward `featA` until white is 4.5:1; `featText2` = `onPrimaryMuted` nudged to 4.5:1 on both; `featGold` = `accentGold` lightened to 3:1
+  on both; `featRule` = `featGold` at 30%; `onGold`/`onFeatGold` = `#1B1406`; `glow` = primary at 28% dark / 12% light (none on AMOLED).
+  Consequences: `glow` is also the page backdrop, so it re-renders every redesigned page, not only heroes; gold is only 3:1 on `featB`, so hero
+  eyebrows and small captions moved from gold to `featText2` (as in the canvas), and gold stays on icons, progress bars, large numerals and the
+  Duas "Begin" button. The Quran landscape and Prayer sky heroes are artwork on their own colours and were not touched. To drop it: revert
+  the three commits (tokens, heroes, goldens).
 - **Native review of machine-drafted translations:** `prayerNextIn`, `showMore`, `prayersCount`, `note`, `saveDuasHere`, and in the
   polish stack `savedFolderLabel` and `savedManageFolders` (plus any other keys those branches added in ar, bn, de, fa, id, tr, ur).
   `polish/strings` adds the 88 keys listed under item 11.
