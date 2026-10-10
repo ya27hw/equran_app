@@ -2727,5 +2727,13 @@
   "prayerMethodShortMoonsighting": "Moonsighting",
   "prayerMethodShortTurkey": "Turkey",
   "dailyToolsKeepOnePinned": "At least one tool must remain pinned.",
-  "zakatLivestockNotCalculated": "Livestock is not calculated here, so it is left out of the total. Please ask a qualified scholar."
+  "zakatLivestockNotCalculated": "Livestock is not calculated here, so it is left out of the total. Please ask a qualified scholar.",
+  "resourcesFilterTitle": "Filter & sort resources",
+  "resourceSortName": "Name (A → Z)",
+  "resourceSortInstalledFirst": "Installed first",
+  "resourceFilterStatus": "Status",
+  "resourceFilterType": "Type",
+  "resourceViewByType": "By type",
+  "resourceViewNone": "No grouping",
+  "resourcesNoMatches": "No resources match these filters."
 }

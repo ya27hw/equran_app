@@ -74,9 +74,9 @@ class RedesignSubpage extends StatelessWidget {
                       Expanded(
                         child: Text(
                           title,
-                          maxLines: 1,
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: redesignDisplayStyle(context, size: 32),
+                          style: redesignDisplayStyle(context, size: 26),
                         ),
                       ),
                       for (final Widget action in actions) action,

@@ -2377,5 +2377,13 @@
   "prayerMethodShortMoonsighting": "رویتِ ہلال",
   "prayerMethodShortTurkey": "ترکی",
   "dailyToolsKeepOnePinned": "کم از کم ایک ٹول پن شدہ رہنا چاہیے۔",
-  "zakatLivestockNotCalculated": "مویشیوں کی زکوٰۃ یہاں شمار نہیں کی جاتی، اس لیے کل میں شامل نہیں۔ براہِ کرم کسی مستند عالم سے پوچھیں۔"
+  "zakatLivestockNotCalculated": "مویشیوں کی زکوٰۃ یہاں شمار نہیں کی جاتی، اس لیے کل میں شامل نہیں۔ براہِ کرم کسی مستند عالم سے پوچھیں۔",
+  "resourcesFilterTitle": "وسائل فلٹر اور ترتیب دیں",
+  "resourceSortName": "نام (الف ← ی)",
+  "resourceSortInstalledFirst": "انسٹال شدہ پہلے",
+  "resourceFilterStatus": "حیثیت",
+  "resourceFilterType": "قسم",
+  "resourceViewByType": "قسم کے لحاظ سے",
+  "resourceViewNone": "گروپ بندی کے بغیر",
+  "resourcesNoMatches": "ان فلٹرز سے کوئی وسیلہ مطابقت نہیں رکھتا۔"
 }

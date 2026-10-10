@@ -1,5 +1,3 @@
-import 'package:equran/utils/resource_labels.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'appearance_settings_page.dart';
 import 'navigation_settings_page.dart';
@@ -14,26 +12,15 @@ import 'package:equran/backend/library.dart'
         QuranStatsDB,
         QuranTranslationService,
         ResumeStateDB,
-        DownloadableResource,
-        ResourceDownloadPhase,
-        ResourceDownloadProgress,
-        ResourceDownloadService,
-        ResourceInstallException,
-        ResourceInstallState,
-        ResourceInstallStore,
         ResourceManifest,
         ResourceRepository,
-        ResourceType,
         RoutineDayProgressDB,
-        SettingsDB,
-        prettyBytes,
-        getResourceSize;
+        SettingsDB;
 import 'package:equran/backend/qpc_v4_font_service.dart';
 import 'package:equran/backend/backup_service.dart';
 import 'package:equran/prayer/prayer_times_settings_page.dart';
 import 'package:equran/utils/app_theme.dart';
 import 'package:equran/theme/equran_spacing.dart';
-import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/widgets/redesign/redesign_widgets.dart';
 import 'package:equran/widgets/redesign/settings_group_card.dart';
 import 'package:equran/utils/library.dart';
@@ -43,12 +30,12 @@ import 'package:equran/widgets/library.dart'
 import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/home/settings_dialogs.dart';
+import 'package:equran/home/downloadable_resources_page.dart';
+import 'package:equran/theme/equran_colors.dart';
+import 'package:equran/theme/equran_tokens.dart';
+import 'package:equran/widgets/resource_state_marker.dart';
 import 'package:equran/home_dashboard/daily_tools_edit_sheet.dart';
 import 'package:equran/widgets/reader_sheet_chrome.dart';
-import 'package:equran/widgets/redesign/page_typography.dart'
-    show RedesignEyebrow;
-import 'package:equran/widgets/settings_sheet_chrome.dart';
-import 'package:equran/word_by_word/word_by_word_download_card.dart';
 import 'package:equran/main.dart' show MyApp;
 import 'package:quran/quran.dart' show Translation, isTranslationLoaded;
 
@@ -208,12 +195,16 @@ class _SettingsPageState extends State<SettingsPage> {
               const PlayBackSlider(),
             ],
           ),
-          _buildSettingsGroup(
+          _buildSettingsLinkCard(
             context: context,
             title: localizations.downloadableResources,
             subtitle: localizations.downloadableResourcesSubtitle,
             icon: Icons.cloud_download_outlined,
-            children: <Widget>[_buildDownloadableResourcesSection(context)],
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (context) => const DownloadableResourcesPage(),
+              ),
+            ),
           ),
           _buildSettingsGroup(
             context: context,
@@ -283,7 +274,11 @@ class _SettingsPageState extends State<SettingsPage> {
         );
         if (value == null) return;
         if (value == 'qpc-v4') {
-          final bool ready = await _ensureQpcV4FontsReady();
+          if (!context.mounted) return;
+          final bool ready = await ensureQpcV4FontsReady(
+            context,
+            _resourceManifestFuture,
+          );
           if (!ready) return;
           await QpcV4FontService.instance.ensureFontLoadedForPage(1);
         }
@@ -317,9 +312,12 @@ class _SettingsPageState extends State<SettingsPage> {
                   .map(
                     (entry) => AppSelectionOption<int>(
                       value: entry.key,
-                      title:
-                          '${translationDisplayName(entry.value)} • '
-                          '${translationAvailabilityLabel(localizations, entry.value, manifest)}',
+                      title: translationDisplayName(entry.value),
+                      trailing: translationStatusWidget(
+                        localizations,
+                        entry.value,
+                        manifest,
+                      ),
                     ),
                   )
                   .toList()
@@ -327,7 +325,9 @@ class _SettingsPageState extends State<SettingsPage> {
         );
         if (value == null) return;
         final Translation translation = Translation.values[value];
-        final bool ready = await _ensureTranslationReadyForSelection(
+        if (!context.mounted) return;
+        final bool ready = await ensureTranslationReadyForSelection(
+          context,
           translation: translation,
           manifest: manifest,
         );
@@ -412,531 +412,67 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildDownloadableResourcesSection(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-    return FutureBuilder<ResourceManifest>(
-      future: _resourceManifestFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 24),
-            child: Center(child: CircularProgressIndicator()),
-          );
-        }
-
-        final ResourceManifest? manifest = snapshot.data;
-        if (manifest == null || manifest.resources.isEmpty) {
-          return Column(
-            children: <Widget>[
-              ReaderOptionRow(
-                leading: const Icon(Icons.error_outline_rounded),
-                title: localizations.resourcesUnavailable,
-                subtitle: localizations.resourcesManifestUnavailable,
-                onTap: null,
-                showChevron: false,
-              ),
-              _hairline(context),
-              ReaderOptionRow(
-                leading: const Icon(Icons.refresh_rounded),
-                title: localizations.retry,
-                onTap: _refreshResourceManifest,
-                showChevron: false,
-              ),
-            ],
-          );
-        }
-
-        return ValueListenableBuilder<int>(
-          valueListenable: ResourceInstallStore.instance.changes,
-          builder: (context, _, _) {
-            return ValueListenableBuilder<
-              Map<String, ResourceDownloadProgress>
-            >(
-              valueListenable: ResourceDownloadService.instance.downloads,
-              builder: (context, downloads, _) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    _buildResourceSubsection(
-                      context: context,
-                      manifest: manifest,
-                      title: localizations.tafsir,
-                      resources: manifest.resourcesOfType(ResourceType.tafsir),
-                      downloads: downloads,
-                    ),
-                    _buildResourceSubsection(
-                      context: context,
-                      manifest: manifest,
-                      title: localizations.quranFonts,
-                      resources: _quranFontResources(manifest),
-                      downloads: downloads,
-                    ),
-                    _buildResourceSubsection(
-                      context: context,
-                      manifest: manifest,
-                      title: localizations.translations,
-                      resources: manifest.resourcesOfType(
-                        ResourceType.translation,
-                      ),
-                      downloads: downloads,
-                    ),
-                    // The pack is stored on disk, which web builds do not have.
-                    if (!kIsWeb &&
-                        manifest
-                            .resourcesOfType(ResourceType.wordByWord)
-                            .isNotEmpty)
-                      _buildWordByWordCard(
-                        context: context,
-                        manifest: manifest,
-                        downloads: downloads,
-                      ),
-                    _hairline(context),
-                    ReaderOptionRow(
-                      leading: const Icon(Icons.refresh_rounded),
-                      title: localizations.refreshManifest,
-                      subtitle: localizations.checkGithubReleases,
-                      onTap: _refreshResourceManifest,
-                      showChevron: false,
-                    ),
-                  ],
-                );
-              },
-            );
-          },
-        );
-      },
-    );
-  }
-
-  /// The optional word-by-word pack: same install state, download and delete
-  /// calls as every other resource, drawn by [WordByWordDownloadCard].
-  Widget _buildWordByWordCard({
+  /// A settings section that is a single link. The whole header opens
+  /// [onTap] directly, with no expansion step.
+  Widget _buildSettingsLinkCard({
     required BuildContext context,
-    required ResourceManifest manifest,
-    required Map<String, ResourceDownloadProgress> downloads,
-  }) {
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final ResourceInstallStore store = ResourceInstallStore.instance;
-    return WordByWordDownloadCard(
-      title: localizations.wordByWord,
-      description: localizations.wordByWordDescription,
-      downloadTooltip: localizations.download,
-      updateTooltip: localizations.update,
-      deleteTooltip: localizations.delete,
-      rows: <WordByWordPackRow>[
-        for (final DownloadableResource resource in manifest.resourcesOfType(
-          ResourceType.wordByWord,
-        ))
-          () {
-            final ResourceDownloadProgress? progress = downloads[resource.id];
-            final ResourceInstallState state =
-                progress != null &&
-                    progress.phase != ResourceDownloadPhase.complete &&
-                    progress.phase != ResourceDownloadPhase.failed
-                ? ResourceInstallState.downloading
-                : store.installStateFor(resource);
-            return WordByWordPackRow(
-              name: resource.name,
-              details: _resourceSubtitle(resource),
-              state: state,
-              progress: progress?.fraction,
-              onDownload: () => _downloadResource(resource),
-              onDelete: () => _confirmDeleteResource(resource),
-            );
-          }(),
-      ],
-    );
-  }
-
-  Widget _hairline(BuildContext context) =>
-      Divider(height: 1, thickness: 1, color: context.equranTokens.hair);
-
-  Widget _buildResourceSubsection({
-    required BuildContext context,
-    required ResourceManifest manifest,
     required String title,
-    required List<DownloadableResource> resources,
-    required Map<String, ResourceDownloadProgress> downloads,
-    String? description,
+    required String subtitle,
+    required IconData icon,
+    required VoidCallback onTap,
   }) {
-    if (resources.isEmpty) {
-      final localizations = AppLocalizations.of(context)!;
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          ReaderOptionRow(
-            leading: const Icon(Icons.cloud_off_rounded),
-            title: title,
-            subtitle: localizations.noResourcesListed,
-            onTap: null,
-            showChevron: false,
-          ),
-          _hairline(context),
-        ],
-      );
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(20, 18, 20, 10),
-          child: RedesignEyebrow(title),
-        ),
-        if (description != null)
-          Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 8),
-            child: Text(
-              description,
-              style: TextStyle(
-                fontSize: 12.5,
-                color: context.equranTokens.muted,
+    final EquranTokens tokens = context.equranTokens;
+    final EquranColors colors = context.equranColors;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: HairlineCard(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(EquranRadii.xl - 1),
+          child: InkWell(
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 12, 12),
+              child: Row(
+                children: <Widget>[
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: tokens.emWash,
+                      shape: BoxShape.circle,
+                    ),
+                    alignment: Alignment.center,
+                    child: Icon(icon, size: 20, color: tokens.emText),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: 15.5,
+                            fontVariations: const [FontVariation('opsz', 15.5)],
+                            fontWeight: FontWeight.w600,
+                            color: colors.textPrimary,
+                          ),
+                        ),
+                        Text(
+                          subtitle,
+                          style: TextStyle(fontSize: 13, color: tokens.muted),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(Icons.chevron_right_rounded, color: tokens.muted),
+                ],
               ),
             ),
           ),
-        for (final DownloadableResource resource in resources) ...<Widget>[
-          _hairline(context),
-          _buildResourceTile(
-            context: context,
-            manifest: manifest,
-            resource: resource,
-            progress: downloads[resource.id],
-          ),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildResourceTile({
-    required BuildContext context,
-    required ResourceManifest manifest,
-    required DownloadableResource resource,
-    required ResourceDownloadProgress? progress,
-  }) {
-    final ResourceInstallStore store = ResourceInstallStore.instance;
-    final bool isTafsir = resource.type == ResourceType.tafsir;
-    final bool isTranslation = resource.type == ResourceType.translation;
-    final bool isQuranFonts = resource.type == ResourceType.quranFonts;
-    final bool isWordByWord = resource.type == ResourceType.wordByWord;
-    final bool selected =
-        (isTafsir &&
-            store.selectedTafsirResourceIds(manifest).contains(resource.id)) ||
-        (isTranslation && _selectedTranslationResourceId() == resource.id);
-    final ResourceInstallState installState =
-        progress != null &&
-            progress.phase != ResourceDownloadPhase.complete &&
-            progress.phase != ResourceDownloadPhase.failed
-        ? ResourceInstallState.downloading
-        : store.installStateFor(resource);
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-
-    return SettingsResourceRow(
-      // A check in the well marks the tafsir or translation in use.
-      leading: selected
-          ? const DesignIcon('check', strokeWidth: 2)
-          : isTafsir
-          ? const DesignIcon('book')
-          : isTranslation
-          ? const Icon(Icons.translate_rounded)
-          : isQuranFonts
-          ? const Icon(Icons.font_download_outlined)
-          : isWordByWord
-          ? const Icon(Icons.touch_app_outlined)
-          : const DesignIcon('headphones'),
-      title: resource.name,
-      details: _resourceSubtitle(resource),
-      statusLabel: resourceInstallStateLabel(localizations, installState),
-      installed: installState == ResourceInstallState.installed,
-      updateAvailable: installState == ResourceInstallState.updateAvailable,
-      selected: selected,
-      selectedLabel: localizations.selected,
-      trailing: _buildResourceAction(resource, installState, progress),
-      onTap: isTafsir
-          ? () => _toggleTafsirSelection(
-              manifest: manifest,
-              resource: resource,
-              selected: !selected,
-            )
-          : isTranslation
-          ? () => _selectTranslationResource(
-              manifest: manifest,
-              resource: resource,
-            )
-          : null,
-    );
-  }
-
-  Widget _buildResourceAction(
-    DownloadableResource resource,
-    ResourceInstallState state,
-    ResourceDownloadProgress? progress,
-  ) {
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    if (state == ResourceInstallState.downloading) {
-      return SettingsProgressRing(progress: progress?.fraction);
-    }
-
-    if (state == ResourceInstallState.installed) {
-      return IconButton44(
-        tooltip: localizations.delete,
-        onPressed: () => _confirmDeleteResource(resource),
-        designIcon: 'trash',
-      );
-    }
-
-    return IconButton44(
-      tooltip: state == ResourceInstallState.updateAvailable
-          ? localizations.update
-          : localizations.download,
-      onPressed: () => _downloadResource(resource),
-      designIcon: 'download',
-    );
-  }
-
-  String _resourceSubtitle(DownloadableResource resource) {
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final List<String> parts = <String>[
-      if (resource.language != null) resource.language!.toUpperCase(),
-      if (resource.reciterCode != null)
-        AppReciter.fromCode(
-          resource.reciterCode,
-        ).displayName(arabic: isArabicLocalizations(localizations)),
-      'v${resource.version}',
-      prettyBytes(getResourceSize(resource)),
-    ];
-    return parts.join(' • ');
-  }
-
-  List<DownloadableResource> _quranFontResources(ResourceManifest manifest) {
-    final List<DownloadableResource> resources = manifest.resourcesOfType(
-      ResourceType.quranFonts,
-    );
-    if (resources.any(
-      (resource) => resource.id == QpcV4FontService.tajweedFontsResource.id,
-    )) {
-      return resources;
-    }
-    return <DownloadableResource>[
-      QpcV4FontService.tajweedFontsResource,
-      ...resources,
-    ];
-  }
-
-  Future<bool> _ensureQpcV4FontsReady() async {
-    if (await QpcV4FontService.instance.hasAllPageFonts()) return true;
-
-    if (!mounted) return false;
-    final DownloadableResource resource = await _qpcV4FontsResource();
-    if (!mounted) return false;
-    final int? size = getResourceSize(resource);
-    final String sizeLabel = size == null ? '' : ' (${prettyBytes(size)})';
-    final localizations = AppLocalizations.of(context)!;
-    final bool? download = await showReaderDialog<bool>(
-      context: context,
-      builder: (context) => ReaderConfirmDialog(
-        title: localizations.downloadQpcFontsTitle,
-        body: localizations.downloadQpcFontsBody(sizeLabel),
-        icon: const DesignIcon('download'),
-        cancelLabel: localizations.cancel,
-        confirmLabel: localizations.download,
+        ),
       ),
     );
-    if (download != true) return false;
-
-    final bool installed = await _downloadResource(resource);
-    if (!installed) return false;
-    QpcV4FontService.instance.clearCache();
-
-    final bool ready = await QpcV4FontService.instance.hasAllPageFonts();
-    if (!ready && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(localizations.qpcFontsDownloadError)),
-      );
-    }
-    return ready;
-  }
-
-  Future<DownloadableResource> _qpcV4FontsResource() async {
-    try {
-      final ResourceManifest manifest = await _resourceManifestFuture;
-      return manifest.resourceById(QpcV4FontService.tajweedFontsResource.id) ??
-          QpcV4FontService.tajweedFontsResource;
-    } catch (_) {
-      return QpcV4FontService.tajweedFontsResource;
-    }
-  }
-
-  Future<void> _toggleTafsirSelection({
-    required ResourceManifest manifest,
-    required DownloadableResource resource,
-    required bool selected,
-  }) async {
-    final ResourceInstallStore store = ResourceInstallStore.instance;
-    final Set<String> selectedIds = store
-        .selectedTafsirResourceIds(manifest)
-        .toSet();
-    if (selected) {
-      selectedIds.add(resource.id);
-    } else {
-      selectedIds.remove(resource.id);
-    }
-    await store.saveSelectedTafsirResourceIds(selectedIds.toList());
-    if (mounted) setState(() {});
-  }
-
-  String? _selectedTranslationResourceId() {
-    final dynamic saved = SettingsDB().get('translation', defaultValue: 0);
-    if (saved is! int ||
-        saved < 0 ||
-        saved >= Translation.values.length ||
-        Translation.values[saved].isBundled) {
-      return null;
-    }
-    return Translation.values[saved].resourceId;
-  }
-
-  Future<void> _selectTranslationResource({
-    required ResourceManifest manifest,
-    required DownloadableResource resource,
-  }) async {
-    final localizations = AppLocalizations.of(context)!;
-    final Translation? translation = _translationForResource(resource);
-    if (translation == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(localizations.translationUnsupported)),
-      );
-      return;
-    }
-
-    final bool ready = await _ensureTranslationReadyForSelection(
-      translation: translation,
-      manifest: manifest,
-    );
-    if (!ready) return;
-
-    await SettingsDB().put(
-      'translation',
-      Translation.values.indexOf(translation),
-    );
-    await QuranTranslationService.instance.loadInstalledTranslation(
-      translation,
-    );
-    if (mounted) setState(() {});
-  }
-
-  Future<bool> _ensureTranslationReadyForSelection({
-    required Translation translation,
-    required ResourceManifest manifest,
-  }) async {
-    if (translation.isBundled) return true;
-
-    final DownloadableResource? resource = QuranTranslationService.instance
-        .resourceForTranslation(translation, manifest);
-    if (resource == null) {
-      if (!mounted) return false;
-      final localizations = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(localizations.translationNotInManifest)),
-      );
-      return false;
-    }
-
-    if (ResourceInstallStore.instance.isInstalled(resource)) return true;
-
-    final bool? download = await showReaderDialog<bool>(
-      context: context,
-      builder: (context) {
-        final AppLocalizations l = AppLocalizations.of(context)!;
-        return ReaderConfirmDialog(
-          title: l.downloadTranslationQuestion(
-            translationDisplayName(translation),
-          ),
-          body: l.translationNotInstalled(
-            prettyBytes(getResourceSize(resource)),
-          ),
-          icon: const DesignIcon('download'),
-          cancelLabel: l.cancel,
-          confirmLabel: l.download,
-        );
-      },
-    );
-    if (download != true) return false;
-    return _downloadResource(resource);
-  }
-
-  Translation? _translationForResource(DownloadableResource resource) {
-    for (final Translation translation in Translation.values) {
-      if (translation.resourceId == resource.id) return translation;
-    }
-    return null;
-  }
-
-  Future<bool> _downloadResource(DownloadableResource resource) async {
-    try {
-      await ResourceDownloadService.instance.downloadAndInstall(resource);
-      if (resource.id == QpcV4FontService.tajweedFontsResource.id) {
-        QpcV4FontService.instance.clearCache();
-      }
-      await QuranTranslationService.instance
-          .loadInstalledTranslationForResource(resource);
-      if (!mounted) return false;
-      final localizations = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(localizations.installedResource(resource.name))),
-      );
-      setState(() {});
-      return true;
-    } on ResourceInstallException catch (error) {
-      if (!mounted) return false;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error.message)));
-      return false;
-    } catch (_) {
-      if (!mounted) return false;
-      final localizations = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(localizations.unableInstallResource)),
-      );
-      return false;
-    }
-  }
-
-  Future<void> _confirmDeleteResource(DownloadableResource resource) async {
-    final bool? confirmed = await showReaderDialog<bool>(
-      context: context,
-      builder: (context) {
-        final AppLocalizations l = AppLocalizations.of(context)!;
-        return ReaderConfirmDialog(
-          title: l.deleteResourceQuestion(resource.name),
-          body: l.deleteResourceBody,
-          icon: const DesignIcon('trash'),
-          cancelLabel: l.cancel,
-          confirmLabel: l.delete,
-          destructive: true,
-        );
-      },
-    );
-    if (confirmed != true) return;
-    await ResourceDownloadService.instance.uninstall(resource);
-    if (resource.id == QpcV4FontService.tajweedFontsResource.id) {
-      QpcV4FontService.instance.clearCache();
-      if (SettingsDB().quranScriptStyle == 'qpc-v4') {
-        await SettingsDB().setQuranScriptStyle('qpc-hafs');
-      }
-    }
-    if (!mounted) return;
-    final localizations = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(localizations.deletedResource(resource.name))),
-    );
-    setState(() {});
-  }
-
-  void _refreshResourceManifest() {
-    setState(() {
-      _resourceManifestFuture = ResourceRepository.instance.refreshManifest();
-    });
   }
 
   Widget _buildDailyQuranGoalTile(BuildContext context) {

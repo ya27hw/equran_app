@@ -237,13 +237,25 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // First in the row so the back button sits at the start
+                      // edge (left in LTR, right in RTL), as on other subpages.
+                      if (Navigator.of(context).canPop()) ...[
+                        IconButton44(
+                          icon: Icons.arrow_back_rounded,
+                          tooltip: MaterialLocalizations.of(
+                            context,
+                          ).backButtonTooltip,
+                          onPressed: () => Navigator.of(context).pop(),
+                        ),
+                        const SizedBox(width: 12),
+                      ],
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               l.statistics,
-                              style: redesignDisplayStyle(context),
+                              style: redesignDisplayStyle(context, size: 26),
                             ),
                             const SizedBox(height: 8),
                             _StatsText(
@@ -253,14 +265,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
                           ],
                         ),
                       ),
-                      if (Navigator.of(context).canPop())
-                        IconButton44(
-                          icon: Icons.arrow_back_rounded,
-                          tooltip: MaterialLocalizations.of(
-                            context,
-                          ).backButtonTooltip,
-                          onPressed: () => Navigator.of(context).pop(),
-                        ),
                     ],
                   ),
                 ),

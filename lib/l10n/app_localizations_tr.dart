@@ -5012,4 +5012,28 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get zakatLivestockNotCalculated =>
       'Hayvan zekâtı burada hesaplanmaz, bu yüzden toplama dahil edilmedi. Lütfen yetkin bir âlime danışın.';
+
+  @override
+  String get resourcesFilterTitle => 'Kaynakları filtrele ve sırala';
+
+  @override
+  String get resourceSortName => 'Ad (A → Z)';
+
+  @override
+  String get resourceSortInstalledFirst => 'Yüklüler önce';
+
+  @override
+  String get resourceFilterStatus => 'Durum';
+
+  @override
+  String get resourceFilterType => 'Tür';
+
+  @override
+  String get resourceViewByType => 'Türe göre';
+
+  @override
+  String get resourceViewNone => 'Gruplama yok';
+
+  @override
+  String get resourcesNoMatches => 'Bu filtrelerle eşleşen kaynak yok.';
 }

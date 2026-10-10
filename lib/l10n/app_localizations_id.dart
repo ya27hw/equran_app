@@ -5023,4 +5023,29 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get zakatLivestockNotCalculated =>
       'Zakat ternak tidak dihitung di sini, sehingga tidak termasuk dalam total. Silakan tanyakan kepada ulama yang berkompeten.';
+
+  @override
+  String get resourcesFilterTitle => 'Filter & urutkan sumber daya';
+
+  @override
+  String get resourceSortName => 'Nama (A → Z)';
+
+  @override
+  String get resourceSortInstalledFirst => 'Yang dipasang dulu';
+
+  @override
+  String get resourceFilterStatus => 'Status';
+
+  @override
+  String get resourceFilterType => 'Jenis';
+
+  @override
+  String get resourceViewByType => 'Menurut jenis';
+
+  @override
+  String get resourceViewNone => 'Tanpa pengelompokan';
+
+  @override
+  String get resourcesNoMatches =>
+      'Tidak ada sumber daya yang cocok dengan filter ini.';
 }

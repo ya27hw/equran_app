@@ -67,8 +67,8 @@ void main() {
       // content so the golden shows the whole page.
       tester.view.physicalSize = Size(390 * dpr, 6000 * dpr);
       await tester.pumpAndSettle();
-      // General and Reading start open; open the other four.
-      for (final int i in <int>[1, 3, 4, 5]) {
+      // General and Reading start open; open Appearance, Audio and Data.
+      for (final int i in <int>[1, 3, 4]) {
         await tester.tap(
           find
               .descendant(

@@ -2492,5 +2492,13 @@
   "prayerMethodShortMoonsighting": "رؤیت هلال",
   "prayerMethodShortTurkey": "ترکیه",
   "dailyToolsKeepOnePinned": "حداقل یک ابزار باید سنجاق شده باقی بماند.",
-  "zakatLivestockNotCalculated": "زکات دام در اینجا محاسبه نمی‌شود و در مجموع نیامده است. لطفاً از یک عالم صلاحیت‌دار بپرسید."
+  "zakatLivestockNotCalculated": "زکات دام در اینجا محاسبه نمی‌شود و در مجموع نیامده است. لطفاً از یک عالم صلاحیت‌دار بپرسید.",
+  "resourcesFilterTitle": "فیلتر و مرتب‌سازی منابع",
+  "resourceSortName": "نام (الف ← ی)",
+  "resourceSortInstalledFirst": "نصب‌شده‌ها اول",
+  "resourceFilterStatus": "وضعیت",
+  "resourceFilterType": "نوع",
+  "resourceViewByType": "بر اساس نوع",
+  "resourceViewNone": "بدون گروه‌بندی",
+  "resourcesNoMatches": "هیچ منبعی با این فیلترها مطابقت ندارد."
 }

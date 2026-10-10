@@ -2412,5 +2412,13 @@
   "prayerMethodShortMoonsighting": "Mondsichtung",
   "prayerMethodShortTurkey": "Türkei",
   "dailyToolsKeepOnePinned": "Mindestens ein Werkzeug muss angeheftet bleiben.",
-  "zakatLivestockNotCalculated": "Die Zakat auf Vieh wird hier nicht berechnet und fehlt daher in der Summe. Bitte fragen Sie einen qualifizierten Gelehrten."
+  "zakatLivestockNotCalculated": "Die Zakat auf Vieh wird hier nicht berechnet und fehlt daher in der Summe. Bitte fragen Sie einen qualifizierten Gelehrten.",
+  "resourcesFilterTitle": "Ressourcen filtern und sortieren",
+  "resourceSortName": "Name (A → Z)",
+  "resourceSortInstalledFirst": "Installierte zuerst",
+  "resourceFilterStatus": "Status",
+  "resourceFilterType": "Typ",
+  "resourceViewByType": "Nach Typ",
+  "resourceViewNone": "Ohne Gruppierung",
+  "resourcesNoMatches": "Keine Ressourcen entsprechen diesen Filtern."
 }

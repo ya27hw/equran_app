@@ -5015,4 +5015,28 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get zakatLivestockNotCalculated =>
       'مویشیوں کی زکوٰۃ یہاں شمار نہیں کی جاتی، اس لیے کل میں شامل نہیں۔ براہِ کرم کسی مستند عالم سے پوچھیں۔';
+
+  @override
+  String get resourcesFilterTitle => 'وسائل فلٹر اور ترتیب دیں';
+
+  @override
+  String get resourceSortName => 'نام (الف ← ی)';
+
+  @override
+  String get resourceSortInstalledFirst => 'انسٹال شدہ پہلے';
+
+  @override
+  String get resourceFilterStatus => 'حیثیت';
+
+  @override
+  String get resourceFilterType => 'قسم';
+
+  @override
+  String get resourceViewByType => 'قسم کے لحاظ سے';
+
+  @override
+  String get resourceViewNone => 'گروپ بندی کے بغیر';
+
+  @override
+  String get resourcesNoMatches => 'ان فلٹرز سے کوئی وسیلہ مطابقت نہیں رکھتا۔';
 }

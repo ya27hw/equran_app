@@ -51,6 +51,7 @@ import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/widgets/playback_options_sheet.dart';
 import 'package:equran/widgets/reader_sheet_chrome.dart';
 import 'package:equran/widgets/reader_sheets.dart';
+import 'package:equran/widgets/resource_state_marker.dart';
 import 'package:equran/widgets/redesign/design_icon.dart';
 import 'package:equran/widgets/redesign/pill_tag.dart' show PillTag;
 import 'package:equran/theme/equran_text_styles.dart';
@@ -7554,9 +7555,12 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
                 .map(
                   (entry) => AppSelectionOption<int>(
                     value: entry.key,
-                    title:
-                        '${translationDisplayName(entry.value)} • '
-                        '${translationAvailabilityLabel(AppLocalizations.of(context)!, entry.value, manifest)}',
+                    title: translationDisplayName(entry.value),
+                    trailing: translationStatusWidget(
+                      AppLocalizations.of(context)!,
+                      entry.value,
+                      manifest,
+                    ),
                   ),
                 )
                 .toList()

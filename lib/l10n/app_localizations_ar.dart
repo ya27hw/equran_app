@@ -4946,4 +4946,28 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get zakatLivestockNotCalculated =>
       'لا تُحتسب زكاة الأنعام هنا، لذا لا تدخل في المجموع. يُرجى سؤال أحد أهل العلم.';
+
+  @override
+  String get resourcesFilterTitle => 'تصفية الموارد وترتيبها';
+
+  @override
+  String get resourceSortName => 'الاسم (أ ← ي)';
+
+  @override
+  String get resourceSortInstalledFirst => 'المثبّت أولًا';
+
+  @override
+  String get resourceFilterStatus => 'الحالة';
+
+  @override
+  String get resourceFilterType => 'النوع';
+
+  @override
+  String get resourceViewByType => 'حسب النوع';
+
+  @override
+  String get resourceViewNone => 'بدون تجميع';
+
+  @override
+  String get resourcesNoMatches => 'لا توجد موارد تطابق هذه الفلاتر.';
 }

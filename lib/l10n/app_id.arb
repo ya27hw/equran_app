@@ -2377,5 +2377,13 @@
   "prayerMethodShortMoonsighting": "Rukyat",
   "prayerMethodShortTurkey": "Turki",
   "dailyToolsKeepOnePinned": "Setidaknya satu alat harus tetap disematkan.",
-  "zakatLivestockNotCalculated": "Zakat ternak tidak dihitung di sini, sehingga tidak termasuk dalam total. Silakan tanyakan kepada ulama yang berkompeten."
+  "zakatLivestockNotCalculated": "Zakat ternak tidak dihitung di sini, sehingga tidak termasuk dalam total. Silakan tanyakan kepada ulama yang berkompeten.",
+  "resourcesFilterTitle": "Filter & urutkan sumber daya",
+  "resourceSortName": "Nama (A → Z)",
+  "resourceSortInstalledFirst": "Yang dipasang dulu",
+  "resourceFilterStatus": "Status",
+  "resourceFilterType": "Jenis",
+  "resourceViewByType": "Menurut jenis",
+  "resourceViewNone": "Tanpa pengelompokan",
+  "resourcesNoMatches": "Tidak ada sumber daya yang cocok dengan filter ini."
 }

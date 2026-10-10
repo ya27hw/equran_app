@@ -5002,4 +5002,28 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get zakatLivestockNotCalculated =>
       'গবাদি পশুর যাকাত এখানে হিসাব করা হয় না, তাই মোট অঙ্কে ধরা হয়নি। অনুগ্রহ করে একজন যোগ্য আলেমকে জিজ্ঞাসা করুন।';
+
+  @override
+  String get resourcesFilterTitle => 'সম্পদ ফিল্টার ও সাজানো';
+
+  @override
+  String get resourceSortName => 'নাম (ক → ন)';
+
+  @override
+  String get resourceSortInstalledFirst => 'ইনস্টল করা আগে';
+
+  @override
+  String get resourceFilterStatus => 'অবস্থা';
+
+  @override
+  String get resourceFilterType => 'ধরন';
+
+  @override
+  String get resourceViewByType => 'ধরন অনুযায়ী';
+
+  @override
+  String get resourceViewNone => 'গ্রুপ ছাড়া';
+
+  @override
+  String get resourcesNoMatches => 'এই ফিল্টারে কোনো সম্পদ মেলেনি।';
 }

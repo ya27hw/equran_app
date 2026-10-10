@@ -720,6 +720,7 @@ class ReaderChoiceDialog<T> extends StatelessWidget {
             title: option.title,
             subtitle: option.subtitle,
             leading: option.leading,
+            trailing: option.trailing,
             selected: option.value == selectedValue,
             onTap: () => Navigator.of(context).pop(option.value),
           );
@@ -739,11 +740,13 @@ class ReaderChoiceTile extends StatelessWidget {
     required this.onTap,
     this.subtitle,
     this.leading,
+    this.trailing,
   });
 
   final String title;
   final String? subtitle;
   final Widget? leading;
+  final Widget? trailing;
   final bool selected;
   final VoidCallback onTap;
 
@@ -803,6 +806,10 @@ class ReaderChoiceTile extends StatelessWidget {
                       ],
                     ),
                   ),
+                  if (trailing != null) ...<Widget>[
+                    const SizedBox(width: 8),
+                    trailing!,
+                  ],
                   if (selected) ...<Widget>[
                     const SizedBox(width: 8),
                     DesignIcon(

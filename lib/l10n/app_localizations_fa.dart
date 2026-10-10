@@ -5000,4 +5000,28 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get zakatLivestockNotCalculated =>
       'زکات دام در اینجا محاسبه نمی‌شود و در مجموع نیامده است. لطفاً از یک عالم صلاحیت‌دار بپرسید.';
+
+  @override
+  String get resourcesFilterTitle => 'فیلتر و مرتب‌سازی منابع';
+
+  @override
+  String get resourceSortName => 'نام (الف ← ی)';
+
+  @override
+  String get resourceSortInstalledFirst => 'نصب‌شده‌ها اول';
+
+  @override
+  String get resourceFilterStatus => 'وضعیت';
+
+  @override
+  String get resourceFilterType => 'نوع';
+
+  @override
+  String get resourceViewByType => 'بر اساس نوع';
+
+  @override
+  String get resourceViewNone => 'بدون گروه‌بندی';
+
+  @override
+  String get resourcesNoMatches => 'هیچ منبعی با این فیلترها مطابقت ندارد.';
 }

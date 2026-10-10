@@ -5003,4 +5003,28 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get zakatLivestockNotCalculated =>
       'Livestock is not calculated here, so it is left out of the total. Please ask a qualified scholar.';
+
+  @override
+  String get resourcesFilterTitle => 'Filter & sort resources';
+
+  @override
+  String get resourceSortName => 'Name (A → Z)';
+
+  @override
+  String get resourceSortInstalledFirst => 'Installed first';
+
+  @override
+  String get resourceFilterStatus => 'Status';
+
+  @override
+  String get resourceFilterType => 'Type';
+
+  @override
+  String get resourceViewByType => 'By type';
+
+  @override
+  String get resourceViewNone => 'No grouping';
+
+  @override
+  String get resourcesNoMatches => 'No resources match these filters.';
 }

@@ -8756,6 +8756,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Livestock is not calculated here, so it is left out of the total. Please ask a qualified scholar.'**
   String get zakatLivestockNotCalculated;
+
+  /// No description provided for @resourcesFilterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter & sort resources'**
+  String get resourcesFilterTitle;
+
+  /// No description provided for @resourceSortName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name (A → Z)'**
+  String get resourceSortName;
+
+  /// No description provided for @resourceSortInstalledFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Installed first'**
+  String get resourceSortInstalledFirst;
+
+  /// No description provided for @resourceFilterStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get resourceFilterStatus;
+
+  /// No description provided for @resourceFilterType.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get resourceFilterType;
+
+  /// No description provided for @resourceViewByType.
+  ///
+  /// In en, this message translates to:
+  /// **'By type'**
+  String get resourceViewByType;
+
+  /// No description provided for @resourceViewNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No grouping'**
+  String get resourceViewNone;
+
+  /// No description provided for @resourcesNoMatches.
+  ///
+  /// In en, this message translates to:
+  /// **'No resources match these filters.'**
+  String get resourcesNoMatches;
 }
 
 class _AppLocalizationsDelegate

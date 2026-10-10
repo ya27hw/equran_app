@@ -1843,5 +1843,13 @@
   "prayerMethodShortMoonsighting": "رؤية الهلال",
   "prayerMethodShortTurkey": "تركيا",
   "dailyToolsKeepOnePinned": "يجب أن تظل أداة واحدة على الأقل مثبتة.",
-  "zakatLivestockNotCalculated": "لا تُحتسب زكاة الأنعام هنا، لذا لا تدخل في المجموع. يُرجى سؤال أحد أهل العلم."
+  "zakatLivestockNotCalculated": "لا تُحتسب زكاة الأنعام هنا، لذا لا تدخل في المجموع. يُرجى سؤال أحد أهل العلم.",
+  "resourcesFilterTitle": "تصفية الموارد وترتيبها",
+  "resourceSortName": "الاسم (أ ← ي)",
+  "resourceSortInstalledFirst": "المثبّت أولًا",
+  "resourceFilterStatus": "الحالة",
+  "resourceFilterType": "النوع",
+  "resourceViewByType": "حسب النوع",
+  "resourceViewNone": "بدون تجميع",
+  "resourcesNoMatches": "لا توجد موارد تطابق هذه الفلاتر."
 }

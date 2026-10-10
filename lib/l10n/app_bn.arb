@@ -2377,5 +2377,13 @@
   "prayerMethodShortMoonsighting": "চাঁদ দেখা",
   "prayerMethodShortTurkey": "তুরস্ক",
   "dailyToolsKeepOnePinned": "অন্তত একটি টুল পিন করা থাকতে হবে।",
-  "zakatLivestockNotCalculated": "গবাদি পশুর যাকাত এখানে হিসাব করা হয় না, তাই মোট অঙ্কে ধরা হয়নি। অনুগ্রহ করে একজন যোগ্য আলেমকে জিজ্ঞাসা করুন।"
+  "zakatLivestockNotCalculated": "গবাদি পশুর যাকাত এখানে হিসাব করা হয় না, তাই মোট অঙ্কে ধরা হয়নি। অনুগ্রহ করে একজন যোগ্য আলেমকে জিজ্ঞাসা করুন।",
+  "resourcesFilterTitle": "সম্পদ ফিল্টার ও সাজানো",
+  "resourceSortName": "নাম (ক → ন)",
+  "resourceSortInstalledFirst": "ইনস্টল করা আগে",
+  "resourceFilterStatus": "অবস্থা",
+  "resourceFilterType": "ধরন",
+  "resourceViewByType": "ধরন অনুযায়ী",
+  "resourceViewNone": "গ্রুপ ছাড়া",
+  "resourcesNoMatches": "এই ফিল্টারে কোনো সম্পদ মেলেনি।"
 }

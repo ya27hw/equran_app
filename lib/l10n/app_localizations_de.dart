@@ -5095,4 +5095,29 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get zakatLivestockNotCalculated =>
       'Die Zakat auf Vieh wird hier nicht berechnet und fehlt daher in der Summe. Bitte fragen Sie einen qualifizierten Gelehrten.';
+
+  @override
+  String get resourcesFilterTitle => 'Ressourcen filtern und sortieren';
+
+  @override
+  String get resourceSortName => 'Name (A → Z)';
+
+  @override
+  String get resourceSortInstalledFirst => 'Installierte zuerst';
+
+  @override
+  String get resourceFilterStatus => 'Status';
+
+  @override
+  String get resourceFilterType => 'Typ';
+
+  @override
+  String get resourceViewByType => 'Nach Typ';
+
+  @override
+  String get resourceViewNone => 'Ohne Gruppierung';
+
+  @override
+  String get resourcesNoMatches =>
+      'Keine Ressourcen entsprechen diesen Filtern.';
 }

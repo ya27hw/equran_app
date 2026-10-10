@@ -97,6 +97,8 @@ class _HomePageState extends State<HomePage> {
         showAppBar = false;
       } else if (T == AsmaUlHusnaPage) {
         label = localizations.asmaUlHusna;
+        // The page draws its own header, so the route must not add an app bar.
+        showAppBar = false;
       } else if (T == QiblaPage) {
         label = localizations.qibla;
         showAppBar = false;
