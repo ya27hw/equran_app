@@ -1,6 +1,7 @@
 import 'package:equran/prayer/prayer_models.dart';
 import 'package:equran/prayer/prayer_sky_scene.dart';
 import 'package:equran/prayer/prayer_times_service.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const PrayerLocation skyTestLocation = PrayerLocation(
@@ -58,7 +59,8 @@ void main() {
       midnight.subtract(const Duration(seconds: 1)),
     );
     final PrayerSkyScene after = at(midnight.add(const Duration(seconds: 1)));
-    expect(before.top, after.top);
+    // Float rounding differs between platforms by under one 8-bit step.
+    _expectSameColour(before.top, after.top);
     expect(before.sunVisibility, 0);
     expect(after.sunVisibility, 0);
     expect(after.stars, greaterThan(0.9));
@@ -146,4 +148,13 @@ void main() {
       );
     },
   );
+}
+
+/// Compares two colours channel by channel, allowing one 8-bit step.
+void _expectSameColour(Color actual, Color expected) {
+  const double step = 1 / 255;
+  expect(actual.r, closeTo(expected.r, step));
+  expect(actual.g, closeTo(expected.g, step));
+  expect(actual.b, closeTo(expected.b, step));
+  expect(actual.a, closeTo(expected.a, step));
 }
