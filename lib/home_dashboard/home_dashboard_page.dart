@@ -1316,70 +1316,65 @@ class _MuslimDailyQuickActionsState extends State<_MuslimDailyQuickActions> {
             .getVisibleDailyTools();
 
         final List<_QuickAction> items = visibleTools.map((tool) {
-          return _QuickAction(
-            tool.icon,
-            tool.getTitle(localizations),
-            () {
-              switch (tool) {
-                case DailyToolType.quran:
-                  widget.actions.onOpenQuran();
-                  break;
-                case DailyToolType.prayer:
-                  widget.actions.onOpenPrayerTimes();
-                  break;
-                case DailyToolType.qibla:
-                  widget.actions.onOpenQibla();
-                  break;
-                case DailyToolType.tasbih:
-                  widget.actions.onOpenTasbih();
-                  break;
-                case DailyToolType.dua:
-                  widget.actions.onOpenDuas();
-                  break;
-                case DailyToolType.downloads:
-                  widget.actions.onOpenDownloads();
-                  break;
-                case DailyToolType.search:
-                  widget.actions.onOpenSearch();
-                  break;
-                case DailyToolType.readingPlans:
-                  widget.actions.onOpenReadingPlans();
-                  break;
-                case DailyToolType.hifz:
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (context) => const HifzHomePage(),
-                    ),
-                  );
-                  break;
-                case DailyToolType.asmaUlHusna:
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (context) => const AsmaUlHusnaPage(),
-                    ),
-                  );
-                  break;
-                case DailyToolType.statistics:
-                  widget.actions.onOpenStats();
-                  break;
-                case DailyToolType.calendar:
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (context) => const HijriCalendarPage(),
-                    ),
-                  );
-                  break;
-                case DailyToolType.zakah:
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (context) => const ZakatCalculatorPage(),
-                    ),
-                  );
-                  break;
-              }
-            },
-            designIcon: _dailyToolDesignIcons[tool],
-          );
+          return _QuickAction(tool.icon, tool.getTitle(localizations), () {
+            switch (tool) {
+              case DailyToolType.quran:
+                widget.actions.onOpenQuran();
+                break;
+              case DailyToolType.prayer:
+                widget.actions.onOpenPrayerTimes();
+                break;
+              case DailyToolType.qibla:
+                widget.actions.onOpenQibla();
+                break;
+              case DailyToolType.tasbih:
+                widget.actions.onOpenTasbih();
+                break;
+              case DailyToolType.dua:
+                widget.actions.onOpenDuas();
+                break;
+              case DailyToolType.downloads:
+                widget.actions.onOpenDownloads();
+                break;
+              case DailyToolType.search:
+                widget.actions.onOpenSearch();
+                break;
+              case DailyToolType.readingPlans:
+                widget.actions.onOpenReadingPlans();
+                break;
+              case DailyToolType.hifz:
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (context) => const HifzHomePage(),
+                  ),
+                );
+                break;
+              case DailyToolType.asmaUlHusna:
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (context) => const AsmaUlHusnaPage(),
+                  ),
+                );
+                break;
+              case DailyToolType.statistics:
+                widget.actions.onOpenStats();
+                break;
+              case DailyToolType.calendar:
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (context) => const HijriCalendarPage(),
+                  ),
+                );
+                break;
+              case DailyToolType.zakah:
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (context) => const ZakatCalculatorPage(),
+                  ),
+                );
+                break;
+            }
+          }, designIcon: _dailyToolDesignIcons[tool]);
         }).toList();
 
         final List<List<_QuickAction>> pages = <List<_QuickAction>>[];
