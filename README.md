@@ -201,6 +201,8 @@ The GitHub Actions release workflow lives in [`.github/workflows/deploy.yml`](.g
 
 On pushes to `main` or manual workflow dispatch, it reads the version from `pubspec.yaml`, builds Android split APKs plus Linux and Windows bundles, then publishes a GitHub Release when the version tag is new.
 
+What changed in each version is written up in [`CHANGELOG.md`](CHANGELOG.md). Add a section there for every release before tagging it.
+
 ## Notes For Maintainers
 
 Prayer times are calculated locally with `adhan_dart`. Prayer reminders use `flutter_local_notifications` and Android scheduled notifications. Android 13 and newer require notification permission, which the app requests when reminders are enabled.

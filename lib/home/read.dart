@@ -5515,7 +5515,6 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     return ReadPlayerMiniBar(
       horizontalInset: horizontalInset,
       content: ReadPlayerMiniContent(
-        chapter: _currentChapter,
         verse: verse,
         isPlaying: _isVersePlaying,
         isLoading: _isVerseLoading,
