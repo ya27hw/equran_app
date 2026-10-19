@@ -1,10 +1,13 @@
 name: Regenerate goldens (Linux)
 
-# Manual only. Rebuilds the golden images on the same Linux runner that the
+# Runs on pushes to a regen/ branch. Rebuilds the golden images on the same Linux runner that the
 # quality job uses, so the committed goldens match CI rendering. The images
 # are uploaded as an artifact; copy them into the repo and commit.
 
 on:
+  push:
+    branches:
+      - 'regen/**'
   workflow_dispatch:
 
 permissions:
