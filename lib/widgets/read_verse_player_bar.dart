@@ -5,7 +5,6 @@ import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/services/device_capability_service.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
-import 'package:equran/theme/equran_text_styles.dart';
 import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/utils/app_slider_theme.dart';
 import 'package:equran/utils/number_formatting.dart';
@@ -187,7 +186,7 @@ class ReadVersePlayerBar extends StatelessWidget {
       collapseProgress,
     )!;
     final double verticalPadding = lerpDouble(
-      width < 900 ? 16 : 18,
+      width < 900 ? 12 : 14,
       10,
       collapseProgress,
     )!;
@@ -313,7 +312,6 @@ class ReadVersePlayerBar extends StatelessWidget {
 
   Widget _buildMinimizedBody(BuildContext context) {
     return ReadPlayerMiniContent(
-      chapter: currentChapter,
       verse: playingVerse ?? currentVerse,
       isPlaying: isPlaying,
       isLoading: isLoading,
@@ -337,22 +335,16 @@ class ReadVersePlayerBar extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: _TrackTitle(
-                    chapter: currentChapter,
-                    verse: playingVerse ?? currentVerse,
-                    isDownloaded: isDownloaded,
-                  ),
-                ),
-                _buildOptionsButton(context),
-              ],
+            // The options button sits at the end of the progress row, so the
+            // transport keeps only its five controls and fits narrow phones.
+            _buildSeekRow(
+              context,
+              position: position,
+              duration: duration,
+              trailingAction: _buildOptionsButton(context),
             ),
-            const SizedBox(height: 2),
-            _buildSeekRow(context, position: position, duration: duration),
             const SizedBox(height: 4),
-            _buildSharedControls(context, playSize: 58, spread: true),
+            _buildSharedControls(context, playSize: 52, spread: true),
           ],
         ),
         Positioned(
@@ -378,7 +370,7 @@ class ReadVersePlayerBar extends StatelessWidget {
     return IconButton(
       tooltip: AppLocalizations.of(context)!.playbackOptions,
       onPressed: onAdvancedOptionsPressed,
-      icon: const Icon(Icons.tune_rounded),
+      icon: const Icon(Icons.more_horiz_rounded),
       iconSize: 22,
       color: context.equranTokens.text2,
       style: IconButton.styleFrom(
@@ -393,6 +385,7 @@ class ReadVersePlayerBar extends StatelessWidget {
     BuildContext context, {
     required Duration position,
     required Duration duration,
+    Widget? trailingAction,
   }) {
     final EquranTokens tokens = context.equranTokens;
     final double progress = _durationProgress(position, duration);
@@ -407,14 +400,21 @@ class ReadVersePlayerBar extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        SliderTheme(
-          data: AppSliderTheme.player(context),
-          child: Slider(
-            value: progress,
-            onChanged: seekable ? onSeek : null,
-            onChangeStart: seekable ? onSeekStart : null,
-            onChangeEnd: seekable ? onSeekEnd : null,
-          ),
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: SliderTheme(
+                data: AppSliderTheme.player(context),
+                child: Slider(
+                  value: progress,
+                  onChanged: seekable ? onSeek : null,
+                  onChangeStart: seekable ? onSeekStart : null,
+                  onChangeEnd: seekable ? onSeekEnd : null,
+                ),
+              ),
+            ),
+            ?trailingAction,
+          ],
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -443,30 +443,16 @@ class ReadVersePlayerBar extends StatelessWidget {
       compactWidescreenLayout ? 500.0 : 640.0,
       max(compactWidescreenLayout ? 460.0 : 320.0, width - 620),
     );
-    final double titleWidth = max(80, (width - centerWidth) / 2 - 56);
 
     return ConstrainedBox(
-      constraints: BoxConstraints(minHeight: width >= 1500 ? 132 : 124),
+      constraints: BoxConstraints(minHeight: width >= 1500 ? 116 : 112),
       child: Stack(
         alignment: Alignment.center,
         children: <Widget>[
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Expanded(
-                child: Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: titleWidth),
-                    child: _TrackTitle(
-                      chapter: currentChapter,
-                      verse: playingVerse ?? currentVerse,
-                      isDownloaded: isDownloaded,
-                      large: true,
-                    ),
-                  ),
-                ),
-              ),
+              const Expanded(child: SizedBox.shrink()),
               SizedBox(width: centerGap),
               Expanded(
                 child: Align(
@@ -499,8 +485,8 @@ class ReadVersePlayerBar extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  _buildSharedControls(context, playSize: 62, gap: 14),
-                  const SizedBox(height: 14),
+                  _buildSharedControls(context, playSize: 54, gap: 12),
+                  const SizedBox(height: 10),
                   _buildSeekRow(
                     context,
                     position: position,
@@ -564,8 +550,13 @@ class ReadVersePlayerBar extends StatelessWidget {
             ? MainAxisAlignment.spaceBetween
             : MainAxisAlignment.center,
         mainAxisSize: spread ? MainAxisSize.max : MainAxisSize.min,
+        // Equal slots never add up to more than the row, so narrow phones
+        // cannot overflow. Play sits in the middle slot, so it stays centred.
         children: spread
-            ? children
+            ? <Widget>[
+                for (final Widget child in children)
+                  Expanded(child: Center(child: child)),
+              ]
             : <Widget>[
                 for (int i = 0; i < children.length; i++) ...<Widget>[
                   if (i > 0) SizedBox(width: gap),
@@ -626,10 +617,11 @@ class ReadVersePlayerBar extends StatelessWidget {
     return 6;
   }
 
-  /// Grows with text scale; the reading page reserves 260 px above the bar.
+  /// Grows with text scale; the reader reserves matching space above the bar
+  /// (the card spacers and list padding in `read.dart` must follow this).
   double _expandedBarHeight(double width, double textScale) {
-    if (width < 900) return 164 + 40 * (textScale.clamp(1.0, 1.5) - 1);
-    return width >= 1500 ? 148 : 142;
+    if (width < 900) return 120 + 32 * (textScale.clamp(1.0, 1.5) - 1);
+    return width >= 1500 ? 124 : 120;
   }
 
   double get _minimizedBarHeight => 45;
@@ -673,78 +665,6 @@ BoxDecoration readPlayerSurfaceDecoration(
       ),
     ],
   );
-}
-
-class _TrackTitle extends StatelessWidget {
-  const _TrackTitle({
-    required this.chapter,
-    required this.verse,
-    required this.isDownloaded,
-    this.large = false,
-  });
-
-  final int chapter;
-  final int verse;
-  final bool isDownloaded;
-  final bool large;
-
-  @override
-  Widget build(BuildContext context) {
-    final AppLocalizations l = AppLocalizations.of(context)!;
-    final EquranColors colors = context.equranColors;
-    final EquranTokens tokens = context.equranTokens;
-    final bool arabic = const <String>[
-      'ar',
-      'fa',
-      'ur',
-    ].contains(l.localeName.split('_').first);
-    final TextStyle title = EquranTextStyles.displayNumeral(
-      context,
-      size: large ? 24 : 20,
-      height: 1.1,
-      color: colors.textPrimary,
-    ).copyWith(fontFamilyFallback: const <String>['NotoNaskhArabic']);
-    return Padding(
-      padding: const EdgeInsets.only(left: 2, right: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Text(
-            localizedSurahName(l, chapter),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: arabic
-                ? title.copyWith(fontFamily: 'NotoNaskhArabic', height: 1.4)
-                : title,
-          ),
-          const SizedBox(height: 4),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Flexible(
-                child: Text(
-                  localizedAyahReference(l, verse),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontFamily: _uiFamily(context),
-                    fontSize: 12.5,
-                    height: 1.2,
-                    color: tokens.muted,
-                  ),
-                ),
-              ),
-              if (isDownloaded) ...<Widget>[
-                const SizedBox(width: 6),
-                Icon(Icons.offline_pin_rounded, size: 14, color: tokens.emText),
-              ],
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 /// A toggle that fills with the emerald wash when on.
@@ -963,7 +883,6 @@ class _PlayPauseButtonState extends State<PlayPauseButton>
 class ReadPlayerMiniContent extends StatelessWidget {
   const ReadPlayerMiniContent({
     super.key,
-    required this.chapter,
     required this.verse,
     required this.isPlaying,
     required this.isLoading,
@@ -973,7 +892,6 @@ class ReadPlayerMiniContent extends StatelessWidget {
     required this.onDismiss,
   });
 
-  final int chapter;
   final int verse;
   final bool isPlaying;
   final bool isLoading;
@@ -1044,7 +962,7 @@ class ReadPlayerMiniContent extends StatelessWidget {
                   children: <Widget>[
                     Flexible(
                       child: Text(
-                        localizedSurahAyahLabel(l, chapter, verse),
+                        localizedAyahReference(l, verse),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(

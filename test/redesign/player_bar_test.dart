@@ -123,8 +123,9 @@ void main() {
     await tester.tap(find.byTooltip(l.repeatInterval));
     await tester.tap(find.byTooltip(l.playbackOptions));
     expect(log, ['toggle', 'prev', 'next', 'auto:false', 'repeat', 'options']);
-    expect(find.text(localizedSurahName(l, 2)), findsOneWidget);
-    expect(find.text(l.ayahNumber(142)), findsOneWidget);
+    // The expanded bar shows no track label: only the controls and progress.
+    expect(find.text(localizedSurahName(l, 2)), findsNothing);
+    expect(find.text(localizedAyahReference(l, 142)), findsNothing);
   });
 
   testWidgets('the play button shows pause while playing and play when not', (
@@ -155,11 +156,40 @@ void main() {
     final l = l10n(tester);
     await tester.tap(find.byTooltip(l.pause));
     await tester.tap(find.byTooltip(l.dismissPlayer));
-    await tester.tap(find.textContaining(localizedSurahName(l, 2)));
+    await tester.tap(find.textContaining(localizedAyahReference(l, 142)));
     expect(log, ['toggle', 'dismiss', 'expand']);
     // Settled and static: nothing animates and there is no slider.
     expect(find.byType(Slider), findsNothing);
   });
+
+  for (final double width in <double>[320, 360]) {
+    for (final double scale in <double>[1, 1.5]) {
+      testWidgets('the expanded bar fits a $width dp phone at ${scale}x text', (
+        tester,
+      ) async {
+        await pump(tester, width: width, scale: scale);
+        expect(find.byTooltip(l10n(tester).nextAyah), findsOneWidget);
+        expect(find.byTooltip(l10n(tester).playbackOptions), findsOneWidget);
+      });
+    }
+  }
+
+  for (final double width in <double>[320, 360, 390]) {
+    for (final double scale in <double>[1, 1.3, 1.5]) {
+      testWidgets(
+        'the options button sits top right at $width dp, ${scale}x text',
+        (tester) async {
+          await pump(tester, width: width, scale: scale);
+          final Rect options = tester.getRect(
+            find.byTooltip(l10n(tester).playbackOptions),
+          );
+          final Rect play = tester.getRect(find.byTooltip(l10n(tester).pause));
+          expect(options.bottom, lessThanOrEqualTo(play.top));
+          expect(options.center.dx, greaterThan(width / 2));
+        },
+      );
+    }
+  }
 
   testWidgets('widescreen keeps the transport and the seek bar', (
     tester,
