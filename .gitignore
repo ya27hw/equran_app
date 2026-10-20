@@ -60,3 +60,6 @@ lib/l10n/untranslated.json
 
 # Golden test failure artifacts (written by flutter test on mismatch)
 test/redesign/failures/
+
+# Gradle problem reports (generated)
+android/build/

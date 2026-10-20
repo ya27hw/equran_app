@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Keys that replaced hard-coded English strings (the "legacy English-only"
-/// list in docs/redesign/CODEX_FOLLOWUP.md). They are machine-drafted in every
+/// list in docs/translation_review.md). They are machine-drafted in every
 /// locale except English and wait for native-speaker review.
 const List<String> _localizedLegacyKeys = <String>[
   'hifzRatingFail',
