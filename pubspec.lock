@@ -525,38 +525,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.1.1"
-  geocoding:
-    dependency: "direct main"
-    description:
-      name: geocoding
-      sha256: "606be036287842d779d7ec4e2f6c9435fc29bbbd3c6da6589710f981d8852895"
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.0.0"
-  geocoding_android:
-    dependency: transitive
-    description:
-      name: geocoding_android
-      sha256: ba810da90d6633cbb82bbab630e5b4a3b7d23503263c00ae7f1ef0316dcae5b9
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.0.1"
-  geocoding_ios:
-    dependency: transitive
-    description:
-      name: geocoding_ios
-      sha256: "18ab1c8369e2b0dcb3a8ccc907319334f35ee8cf4cfef4d9c8e23b13c65cb825"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.1.0"
-  geocoding_platform_interface:
-    dependency: transitive
-    description:
-      name: geocoding_platform_interface
-      sha256: "8c2c8226e5c276594c2e18bfe88b19110ed770aeb7c1ab50ede570be8b92229b"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.2.0"
   geolocator:
     dependency: "direct main"
     description:

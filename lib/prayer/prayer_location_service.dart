@@ -1,11 +1,7 @@
-import 'dart:convert';
-
 import 'package:equran/prayer/prayer_models.dart';
 import 'package:equran/prayer/prayer_timezone_service.dart';
 import 'package:flutter/foundation.dart';
-import 'package:geocoding/geocoding.dart' as geocoding;
 import 'package:geolocator/geolocator.dart';
-import 'package:http/http.dart' as http;
 
 enum PrayerLocationFailureReason {
   servicesDisabled,
@@ -103,119 +99,16 @@ abstract class PrayerReverseGeocoder {
   );
 }
 
-class GeocodingPrayerReverseGeocoder implements PrayerReverseGeocoder {
-  const GeocodingPrayerReverseGeocoder();
+/// Coordinates never leave the device, so no reverse geocoding happens here.
+/// Labels come from the user, or fall back to the coordinates.
+class DisabledPrayerReverseGeocoder implements PrayerReverseGeocoder {
+  const DisabledPrayerReverseGeocoder();
 
   @override
   Future<List<PrayerAddressPlacemark>> placemarksFromCoordinates(
     double latitude,
     double longitude,
-  ) async {
-    final List<geocoding.Placemark> placemarks = await geocoding
-        .placemarkFromCoordinates(latitude, longitude)
-        .timeout(const Duration(seconds: 8));
-    return placemarks
-        .map((geocoding.Placemark placemark) {
-          return PrayerAddressPlacemark(
-            name: placemark.name,
-            street: placemark.street,
-            locality: placemark.locality,
-            subLocality: placemark.subLocality,
-            administrativeArea: placemark.administrativeArea,
-            subAdministrativeArea: placemark.subAdministrativeArea,
-            country: placemark.country,
-            isoCountryCode: placemark.isoCountryCode,
-          );
-        })
-        .toList(growable: false);
-  }
-}
-
-class CompositePrayerReverseGeocoder implements PrayerReverseGeocoder {
-  const CompositePrayerReverseGeocoder({
-    this.platformGeocoder = const GeocodingPrayerReverseGeocoder(),
-    this.httpGeocoder = const NominatimPrayerReverseGeocoder(),
-  });
-
-  final PrayerReverseGeocoder platformGeocoder;
-  final PrayerReverseGeocoder httpGeocoder;
-
-  @override
-  Future<List<PrayerAddressPlacemark>> placemarksFromCoordinates(
-    double latitude,
-    double longitude,
-  ) async {
-    try {
-      final List<PrayerAddressPlacemark> platformPlacemarks =
-          await platformGeocoder.placemarksFromCoordinates(latitude, longitude);
-      if (platformPlacemarks.isNotEmpty) {
-        return platformPlacemarks;
-      }
-      _debugLog(
-        'Prayer platform reverse geocoder returned no placemarks; '
-        'trying HTTP fallback.',
-      );
-    } catch (error) {
-      _debugLog(
-        'Prayer platform reverse geocoder failed; trying HTTP fallback: $error',
-      );
-    }
-    return httpGeocoder.placemarksFromCoordinates(latitude, longitude);
-  }
-}
-
-class NominatimPrayerReverseGeocoder implements PrayerReverseGeocoder {
-  const NominatimPrayerReverseGeocoder();
-
-  @override
-  Future<List<PrayerAddressPlacemark>> placemarksFromCoordinates(
-    double latitude,
-    double longitude,
-  ) async {
-    final Uri uri = Uri.https('nominatim.openstreetmap.org', '/reverse', {
-      'format': 'jsonv2',
-      'lat': latitude.toStringAsFixed(7),
-      'lon': longitude.toStringAsFixed(7),
-      'zoom': '10',
-      'addressdetails': '1',
-      'accept-language': 'en',
-    });
-    final http.Response response = await http
-        .get(
-          uri,
-          headers: const <String, String>{
-            'Accept': 'application/json',
-            'User-Agent': 'eQuran/PrayerTimesReverseGeocoding',
-          },
-        )
-        .timeout(const Duration(seconds: 8));
-
-    if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception(
-        'Nominatim reverse geocoding HTTP ${response.statusCode}',
-      );
-    }
-
-    final Object? decoded = jsonDecode(response.body);
-    if (decoded is! Map) return const <PrayerAddressPlacemark>[];
-
-    final Object? error = decoded['error'];
-    if (error != null) {
-      throw Exception('Nominatim reverse geocoding error: $error');
-    }
-
-    final Object? rawAddress = decoded['address'];
-    final Map<dynamic, dynamic> address = rawAddress is Map
-        ? rawAddress
-        : const <dynamic, dynamic>{};
-    final PrayerAddressPlacemark? placemark = _placemarkFromNominatim(
-      decoded,
-      address,
-    );
-    return placemark == null
-        ? const <PrayerAddressPlacemark>[]
-        : <PrayerAddressPlacemark>[placemark];
-  }
+  ) async => const <PrayerAddressPlacemark>[];
 }
 
 abstract class PrayerPositionProvider {
@@ -292,7 +185,7 @@ class PrayerLocationService {
   const PrayerLocationService({
     PrayerPositionProvider provider = const GeolocatorPrayerPositionProvider(),
     PrayerReverseGeocoder reverseGeocoder =
-        const CompositePrayerReverseGeocoder(),
+        const DisabledPrayerReverseGeocoder(),
     PrayerTimezoneResolver timezoneResolver =
         const DevicePrayerTimezoneResolver(),
   }) : _provider = provider,
@@ -546,81 +439,6 @@ String _fallbackLabel(String label) {
     return 'Saved location';
   }
   return trimmed;
-}
-
-PrayerAddressPlacemark? _placemarkFromNominatim(
-  Map<dynamic, dynamic> root,
-  Map<dynamic, dynamic> address,
-) {
-  final String? locality = _firstMapString(address, const <String>[
-    'city',
-    'town',
-    'village',
-    'municipality',
-    'hamlet',
-  ]);
-  final String? subLocality = _firstMapString(address, const <String>[
-    'suburb',
-    'neighbourhood',
-    'quarter',
-    'city_district',
-    'borough',
-  ]);
-  final String? administrativeArea = _firstMapString(address, const <String>[
-    'state',
-    'region',
-    'province',
-    'governorate',
-  ]);
-  final String? subAdministrativeArea = _firstMapString(address, const <String>[
-    'county',
-    'state_district',
-  ]);
-  final String? country = _mapString(address, 'country');
-  final String? isoCountryCode = _mapString(address, 'country_code');
-  final String? street = _firstMapString(address, const <String>[
-    'road',
-    'pedestrian',
-    'footway',
-  ]);
-  final String? name = _mapString(root, 'name');
-
-  final bool hasAnyUsefulPart = <String?>[
-    locality,
-    subLocality,
-    administrativeArea,
-    subAdministrativeArea,
-    country,
-    street,
-    name,
-  ].any((String? value) => value != null && value.trim().isNotEmpty);
-  if (!hasAnyUsefulPart) return null;
-
-  return PrayerAddressPlacemark(
-    name: name,
-    street: street,
-    locality: locality,
-    subLocality: subLocality,
-    administrativeArea: administrativeArea,
-    subAdministrativeArea: subAdministrativeArea,
-    country: country,
-    isoCountryCode: isoCountryCode,
-  );
-}
-
-String? _firstMapString(Map<dynamic, dynamic> map, List<String> keys) {
-  for (final String key in keys) {
-    final String? value = _mapString(map, key);
-    if (value != null) return value;
-  }
-  return null;
-}
-
-String? _mapString(Map<dynamic, dynamic> map, String key) {
-  final Object? value = map[key];
-  if (value is! String) return null;
-  final String trimmed = value.trim();
-  return trimmed.isEmpty ? null : trimmed;
 }
 
 String _fallbackLabelAfterFailedResolve(
