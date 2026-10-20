@@ -12,7 +12,7 @@ Roadmap data flows are local: Hifz signals -> versioned Memory Twin features/mod
 - A location label comes from the user, or falls back to the coordinates.
 - The app contacts only the hosts listed in `tool/verify_privacy.dart`. Adding a host needs a review of what it receives.
 - Map tiles from `tile.openstreetmap.org` reveal the area being viewed. They are the one known exception, and they stay listed until the map changes.
-- The developer's own location must not appear in the source, tests, docs or CI. `tool/verify_privacy.dart` fails the quality job if it does. The only exception is the timezone alias for `Asia/Muscat`, which maps an identifier, not a place.
+- Personal place names must not appear in the source, tests, docs or CI. `tool/verify_privacy.dart` checks the network rules; this rule is reviewed by hand.
 
 ## Controls and threat model
 
