@@ -28,6 +28,9 @@ jobs:
       - name: Verify dependency policy
         run: dart run tool/verify_dependency_policy.dart
 
+      - name: Verify privacy policy
+        run: dart run tool/verify_privacy.dart
+
       - name: Verify localization keys
         run: dart run tool/verify_localizations.dart
 
