@@ -1,13 +1,16 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:quran/quran.dart' as quran;
 import 'package:equran/utils/quran_text.dart';
 
 import '../models/hifz_entry.dart';
+
 import 'package:equran/hifz/hifz_unit_labels.dart';
+
 import '../models/hifz_unit.dart';
 import '../hifz_limits.dart';
 import '../hifz_surah_data.dart';
@@ -25,14 +28,35 @@ import 'package:equran/backend/transliteration_service.dart';
 import 'package:equran/backend/quran_stream_url.dart';
 import 'package:equran/backend/audio_downloads.dart';
 import 'package:equran/l10n/app_localizations.dart';
+import 'package:equran/widgets/font_slider.dart'
+    show
+        kDefaultTranslationFontSize,
+        kMaxTranslationFontSize,
+        kMinTranslationFontSize;
 import 'package:equran/widgets/reader_sheet_chrome.dart';
 import 'package:equran/widgets/redesign/page_typography.dart';
 import 'package:equran/widgets/redesign/redesign_widgets.dart';
+
 import 'hifz_session_chrome.dart';
 
 enum _Phase { listen, recall, rating }
 
 enum _Track { newAyah, sabqi, manzil }
+
+/// The stored translation size (`fontSizeTranslation`), clamped to the range
+/// the Settings slider uses.
+double _savedTranslationFontSize() {
+  final Object? value = SettingsDB().get(
+    'fontSizeTranslation',
+    defaultValue: kDefaultTranslationFontSize,
+  );
+  final double size = value is num
+      ? value.toDouble()
+      : kDefaultTranslationFontSize;
+  return size
+      .clamp(kMinTranslationFontSize, kMaxTranslationFontSize)
+      .toDouble();
+}
 
 class _SessionCard {
   final HifzEntry entry;
@@ -83,6 +107,12 @@ class _HifzSessionPageState extends State<HifzSessionPage>
   bool _showTranslation = false;
   String _currentTransliteration = '';
   String _currentTranslation = '';
+  double _translationFontSize = _savedTranslationFontSize();
+
+  /// Transliteration covers the whole verse, so it cannot be shown for only
+  /// the revealed words. It stays hidden while any word is still blanked.
+  bool get _transliterationHeldForRecall =>
+      _phase == _Phase.recall && _blankedIndices.isNotEmpty && !_allRevealed;
 
   // Session stats
   final Map<String, int> _ratingCounts = {
@@ -156,9 +186,9 @@ class _HifzSessionPageState extends State<HifzSessionPage>
     ).map((e) => _SessionCard(entry: e, track: _Track.newAyah)).toList();
 
     // Track 2 — Sabqi (recent revision)
-    final sabqiEntries = HifzDB.getSabqiAyahs(
-      unitId,
-    ).map((e) => _SessionCard(entry: e, track: _Track.sabqi)).toList();
+    final sabqiEntries = HifzDB.getSabqiAyahs(unitId)
+        .map((e) => _SessionCard(entry: e, track: _Track.sabqi))
+        .toList();
 
     // Track 3 — Manzil (older SM-2 due)
     final manzilEntries = HifzDB.getManzilAyahs(unitId)
@@ -447,6 +477,15 @@ class _HifzSessionPageState extends State<HifzSessionPage>
     }
   }
 
+  void _changeTranslationFontSize(double delta) {
+    final double next = (_translationFontSize + delta)
+        .clamp(kMinTranslationFontSize, kMaxTranslationFontSize)
+        .toDouble();
+    if (next == _translationFontSize) return;
+    setState(() => _translationFontSize = next);
+    SettingsDB().put('fontSizeTranslation', next);
+  }
+
   Future<void> _confirmExit() async {
     final AppLocalizations l10n = AppLocalizations.of(context)!;
     final bool? exit = await showReaderDialog<bool>(
@@ -517,13 +556,21 @@ class _HifzSessionPageState extends State<HifzSessionPage>
     final colors = context.equranColors;
     final tokens = context.equranTokens;
     final l10n = AppLocalizations.of(context)!;
+    final double sideInset = hifzSessionSideInset(
+      MediaQuery.sizeOf(context).width,
+    );
 
     if (_queue.isEmpty) {
       return RedesignSubpage(
         title: hifzUnitLabel(_unit, l10n),
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
+            padding: EdgeInsets.fromLTRB(
+              28 + sideInset,
+              24,
+              28 + sideInset,
+              24,
+            ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -581,22 +628,25 @@ class _HifzSessionPageState extends State<HifzSessionPage>
       body: HifzSessionFrame(
         child: Column(
           children: [
-            HifzSessionTopBar(
-              title: hifzUnitLabel(_unit, l10n),
-              closeTooltip: l10n.close,
-              onClose: _confirmExit,
-              trackLabel: switch (currentCard.track) {
-                _Track.newAyah => l10n.hifzTrackNewLabel,
-                _Track.sabqi => l10n.hifzTrackRevisionLabel,
-                _Track.manzil => l10n.hifzTrackMaintenanceLabel,
-              },
-              trackTone: switch (currentCard.track) {
-                _Track.newAyah => HifzTrackTone.fresh,
-                _Track.sabqi => HifzTrackTone.revision,
-                _Track.manzil => HifzTrackTone.maintenance,
-              },
-              position: '${_currentIndex + 1}/${_queue.length}',
-              progress: (_currentIndex + 1) / _queue.length,
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: sideInset),
+              child: HifzSessionTopBar(
+                title: hifzUnitLabel(_unit, l10n),
+                closeTooltip: l10n.close,
+                onClose: _confirmExit,
+                trackLabel: switch (currentCard.track) {
+                  _Track.newAyah => l10n.hifzTrackNewLabel,
+                  _Track.sabqi => l10n.hifzTrackRevisionLabel,
+                  _Track.manzil => l10n.hifzTrackMaintenanceLabel,
+                },
+                trackTone: switch (currentCard.track) {
+                  _Track.newAyah => HifzTrackTone.fresh,
+                  _Track.sabqi => HifzTrackTone.revision,
+                  _Track.manzil => HifzTrackTone.maintenance,
+                },
+                position: '${_currentIndex + 1}/${_queue.length}',
+                progress: (_currentIndex + 1) / _queue.length,
+              ),
             ),
             Expanded(
               child: SlideTransition(
@@ -633,8 +683,15 @@ class _HifzSessionPageState extends State<HifzSessionPage>
       entry.ayah,
     );
 
+    // The scroll view spans the full window, so the side inset lives in its
+    // padding and the wheel still scrolls over the gutters.
+    final double sideInset = hifzSessionSideInset(
+      MediaQuery.sizeOf(context).width,
+    );
+    final bool transliterationHeld = _transliterationHeldForRecall;
+
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
+      padding: EdgeInsets.fromLTRB(20 + sideInset, 18, 20 + sideInset, 18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -665,7 +722,8 @@ class _HifzSessionPageState extends State<HifzSessionPage>
                     HifzToggleButton(
                       icon: Icons.translate,
                       tooltip: l10n.hifzToggleTransliteration,
-                      active: _showTransliteration,
+                      active: _showTransliteration && !transliterationHeld,
+                      enabled: !transliterationHeld,
                       onTap: () {
                         setState(() {
                           _showTransliteration = !_showTransliteration;
@@ -722,7 +780,7 @@ class _HifzSessionPageState extends State<HifzSessionPage>
             const SizedBox(height: 16),
             AnimatedSwitcher(
               duration: switchDuration,
-              child: _showTransliteration
+              child: _showTransliteration && !transliterationHeld
                   ? Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: Text(
@@ -742,7 +800,31 @@ class _HifzSessionPageState extends State<HifzSessionPage>
             AnimatedSwitcher(
               duration: switchDuration,
               child: _showTranslation
-                  ? HifzTranslationPanel(text: _currentTranslation)
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        HifzTranslationPanel(
+                          text: _currentTranslation,
+                          fontSize: _translationFontSize,
+                        ),
+                        const SizedBox(height: 8),
+                        HifzTextSizeControls(
+                          decreaseTooltip: l10n.decreaseLabel(
+                            l10n.translationTextSize,
+                          ),
+                          increaseTooltip: l10n.increaseLabel(
+                            l10n.translationTextSize,
+                          ),
+                          onDecrease: () => _changeTranslationFontSize(-1),
+                          onIncrease: () => _changeTranslationFontSize(1),
+                          canDecrease:
+                              _translationFontSize > kMinTranslationFontSize,
+                          canIncrease:
+                              _translationFontSize < kMaxTranslationFontSize,
+                        ),
+                      ],
+                    )
                   : const SizedBox.shrink(),
             ),
           ],
@@ -905,7 +987,15 @@ class _HifzSessionPageState extends State<HifzSessionPage>
       }
     }
 
-    return HifzActionBar(child: child);
+    final double sideInset = hifzSessionSideInset(
+      MediaQuery.sizeOf(context).width,
+    );
+    return HifzActionBar(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: sideInset),
+        child: child,
+      ),
+    );
   }
 
   Widget _buildRatingButtons() {

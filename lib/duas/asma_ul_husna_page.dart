@@ -5,9 +5,12 @@ import 'package:equran/duas/widgets/dua_browser_widgets.dart'
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
+import 'package:equran/theme/equran_text_styles.dart';
 import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/utils/quran_display.dart';
 import 'package:equran/widgets/reader_sheet_chrome.dart';
+import 'package:equran/widgets/redesign/design_icon.dart';
+import 'package:equran/widgets/redesign/hairline_card.dart';
 import 'package:equran/widgets/redesign/hero_panel.dart';
 import 'package:equran/widgets/redesign/ornament_divider.dart';
 import 'package:equran/widgets/redesign/page_typography.dart';
@@ -17,6 +20,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 const String _asmaUlHusnaAssetPath = 'assets/data/dua/asma_al_husna.json';
+
+/// Widest the hero, search and name grid get on a desktop window; the page
+/// frame itself stays full width. Matches the Duas page's column.
+const double _asmaContentMaxWidth = 880;
 
 class AsmaUlHusnaName {
   const AsmaUlHusnaName({
@@ -170,20 +177,25 @@ class _AsmaNamesContent extends StatelessWidget {
 
     return Center(
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 1180),
+        constraints: const BoxConstraints(maxWidth: _asmaContentMaxWidth),
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final double width = constraints.maxWidth;
-            final int columns = width >= 1040
+            // Columns follow the content width after the page gutters, so a
+            // phone keeps two readable columns and a laptop gets five.
+            final double width =
+                constraints.maxWidth - 2 * EquranSpacing.pagePadding;
+            final int columns = width >= 720
+                ? 5
+                : width >= 560
                 ? 4
-                : width >= 720
+                : width >= 400
                 ? 3
                 : 2;
             // Cards grow with the text size so the meaning never clips.
-            final double textScale = MediaQuery.textScalerOf(
-              context,
-            ).scale(1).clamp(1.0, 2.0);
-            final double cardHeight = 172 * textScale;
+            final double textScale = MediaQuery.textScalerOf(context)
+                .scale(1)
+                .clamp(1.0, 2.0);
+            final double cardHeight = 176 * textScale;
 
             return CustomScrollView(
               physics: const BouncingScrollPhysics(),
@@ -262,52 +274,49 @@ class _AsmaHeaderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final EquranTokens tokens = context.equranTokens;
-    final Color gold = tokens.featGold;
-    final Color ink = tokens.onFeat;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
 
     return HeroPanel(
-      padding: const EdgeInsetsDirectional.fromSTEB(20, 26, 20, 24),
+      padding: const EdgeInsetsDirectional.fromSTEB(22, 22, 22, 24),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              DesignIcon('sparkle', size: 16, color: tokens.featGold),
+              const SizedBox(width: 8),
+              Flexible(
+                child: RedesignEyebrow(
+                  localizations.the99BeautifulNamesOfAllah,
+                  color: tokens.featText2,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
           Text(
             'أَسْمَاءُ اللَّهِ الْحُسْنَى',
             textDirection: TextDirection.rtl,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: 'NotoNaskhArabic',
-              color: ink,
-              fontSize: 32,
-              fontWeight: FontWeight.w600,
-              height: 1.5,
+            style: EquranTextStyles.surahTitleStyle(
+              fontSize: 38,
+              color: tokens.onFeat,
             ),
           ),
-          const SizedBox(height: 4),
-          Text(
-            localizations.the99BeautifulNamesOfAllah,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              height: 1.4,
-              color: tokens.featText2,
-            ),
-          ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 14),
           const OrnamentDivider(onHero: true),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           Text(
             'وَلِلَّهِ الْأَسْمَاءُ الْحُسْنَىٰ',
             textDirection: TextDirection.rtl,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: 'NotoNaskhArabic',
-              color: gold,
+            style: EquranTextStyles.surahTitleStyle(
               fontSize: 24,
-              fontWeight: FontWeight.w600,
-              height: 1.5,
+              color: tokens.featGold,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 6),
           Text(
             localizedSurahAyahLabel(localizations, 7, 180),
             textAlign: TextAlign.center,
@@ -334,71 +343,73 @@ class _NameCard extends StatelessWidget {
     final EquranColors colors = context.equranColors;
     final EquranTokens tokens = context.equranTokens;
 
-    return Material(
-      color: colors.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(EquranRadii.xl),
-        side: BorderSide(color: tokens.hair),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(14, 12, 14, 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: PillTag(
-                  name.number.toString().padLeft(2, '0'),
-                  gold: true,
-                  compact: true,
+    // The same hairline surface and tap ink as the Duas theme tiles.
+    return HairlineCard(
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(EquranRadii.xl),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: PillTag(
+                    name.number.toString().padLeft(2, '0'),
+                    gold: true,
+                    compact: true,
+                  ),
                 ),
-              ),
-              Expanded(
-                child: Align(
-                  alignment: AlignmentDirectional.centerEnd,
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: AlignmentDirectional.centerEnd,
-                    child: Text(
-                      name.name,
-                      maxLines: 1,
-                      textDirection: TextDirection.rtl,
-                      style: TextStyle(
-                        fontFamily: 'NotoNaskhArabic',
-                        color: colors.textPrimary,
-                        fontSize: 30,
-                        fontWeight: FontWeight.w600,
-                        height: 1.5,
+                Expanded(
+                  child: Center(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        name.name,
+                        maxLines: 1,
+                        textDirection: TextDirection.rtl,
+                        style: EquranTextStyles.surahTitleStyle(
+                          fontSize: 32,
+                          color: colors.textPrimary,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              Text(
-                name.transliteration,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 13.5,
-                  fontWeight: FontWeight.w600,
-                  color: tokens.emText,
+                Text(
+                  name.transliteration,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w600,
+                    color: tokens.emText,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 3),
-              Text(
-                name.meaning,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 12.5,
-                  height: 1.3,
-                  color: tokens.text2,
+                const SizedBox(height: 3),
+                // Two lines always reserved, so one-line and two-line meanings
+                // keep the names and transliterations on the same baseline.
+                SizedBox(
+                  height:
+                      MediaQuery.textScalerOf(context).scale(12.5) * 1.3 * 2,
+                  child: Text(
+                    name.meaning,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      height: 1.3,
+                      color: tokens.text2,
+                    ),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -471,12 +482,9 @@ Future<void> _showNameSheet(BuildContext context, AsmaUlHusnaName name) async {
                 name.name,
                 textDirection: TextDirection.rtl,
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'NotoNaskhArabic',
+                style: EquranTextStyles.surahTitleStyle(
                   fontSize: 52,
                   color: colors.textPrimary,
-                  fontWeight: FontWeight.w600,
-                  height: 1.5,
                 ),
               ),
               const SizedBox(height: 4),

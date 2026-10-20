@@ -1,5 +1,18 @@
 # Changelog
 
+## 4.0.0-beta.2 (build 106)
+
+Follow-up to the beta with the redesigned screens that were still in progress:
+
+- **Hifz session.** Redesigned session header and text-size controls, and the review and completion screens.
+- **Quran.** Juz and surah card lists use the grouped card style, and the text-size slider is restyled.
+- **Home.** Quick tools and the dashboard header are updated, and the Statistics page is restyled.
+- **Prayer.** The prayer times sheet is restyled.
+- **Duas.** The Asma ul-Husna page is updated, with a clearer empty-results state.
+- **Settings.** Rows and dialogs are restyled.
+
+Privacy: coordinates stay on the device. Labels come from you, or fall back to the coordinates.
+
 ## 4.0.0-beta.1 (build 105): the redesign beta
 
 This is the first public beta of eQuran 4. It is a pre-release: the core reading,

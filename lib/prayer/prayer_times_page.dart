@@ -1,4 +1,5 @@
 import 'package:equran/prayer/prayer_clock_text.dart';
+
 import 'dart:async';
 
 import 'package:equran/backend/settings_db.dart';
@@ -416,9 +417,8 @@ class _PrayerTimesPageState extends State<PrayerTimesPage>
         IconButton44(
           designIcon: 'compass',
           tooltip: l.qibla,
-          onPressed: () => Navigator.of(
-            context,
-          ).push(MaterialPageRoute<void>(builder: (_) => const QiblaPage())),
+          onPressed: () => Navigator.of(context)
+              .push(MaterialPageRoute<void>(builder: (_) => const QiblaPage())),
         ),
       ],
     );
@@ -644,6 +644,8 @@ class _PrayerTimesPageState extends State<PrayerTimesPage>
     );
   }
 
+  /// Phones keep the stacked list of rows. Wider content switches to a grid of
+  /// thumb cards whose columns share the full (capped) content width.
   Widget _buildPrayerGrid(
     BuildContext context,
     List<PrayerTimeEntry> entries,
@@ -651,32 +653,88 @@ class _PrayerTimesPageState extends State<PrayerTimesPage>
     PrayerTimeSettings settings,
     bool isViewingToday,
     DateTime? periodEndsAt,
-  ) => ClipRRect(
-    borderRadius: BorderRadius.circular(24),
-    child: HairlineCard(
-      child: Column(
-        children: [
-          for (var i = 0; i < entries.length; i++) ...[
-            if (i > 0)
-              Divider(
-                height: 1,
-                thickness: 1,
-                color: context.equranTokens.hair,
-              ),
-            PrayerTimeThumbCard(
-              entry: entries[i],
-              isActive: highlightedKind == entries[i].kind,
-              use24HourFormat: settings.use24HourFormat,
-              listRow: true,
-              periodEndsAt: periodEndsAt,
-              now: _now,
-              isViewingToday: isViewingToday,
-            ),
-          ],
-        ],
-      ),
-    ),
+  ) => LayoutBuilder(
+    builder: (context, constraints) {
+      final double width = constraints.maxWidth;
+      final int columns = width >= 720
+          ? 6
+          : width >= 480
+          ? 3
+          : 0;
+      if (columns > 0) {
+        return _buildPrayerThumbGrid(
+          entries,
+          highlightedKind,
+          settings,
+          columns,
+        );
+      }
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: HairlineCard(
+          child: Column(
+            children: [
+              for (var i = 0; i < entries.length; i++) ...[
+                if (i > 0)
+                  Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: context.equranTokens.hair,
+                  ),
+                PrayerTimeThumbCard(
+                  entry: entries[i],
+                  isActive: highlightedKind == entries[i].kind,
+                  use24HourFormat: settings.use24HourFormat,
+                  listRow: true,
+                  periodEndsAt: periodEndsAt,
+                  now: _now,
+                  isViewingToday: isViewingToday,
+                ),
+              ],
+            ],
+          ),
+        ),
+      );
+    },
   );
+
+  Widget _buildPrayerThumbGrid(
+    List<PrayerTimeEntry> entries,
+    PrayerTimeKind? highlightedKind,
+    PrayerTimeSettings settings,
+    int columns,
+  ) {
+    const double gap = 10;
+    final List<Widget> rows = <Widget>[];
+    for (var start = 0; start < entries.length; start += columns) {
+      final int end = start + columns < entries.length
+          ? start + columns
+          : entries.length;
+      final List<Widget> cells = <Widget>[];
+      for (var i = start; i < start + columns; i++) {
+        if (i > start) cells.add(const SizedBox(width: gap));
+        cells.add(
+          Expanded(
+            child: i < end
+                ? PrayerTimeThumbCard(
+                    entry: entries[i],
+                    isActive: highlightedKind == entries[i].kind,
+                    use24HourFormat: settings.use24HourFormat,
+                  )
+                : const SizedBox.shrink(),
+          ),
+        );
+      }
+      if (rows.isNotEmpty) rows.add(const SizedBox(height: gap));
+      rows.add(
+        Row(crossAxisAlignment: CrossAxisAlignment.start, children: cells),
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: rows,
+    );
+  }
 
   Widget _buildDisclaimer(BuildContext context) {
     final tokens = context.equranTokens;

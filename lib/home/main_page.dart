@@ -5,7 +5,6 @@ import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/widgets/redesign/design_icon.dart';
-import 'package:equran/widgets/redesign/pill_tag.dart' show ChipButton;
 import 'package:equran/utils/app_radii.dart';
 import 'package:equran/hifz/hifz.dart';
 import 'package:equran/utils/debouncer.dart';
@@ -94,12 +93,6 @@ class _MainPageState extends State<MainPage>
 
   @override
   Widget build(BuildContext context) {
-    final double width = MediaQuery.of(context).size.width;
-    final double horizontalPadding = width >= 1400
-        ? 36
-        : width >= 1100
-        ? 28
-        : EquranSpacing.pagePadding;
     return Scaffold(
       backgroundColor: Colors.transparent,
       resizeToAvoidBottomInset: false,
@@ -107,24 +100,34 @@ class _MainPageState extends State<MainPage>
         children: <Widget>[
           SafeArea(
             bottom: false,
-            child: SavedQuranHeader(
-              selectedIndex: _selectedSegment,
-              searchField: _showSearch && _selectedSegment != 3
-                  ? _buildSearchField()
-                  : null,
-              onTitleTap: _scrollToTop,
-              onSearch: () {
-                if (_selectedSegment == 3) {
-                  _favouritesSearchFocus.requestFocus();
-                } else {
-                  _openSearch();
-                }
-              },
-              onSelectSection: _selectSection,
+            // Caps the header's width on wide windows. The header adds its own
+            // 20 px inset, so the cap is widened by it to keep its content
+            // edges on the same line as the lists' card edges.
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: quranTabMaxWidth + 2 * EquranSpacing.pagePadding,
+                ),
+                child: SavedQuranHeader(
+                  selectedIndex: _selectedSegment,
+                  searchField: _showSearch && _selectedSegment != 3
+                      ? _buildSearchField()
+                      : null,
+                  onTitleTap: _scrollToTop,
+                  onSearch: () {
+                    if (_selectedSegment == 3) {
+                      _favouritesSearchFocus.requestFocus();
+                    } else {
+                      _openSearch();
+                    }
+                  },
+                  onSelectSection: _selectSection,
+                ),
+              ),
             ),
           ),
           const SizedBox(height: 14),
-          Expanded(child: _buildSegmentPager(horizontalPadding)),
+          Expanded(child: _buildSegmentPager()),
         ],
       ),
       floatingActionButton: _showsOrderChip ? _buildOrderChip() : null,
@@ -137,44 +140,20 @@ class _MainPageState extends State<MainPage>
           _activeSearchMode == QuranSearchMode.quranText &&
           _selectedSegment == 0);
 
-  /// Flat chip that reverses the order of the active list. It shows the order
-  /// as numerals only (so it needs no per-language text); the reading
-  /// direction of the numerals is pinned to left-to-right.
+  /// Round icon-only control that reverses the order of the active list. The
+  /// swap arrows are the whole control; the tooltip names the action.
   Widget _buildOrderChip() {
     final EquranColors colors = context.equranColors;
     final EquranTokens tokens = context.equranTokens;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final int last = switch (_selectedSegment) {
-      0 => quran.totalSurahCount,
-      1 => 30,
-      _ => quran.totalPagesCount,
-    };
-    final String label = _ascending ? '1\u2013$last' : '$last\u20131';
-    void reverse() => setState(() => _ascending = !_ascending);
-    return Tooltip(
-      message: localizations.reverseOrder,
-      child: GestureDetector(
-        // The chip is 36 px high; this widens the touch area to 44 px.
-        behavior: HitTestBehavior.translucent,
-        excludeFromSemantics: true,
-        onTap: reverse,
-        child: SizedBox(
-          height: 44,
-          child: Center(
-            widthFactor: 1,
-            child: Material(
-              color: colors.surface,
-              shape: StadiumBorder(side: BorderSide(color: tokens.hair2)),
-              clipBehavior: Clip.antiAlias,
-              child: ChipButton(
-                label,
-                icon: Icons.swap_vert_rounded,
-                labelDirection: TextDirection.ltr,
-                onPressed: reverse,
-              ),
-            ),
-          ),
-        ),
+    return Material(
+      color: colors.surface,
+      shape: CircleBorder(side: BorderSide(color: tokens.hair2)),
+      clipBehavior: Clip.antiAlias,
+      child: IconButton(
+        tooltip: localizations.reverseOrder,
+        onPressed: () => setState(() => _ascending = !_ascending),
+        icon: Icon(Icons.swap_vert_rounded, color: tokens.text2),
       ),
     );
   }
@@ -244,77 +223,85 @@ class _MainPageState extends State<MainPage>
     );
   }
 
-  Widget _buildSegmentPager(double horizontalPadding) {
+  Widget _buildSegmentPager() {
     final bool showQuranTextSearch =
         _showSearch &&
         _activeSearchMode == QuranSearchMode.quranText &&
         _selectedSegment == 0;
 
+    // The surah, juz and page lists inset themselves (see quranTabSideInset) so
+    // their scrollbars stay on the window edge.
     return TabBarView(
       controller: _tabController,
       physics: const BouncingScrollPhysics(),
       children: <Widget>[
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-          child: PrimaryScrollController(
-            controller: _surahScrollController,
-            child: showQuranTextSearch
-                ? QuranTextSearchResults(
-                    key: const ValueKey<String>('quran-text-search'),
-                    searchQuery: _searchQuery,
-                    onSearchSelected: _selectRecentQuranTextSearch,
-                  )
-                : QuranCardList(
-                    key: const ValueKey<String>('surah-list'),
-                    searchQuery: _searchQuery,
-                    ascending: _ascending,
-                    header: _buildHeader(),
-                  ),
+        PrimaryScrollController(
+          controller: _surahScrollController,
+          child: showQuranTextSearch
+              ? LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: quranTabSideInset(constraints.maxWidth),
+                      ),
+                      child: QuranTextSearchResults(
+                        key: const ValueKey<String>('quran-text-search'),
+                        searchQuery: _searchQuery,
+                        onSearchSelected: _selectRecentQuranTextSearch,
+                      ),
+                    );
+                  },
+                )
+              : QuranCardList(
+                  key: const ValueKey<String>('surah-list'),
+                  searchQuery: _searchQuery,
+                  ascending: _ascending,
+                  header: _buildHeader(),
+                ),
+        ),
+        PrimaryScrollController(
+          controller: _juzScrollController,
+          child: JuzCardList(
+            key: const ValueKey<String>('juz-list'),
+            searchQuery: _searchQuery,
+            ascending: _ascending,
           ),
         ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-          child: PrimaryScrollController(
-            controller: _juzScrollController,
-            child: JuzCardList(
-              key: const ValueKey<String>('juz-list'),
-              searchQuery: _searchQuery,
-              ascending: _ascending,
-            ),
+        PrimaryScrollController(
+          controller: _pageScrollController,
+          child: _QuranPageList(
+            searchQuery: _searchQuery,
+            ascending: _ascending,
           ),
         ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-          child: PrimaryScrollController(
-            controller: _pageScrollController,
-            child: _QuranPageList(
-              searchQuery: _searchQuery,
-              ascending: _ascending,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: PrimaryScrollController(
-            controller: _favouritesScrollController,
-            child: FavouritesList(
-              searchQuery: _searchQuery,
-              searchFocusNode: _favouritesSearchFocus,
-              onSearchChanged: (value) {
-                _searchController.text = value;
-                _changeSearchQuery(value);
-              },
-              onBrowseSurahs: () {
-                _closeSearch();
-                _tabController.animateTo(
-                  0,
-                  duration: MediaQuery.disableAnimationsOf(context)
-                      ? Duration.zero
-                      : const Duration(milliseconds: 220),
-                );
-              },
-            ),
-          ),
+        LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+            return Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: quranTabSideInset(constraints.maxWidth),
+              ),
+              child: PrimaryScrollController(
+                controller: _favouritesScrollController,
+                child: FavouritesList(
+                  searchQuery: _searchQuery,
+                  searchFocusNode: _favouritesSearchFocus,
+                  onSearchChanged: (value) {
+                    _searchController.text = value;
+                    _changeSearchQuery(value);
+                  },
+                  onBrowseSurahs: () {
+                    _closeSearch();
+                    _tabController.animateTo(
+                      0,
+                      duration: MediaQuery.disableAnimationsOf(context)
+                          ? Duration.zero
+                          : const Duration(milliseconds: 220),
+                    );
+                  },
+                ),
+              ),
+            );
+          },
         ),
       ],
     );
@@ -590,10 +577,8 @@ class _QuranPageList extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        // The grouped card keeps a readable width on tablets and desktops.
-        final double sideInset = constraints.maxWidth > 760
-            ? (constraints.maxWidth - 760) / 2
-            : 0;
+        // Centres the grouped card within the Quran tab's width cap.
+        final double sideInset = quranTabSideInset(constraints.maxWidth);
         return Scrollbar(
           key: ValueKey<bool>(ascending),
           controller: controller,
@@ -707,6 +692,7 @@ class _QuranPageTile extends StatelessWidget {
   }
 }
 
+/// What a page row shows, plus the juz label that page search matches against.
 class _PageSummary {
   const _PageSummary({
     required this.startSurah,
