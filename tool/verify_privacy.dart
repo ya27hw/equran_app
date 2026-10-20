@@ -37,12 +37,12 @@ void main() {
 
   final RegExp hostPattern = RegExp(r'https?://([A-Za-z0-9.-]+)');
 
-  for (final FileSystemEntity entity in <Directory>[
-    Directory('lib'),
-    Directory('test'),
-  ].expand((Directory dir) => dir.existsSync()
-      ? dir.listSync(recursive: true)
-      : const <FileSystemEntity>[])) {
+  for (final FileSystemEntity entity
+      in <Directory>[Directory('lib'), Directory('test')].expand(
+        (Directory dir) => dir.existsSync()
+            ? dir.listSync(recursive: true)
+            : const <FileSystemEntity>[],
+      )) {
     if (entity is! File || !entity.path.endsWith('.dart')) continue;
     final String path = entity.path.replaceAll('\\', '/');
     final String contents = entity.readAsStringSync();
@@ -55,9 +55,8 @@ void main() {
       }
     }
 
-    for (final RegExpMatch match in shipped
-        ? hostPattern.allMatches(contents)
-        : const <RegExpMatch>[]) {
+    for (final RegExpMatch match
+        in shipped ? hostPattern.allMatches(contents) : const <RegExpMatch>[]) {
       final String host = match.group(1)!;
       final bool allowed = allowedHosts.any(
         (String allowedHost) =>
