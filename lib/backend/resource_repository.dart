@@ -437,13 +437,3 @@ String prettyBytes(int? bytes) {
       : value.toStringAsFixed(1);
   return '$formatted ${units[unitIndex]}';
 }
-
-String resourceDetailsLabel(DownloadableResource resource) {
-  final List<String> parts = <String>[
-    if (resource.language != null) resource.language!.toUpperCase(),
-    if (resource.reciterCode != null) 'Reciter ${resource.reciterCode}',
-    'v${resource.version}',
-    prettyBytes(getResourceSize(resource)),
-  ];
-  return parts.join(' • ');
-}

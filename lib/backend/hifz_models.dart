@@ -3,16 +3,10 @@ import 'package:hive/hive.dart';
 part 'hifz_models.g.dart';
 
 const String hifzStatusNew = 'new';
-const String hifzStatusLearning = 'learning';
-const String hifzStatusReview = 'review';
 const String hifzStatusMastered = 'mastered';
 
 const String hifzTrackSabaq = 'sabaq';
-const String hifzTrackSabqi = 'sabqi';
-const String hifzTrackManzil = 'manzil';
 
-const String hifzRatingAgain = 'again';
-const String hifzRatingHard = 'hard';
 const String hifzRatingGood = 'good';
 const String hifzRatingEasy = 'easy';
 

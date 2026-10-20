@@ -1,9 +1,6 @@
-import 'package:equran/backend/quran_translation_service.dart';
 import 'package:equran/backend/resource_download_service.dart';
-import 'package:equran/backend/resource_install_store.dart';
 import 'package:equran/backend/resource_models.dart';
 import 'package:equran/l10n/app_localizations.dart';
-import 'package:quran/quran.dart' as quran;
 
 /// Localized wording for the download and install state of a resource.
 ///
@@ -46,20 +43,4 @@ String resourceDownloadPhaseLabel(
     ResourceDownloadPhase.complete => l10n.installed,
     ResourceDownloadPhase.failed => l10n.resourcePhaseFailed,
   };
-}
-
-/// Mirrors `QuranTranslationService.availabilityLabel` with localized text.
-String translationAvailabilityLabel(
-  AppLocalizations l10n,
-  quran.Translation translation,
-  ResourceManifest manifest,
-) {
-  if (translation.isBundled) return l10n.translationBundled;
-  final DownloadableResource? resource = QuranTranslationService.instance
-      .resourceForTranslation(translation, manifest);
-  if (resource == null) return l10n.translationDownloadUnavailable;
-  return resourceInstallStateLabel(
-    l10n,
-    ResourceInstallStore.instance.installStateFor(resource),
-  );
 }

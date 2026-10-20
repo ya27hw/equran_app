@@ -232,44 +232,25 @@ class _StatisticsPageState extends State<StatisticsPage> {
               controller: _scrollController,
               physics: const BouncingScrollPhysics(),
               slivers: [
-                _PageContentSliver(
-                  topPadding: 64,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // First in the row so the back button sits at the start
-                      // edge (left in LTR, right in RTL), as on other subpages.
-                      if (Navigator.of(context).canPop()) ...[
-                        IconButton44(
-                          icon: Icons.arrow_back_rounded,
-                          tooltip: MaterialLocalizations.of(
-                            context,
-                          ).backButtonTooltip,
-                          onPressed: () => Navigator.of(context).pop(),
-                        ),
-                        const SizedBox(width: 12),
-                      ],
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              l.statistics,
-                              style: redesignDisplayStyle(context, size: 26),
-                            ),
-                            const SizedBox(height: 8),
-                            _StatsText(
-                              '${l.assalamuAlaikum}. ${l.continueYourJourneyToday}',
-                              size: 14,
-                            ),
-                          ],
-                        ),
+                // No title or greeting band above the content. A pushed route
+                // keeps only its back button, because the stats page draws
+                // no app bar of its own.
+                if (Navigator.of(context).canPop())
+                  _PageContentSliver(
+                    topPadding: 8,
+                    child: Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: IconButton44(
+                        icon: Icons.arrow_back_rounded,
+                        tooltip: MaterialLocalizations.of(
+                          context,
+                        ).backButtonTooltip,
+                        onPressed: () => Navigator.of(context).pop(),
                       ),
-                    ],
+                    ),
                   ),
-                ),
                 _PageContentSliver(
-                  topPadding: 20,
+                  topPadding: 12,
                   child: _RangeToggle(rangeListenable: _rangeNotifier),
                 ),
                 _PageContentSliver(
@@ -294,8 +275,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
                         builder: (context, data) => _StatisticsToday(
                           data: data.overview,
                           mastered: data.hifz?.totalMemorized,
-                          now: widget.previewNow,
-                          onLogSaved: _handleDataChanged,
                         ),
                       ),
                 ),
@@ -1886,42 +1865,14 @@ class _InsightsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final EquranColors colors = context.equranColors;
-    return Stack(
+    // Chips wrap onto new lines instead of scrolling sideways, so every
+    // insight stays visible on narrow phones.
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
       children: <Widget>[
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          physics: const BouncingScrollPhysics(),
-          child: Row(
-            children: <Widget>[
-              for (int index = 0; index < insights.length; index++) ...<Widget>[
-                if (index > 0) const SizedBox(width: 10),
-                _InsightChip(insight: insights[index]),
-              ],
-            ],
-          ),
-        ),
-        if (insights.length > 1)
-          PositionedDirectional(
-            top: 0,
-            end: 0,
-            bottom: 0,
-            width: 40,
-            child: IgnorePointer(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: AlignmentDirectional.centerStart,
-                    end: AlignmentDirectional.centerEnd,
-                    colors: <Color>[
-                      colors.background.withAlpha(0),
-                      colors.background,
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
+        for (final InsightData insight in insights)
+          _InsightChip(insight: insight),
       ],
     );
   }
@@ -1941,9 +1892,10 @@ class _InsightChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadii.large),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
         child: Row(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Icon(insight.icon, color: context.equranTokens.emText, size: 16),
             const SizedBox(width: 8),
@@ -1986,6 +1938,7 @@ class _MonthlyActivitySectionState extends State<_MonthlyActivitySection> {
   bool _loading = false;
   int _slideDirection = 1;
   double _dragOffset = 0;
+  MonthlyActivityDay? _selectedDay;
 
   @override
   void initState() {
@@ -2042,6 +1995,7 @@ class _MonthlyActivitySectionState extends State<_MonthlyActivitySection> {
       _displayedMonth = target;
       _slideDirection = monthOffset > 0 ? 1 : -1;
       _loading = true;
+      _selectedDay = null;
     });
     _load(notify: false);
   }
@@ -2060,49 +2014,12 @@ class _MonthlyActivitySectionState extends State<_MonthlyActivitySection> {
     _dragOffset = 0;
   }
 
-  void _showDayDetails(MonthlyActivityDay day) {
-    final ThemeData theme = Theme.of(context);
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final EquranColors colors = context.equranColors;
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: colors.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AppRadii.large),
-        ),
-      ),
-      builder: (context) {
-        return SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  _dateChipLabel(day.date, localizations),
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    color: colors.textPrimary,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 12.5,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  _monthlyDayBreakdown(day, localizations),
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colors.textSecondary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+  /// Tapping a day selects it and shows its breakdown inline; tapping the
+  /// selected day again clears the selection.
+  void _toggleDaySelection(MonthlyActivityDay day) {
+    setState(() {
+      _selectedDay = _selectedDay?.date == day.date ? null : day;
+    });
   }
 
   @override
@@ -2171,7 +2088,8 @@ class _MonthlyActivitySectionState extends State<_MonthlyActivitySection> {
                   child: _MonthlyActivityBody(
                     key: ValueKey<String>(targetKey),
                     data: data,
-                    onDayTap: _showDayDetails,
+                    selectedDay: _selectedDay,
+                    onDayTap: _toggleDaySelection,
                     now: widget.now,
                   ),
                 ),
@@ -2249,11 +2167,13 @@ class _MonthlyActivityBody extends StatelessWidget {
   const _MonthlyActivityBody({
     super.key,
     required this.data,
+    required this.selectedDay,
     required this.onDayTap,
     this.now,
   });
 
   final MonthlyActivityData data;
+  final MonthlyActivityDay? selectedDay;
   final ValueChanged<MonthlyActivityDay> onDayTap;
   final DateTime? now;
 
@@ -2262,10 +2182,16 @@ class _MonthlyActivityBody extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final AppLocalizations localizations = AppLocalizations.of(context)!;
     final EquranColors colors = context.equranColors;
+    final MonthlyActivityDay? selected = selectedDay;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        _MonthlyCalendarGrid(data: data, onDayTap: onDayTap, now: now),
+        _MonthlyCalendarGrid(
+          data: data,
+          selectedDay: selected,
+          onDayTap: onDayTap,
+          now: now,
+        ),
         const SizedBox(height: 14),
         Text(
           _monthlySummaryLabel(data, localizations),
@@ -2275,7 +2201,109 @@ class _MonthlyActivityBody extends StatelessWidget {
             fontWeight: FontWeight.w700,
           ),
         ),
+        if (selected != null) ...<Widget>[
+          const SizedBox(height: 14),
+          _MonthlyDayDetail(day: selected),
+        ],
       ],
+    );
+  }
+}
+
+/// The breakdown for the selected day: one row per activity type.
+class _MonthlyDayDetail extends StatelessWidget {
+  const _MonthlyDayDetail({required this.day});
+
+  final MonthlyActivityDay day;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final AppLocalizations l = AppLocalizations.of(context)!;
+    final EquranColors colors = context.equranColors;
+    final EquranTokens tokens = context.equranTokens;
+    final TextStyle? labelStyle = theme.textTheme.bodyMedium?.copyWith(
+      color: colors.textSecondary,
+      fontWeight: FontWeight.w600,
+    );
+    final TextStyle? valueStyle = theme.textTheme.bodyMedium?.copyWith(
+      color: colors.textPrimary,
+      fontWeight: FontWeight.w800,
+    );
+
+    Widget row({
+      required IconData icon,
+      required String label,
+      required String value,
+      required bool active,
+    }) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 7),
+        child: Row(
+          children: <Widget>[
+            Icon(icon, size: 18, color: active ? tokens.emText : tokens.muted),
+            const SizedBox(width: 12),
+            Expanded(child: Text(label, style: labelStyle)),
+            Text(value, style: active ? valueStyle : labelStyle),
+          ],
+        ),
+      );
+    }
+
+    return DecoratedBox(
+      key: const ValueKey<String>('statistics-day-detail'),
+      decoration: BoxDecoration(
+        color: tokens.emWash,
+        borderRadius: BorderRadius.circular(AppRadii.large),
+        border: Border.all(color: tokens.hair2),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Text(
+              _dateChipLabel(day.date, l),
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: colors.textPrimary,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 6),
+            row(
+              icon: Icons.menu_book_outlined,
+              label: l.quran,
+              value: l.ayahsCount(day.quran),
+              active: day.quran > 0,
+            ),
+            row(
+              icon: Icons.schedule_outlined,
+              label: l.salah,
+              value: '${day.salah}/5',
+              active: day.salah > 0,
+            ),
+            row(
+              icon: Icons.auto_awesome_outlined,
+              label: l.tasbih,
+              value: l.dhikrCount(day.tasbih),
+              active: day.tasbih > 0,
+            ),
+            row(
+              icon: Icons.auto_stories_outlined,
+              label: l.duas,
+              value: l.duasCount(day.duas),
+              active: day.duas > 0,
+            ),
+            row(
+              icon: Icons.bookmark_outline_rounded,
+              label: l.hifzTitle,
+              // The monthly data records whether any Hifz work happened.
+              value: day.hifz > 0 ? '✓' : '–',
+              active: day.hifz > 0,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -2283,11 +2311,13 @@ class _MonthlyActivityBody extends StatelessWidget {
 class _MonthlyCalendarGrid extends StatelessWidget {
   const _MonthlyCalendarGrid({
     required this.data,
+    required this.selectedDay,
     required this.onDayTap,
     this.now,
   });
 
   final MonthlyActivityData data;
+  final MonthlyActivityDay? selectedDay;
   final ValueChanged<MonthlyActivityDay> onDayTap;
   final DateTime? now;
 
@@ -2328,10 +2358,15 @@ class _MonthlyCalendarGrid extends StatelessWidget {
           ),
           itemBuilder: (context, index) {
             final MonthlyActivityDay? day = cells[index];
+            final DateTime today = now ?? _getShiftedNow();
             return _MonthlyCalendarCell(
               day: day,
-              isToday:
-                  day != null && _isSameDate(day.date, now ?? _getShiftedNow()),
+              isToday: day != null && _isSameDate(day.date, today),
+              isSelected:
+                  day != null &&
+                  selectedDay != null &&
+                  _isSameDate(day.date, selectedDay!.date),
+              isFuture: day != null && day.date.isAfter(today),
               onTap: onDayTap,
             );
           },
@@ -2345,11 +2380,15 @@ class _MonthlyCalendarCell extends StatelessWidget {
   const _MonthlyCalendarCell({
     required this.day,
     required this.isToday,
+    required this.isSelected,
+    required this.isFuture,
     required this.onTap,
   });
 
   final MonthlyActivityDay? day;
   final bool isToday;
+  final bool isSelected;
+  final bool isFuture;
   final ValueChanged<MonthlyActivityDay> onTap;
 
   @override
@@ -2378,14 +2417,18 @@ class _MonthlyCalendarCell extends StatelessWidget {
       decoration: BoxDecoration(
         color: background,
         borderRadius: radius,
-        border: isToday ? Border.all(color: tokens.gold) : null,
+        border: isSelected
+            ? Border.all(color: tokens.emText, width: 2)
+            : isToday
+            ? Border.all(color: tokens.gold)
+            : null,
       ),
       child: ClipRRect(
         borderRadius: radius,
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: activity.total > 0 ? () => onTap(activity) : null,
+            onTap: isFuture ? null : () => onTap(activity),
             child: Center(
               child: Text(
                 '${activity.date.day}',
@@ -3450,14 +3493,6 @@ String _monthlySummaryLabel(
         : _weekdayName(bestDay.date.weekday, localizations),
     data.totalActions,
   );
-}
-
-String _monthlyDayBreakdown(
-  MonthlyActivityDay day,
-  AppLocalizations localizations,
-) {
-  return '${localizations.ayahsCount(day.quran)} · ${localizations.dhikrCount(day.tasbih)} · ${localizations.duasCount(day.duas)} · '
-      '${day.salah}/5 ${localizations.salah}';
 }
 
 List<MonthlyActivityDay?> _monthlyCalendarCells(MonthlyActivityData data) {

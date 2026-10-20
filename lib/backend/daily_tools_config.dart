@@ -54,7 +54,7 @@ enum DailyToolType {
       dua => '$base/dua.webp',
       downloads => '$base/download.webp',
       search => '$base/quran.webp',
-      readingPlans => '$base/routine.webp',
+      readingPlans => null,
       hifz => '$base/hifz.webp',
       asmaUlHusna => '$base/dua.webp',
       statistics => '$base/last_read.webp',

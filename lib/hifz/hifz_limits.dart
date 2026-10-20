@@ -50,8 +50,4 @@ class HifzLimits {
 
   static Future<void> incrementReview() async =>
       prefsBox.put(_todayKey('hifzReview'), todayReviewCount + 1);
-
-  static bool get canIntroduce => todayIntroducedCount < maxNewPerDay;
-
-  static bool get canReview => todayReviewCount < maxReviewPerDay;
 }

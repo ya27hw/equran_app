@@ -2,11 +2,9 @@ import 'package:equran/widgets/common/equran_asset_image.dart';
 import 'dart:math' as math;
 import 'package:adhan_dart/adhan_dart.dart' as adhan;
 import 'package:equran/l10n/app_localizations.dart';
-import 'package:equran/prayer/manual_prayer_location_page.dart';
 import 'package:equran/prayer/prayer_location_service.dart';
 import 'package:equran/prayer/prayer_models.dart';
 import 'package:equran/prayer/prayer_map_widgets.dart';
-import 'package:equran/widgets/reader_sheet_chrome.dart';
 import 'package:equran/widgets/redesign/redesign_subpage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -418,13 +416,7 @@ class _PrayerMapLocationPageState extends State<PrayerMapLocationPage> {
                 picker: widget.isPicker
                     ? PrayerMapPickerActions(
                         usePinLabel: localizations.usePinLocation,
-                        useLiveLabel: localizations.useLiveLocation,
-                        enterManuallyLabel:
-                            localizations.enterCoordinatesManually,
-                        liveLoading: _isLoadingLocation,
                         onUsePin: _hasSelection ? _useSelectedLocation : null,
-                        onUseLive: _isLoadingLocation ? null : _useLiveLocation,
-                        onEnterManually: _enterCoordinatesManually,
                       )
                     : null,
               ),
@@ -444,94 +436,6 @@ class _PrayerMapLocationPageState extends State<PrayerMapLocationPage> {
         localizations: localizations,
       ),
     );
-  }
-
-  Future<void> _useLiveLocation() async {
-    LatLng? coords = _userLocation;
-    if (coords == null) {
-      if (_isLoadingLocation) return;
-      setState(() {
-        _isLoadingLocation = true;
-      });
-      try {
-        final PrayerLocationResult result = await const PrayerLocationService()
-            .currentDeviceLocation();
-        if (!mounted) return;
-        setState(() {
-          _isLoadingLocation = false;
-        });
-        if (result.isSuccess && result.location != null) {
-          final LatLng detectedCoords = LatLng(
-            result.location!.latitude,
-            result.location!.longitude,
-          );
-          coords = detectedCoords;
-          setState(() {
-            _userLocation = detectedCoords;
-            _selectedCenter = detectedCoords;
-            _hasSelection = true;
-          });
-          _mapController.move(detectedCoords, 13.0);
-        } else {
-          if (mounted && result.message != null) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(result.message!)));
-          }
-          return;
-        }
-      } catch (e) {
-        debugPrint('Error getting live location: $e');
-        return;
-      }
-    }
-
-    if (mounted) {
-      final PrayerLocation liveLocation = PrayerLocation(
-        latitude: coords.latitude,
-        longitude: coords.longitude,
-        label: AppLocalizations.of(context)!.currentLocation,
-        mode: PrayerLocationMode.currentDevice,
-      );
-
-      final bool? confirm = await showReaderDialog<bool>(
-        context: context,
-        builder: (BuildContext context) {
-          final AppLocalizations localizations = AppLocalizations.of(context)!;
-          return ReaderConfirmDialog(
-            title: localizations.confirmLiveLocationTitle,
-            body:
-                '${localizations.confirmLiveLocationMessage}\n\n'
-                '${liveLocation.latitude.toStringAsFixed(5)}, ${liveLocation.longitude.toStringAsFixed(5)}',
-            icon: const Icon(Icons.my_location_rounded),
-            cancelLabel: localizations.cancel,
-            confirmLabel: localizations.confirm,
-          );
-        },
-      );
-      if (confirm == true && mounted) {
-        Navigator.of(context).pop(liveLocation);
-      }
-    }
-  }
-
-  Future<void> _enterCoordinatesManually() async {
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final PrayerLocation? location = await Navigator.of(context).push(
-      MaterialPageRoute<PrayerLocation>(
-        builder: (BuildContext context) => ManualPrayerLocationPage(
-          initialLocation: _hasSelection
-              ? prayerLocationFromMapSelection(
-                  latitude: _selectedCenter.latitude,
-                  longitude: _selectedCenter.longitude,
-                  localizations: localizations,
-                )
-              : null,
-        ),
-      ),
-    );
-    if (location == null || !mounted) return;
-    Navigator.of(context).pop(location);
   }
 }
 

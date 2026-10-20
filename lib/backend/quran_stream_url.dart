@@ -15,15 +15,6 @@ class QuranAudioStreamResolver {
     final String paddedAyah = ayah.toString().padLeft(3, '0');
     return '$_everyAyahBase/${reciter.everyAyahFolder}/$paddedSurah$paddedAyah.mp3';
   }
-
-  /// Generates standalone full chapter strings for surah audio stream/download
-  /// Updated to use EveryAyah full chapter downloads
-  static String buildFullSurahUrl({
-    required ReciterProfile reciter,
-    required int surah,
-  }) {
-    return '${reciter.fallbackSurahUrl}/$surah.mp3';
-  }
 }
 
 class QuranAudioService {
@@ -38,15 +29,6 @@ class QuranAudioService {
       SettingsDB().put('reciter', normalizedCode);
     }
     return AppReciter.fromCode(normalizedCode);
-  }
-
-  Future<String> getSurahUrl(int surah) async {
-    final reciter = selectedReciter;
-    final profile = QuranAudioCatalog.findById(reciter.code);
-    return QuranAudioStreamResolver.buildFullSurahUrl(
-      reciter: profile,
-      surah: surah,
-    );
   }
 
   Future<String> getAyahUrl(int surah, int ayah) async {

@@ -53,29 +53,32 @@ class PillTag extends StatelessWidget {
               : tokens.hair,
         ),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (icon != null || designIcon != null) ...[
-            designIcon != null
-                ? DesignIcon(designIcon!, size: 14, color: color)
-                : Icon(icon, size: 14, color: color),
-            const SizedBox(width: 6),
-          ],
-          Text(
-            label,
-            textDirection: scriptDirectionIn(context, label),
-            style: TextStyle(
-              fontFamily: 'Inter',
-              fontFamilyFallback: const ['NotoNaskhArabic'],
-              fontSize: compact ? 10.5 : 12,
-              letterSpacing: compact ? .84 : null,
-              height: 1.25,
-              fontWeight: FontWeight.w500,
-              color: color,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null || designIcon != null) ...[
+              designIcon != null
+                  ? DesignIcon(designIcon!, size: 14, color: color)
+                  : Icon(icon, size: 14, color: color),
+              const SizedBox(width: 6),
+            ],
+            Text(
+              label,
+              textDirection: scriptDirectionIn(context, label),
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontFamilyFallback: const ['NotoNaskhArabic'],
+                fontSize: compact ? 10.5 : 12,
+                letterSpacing: compact ? .84 : null,
+                height: 1.25,
+                fontWeight: FontWeight.w500,
+                color: color,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

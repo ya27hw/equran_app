@@ -152,34 +152,6 @@ class HifzPrefs {
   static Future<void> setBlankingLevel(String value) =>
       SettingsDB().put('hifzBlankingLevel', value);
 
-  static int newCountForDate(DateTime date) {
-    final String key = 'hifzNewCount_${dateKey(date)}';
-    final dynamic val = SettingsDB().get(key, defaultValue: 0);
-    if (val is int) return val;
-    if (val is num) return val.toInt();
-    return 0;
-  }
-
-  static int reviewCountForDate(DateTime date) {
-    final String key = 'hifzReviewCount_${dateKey(date)}';
-    final dynamic val = SettingsDB().get(key, defaultValue: 0);
-    if (val is int) return val;
-    if (val is num) return val.toInt();
-    return 0;
-  }
-
-  static Future<void> incrementNewCount({DateTime? now}) async {
-    final DateTime value = now ?? DateTime.now();
-    final String key = 'hifzNewCount_${dateKey(value)}';
-    await SettingsDB().put(key, newCountForDate(value) + 1);
-  }
-
-  static Future<void> incrementReviewCount({DateTime? now}) async {
-    final DateTime value = now ?? DateTime.now();
-    final String key = 'hifzReviewCount_${dateKey(value)}';
-    await SettingsDB().put(key, reviewCountForDate(value) + 1);
-  }
-
   static String dateKey(DateTime date) {
     final DateTime day = _startOfDay(date);
     final String year = day.year.toString().padLeft(4, '0');

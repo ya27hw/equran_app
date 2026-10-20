@@ -94,25 +94,6 @@ class HifzFrontierService {
 
   // Returns per-unit due summary.
   // Used by Statistics page.
-  static Map<String, HifzUnitDueSummary> perUnitDueSummary() {
-    try {
-      final result = <String, HifzUnitDueSummary>{};
-      for (final unit in HifzDB.getActiveUnits()) {
-        result[unit.id] = HifzUnitDueSummary(
-          newCount: math.min(
-            HifzDB.getNewAyahsForUnit(unit.id, 999).length,
-            HifzLimits.remainingNewToday,
-          ),
-          sabqiCount: HifzDB.getSabqiAyahs(unit.id).length,
-          manzilCount: HifzDB.getManzilAyahs(unit.id).length,
-          unit: unit,
-        );
-      }
-      return result;
-    } catch (e) {
-      return {};
-    }
-  }
 }
 
 class HifzUnitDueSummary {
@@ -121,7 +102,6 @@ class HifzUnitDueSummary {
   final int manzilCount;
   final HifzUnit unit;
   int get total => newCount + sabqiCount + manzilCount;
-  bool get hasDue => total > 0;
 
   const HifzUnitDueSummary({
     required this.newCount,

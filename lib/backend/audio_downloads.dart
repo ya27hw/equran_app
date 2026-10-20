@@ -163,11 +163,6 @@ class AudioDownloadService {
     return _isCompleteDownload(file);
   }
 
-  Future<bool> hasTempAyah(int surah, int ayah) async {
-    final File file = await tempAyahFile(surah, ayah);
-    return _isCompleteDownload(file);
-  }
-
   Future<File?> playbackAyahFile(int surah, int ayah) async {
     final File downloadedFile = await ayahFile(surah, ayah);
     if (_isCompleteDownload(downloadedFile)) {
@@ -728,10 +723,6 @@ class AudioDownloadService {
 
   String _basename(String path) {
     return path.split(Platform.pathSeparator).last;
-  }
-
-  bool isCompleteDownload(File file) {
-    return _isCompleteDownload(file);
   }
 
   bool _isCompleteDownload(File file) {

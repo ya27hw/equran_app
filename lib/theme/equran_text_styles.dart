@@ -439,4 +439,21 @@ class EquranTextStyles {
       color: color ?? Theme.of(context).colorScheme.onSurface,
     );
   }
+
+  /// Style for Arabic surah names with full tashkeel (Amiri Quran, OFL,
+  /// Regular only). A bare style rather than one derived from the theme text
+  /// styles, so Newsreader metrics and letter spacing never reach the marks.
+  /// Weight is pinned to 400; a synthesised bold would smear the harakat.
+  /// The line height leaves room for the vowel marks above each letter.
+  static TextStyle surahTitleStyle({required double fontSize, Color? color}) {
+    return TextStyle(
+      fontFamily: 'AmiriQuran',
+      fontFamilyFallback: const <String>['UthmanicHafs'],
+      fontSize: fontSize,
+      fontWeight: FontWeight.w400,
+      height: 1.7,
+      letterSpacing: 0,
+      color: color,
+    );
+  }
 }

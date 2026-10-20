@@ -1452,6 +1452,18 @@ abstract class AppLocalizations {
   /// **'eQuran is a modern Quran companion designed for focused reading, listening, and daily reflection.'**
   String get aboutAppBody;
 
+  /// No description provided for @specialThanks.
+  ///
+  /// In en, this message translates to:
+  /// **'Special thanks'**
+  String get specialThanks;
+
+  /// No description provided for @specialThanksBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A heartfelt thank you to these contributors for their massive contributions to eQuran, and for their valuable input and feedback.'**
+  String get specialThanksBody;
+
   /// No description provided for @supportProject.
   ///
   /// In en, this message translates to:
@@ -1763,6 +1775,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Set up location'**
   String get setUpLocation;
+
+  /// No description provided for @locationSetupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Where are you praying?'**
+  String get locationSetupTitle;
+
+  /// No description provided for @locationSetupSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick one way to set it. Prayer times are calculated for this place only.'**
+  String get locationSetupSubtitle;
+
+  /// No description provided for @locationOptionCurrentDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Fastest. We read your position once.'**
+  String get locationOptionCurrentDescription;
+
+  /// No description provided for @locationOptionMapDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Move the map until the pin sits over your area.'**
+  String get locationOptionMapDescription;
+
+  /// No description provided for @locationOptionManualDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Type the latitude and longitude yourself.'**
+  String get locationOptionManualDescription;
+
+  /// No description provided for @recommendedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended'**
+  String get recommendedLabel;
+
+  /// No description provided for @chooseAnotherWay.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose another way'**
+  String get chooseAnotherWay;
+
+  /// No description provided for @confirmLocationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm this location'**
+  String get confirmLocationTitle;
 
   /// No description provided for @chooseLocationForNextPrayer.
   ///
@@ -7334,6 +7394,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Today'**
   String get todayLegend;
+
+  /// No description provided for @newMonthLegend.
+  ///
+  /// In en, this message translates to:
+  /// **'New Hijri month'**
+  String get newMonthLegend;
+
+  /// No description provided for @comingUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming up'**
+  String get comingUp;
+
+  /// No description provided for @moonSightingHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Shifts the Hijri dates by a day if moon sighting in your area is different.'**
+  String get moonSightingHint;
 
   /// No description provided for @eidLegend.
   ///

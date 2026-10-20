@@ -34,17 +34,6 @@ class QpcV4FontService {
   Map<int, File>? _fontFileIndex;
   String? _fontFileIndexRoot;
 
-  /// Preloads a list of pages.
-  Future<void> preloadFontsForPages(List<int> pages) async {
-    final List<int> boundedPages = pages
-        .toSet()
-        .take(3)
-        .toList(growable: false);
-    for (final int page in boundedPages) {
-      unawaited(ensureFontLoadedForPage(page));
-    }
-  }
-
   /// Dynamically loads a font for a specific page if not already loaded.
   /// Returns true only when the page font is installed and loaded.
   Future<bool> ensureFontLoadedForPage(int pageNumber) async {

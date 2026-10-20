@@ -34,7 +34,9 @@ class _TasbihPageState extends State<TasbihPage> {
   static const String _selectedPresetKey = 'tasbih.selectedPreset';
   static const String _currentCountKey = 'tasbih.currentCount';
   static const String _hapticsKey = 'tasbih.hapticsEnabled';
-  static const Duration _completionInputLockDuration = Duration(seconds: 1);
+  static const Duration _completionInputLockDuration = Duration(
+    milliseconds: 450,
+  );
 
   int _selectedPresetIndex = 0;
   int _count = 0;

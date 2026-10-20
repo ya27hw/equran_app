@@ -100,7 +100,6 @@ flutter:
     - assets/data/quran/translations/en_saheeh/
     - assets/data/transliteration/quran_en_transliteration.json
     - assets/data/dua/asma_al_husna.json
-    - assets/data/dua/daily_hadith_duas.json
     - assets/data/dua/hisn/index.json
     - assets/data/dua/hisn/categories/
     - assets/media/images/app/
@@ -108,6 +107,7 @@ flutter:
     - assets/media/fonts/newsreader/OFL.txt
     - assets/media/fonts/inter/OFL.txt
     - assets/media/fonts/noto-naskh-arabic/OFL.txt
+    - assets/media/fonts/amiri-quran/OFL.txt
 
   fonts:
     - family: Inter
@@ -126,6 +126,10 @@ flutter:
           weight: 500
         - asset: assets/media/fonts/noto-naskh-arabic/NotoNaskhArabic.ttf
           weight: 600
+    - family: AmiriQuran
+      fonts:
+        - asset: assets/media/fonts/amiri-quran/AmiriQuran-Regular.ttf
+          weight: 400
     - family: QuranIndoPak
       fonts:
         - asset: assets/media/fonts/QuranIndoPak.ttf

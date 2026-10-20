@@ -17,8 +17,6 @@ const String _appDownloadUrl =
     'https://f-droid.org/en/packages/com.app.equran/';
 const String _issueReportUrl = 'https://github.com/ya27hw/equran_app/issues';
 const String _contactEmail = 'equran@elbaesy.com';
-const String _appAssetBase = 'assets/media/images/app';
-const String _routineAsset = '$_appAssetBase/routine.webp';
 const String _appIconAsset = 'assets/media/images/icon.webp';
 const String _bitcoinDonationAddress =
     'bc1qs7jfrkxvpdh96qmfu9srtla38fe30gvdvc22av';
@@ -29,6 +27,7 @@ const String _solanaDonationAddress =
 const String _usdcDonationAddress =
     '0x9d60158D5315Fa46241FC47Bf76eEE6cF7abcAa9';
 const String _litecoinDonationAddress = 'LZW5Jh52Lnni6Zr3FQhimGGkyZPywSAaDX';
+const List<String> _specialThanksContributors = <String>['Muhammad', 'Fawaz'];
 
 class MorePage extends StatelessWidget {
   const MorePage({
@@ -413,11 +412,12 @@ class _MoreHeroArtwork extends StatelessWidget {
                       opacity: 0.18,
                       child: SizedBox(
                         width: artWidth,
-                        child: EquranAssetImage(
-                          _routineAsset,
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) =>
-                              const SizedBox.shrink(),
+                        child: Center(
+                          child: DesignIcon(
+                            'route',
+                            size: artWidth * 0.6,
+                            color: context.equranTokens.emText,
+                          ),
                         ),
                       ),
                     ),
@@ -713,6 +713,75 @@ class _CustomAboutDialogState extends State<_CustomAboutDialog> {
     );
   }
 
+  // The fixed SizedBox keeps AlertDialog's intrinsic measurement away from
+  // EquranAssetImage, whose LayoutBuilder cannot report intrinsic sizes.
+  Widget _buildAppIcon() {
+    return SizedBox(
+      width: 40,
+      height: 40,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(EquranRadii.medium),
+        child: EquranAssetImage(
+          _appIconAsset,
+          width: 40,
+          height: 40,
+          fit: BoxFit.contain,
+        ),
+      ),
+    );
+  }
+
+  Widget _sectionHeader(String text, ThemeData theme, EquranColors colors) {
+    return Text(
+      text,
+      style: theme.textTheme.titleMedium?.copyWith(
+        color: colors.textPrimary,
+        fontWeight: FontWeight.w800,
+      ),
+    );
+  }
+
+  Widget _sectionBody(String text, ThemeData theme, EquranColors colors) {
+    return Text(
+      text,
+      style: theme.textTheme.bodyMedium?.copyWith(color: colors.textSecondary),
+    );
+  }
+
+  Widget _contributorTile({
+    required String name,
+    required ThemeData theme,
+    required EquranColors colors,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: colors.surfaceAlt,
+        borderRadius: BorderRadius.circular(EquranRadii.medium),
+        border: Border.all(color: colors.border),
+      ),
+      child: Row(
+        children: <Widget>[
+          Icon(
+            Icons.favorite_border,
+            size: 18,
+            color: theme.colorScheme.primary,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              name,
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: colors.textPrimary,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final AppLocalizations localizations = AppLocalizations.of(context)!;
@@ -724,15 +793,7 @@ class _CustomAboutDialogState extends State<_CustomAboutDialog> {
       surfaceTintColor: Colors.transparent,
       title: Row(
         children: <Widget>[
-          ClipRRect(
-            borderRadius: BorderRadius.circular(EquranRadii.medium),
-            child: EquranAssetImage(
-              _appIconAsset,
-              width: 40,
-              height: 40,
-              fit: BoxFit.contain,
-            ),
-          ),
+          _buildAppIcon(),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -764,26 +825,28 @@ class _CustomAboutDialogState extends State<_CustomAboutDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Text(
-                localizations.aboutAppBody,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colors.textSecondary,
-                ),
-              ),
+              _sectionBody(localizations.aboutAppBody, theme, colors),
               const SizedBox(height: 24),
-              Text(
-                localizations.supportProject,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: colors.textPrimary,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
+              _sectionHeader(localizations.specialThanks, theme, colors),
               const SizedBox(height: 6),
-              Text(
-                localizations.supportProjectDescription,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colors.textSecondary,
+              _sectionBody(localizations.specialThanksBody, theme, colors),
+              const SizedBox(height: 12),
+              for (final String name in _specialThanksContributors)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: _contributorTile(
+                    name: name,
+                    theme: theme,
+                    colors: colors,
+                  ),
                 ),
+              const SizedBox(height: 24),
+              _sectionHeader(localizations.supportProject, theme, colors),
+              const SizedBox(height: 6),
+              _sectionBody(
+                localizations.supportProjectDescription,
+                theme,
+                colors,
               ),
               const SizedBox(height: 12),
               for (final _SupportDonation donation in <_SupportDonation>[
@@ -830,15 +893,7 @@ class _CustomAboutDialogState extends State<_CustomAboutDialog> {
               applicationVersion: widget.version,
               applicationIcon: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(EquranRadii.medium),
-                  child: EquranAssetImage(
-                    _appIconAsset,
-                    width: 40,
-                    height: 40,
-                    fit: BoxFit.contain,
-                  ),
-                ),
+                child: _buildAppIcon(),
               ),
             );
           },

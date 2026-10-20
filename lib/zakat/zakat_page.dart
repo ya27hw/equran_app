@@ -135,9 +135,6 @@ class _ZakatComputation {
   final double zakatDue;
   final double goldPrice;
   final double silverPrice;
-
-  double get totalZakatFromItems =>
-      items.fold(0.0, (sum, i) => sum + i.zakatPortion);
 }
 
 class ZakatCalculatorPage extends StatefulWidget {

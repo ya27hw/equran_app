@@ -35,9 +35,18 @@ class PrayerTimezoneService {
           await FlutterTimezone.getLocalTimezone();
       final String timezoneId = localTimezone.identifier.trim();
       if (timezoneId.isEmpty) return null;
-      timezone.setLocalLocation(timezone.getLocation(timezoneId));
+      final timezone.Location? location = locationForId(timezoneId);
+      if (location == null) {
+        if (kDebugMode) {
+          debugPrint(
+            'Prayer device timezone has no database entry: $timezoneId',
+          );
+        }
+        return null;
+      }
+      timezone.setLocalLocation(location);
       _deviceTimezoneId = timezoneId;
-      return timezoneId;
+      return location.name;
     } catch (error) {
       if (kDebugMode) {
         debugPrint('Prayer device timezone lookup failed: $error');
@@ -53,9 +62,21 @@ class PrayerTimezoneService {
     try {
       return timezone.getLocation(trimmed);
     } catch (_) {
-      return null;
+      final String? alias = _timezoneAliases[trimmed];
+      if (alias == null) return null;
+      try {
+        return timezone.getLocation(alias);
+      } catch (_) {
+        return null;
+      }
     }
   }
+
+  /// Backward-compatibility links that the bundled tz database omits. Each
+  /// alias must share its target's current offset and DST rules.
+  static const Map<String, String> _timezoneAliases = {
+    'Asia/Muscat': 'Asia/Dubai', // Gulf Standard Time (+04), no DST
+  };
 
   static String? validTimezoneId(String? timezoneId) {
     final timezone.Location? location = locationForId(timezoneId);

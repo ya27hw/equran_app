@@ -58,8 +58,9 @@ class PrayerMapLocateButton extends StatelessWidget {
   }
 }
 
-/// The card pinned to the bottom of the map: where the pin is, the Qibla
-/// bearing and, when picking a location, the three ways to confirm it.
+/// The card pinned to the bottom of the map. Picking a location shows a small
+/// bar with the pin's coordinates and one button; the Qibla map shows its
+/// bearing instead.
 class PrayerMapInfoCard extends StatelessWidget {
   const PrayerMapInfoCard({
     super.key,
@@ -82,19 +83,78 @@ class PrayerMapInfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final EquranTokens tokens = context.equranTokens;
     final EquranColors colors = context.equranColors;
-    return Container(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(EquranRadii.xl),
-        border: Border.all(color: tokens.hair2),
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-            color: tokens.shadow,
-            blurRadius: 24,
-            offset: const Offset(0, 10),
+    final BoxDecoration decoration = BoxDecoration(
+      color: colors.surface,
+      borderRadius: BorderRadius.circular(EquranRadii.xl),
+      border: Border.all(color: tokens.hair2),
+      boxShadow: <BoxShadow>[
+        BoxShadow(
+          color: tokens.shadow,
+          blurRadius: 24,
+          offset: const Offset(0, 10),
+        ),
+      ],
+    );
+    final PrayerMapPickerActions? pick = picker;
+    if (pick != null) {
+      return Align(
+        alignment: Alignment.bottomCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 420),
+          child: Container(
+            decoration: decoration,
+            padding: const EdgeInsetsDirectional.fromSTEB(18, 12, 12, 12),
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(
+                        locationLabel,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: colors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        coordinates,
+                        textDirection: TextDirection.ltr,
+                        style: TextStyle(
+                          fontSize: 12.5,
+                          color: tokens.text2,
+                          fontFeatures: const <FontFeature>[
+                            FontFeature.tabularFigures(),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                FilledButton(
+                  onPressed: pick.onUsePin,
+                  style: readerFilledButtonStyle(context).copyWith(
+                    minimumSize: const WidgetStatePropertyAll(Size(0, 44)),
+                    padding: const WidgetStatePropertyAll(
+                      EdgeInsets.symmetric(horizontal: 18),
+                    ),
+                  ),
+                  child: Text(pick.usePinLabel),
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
+        ),
+      );
+    }
+    return Container(
+      decoration: decoration,
       padding: const EdgeInsetsDirectional.fromSTEB(18, 16, 18, 18),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -140,61 +200,20 @@ class PrayerMapInfoCard extends StatelessWidget {
               ],
             ),
           ],
-          if (picker != null) ...<Widget>[
-            const SizedBox(height: 16),
-            OutlinedButton.icon(
-              onPressed: picker!.onUsePin,
-              style: readerOutlinedButtonStyle(context),
-              icon: const DesignIcon('pin', size: 18),
-              label: Text(picker!.usePinLabel),
-            ),
-            const SizedBox(height: 10),
-            FilledButton.icon(
-              onPressed: picker!.onUseLive,
-              style: readerFilledButtonStyle(context),
-              icon: picker!.liveLoading
-                  ? const SizedBox.square(
-                      dimension: 18,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                  : const Icon(Icons.my_location_rounded, size: 18),
-              label: Text(picker!.useLiveLabel),
-            ),
-            const SizedBox(height: 4),
-            TextButton.icon(
-              onPressed: picker!.onEnterManually,
-              style: readerTextButtonStyle(context, color: tokens.emText),
-              icon: const DesignIcon('edit', size: 18),
-              label: Text(picker!.enterManuallyLabel),
-            ),
-          ],
         ],
       ),
     );
   }
 }
 
-/// The labels and callbacks of the picker buttons. A null callback disables
-/// that button.
+/// The label and callback of the picker's one button. A null callback
+/// disables it.
 class PrayerMapPickerActions {
   const PrayerMapPickerActions({
     required this.usePinLabel,
-    required this.useLiveLabel,
-    required this.enterManuallyLabel,
     required this.onUsePin,
-    required this.onUseLive,
-    required this.onEnterManually,
-    this.liveLoading = false,
   });
 
   final String usePinLabel;
-  final String useLiveLabel;
-  final String enterManuallyLabel;
   final VoidCallback? onUsePin;
-  final VoidCallback? onUseLive;
-  final VoidCallback onEnterManually;
-  final bool liveLoading;
 }

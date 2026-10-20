@@ -732,6 +732,13 @@ class AppLocalizationsFa extends AppLocalizations {
       'ای‌قرآن یک همراه مدرن قرآنی است که برای خواندن متمرکز، گوش دادن و تدبر روزانه طراحی شده است.';
 
   @override
+  String get specialThanks => 'تشکر ویژه';
+
+  @override
+  String get specialThanksBody =>
+      'از این همکاران سپاسگزاریم که سهم بزرگی در توسعه ای‌قرآن داشتند و با نظرات و بازخوردهای ارزشمند خود به آن یاری رساندند.';
+
+  @override
   String get supportProject => 'حمایت';
 
   @override
@@ -900,6 +907,34 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get setUpLocation => 'تنظیم مکان';
+
+  @override
+  String get locationSetupTitle => 'کجا نماز می‌خوانید؟';
+
+  @override
+  String get locationSetupSubtitle =>
+      'یک روش را انتخاب کنید. اوقات نماز فقط برای همین مکان محاسبه می‌شود.';
+
+  @override
+  String get locationOptionCurrentDescription =>
+      'سریع‌ترین روش. موقعیت شما را یک‌بار می‌خوانیم.';
+
+  @override
+  String get locationOptionMapDescription =>
+      'نقشه را جابه‌جا کنید تا سنجاق روی منطقه شما قرار گیرد.';
+
+  @override
+  String get locationOptionManualDescription =>
+      'عرض و طول جغرافیایی را خودتان وارد کنید.';
+
+  @override
+  String get recommendedLabel => 'پیشنهادی';
+
+  @override
+  String get chooseAnotherWay => 'روش دیگری انتخاب کنید';
+
+  @override
+  String get confirmLocationTitle => 'تأیید این مکان';
 
   @override
   String get chooseLocationForNextPrayer =>
@@ -4193,6 +4228,16 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get todayLegend => 'امروز';
+
+  @override
+  String get newMonthLegend => 'آغاز ماه هجری';
+
+  @override
+  String get comingUp => 'پیش رو';
+
+  @override
+  String get moonSightingHint =>
+      'اگر رؤیت ماه در منطقه شما متفاوت باشد، تاریخ‌های هجری را یک روز جابه‌جا می‌کند.';
 
   @override
   String get eidLegend => 'عید';

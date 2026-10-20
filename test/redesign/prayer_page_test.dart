@@ -69,12 +69,11 @@ void main() {
     await tester.runAsync(() async {
       final context = tester.element(find.byType(PrayerTimesPage));
       for (final name in [
-        'fajr',
-        'sunrise',
-        'dhuhr',
-        'asr',
-        'maghrib',
-        'isha',
+        'fajr_banner',
+        'dhuhr_banner',
+        'asr_banner',
+        'maghrib_banner',
+        'isha_banner',
       ]) {
         await precacheImage(
           AssetImage('assets/media/images/app/$name.webp'),

@@ -30,7 +30,7 @@ class SplashScreen extends StatefulWidget {
   final WidgetBuilder? nextBuilder;
 
   /// Total length of the intro animation.
-  static const Duration introDuration = Duration(milliseconds: 1100);
+  static const Duration introDuration = Duration(milliseconds: 1300);
 
   /// Cross-fade into the next page.
   static const Duration exitDuration = Duration(milliseconds: 300);

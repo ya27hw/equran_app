@@ -114,42 +114,40 @@ class PrayerArcHero extends StatelessWidget {
                           onTap: onTap,
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(20, 48, 20, 20),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                if (isViewingToday) ...<Widget>[
-                                  RedesignEyebrow(
-                                    l10n.countdownNow,
-                                    color: PrayerSkyScene.foreground,
-                                  ),
-                                  const SizedBox(height: 5),
-                                ],
-                                FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  child: Text(
-                                    title,
-                                    style: redesignDisplayStyle(
-                                      context,
-                                      size: 36,
-                                      height: 1.15,
-                                      color: PrayerSkyScene.foreground,
+                            // Lifted a little: without the NOW label the
+                            // centred block would sit lower than before.
+                            child: Transform.translate(
+                              offset: const Offset(0, -10),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      title,
+                                      style: redesignDisplayStyle(
+                                        context,
+                                        size: 36,
+                                        height: 1.15,
+                                        color: PrayerSkyScene.foreground,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(height: 6),
-                                Text.rich(
-                                  subtitle,
-                                  textAlign: TextAlign.center,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: PrayerSkyScene.foreground,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
-                                    height: 1.3,
+                                  const SizedBox(height: 6),
+                                  Text.rich(
+                                    subtitle,
+                                    textAlign: TextAlign.center,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: PrayerSkyScene.foreground,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                      height: 1.3,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),

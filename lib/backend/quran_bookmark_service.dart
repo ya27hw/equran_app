@@ -8,7 +8,6 @@ class QuranBookmarkService {
   const QuranBookmarkService();
 
   static const String defaultFolder = 'Default';
-  static const String defaultFolderLabel = 'Unsorted';
 
   bool isFavourite(int surah, int verse) {
     final String key = favouriteAyahKey(surah, verse);

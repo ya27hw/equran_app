@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'gallery_test_support.dart' show loadGalleryFonts;
 
 void main() {
@@ -125,6 +126,28 @@ void main() {
     ]) {
       expect(find.text(group.toUpperCase()), findsOneWidget, reason: group);
     }
+  });
+
+  testWidgets('the about dialog credits the special thanks contributors', (
+    tester,
+  ) async {
+    PackageInfo.setMockInitialValues(
+      appName: 'eQuran',
+      packageName: 'com.app.equran',
+      version: '3.6.0',
+      buildNumber: '104',
+      buildSignature: '',
+    );
+    await pump(tester);
+    final l = AppLocalizations.of(tester.element(find.byType(MorePage)))!;
+    await tester.ensureVisible(find.text(l.aboutThisApp).first);
+    await tester.tap(find.text(l.aboutThisApp).first);
+    await tester.pumpAndSettle();
+    expect(find.text(l.specialThanks), findsOneWidget);
+    expect(find.text(l.specialThanksBody), findsOneWidget);
+    expect(find.text('Muhammad'), findsOneWidget);
+    expect(find.text('Fawaz'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   final variants = [

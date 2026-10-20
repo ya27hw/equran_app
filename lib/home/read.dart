@@ -58,6 +58,11 @@ import 'package:equran/theme/equran_text_styles.dart';
 import 'package:equran/reading_plans/routine_progress.dart';
 import 'package:equran/utils/app_radii.dart';
 import 'package:equran/utils/quran_display.dart';
+import 'package:equran/utils/surah_title_tashkeel.dart';
+import 'package:equran/widgets/common/geometric_pattern.dart'
+    show GeometricPattern;
+import 'package:equran/widgets/redesign/page_typography.dart'
+    show RedesignEyebrow;
 import 'package:equran/utils/quran_text.dart';
 import 'package:equran/word_by_word/word_by_word_pack.dart';
 import 'package:equran/word_by_word/word_by_word_service.dart';
@@ -500,6 +505,14 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
   int? _playingVerse;
   Duration _playerPosition = Duration.zero;
   Duration _playerDuration = Duration.zero;
+  // The visible position just before a sequence advance. The player can keep
+  // reporting the finished ayah's end for a moment after the index changes;
+  // samples at or above this ceiling are dropped until the new ayah starts.
+  Duration? _staleSequenceAdvanceCeiling;
+  DateTime? _staleSequenceAdvanceSince;
+  static const Duration _staleSequenceAdvanceWindow = Duration(
+    milliseconds: 1500,
+  );
   double _currentVersePlaybackRate = 1.0;
   final ValueNotifier<Duration> _playerPositionValue = ValueNotifier<Duration>(
     Duration.zero,
@@ -1246,6 +1259,9 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     final Duration normalizedPosition = position < Duration.zero
         ? Duration.zero
         : position;
+    if (fromPlayerStream && _isStaleSequenceAdvanceSample(normalizedPosition)) {
+      return;
+    }
     if (fromPlayerStream &&
         !allowBackward &&
         _shouldGuardVisibleProgressBackwards) {
@@ -1273,6 +1289,23 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
         fromPlayerStream: fromPlayerStream,
       );
     }
+  }
+
+  /// True while [position] is still the finished ayah's end after a sequence
+  /// advance. The window closes at the first real sample near the start of the
+  /// new ayah, or after [_staleSequenceAdvanceWindow] (a seek can land anywhere).
+  bool _isStaleSequenceAdvanceSample(Duration position) {
+    final Duration? ceiling = _staleSequenceAdvanceCeiling;
+    if (ceiling == null) return false;
+    final bool windowOver =
+        DateTime.now().difference(_staleSequenceAdvanceSince!) >
+        _staleSequenceAdvanceWindow;
+    if (windowOver || position < ceiling - const Duration(milliseconds: 500)) {
+      _staleSequenceAdvanceCeiling = null;
+      _staleSequenceAdvanceSince = null;
+      return false;
+    }
+    return true;
   }
 
   void _setPlayerDuration(Duration duration, {bool allowReset = false}) {
@@ -2391,6 +2424,10 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
       surah: position.surah,
       ayah: position.ayah,
     );
+    if (_playerPositionValue.value > Duration.zero) {
+      _staleSequenceAdvanceCeiling = _playerPositionValue.value;
+      _staleSequenceAdvanceSince = DateTime.now();
+    }
     final ja.PlayerState state = _versePlayer.playerState;
     final bool isLoading =
         state.processingState == ja.ProcessingState.loading ||
@@ -2420,9 +2457,11 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
       _isVersePlaying = isPlaying;
       _beginNewReadingAudioSource(progressSource);
     });
+    // Seed at the start of the new ayah. `_versePlayer.position` can still be
+    // the previous ayah's end here, and a seeded end would hold the slider.
     _markReadingAudioSourceReady(
       progressSource,
-      position: _versePlayer.position,
+      position: Duration.zero,
       duration: _versePlayer.duration,
     );
     if (chapterChanged) {
@@ -6719,138 +6758,155 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     return painter.computeLineMetrics().length;
   }
 
-  Widget _buildSurahIntroCard({required double marginValue}) {
-    final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
+  Widget _buildSurahIntroCard() {
     final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final bool arabicMode = isArabicLocalizations(localizations);
-    final String surahName = quran.getSurahNameArabic(_currentChapter);
-    final String englishName = quran.getSurahNameEnglish(_currentChapter);
+    final EquranColors colors = context.equranColors;
+    // Same horizontal margin and corner radius as the reading card below it,
+    // so the two line up on every width.
+    final double marginValue = readQuranCardHorizontalMarginForWidth(
+      MediaQuery.sizeOf(context).width,
+    );
+    const Color foreground = Color(0xFFF8F6EC);
+    final Color gold = colors.accentGold;
+    final String surahName = surahTitleTashkeel(
+      _currentChapter,
+      fallback: quran.getSurahNameArabic(_currentChapter),
+    );
     final int verseCount = quran.getVerseCount(_currentChapter);
     final String revelation = _localizedRevelationPlace(localizations);
     final int juzNumber = quran.getJuzNumber(_currentChapter, 1);
     final bool showBasmala = _currentChapter != 1 && _currentChapter != 9;
-    final BorderRadius radius = BorderRadius.circular(20);
+    final BorderRadius radius = BorderRadius.circular(AppRadii.large);
+    final Color top = colors.primaryGradientStart;
+    final Color bottom = Color.lerp(
+      colors.primaryGradientEnd,
+      colors.primary,
+      0.65,
+    )!;
 
     return Padding(
       padding: EdgeInsets.fromLTRB(marginValue, 8, marginValue, 10),
       child: SizedBox(
         width: double.infinity,
-        child: ClipRRect(
-          borderRadius: radius,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: radius,
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: <Color>[
-                  colors.primaryGradientStart,
-                  // Keep the tail dark enough for the white and gold text on
-                  // themes whose gradient ends in a pale tint.
-                  Color.lerp(colors.primaryGradientEnd, colors.primary, 0.65)!,
-                ],
-              ),
-              border: Border.all(color: colors.accentGold.withAlpha(115)),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: radius,
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: <Color>[top, bottom],
             ),
-            child: CustomPaint(
-              painter: _SurahIntroOrnamentPainter(
-                color: colors.accentGold.withAlpha(153),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  EquranSpacing.pagePadding,
-                  20,
-                  EquranSpacing.pagePadding,
-                  24,
+          ),
+          child: ClipRRect(
+            borderRadius: radius,
+            child: Stack(
+              children: <Widget>[
+                // Warm light from the top edge, then the brand lattice faded
+                // out behind the name, then the gold frame on top of both.
+                Positioned.fill(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: RadialGradient(
+                        center: const Alignment(0, -1.1),
+                        radius: 1.1,
+                        colors: <Color>[gold.withAlpha(56), gold.withAlpha(0)],
+                      ),
+                    ),
+                  ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Text(
-                        surahName,
-                        maxLines: 1,
-                        textDirection: TextDirection.rtl,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.displaySmall?.copyWith(
-                          fontFamily: 'NotoNaskhArabic',
-                          color: colors.onPrimary,
-                          fontSize: 44,
-                          fontWeight: FontWeight.bold,
-                          height: 1.08,
-                        ),
-                      ),
-                    ),
-                    if (!arabicMode) ...<Widget>[
-                      const SizedBox(height: 8),
-                      Text(
-                        englishName,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: colors.onPrimaryMuted,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ],
-                    const SizedBox(height: 20),
-                    SizedBox(
-                      width: 100,
-                      child: Divider(
-                        height: 1,
-                        thickness: 1,
-                        color: colors.accentGold.withAlpha(89),
-                      ),
-                    ),
-                    if (showBasmala) ...<Widget>[
-                      const SizedBox(height: 20),
-                      Text(
-                        SettingsDB().quranScriptStyle == 'indopak'
-                            ? 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ'
-                            : SettingsDB().quranScriptStyle == 'qpc-hafs'
-                            ? 'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ'
-                            : SettingsDB().quranScriptStyle == 'qpc-v4'
-                            ? 'ﱁ ﱂ ﱃ ﱄ'
-                            : quranBasmalaText,
-                        textDirection: TextDirection.rtl,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontFamily: SettingsDB().quranScriptStyle == 'qpc-v4'
-                              ? EquranTextStyles.fontFamilyForPage(1)
-                              : EquranTextStyles.activeFontFamily,
-                          fontFamilyFallback: const <String>['UthmanicHafs'],
-                          color: colors.onPrimary,
-                          fontSize: 36,
-                          fontWeight: FontWeight.w400,
-                          height: 2.0,
-                        ),
-                      ),
-                    ],
-                    const SizedBox(height: 20),
-                    Text(
-                      localizations.surahIntroMeta(
-                        juzNumber,
-                        revelation,
-                        verseCount,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: colors.accentGold.withAlpha(235),
-                        fontSize: 10.5,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-                  ],
+                Positioned.fill(
+                  child: GeometricPattern(
+                    color: gold,
+                    anchor: Alignment.center,
+                    reach: 0.95,
+                    maxOpacity: 0.16,
+                  ),
                 ),
-              ),
+                Positioned.fill(
+                  child: CustomPaint(painter: _SurahFramePainter(gold: gold)),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(30, 28, 30, 24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Row(
+                        children: <Widget>[
+                          Expanded(child: _GoldRule(color: gold)),
+                          const SizedBox(width: 12),
+                          RedesignEyebrow(
+                            localizations.surahIntroMeta(
+                              juzNumber,
+                              revelation,
+                              verseCount,
+                            ),
+                            color: gold,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _GoldRule(color: gold, reverse: true),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          surahName,
+                          maxLines: 1,
+                          textDirection: TextDirection.rtl,
+                          textAlign: TextAlign.center,
+                          style: EquranTextStyles.surahTitleStyle(
+                            fontSize: 44,
+                            color: foreground,
+                          ).copyWith(height: 1.5),
+                        ),
+                      ),
+                      if (showBasmala) ...<Widget>[
+                        const SizedBox(height: 10),
+                        Row(
+                          children: <Widget>[
+                            Expanded(child: _GoldRule(color: gold)),
+                            const SizedBox(width: 10),
+                            CustomPaint(
+                              size: const Size(14, 14),
+                              painter: _StarMarkPainter(color: gold),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: _GoldRule(color: gold, reverse: true),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          SettingsDB().quranScriptStyle == 'indopak'
+                              ? 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ'
+                              : SettingsDB().quranScriptStyle == 'qpc-hafs'
+                              ? 'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ'
+                              : SettingsDB().quranScriptStyle == 'qpc-v4'
+                              ? 'ﱁ ﱂ ﱃ ﱄ'
+                              : quranBasmalaText,
+                          textDirection: TextDirection.rtl,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily:
+                                SettingsDB().quranScriptStyle == 'qpc-v4'
+                                ? EquranTextStyles.fontFamilyForPage(1)
+                                : EquranTextStyles.activeFontFamily,
+                            fontFamilyFallback: const <String>['UthmanicHafs'],
+                            color: foreground,
+                            fontSize: 30,
+                            fontWeight: FontWeight.w400,
+                            height: 1.7,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -6870,10 +6926,7 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
 
   Widget cardView({required double marginValue}) {
     final bool compactPlayerLayout = MediaQuery.sizeOf(context).width < 700;
-    final double quranCardMargin = readQuranCardHorizontalMarginForWidth(
-      MediaQuery.sizeOf(context).width,
-    );
-    final double expandedSpacer = compactPlayerLayout ? 392 : 304;
+    final double expandedSpacer = compactPlayerLayout ? 348 : 282;
     final double bottomSpacer = _playerMounted
         ? lerpDouble(expandedSpacer, 132, _playerCollapseProgress)!
         : 180;
@@ -6898,8 +6951,7 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
                 child: Column(
                   children: [
                     _buildProgressBar(marginValue),
-                    if (_currentVerse == 1)
-                      _buildSurahIntroCard(marginValue: quranCardMargin),
+                    if (_currentVerse == 1) _buildSurahIntroCard(),
                     SizedBox(
                       width: MediaQuery.of(context).size.width,
                       child: RepaintBoundary(
@@ -7006,7 +7058,7 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
     final double pageMargin = marginValue > 8 ? 16 : 8;
     final bool compactPlayerLayout = MediaQuery.sizeOf(context).width < 700;
     final double playerBottomPadding = lerpDouble(
-      compactPlayerLayout ? 260 : 190,
+      compactPlayerLayout ? 216 : 170,
       76,
       _playerCollapseProgress,
     )!;
@@ -7062,7 +7114,7 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
 
     return Column(
       children: <Widget>[
-        _buildSurahIntroCard(marginValue: pageMargin),
+        _buildSurahIntroCard(),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: pageMargin, vertical: 10),
           child: DecoratedBox(
@@ -8413,45 +8465,122 @@ int _globalAyahIndex(int surah, int verse) {
   return index.clamp(1, quran.totalVerseCount).toInt();
 }
 
-class _SurahIntroOrnamentPainter extends CustomPainter {
-  const _SurahIntroOrnamentPainter({required this.color});
+/// A hairline that fades in from transparent to [color]. [reverse] flips it so
+/// the gold end faces the centre of a row.
+class _GoldRule extends StatelessWidget {
+  const _GoldRule({required this.color, this.reverse = false});
+
+  final Color color;
+  final bool reverse;
+
+  @override
+  Widget build(BuildContext context) {
+    final List<Color> colors = reverse
+        ? <Color>[color, color.withAlpha(0)]
+        : <Color>[color.withAlpha(0), color];
+    return Container(
+      height: 1,
+      decoration: BoxDecoration(gradient: LinearGradient(colors: colors)),
+    );
+  }
+}
+
+/// Eight-pointed rosette: sixteen vertices alternating between the outer radius
+/// and an inner radius, so the points read as a star rather than a polygon.
+Path _rosettePath(Offset centre, double radius, double innerFactor) {
+  final Path path = Path();
+  for (int i = 0; i < 16; i++) {
+    final double angle = pi / 8 * i - pi / 2;
+    final double r = i.isOdd ? radius * innerFactor : radius;
+    final Offset point = Offset(
+      centre.dx + cos(angle) * r,
+      centre.dy + sin(angle) * r,
+    );
+    if (i == 0) {
+      path.moveTo(point.dx, point.dy);
+    } else {
+      path.lineTo(point.dx, point.dy);
+    }
+  }
+  return path..close();
+}
+
+/// Small filled rosette used as the centre of the basmala divider.
+class _StarMarkPainter extends CustomPainter {
+  const _StarMarkPainter({required this.color});
 
   final Color color;
 
   @override
   void paint(Canvas canvas, Size size) {
-    const double inset = 10;
-    const double arm = 20;
-    final Paint paint = Paint()
-      ..color = color
-      ..strokeWidth = 1
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round
-      ..isAntiAlias = true;
-
-    void drawCorner({required bool right, required bool bottom}) {
-      final double x = right ? size.width - inset : inset;
-      final double y = bottom ? size.height - inset : inset;
-      final double dx = right ? -1 : 1;
-      final double dy = bottom ? -1 : 1;
-
-      final Path path = Path()
-        ..moveTo(x, y + (dy * arm))
-        ..lineTo(x, y)
-        ..lineTo(x + (dx * arm), y)
-        ..moveTo(x, y)
-        ..lineTo(x, y + (dy * arm));
-      canvas.drawPath(path, paint);
-    }
-
-    drawCorner(right: false, bottom: false);
-    drawCorner(right: true, bottom: false);
-    drawCorner(right: true, bottom: true);
-    drawCorner(right: false, bottom: true);
+    canvas.drawPath(
+      _rosettePath(size.center(Offset.zero), size.width / 2, 0.5),
+      Paint()
+        ..color = color
+        ..isAntiAlias = true,
+    );
   }
 
   @override
-  bool shouldRepaint(covariant _SurahIntroOrnamentPainter oldDelegate) {
+  bool shouldRepaint(covariant _StarMarkPainter oldDelegate) {
     return color != oldDelegate.color;
+  }
+}
+
+/// Gold frame for the intro card: an outer rule, a fainter inner rule, and a
+/// rosette on each corner where the rules meet.
+class _SurahFramePainter extends CustomPainter {
+  const _SurahFramePainter({required this.gold});
+
+  final Color gold;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Rect bounds = Offset.zero & size;
+    final Shader shader = LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: <Color>[
+        Color.lerp(gold, Colors.white, 0.35)!,
+        gold,
+        Color.lerp(gold, Colors.black, 0.3)!,
+      ],
+    ).createShader(bounds);
+
+    final Paint outerRule = Paint()
+      ..shader = shader
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.4
+      ..isAntiAlias = true;
+    final Paint innerRule = Paint()
+      ..shader = shader
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.7
+      ..isAntiAlias = true;
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(bounds.deflate(7.5), const Radius.circular(13)),
+      outerRule,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(bounds.deflate(13.5), const Radius.circular(9)),
+      innerRule,
+    );
+
+    final Paint rosette = Paint()
+      ..shader = shader
+      ..isAntiAlias = true;
+    for (final Offset corner in <Offset>[
+      Offset(7.5, 7.5),
+      Offset(size.width - 7.5, 7.5),
+      Offset(7.5, size.height - 7.5),
+      Offset(size.width - 7.5, size.height - 7.5),
+    ]) {
+      canvas.drawPath(_rosettePath(corner, 9, 0.55), rosette);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _SurahFramePainter oldDelegate) {
+    return gold != oldDelegate.gold;
   }
 }

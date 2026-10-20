@@ -138,12 +138,8 @@ void main() {
               coordinates: '23.58800, 58.38290',
               qiblaLine: 'Qibla: 268.4° • 1,330 km to the Kaaba',
               picker: PrayerMapPickerActions(
-                usePinLabel: 'Use pin location',
-                useLiveLabel: 'Use live location',
-                enterManuallyLabel: 'Enter coordinates manually',
+                usePinLabel: 'Use this spot',
                 onUsePin: () {},
-                onUseLive: () {},
-                onEnterManually: () {},
               ),
             ),
           ),
@@ -181,19 +177,12 @@ void main() {
       PrayerMapInfoCard(
         locationLabel: 'x',
         coordinates: '—',
-        picker: PrayerMapPickerActions(
-          usePinLabel: 'Use pin',
-          useLiveLabel: 'Live',
-          enterManuallyLabel: 'Manual',
-          onUsePin: null,
-          onUseLive: () {},
-          onEnterManually: () {},
-        ),
+        picker: PrayerMapPickerActions(usePinLabel: 'Use pin', onUsePin: null),
       ),
       colors: EquranColors.dark,
     );
     expect(
-      tester.widget<OutlinedButton>(find.byType(OutlinedButton)).onPressed,
+      tester.widget<FilledButton>(find.byType(FilledButton)).onPressed,
       isNull,
     );
   });

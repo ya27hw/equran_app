@@ -21,14 +21,12 @@ import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/widgets/redesign/redesign_widgets.dart';
 import 'package:equran/widgets/redesign/page_typography.dart';
 import 'package:equran/home_dashboard/daily_tools_edit_sheet.dart';
-import 'package:intl/intl.dart' show DateFormat;
 import 'package:equran/theme/equran_text_styles.dart';
 import 'package:equran/utils/app_radii.dart';
 import 'package:equran/utils/number_formatting.dart';
 import 'package:equran/utils/quran_display.dart';
 import 'package:equran/utils/quran_text.dart';
 import 'package:equran/widgets/common/equran_components.dart';
-import 'package:equran/prayer/hijri_calendar.dart';
 import 'package:equran/widgets/quran_reading_hero.dart';
 import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
@@ -46,7 +44,6 @@ import 'package:equran/duas/asma_ul_husna_page.dart';
 const String _appAssetBase = 'assets/media/images/app';
 const String _quranAsset = '$_appAssetBase/quran.webp';
 const String _lastReadAsset = '$_appAssetBase/last_read.webp';
-const String _routineAsset = '$_appAssetBase/routine.webp';
 
 class HomeDashboardPage extends StatefulWidget {
   const HomeDashboardPage({
@@ -110,7 +107,6 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
     final EquranColors colors = context.equranColors;
 
     return Material(
@@ -130,11 +126,10 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
                 parent: BouncingScrollPhysics(),
               ),
               slivers: <Widget>[
-                SliverToBoxAdapter(child: _buildHeader(theme)),
                 SliverPadding(
                   padding: const EdgeInsets.fromLTRB(
                     EquranSpacing.pagePadding,
-                    8,
+                    16,
                     EquranSpacing.pagePadding,
                     112,
                   ),
@@ -157,52 +152,6 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildHeader(ThemeData theme) {
-    final EquranTokens tokens = context.equranTokens;
-    final PrayerLocation? location = _prayerStore.getLocation();
-    final int hijriOffset =
-        SettingsDB().get('hijri_offset', defaultValue: 0) as int;
-    final HijriCalendar hijri = HijriCalendar.fromDate(
-      _now,
-      offset: hijriOffset,
-    );
-    final String localeName = Localizations.localeOf(context).toString();
-    final String weekday = DateFormat('EEEE', localeName).format(_now);
-    // Month name in the app language and Western digits (the app-wide policy);
-    // the bidi algorithm puts the day first under right-to-left scripts.
-    final String hijriDate = hijri.toLocalizedDateString(localeName);
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        EquranSpacing.pagePadding,
-        18,
-        EquranSpacing.pagePadding,
-        4,
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Expanded(
-            child: RedesignEyebrow(
-              '$weekday \u00B7 $hijriDate',
-              color: tokens.goldText,
-            ),
-          ),
-          if (location != null) ...<Widget>[
-            const SizedBox(width: 12),
-            _LocationPill(
-              label: localizedCityLabel(
-                AppLocalizations.of(context)!,
-                location,
-              ),
-              onTap: widget.onOpenPrayerTimes,
-            ),
-          ],
-        ],
       ),
     );
   }
@@ -234,55 +183,6 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
     setState(() {
       _exactAlarmPermission = status;
     });
-  }
-}
-
-class _LocationPill extends StatelessWidget {
-  const _LocationPill({required this.label, required this.onTap});
-
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
-    final EquranTokens tokens = context.equranTokens;
-    final BorderRadius radius = BorderRadius.circular(EquranRadii.pill);
-    return Material(
-      color: colors.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: radius,
-        side: BorderSide(color: tokens.hair),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: radius,
-        child: Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(12, 9, 14, 9),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              DesignIcon('pin', size: 16, color: tokens.emText),
-              const SizedBox(width: 6),
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 130),
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: colors.textPrimary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }
 
@@ -1060,12 +960,8 @@ class _RoutinePlanCta extends StatelessWidget {
     height: 52,
     padding: const EdgeInsets.all(3),
     decoration: BoxDecoration(color: tokens.emWash, shape: BoxShape.circle),
-    child: EquranAssetImage(
-      _routineAsset,
-      fit: BoxFit.contain,
-      errorBuilder: (context, error, stackTrace) =>
-          DesignIcon('route', size: 22, color: tokens.emText),
-    ),
+    alignment: Alignment.center,
+    child: DesignIcon('route', size: 24, color: tokens.emText),
   );
 
   @override

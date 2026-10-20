@@ -282,14 +282,6 @@ class HijriCalendar {
     return null;
   }
 
-  /// Returns a short label suitable for small calendar badges.
-  String? get shortEventLabel {
-    final occasion = majorOccasion;
-    if (occasion != null) return occasion;
-    if (isRecommendedFastingDay) return 'Fast';
-    return null;
-  }
-
   /// Very rough moon phase estimate (0=new, 1=waxing crescent, 2=full-ish, 3=waning).
   /// Good enough for beautiful UI indicators. Not astronomically precise.
   int get estimatedMoonPhase {
@@ -300,21 +292,5 @@ class HijriCalendar {
     if (hDay < 18) return 2; // Near full
     if (hDay < 23) return 3; // Waning
     return 3;
-  }
-
-  /// Human friendly moon phase name for details view.
-  String get moonPhaseName {
-    switch (estimatedMoonPhase) {
-      case 0:
-        return 'New Moon';
-      case 1:
-        return 'Waxing Crescent';
-      case 2:
-        return 'Full Moon';
-      case 3:
-        return 'Waning Crescent';
-      default:
-        return 'Crescent';
-    }
   }
 }

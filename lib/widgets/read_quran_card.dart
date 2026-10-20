@@ -210,32 +210,8 @@ class ReadQuranCard extends StatelessWidget {
     if (!shareImageMode) {
       return Row(
         children: <Widget>[
-          SurahNumberBadge(number: currentVerse, size: 44, active: true),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text(
-                  ayahLabel,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    color: colorScheme.onSurface,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  localizedJuzLabel(localizations, juzNumber),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: mutedStyle?.copyWith(color: colors.warning),
-                ),
-              ],
-            ),
-          ),
+          SurahNumberBadge(number: currentVerse, size: 36, active: true),
+          const Spacer(),
           if (showActions) ...<Widget>[
             const SizedBox(width: 12),
             _buildHeaderActions(context),

@@ -5,6 +5,7 @@ import 'package:equran/backend/settings_db.dart';
 import 'package:equran/prayer/manual_prayer_location_page.dart';
 import 'package:equran/prayer/prayer_map_location_page.dart';
 import 'package:equran/prayer/prayer_location_service.dart';
+import 'package:equran/prayer/prayer_location_setup_page.dart';
 import 'package:equran/prayer/prayer_localizations.dart';
 import 'package:equran/prayer/prayer_arc_hero.dart' show PrayerArcSetupHero;
 import 'package:equran/prayer/prayer_hero_card.dart';
@@ -22,9 +23,8 @@ import 'package:equran/prayer/qibla_page.dart';
 import 'package:equran/utils/app_radii.dart';
 import 'package:equran/utils/quran_display.dart';
 import 'package:equran/widgets/reader_sheet_chrome.dart'
-    show ReaderIconWell, readerFilledButtonStyle;
+    show readerFilledButtonStyle;
 import 'package:equran/widgets/prayer_widget_service.dart';
-import 'package:equran/prayer/hijri_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
@@ -75,11 +75,6 @@ class _PrayerTimesPageState extends State<PrayerTimesPage>
     unawaited(_refreshCurrentDeviceLocationOnEntry());
     if (widget.enableLiveCountdown) {
       _scheduleNextRefresh();
-    }
-    if (_store.getLocation() == null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _chooseOnMap(null);
-      });
     }
   }
 
@@ -216,7 +211,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: <Widget>[
-                          _buildPrayerHeader(context, selectedDay, location),
+                          _buildPrayerHeader(context, location),
                           const SizedBox(height: 20),
                           if (_dateControlsExpanded) ...<Widget>[
                             _buildPrayerInfoCard(
@@ -275,9 +270,8 @@ class _PrayerTimesPageState extends State<PrayerTimesPage>
     );
   }
 
-  /// No location saved yet: the Prayer page frame with the setup sky hero, a
-  /// card explaining why a location is needed, and the one action (the map
-  /// picker, where the device location and the manual entry also live).
+  /// No location saved yet: the sky hero, one line of why, and the single
+  /// action that starts the guided setup.
   Widget _buildSetupState(BuildContext context) {
     final AppLocalizations l = AppLocalizations.of(context)!;
     final EquranTokens tokens = context.equranTokens;
@@ -298,95 +292,38 @@ class _PrayerTimesPageState extends State<PrayerTimesPage>
                   children: <Widget>[
                     Text(l.prayer, style: redesignDisplayStyle(context)),
                     const SizedBox(height: 20),
-                    PrayerArcSetupHero(onTap: () => _chooseOnMap(null)),
-                    const SizedBox(height: 20),
-                    HairlineCard(
-                      padding: const EdgeInsetsDirectional.fromSTEB(
-                        18,
-                        18,
-                        18,
-                        18,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: <Widget>[
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              const ReaderIconWell(icon: DesignIcon('pin')),
-                              const SizedBox(width: 14),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(
-                                      l.prayerTimesNeedLocation,
-                                      style: TextStyle(
-                                        fontSize: 15.5,
-                                        fontVariations: const [
-                                          FontVariation('opsz', 15.5),
-                                        ],
-                                        fontWeight: FontWeight.w600,
-                                        height: 1.3,
-                                        color: colors.textPrimary,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      l.prayerTimesLocationSubtitle,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        height: 1.45,
-                                        color: tokens.text2,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 14),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.only(top: 1),
-                                child: DesignIcon(
-                                  'shield',
-                                  size: 16,
-                                  strokeWidth: 1.7,
-                                  color: tokens.muted,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  l.locationUseNotice,
-                                  style: TextStyle(
-                                    fontSize: 12.5,
-                                    height: 1.4,
-                                    color: tokens.muted,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 18),
-                          FilledButton.icon(
-                            key: const Key('prayer-setup-location'),
-                            onPressed: () => _chooseOnMap(null),
-                            style: readerFilledButtonStyle(context).copyWith(
-                              minimumSize: const WidgetStatePropertyAll(
-                                Size(0, 52),
-                              ),
-                            ),
-                            icon: const DesignIcon('pin', size: 18),
-                            label: Text(l.setUpLocation),
-                          ),
-                        ],
+                    PrayerArcSetupHero(onTap: () => _startLocationSetup(null)),
+                    const SizedBox(height: 24),
+                    Text(
+                      l.prayerTimesNeedLocation,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: colors.textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 8),
+                    Text(
+                      l.prayerTimesLocationSubtitle,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14.5,
+                        height: 1.45,
+                        color: tokens.text2,
+                      ),
+                    ),
+                    const SizedBox(height: 22),
+                    FilledButton.icon(
+                      key: const Key('prayer-setup-location'),
+                      onPressed: () => _startLocationSetup(null),
+                      style: readerFilledButtonStyle(context).copyWith(
+                        minimumSize: const WidgetStatePropertyAll(Size(0, 52)),
+                      ),
+                      icon: const DesignIcon('pin', size: 18),
+                      label: Text(l.setUpLocation),
+                    ),
+                    const SizedBox(height: 14),
                     Text(
                       l.timesCalculatedLocally,
                       textAlign: TextAlign.center,
@@ -406,14 +343,9 @@ class _PrayerTimesPageState extends State<PrayerTimesPage>
     );
   }
 
-  Widget _buildPrayerHeader(
-    BuildContext context,
-    PrayerDay day,
-    PrayerLocation location,
-  ) {
+  Widget _buildPrayerHeader(BuildContext context, PrayerLocation location) {
     final l = AppLocalizations.of(context)!;
-    final offset = SettingsDB().get('hijri_offset', defaultValue: 0) as int;
-    final hijri = HijriCalendar.fromDate(day.date, offset: offset);
+    final EquranTokens tokens = context.equranTokens;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -423,47 +355,39 @@ class _PrayerTimesPageState extends State<PrayerTimesPage>
             children: [
               Text(l.prayer, style: redesignDisplayStyle(context)),
               const SizedBox(height: 8),
+              // The city opens location setup; dates have their own button.
               Tooltip(
-                message: l.selectPrayerDate,
-                child: Semantics(
-                  button: true,
-                  expanded: _dateControlsExpanded,
-                  child: InkWell(
-                    key: const Key('prayer-date-toggle'),
-                    onTap: () => setState(() {
-                      _dateControlsExpanded = !_dateControlsExpanded;
-                    }),
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(minHeight: 44),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          DesignIcon(
-                            'pin',
-                            size: 15,
-                            strokeWidth: 1.7,
-                            color: context.equranTokens.muted,
+                message: l.setPrayerLocation,
+                child: InkWell(
+                  key: const Key('prayer-location-chip'),
+                  onTap: () => _startLocationSetup(location),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 44),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        DesignIcon(
+                          'pin',
+                          size: 15,
+                          strokeWidth: 1.7,
+                          color: tokens.muted,
+                        ),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            localizedCityLabel(l, location),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(fontSize: 14, color: tokens.muted),
                           ),
-                          const SizedBox(width: 6),
-                          Flexible(
-                            child: Text(
-                              '${localizedCityLabel(l, location)} · ${hijri.toLocalizedDateString(l.localeName)}',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: context.equranTokens.muted,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Icon(
-                            _dateControlsExpanded
-                                ? Icons.expand_less_rounded
-                                : Icons.expand_more_rounded,
-                            size: 18,
-                            color: context.equranTokens.muted,
-                          ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(width: 2),
+                        Icon(
+                          Icons.chevron_right_rounded,
+                          size: 18,
+                          color: tokens.muted,
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -472,6 +396,17 @@ class _PrayerTimesPageState extends State<PrayerTimesPage>
           ),
         ),
         const SizedBox(width: 12),
+        IconButton44(
+          key: const Key('prayer-date-toggle'),
+          icon: _dateControlsExpanded
+              ? Icons.event_available_rounded
+              : Icons.calendar_month_rounded,
+          tooltip: l.selectPrayerDate,
+          onPressed: () => setState(() {
+            _dateControlsExpanded = !_dateControlsExpanded;
+          }),
+        ),
+        const SizedBox(width: 10),
         IconButton44(
           designIcon: 'sliders',
           tooltip: l.prayerTimesSettings,
@@ -800,6 +735,33 @@ class _PrayerTimesPageState extends State<PrayerTimesPage>
 
     await _store.saveLocation(location);
     await _rescheduleReminders(location);
+  }
+
+  /// Opens the guided setup. [current] is the saved place when changing it,
+  /// or null on first setup.
+  Future<void> _startLocationSetup(PrayerLocation? current) async {
+    final PrayerLocation? location = await Navigator.of(context)
+        .push<PrayerLocation>(
+          MaterialPageRoute<PrayerLocation>(
+            builder: (BuildContext context) => PrayerLocationSetupPage(
+              initialLocation: current,
+              mapLocationPicker: widget.mapLocationPicker,
+              locationService: _locationService,
+            ),
+          ),
+        );
+    if (location == null || !mounted) return;
+    await _persistLocation(location);
+    if (!mounted) return;
+    _showMessage(AppLocalizations.of(context)!.locationSaved);
+  }
+
+  /// Saves a place the setup flow has already resolved.
+  Future<void> _persistLocation(PrayerLocation location) async {
+    final EquranColors colors = context.equranColors;
+    await _store.saveLocation(location);
+    await _rescheduleReminders(location);
+    unawaited(PrayerWidgetService.refreshWidget(colors: colors));
   }
 
   Future<void> _chooseOnMap(PrayerLocation? initialLocation) async {
@@ -1697,32 +1659,6 @@ String _formatTime(
       : (hour >= 12 ? 'PM' : 'AM');
   final int displayHour = hour % 12 == 0 ? 12 : hour % 12;
   return '$displayHour:${_two(minute)} $period';
-}
-
-String formatPrayerCountdownLabel(
-  Duration duration,
-  AppLocalizations localizations, {
-  bool isNow = false,
-}) {
-  if (isNow || duration == Duration.zero || duration.isNegative) {
-    return localizations.countdownNow;
-  }
-  if (duration < const Duration(minutes: 5)) {
-    return localizations.countdownVerySoon;
-  }
-
-  final int totalMinutes = (duration.inSeconds / 60).ceil();
-  final int hours = totalMinutes ~/ 60;
-  if (hours > 0) {
-    final int minutes = totalMinutes.remainder(60);
-    return minutes == 0
-        ? localizations.countdownInHours(hours)
-        : localizations.countdownInHoursMinutes(
-            hours,
-            twoDigitMinutes(minutes),
-          );
-  }
-  return localizations.countdownInMinutes(totalMinutes);
 }
 
 String _formatDate(DateTime date, AppLocalizations localizations) {

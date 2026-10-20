@@ -70,7 +70,7 @@ void main() {
     expect(find.text('home'), findsOneWidget);
   });
 
-  testWidgets('enabled: plays the intro and is gone within 1.5 s', (
+  testWidgets('enabled: plays the intro and is gone within 1.7 s', (
     tester,
   ) async {
     await tester.pumpWidget(app(enabled: true));
@@ -78,7 +78,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
     expect(find.text('home'), findsNothing);
     expect(find.text('eQuran'), findsOneWidget);
-    await tester.pump(const Duration(milliseconds: 700));
+    await tester.pump(const Duration(milliseconds: 800));
     await tester.pump(SplashScreen.exitDuration);
     await tester.pumpAndSettle();
     expect(find.text('home'), findsOneWidget);

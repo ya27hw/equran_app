@@ -17,20 +17,8 @@ class AndroidFrameRateHints {
     return setPreferredRefreshRate(30);
   }
 
-  static Future<void> setInteractiveHint60() {
-    return setPreferredRefreshRate(60);
-  }
-
-  static Future<void> clearFrameRateHint() {
-    return clear();
-  }
-
   static Future<void> setAudioIdle() {
     return setAudioPlaybackHint30();
-  }
-
-  static Future<void> setInteractive() {
-    return setInteractiveHint60();
   }
 
   static Future<void> setPreferredRefreshRate(double hz) async {

@@ -41,11 +41,7 @@ class StartupCoordinator extends ChangeNotifier {
   Future<void>? _blockingFuture;
   Future<void>? _deferredFuture;
   final List<StartupIssue> _issues = <StartupIssue>[];
-  bool _blockingReady = false;
-  bool _deferredReady = false;
 
-  bool get isBlockingReady => _blockingReady;
-  bool get isReady => _deferredReady;
   List<StartupIssue> get issues => List<StartupIssue>.unmodifiable(_issues);
 
   Future<void> initializeBlocking() {
@@ -84,7 +80,6 @@ class StartupCoordinator extends ChangeNotifier {
     // One cheap platform call; lets the first frames already adapt to
     // low-RAM and reduced-motion devices.
     await DeviceCapabilityService.instance.detect();
-    _blockingReady = true;
     notifyListeners();
   }
 
@@ -94,7 +89,6 @@ class StartupCoordinator extends ChangeNotifier {
     await _runStep('audio', _initializeAudio);
     await _runStep('prayer', _initializePrayer);
     await _runStep('widgets', _initializeWidgets);
-    _deferredReady = true;
     notifyListeners();
   }
 

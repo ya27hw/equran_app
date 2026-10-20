@@ -60,13 +60,6 @@ class HifzDB {
   }
 
   // Get entries with status 'new' not yet due
-  static List<HifzEntry> getNewEntries() {
-    return _entries.values.where((e) => e.status == 'new').toList()
-      ..sort((a, b) {
-        if (a.surah != b.surah) return a.surah.compareTo(b.surah);
-        return a.ayah.compareTo(b.ayah);
-      });
-  }
 
   // ── UNIT METHODS ─────────────────────
 
@@ -80,10 +73,6 @@ class HifzDB {
   }
 
   static HifzUnit? getUnit(String id) => _units.get(id);
-
-  static List<HifzUnit> getAllUnits() =>
-      _units.values.toList()
-        ..sort((a, b) => a.startedAt.compareTo(b.startedAt));
 
   static List<HifzUnit> getActiveUnits() =>
       _units.values.where((u) => !u.isComplete).toList()
@@ -321,10 +310,6 @@ class HifzDB {
   }
 
   // Get all entries for a specific surah
-  static List<HifzEntry> getEntriesForSurah(int surah) {
-    return _entries.values.where((e) => e.surah == surah).toList()
-      ..sort((a, b) => a.ayah.compareTo(b.ayah));
-  }
 
   // Save review log
   static Future<void> saveLog(HifzReviewLog log) async {
@@ -356,14 +341,6 @@ class HifzDB {
   }
 
   // Get total review count for today
-  static int getTodayReviewCount() {
-    final today = DateTime.now();
-    return _logs.values.where((l) {
-      return l.reviewedAt.year == today.year &&
-          l.reviewedAt.month == today.month &&
-          l.reviewedAt.day == today.day;
-    }).length;
-  }
 
   // Check if any hifz activity on a given date
   // Used for Statistics heatmap integration
@@ -377,13 +354,6 @@ class HifzDB {
   }
 
   // Compatibility shim: maps old UI calls to the new unit-based sequential system
-  static Future<void> addAyahRange({
-    required int surah,
-    required int startAyah,
-    required int endAyah,
-  }) async {
-    await createUnit(type: HifzUnitType.surah, unitNumber: surah);
-  }
 
   // Delete a single entry
   static Future<void> deleteEntry(int surah, int ayah) async {

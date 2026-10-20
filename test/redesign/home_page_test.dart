@@ -185,12 +185,9 @@ void main() {
     return taps;
   }
 
-  testWidgets('header shows weekday, Hijri date and the city only', (
-    tester,
-  ) async {
+  testWidgets('no date or location band above the content', (tester) async {
     await pump(tester, rich: true);
-    expect(find.text("SUNDAY · 21 RABI' AL-THANI 1448"), findsOneWidget);
-    expect(find.text('Muscat'), findsOneWidget);
+    expect(find.text("SUNDAY · 21 RABI' AL-THANI 1448"), findsNothing);
     expect(find.text('السلام عليكم'), findsNothing);
   });
 
@@ -203,14 +200,13 @@ void main() {
     expect(find.text('12-day streak'), findsOneWidget);
   });
 
-  testWidgets('header Hijri date follows the app language', (tester) async {
-    // 4 Oct 2026 is 21 Rabi al-Thani 1448; digits stay Western everywhere.
+  testWidgets('no localized date line in any language', (tester) async {
     await pump(tester, rich: true, locale: const Locale('ar'));
-    expect(find.text('الأحد · 21 رَبِيع الثَّانِي 1448'), findsOneWidget);
+    expect(find.text('الأحد · 21 رَبِيع الثَّانِي 1448'), findsNothing);
     await pump(tester, rich: true, locale: const Locale('tr'));
-    expect(find.text('PAZAR · 21 REBİÜLAHİR 1448'), findsOneWidget);
+    expect(find.text('PAZAR · 21 REBİÜLAHİR 1448'), findsNothing);
     await pump(tester, rich: true, locale: const Locale('ur'));
-    expect(find.text('اتوار · 21 ربیع الثانی 1448'), findsOneWidget);
+    expect(find.text('اتوار · 21 ربیع الثانی 1448'), findsNothing);
   });
 
   testWidgets('shortcuts keep their callbacks', (tester) async {

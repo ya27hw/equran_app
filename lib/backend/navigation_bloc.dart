@@ -132,14 +132,6 @@ class NavigationBloc extends ValueNotifier<NavigationState> {
     value = value.copyWith(selectedIndex: index);
   }
 
-  /// Selects the tab by matching its NavItem
-  void selectTabByItem(NavItem item) {
-    final int idx = value.activeNavbarItems.indexOf(item);
-    if (idx != -1) {
-      selectTab(idx);
-    }
-  }
-
   Future<void> reorderActiveItems(int oldIndex, int newIndex) async {
     final List<NavItem> items = List<NavItem>.from(value.activeNavbarItems);
     final NavItem item = items.removeAt(oldIndex);

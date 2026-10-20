@@ -730,6 +730,13 @@ class AppLocalizationsAr extends AppLocalizations {
       'إي قرآن رفيق قرآني حديث صُمّم للقراءة المركزة والاستماع والتدبر اليومي.';
 
   @override
+  String get specialThanks => 'شكر خاص';
+
+  @override
+  String get specialThanksBody =>
+      'شكر من القلب لهؤلاء المساهمين على إسهاماتهم الكبيرة في إي قرآن، وعلى ملاحظاتهم ومقترحاتهم القيّمة.';
+
+  @override
   String get supportProject => 'الدعم';
 
   @override
@@ -894,6 +901,34 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get setUpLocation => 'إعداد الموقع';
+
+  @override
+  String get locationSetupTitle => 'أين تصلّي؟';
+
+  @override
+  String get locationSetupSubtitle =>
+      'اختر طريقة واحدة لتحديد موقعك. تُحسب أوقات الصلاة لهذا المكان فقط.';
+
+  @override
+  String get locationOptionCurrentDescription =>
+      'الأسرع. نقرأ موقعك مرة واحدة.';
+
+  @override
+  String get locationOptionMapDescription =>
+      'حرّك الخريطة حتى يقع الدبوس على منطقتك.';
+
+  @override
+  String get locationOptionManualDescription =>
+      'اكتب خط العرض وخط الطول بنفسك.';
+
+  @override
+  String get recommendedLabel => 'موصى به';
+
+  @override
+  String get chooseAnotherWay => 'اختر طريقة أخرى';
+
+  @override
+  String get confirmLocationTitle => 'تأكيد هذا الموقع';
 
   @override
   String get chooseLocationForNextPrayer =>
@@ -4118,6 +4153,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get todayLegend => 'اليوم';
+
+  @override
+  String get newMonthLegend => 'بداية شهر هجري';
+
+  @override
+  String get comingUp => 'قريبًا';
+
+  @override
+  String get moonSightingHint =>
+      'تُغيّر التواريخ الهجرية بيوم إذا كانت رؤية الهلال في منطقتك مختلفة.';
 
   @override
   String get eidLegend => 'العيد';

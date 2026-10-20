@@ -5,6 +5,7 @@ import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/theme/equran_text_styles.dart';
 import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/utils/quran_display.dart';
+import 'package:equran/utils/surah_title_tashkeel.dart';
 import 'package:equran/utils/responsive_nav.dart';
 import 'package:equran/widgets/common/pressable_scale.dart';
 import 'package:equran/widgets/number_badge.dart';
@@ -57,25 +58,20 @@ class QuranCard extends StatelessWidget {
                 ? theme.textTheme.titleLarge
                 : theme.textTheme.titleMedium)
             ?.copyWith(fontWeight: FontWeight.w600);
-    final TextStyle? arabicTitleStyle =
-        (compactText
-                ? theme.textTheme.titleSmall
-                : compact
-                ? theme.textTheme.titleLarge
-                : theme.textTheme.titleMedium)
-            ?.copyWith(
-              color: colors.textPrimary,
-              fontFamily: EquranTextStyles.activeFontFamily == 'QuranIndoPak'
-                  ? 'UthmanicHafs'
-                  : EquranTextStyles.activeFontFamily,
-              fontFamilyFallback: const <String>['UthmanicHafs'],
-              fontSize: compactText
-                  ? 19
-                  : compact
-                  ? 22
-                  : 21,
-              height: 1.1,
-            );
+    // Arabic surah names use the tashkeel form in Amiri Quran. Its marks sit
+    // above the line, so the line height is kept generous in the style itself.
+    final TextStyle arabicTitleStyle = EquranTextStyles.surahTitleStyle(
+      color: colors.textPrimary,
+      fontSize: compactText
+          ? 20
+          : compact
+          ? 24
+          : 22,
+    );
+    final String arabicTitle = surahTitleTashkeel(
+      surah.id,
+      fallback: surah.name,
+    );
     final TextStyle? versesStyle =
         (compactText
                 ? theme.textTheme.bodySmall
@@ -94,15 +90,17 @@ class QuranCard extends StatelessWidget {
             children: <Widget>[
               Text(
                 rtlMode
-                    ? surah.name
+                    ? arabicTitle
                     : localizedSurahName(localizations, surah.id),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textDirection: rtlMode ? TextDirection.rtl : null,
-                style: (rtlMode ? arabicTitleStyle : titleStyle)?.copyWith(
-                  color: colors.textPrimary,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: rtlMode
+                    ? arabicTitleStyle
+                    : titleStyle?.copyWith(
+                        color: colors.textPrimary,
+                        fontWeight: FontWeight.w600,
+                      ),
               ),
               const SizedBox(height: 3),
               Text(
@@ -120,11 +118,11 @@ class QuranCard extends StatelessWidget {
         if (!rtlMode) ...<Widget>[
           const SizedBox(width: EquranSpacing.m),
           Text(
-            surah.name,
+            arabicTitle,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textDirection: TextDirection.rtl,
-            style: arabicTitleStyle?.copyWith(color: tokens.emText),
+            style: arabicTitleStyle.copyWith(color: tokens.emText),
           ),
         ],
       ],

@@ -110,24 +110,13 @@ class _RangeToggle extends StatelessWidget {
 }
 
 class _StatisticsToday extends StatelessWidget {
-  const _StatisticsToday({
-    required this.data,
-    required this.mastered,
-    required this.onLogSaved,
-    this.now,
-  });
+  const _StatisticsToday({required this.data, required this.mastered});
   final OverviewStats data;
   final int? mastered;
-  final VoidCallback onLogSaved;
-  final DateTime? now;
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final t = context.equranTokens;
-    final salahData = SalahSectionData.disabled(
-      todayEntry: data.todaySalahEntry,
-    );
-    final log = _SalahSection(data: salahData, onLogSaved: onLogSaved);
     return Container(
       key: const ValueKey('statistics-today'),
       padding: const EdgeInsets.fromLTRB(18, 20, 18, 18),
@@ -250,16 +239,6 @@ class _StatisticsToday extends StatelessWidget {
               ),
             ],
           ),
-          if (data.prayerTrackingEnabled) ...[
-            const SizedBox(height: 16),
-            Divider(height: 1, color: t.hair),
-            const SizedBox(height: 14),
-            _StatisticsPrayerRow(
-              entry: data.todaySalahEntry,
-              now: now,
-              onPrayerTap: (prayer) => log._openLogSheet(context, prayer),
-            ),
-          ],
         ],
       ),
     );
@@ -366,60 +345,6 @@ String _statisticsGlyphLabel(AppLocalizations l, SalahGlyphState state) =>
       SalahGlyphState.notYet => l.notYet,
     };
 
-class _StatisticsPrayerRow extends StatelessWidget {
-  const _StatisticsPrayerRow({
-    required this.entry,
-    required this.onPrayerTap,
-    this.now,
-  });
-  final SalahLogEntry entry;
-  final ValueChanged<SalahPrayer> onPrayerTap;
-  final DateTime? now;
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    final availability = _salahLogAvailabilityForNow(now: now);
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (final prayer in SalahPrayer.values)
-          Expanded(
-            child: Column(
-              children: [
-                _StatsText(
-                  _salahPrayerLabel(l, prayer),
-                  size: 11,
-                  align: TextAlign.center,
-                  weight: FontWeight.w500,
-                ),
-                const SizedBox(height: 7),
-                IconButton(
-                  key: ValueKey('statistics-log-${prayer.key}'),
-                  tooltip: '${l.log}: ${_salahPrayerLabel(l, prayer)}',
-                  onPressed: () => onPrayerTap(prayer),
-                  icon: SalahGlyph(
-                    size: 28,
-                    state: _statisticsGlyph(
-                      prayer.statusFor(entry),
-                      available: availability.isLoggable(prayer, now: now),
-                    ),
-                    semanticLabel: _statisticsGlyphLabel(
-                      l,
-                      _statisticsGlyph(
-                        prayer.statusFor(entry),
-                        available: availability.isLoggable(prayer, now: now),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-      ],
-    );
-  }
-}
-
 class _StatisticsPrayer extends StatelessWidget {
   const _StatisticsPrayer({
     required this.data,
@@ -475,88 +400,53 @@ class _StatisticsPrayer extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Summary: one ring and three figures, nothing else.
           Row(
             children: [
               SizedBox.square(
-                dimension: 92,
+                dimension: 80,
                 child: Center(
                   child: ProgressRing(
                     value: rate,
                     trackColor: t.hair2,
                     color: t.emText,
-                    size: 85,
-                    strokeWidth: 9,
+                    size: 74,
+                    strokeWidth: 8,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         DisplayNumeral(
                           '${(rate * 100).round()}%',
-                          size: 24,
+                          size: 21,
                           height: 1,
                         ),
-                        const SizedBox(height: 5),
-                        _StatsText(l.onTime, size: 10.5),
+                        const SizedBox(height: 4),
+                        _StatsText(l.onTime, size: 10),
                       ],
                     ),
                   ),
                 ),
               ),
-              const SizedBox(width: 18),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: _CountLabel(
-                            '${data.onTimeThisWeek}',
-                            l.onTimeThisWeek,
-                            size: 22,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: _CountLabel(
-                            '${data.lateThisWeek}',
-                            l.lateThisWeek,
-                            size: 22,
-                          ),
-                        ),
-                      ],
+                    _CountLabel(
+                      '${data.onTimeThisWeek}',
+                      l.onTimeThisWeek,
+                      size: 20,
                     ),
-                    const SizedBox(height: 14),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                data.bestPrayer == null
-                                    ? '—'
-                                    : _salahPrayerLabel(l, data.bestPrayer!),
-                                style: redesignDisplayStyle(
-                                  context,
-                                  size: 22,
-                                  height: 1,
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                              _StatsText(l.bestPrayer, size: 12),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: _CountLabel(
-                            '${data.fajrStreak}',
-                            l.currentFajrStreak,
-                            size: 22,
-                          ),
-                        ),
-                      ],
+                    const SizedBox(height: 8),
+                    _CountLabel(
+                      '${data.lateThisWeek}',
+                      l.lateThisWeek,
+                      size: 20,
+                    ),
+                    const SizedBox(height: 8),
+                    _StatsText(
+                      '${l.bestPrayer}: ${data.bestPrayer == null ? '—' : _salahPrayerLabel(l, data.bestPrayer!)}',
+                      size: 12,
                     ),
                   ],
                 ),
@@ -564,68 +454,22 @@ class _StatisticsPrayer extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 18),
-          Divider(height: 1, color: t.hair),
-          const SizedBox(height: 12),
+          // Today is the one thing to act on: five large tiles, one tap each.
+          _StatsText(l.today, size: 12, weight: FontWeight.w600),
+          const SizedBox(height: 8),
           Row(
             children: [
-              const SizedBox(width: 62),
-              for (final day in days)
+              for (final prayer in SalahPrayer.values)
                 Expanded(
-                  child: _StatsText(
-                    _weekdayInitials(l)[(day.weekday - 1) % 7],
-                    size: 11,
-                    align: TextAlign.center,
+                  child: _PrayerTodayTile(
+                    prayer: prayer,
+                    state: glyphFor(prayer, today),
+                    onTap: () => onPrayerTap(prayer),
                   ),
                 ),
             ],
           ),
-          const SizedBox(height: 6),
-          for (final prayer in SalahPrayer.values)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6),
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 62,
-                    child: _StatsText(_salahPrayerLabel(l, prayer)),
-                  ),
-                  for (final day in days)
-                    Expanded(
-                      child: Builder(
-                        builder: (context) {
-                          final isToday = day == today;
-                          final state = glyphFor(prayer, day);
-                          final label =
-                              '${_dateChipLabel(day, l)} · ${_salahPrayerLabel(l, prayer)} · ${_statisticsGlyphLabel(l, state)}';
-                          return Tooltip(
-                            message: label,
-                            child: isToday
-                                ? InkResponse(
-                                    onTap: () => onPrayerTap(prayer),
-                                    child: SizedBox(
-                                      height: 24,
-                                      child: Center(
-                                        child: SalahGlyph(
-                                          state: state,
-                                          semanticLabel: label,
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                : Center(
-                                    child: SalahGlyph(
-                                      state: state,
-                                      semanticLabel: label,
-                                    ),
-                                  ),
-                          );
-                        },
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           Wrap(
             spacing: 14,
             runSpacing: 8,
@@ -647,10 +491,189 @@ class _StatisticsPrayer extends StatelessWidget {
                   ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 6),
+          _PrayerWeekDisclosure(days: days, glyphFor: glyphFor),
+          const SizedBox(height: 10),
           _StatisticsFajr(data: data),
         ],
       ),
+    );
+  }
+}
+
+/// One prayer for today: a large glyph and a name. Tapping opens the log sheet.
+class _PrayerTodayTile extends StatelessWidget {
+  const _PrayerTodayTile({
+    required this.prayer,
+    required this.state,
+    required this.onTap,
+  });
+
+  final SalahPrayer prayer;
+  final SalahGlyphState state;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final t = context.equranTokens;
+    final String name = _salahPrayerLabel(l, prayer);
+    final String stateLabel = _statisticsGlyphLabel(l, state);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 3),
+      child: Material(
+        color: context.equranColors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: t.hair),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Tooltip(
+          message: '${l.log}: $name',
+          child: InkWell(
+            key: ValueKey('statistics-log-${prayer.key}'),
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 2),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SalahGlyph(size: 30, state: state, semanticLabel: stateLabel),
+                  const SizedBox(height: 8),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      name,
+                      maxLines: 1,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: t.text2,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: _StatsText(stateLabel, size: 10.5),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The last seven days as a grid, collapsed by default to keep the card short.
+class _PrayerWeekDisclosure extends StatefulWidget {
+  const _PrayerWeekDisclosure({required this.days, required this.glyphFor});
+
+  final List<DateTime> days;
+  final SalahGlyphState Function(SalahPrayer prayer, DateTime day) glyphFor;
+
+  @override
+  State<_PrayerWeekDisclosure> createState() => _PrayerWeekDisclosureState();
+}
+
+class _PrayerWeekDisclosureState extends State<_PrayerWeekDisclosure> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final t = context.equranTokens;
+    final bool reduceMotion = MediaQuery.disableAnimationsOf(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Divider(height: 1, color: t.hair),
+        InkWell(
+          key: const ValueKey('statistics-prayer-week-toggle'),
+          onTap: () => setState(() => _expanded = !_expanded),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _StatsText(
+                    l.thisWeek,
+                    size: 13.5,
+                    weight: FontWeight.w600,
+                  ),
+                ),
+                Icon(
+                  _expanded
+                      ? Icons.keyboard_arrow_up_rounded
+                      : Icons.keyboard_arrow_down_rounded,
+                  color: t.text2,
+                ),
+              ],
+            ),
+          ),
+        ),
+        AnimatedSize(
+          duration: reduceMotion
+              ? Duration.zero
+              : const Duration(milliseconds: 220),
+          curve: Curves.easeOutCubic,
+          alignment: Alignment.topCenter,
+          child: !_expanded
+              ? const SizedBox(width: double.infinity)
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      children: [
+                        const SizedBox(width: 62),
+                        for (final day in widget.days)
+                          Expanded(
+                            child: _StatsText(
+                              _weekdayInitials(l)[(day.weekday - 1) % 7],
+                              size: 11,
+                              align: TextAlign.center,
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    for (final prayer in SalahPrayer.values)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 62,
+                              child: _StatsText(_salahPrayerLabel(l, prayer)),
+                            ),
+                            for (final day in widget.days)
+                              Expanded(
+                                child: Builder(
+                                  builder: (context) {
+                                    final state = widget.glyphFor(prayer, day);
+                                    final label =
+                                        '${_dateChipLabel(day, l)} · ${_salahPrayerLabel(l, prayer)} · ${_statisticsGlyphLabel(l, state)}';
+                                    return Tooltip(
+                                      message: label,
+                                      child: Center(
+                                        child: SalahGlyph(
+                                          state: state,
+                                          semanticLabel: label,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+        ),
+      ],
     );
   }
 }

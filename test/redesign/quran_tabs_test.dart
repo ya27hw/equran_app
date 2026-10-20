@@ -8,6 +8,7 @@ import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/widgets/favourites_list.dart' show SavedQuranHeader;
 import 'package:equran/widgets/grouped_card_sliver.dart';
 import 'package:equran/widgets/juz_card.dart';
+import 'package:equran/widgets/last_read_cards.dart';
 import 'package:equran/widgets/quran_reading_hero.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -302,6 +303,70 @@ void main() {
             as ReadPage;
     expect(target.chapter, 2);
     expect(target.startVerse, 50);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('resume cards recede while swiping and settle at full size', (
+    tester,
+  ) async {
+    await SettingsDB().put('showLastRead', true);
+    await BookmarkDB().put(
+      1,
+      ReadingEntry(surah: 1, verse: 4, timestamp: DateTime(2026, 10, 4)),
+    );
+    await BookmarkDB().put(
+      2,
+      ReadingEntry(surah: 2, verse: 50, timestamp: DateTime(2026, 10, 3)),
+    );
+    await pump(tester);
+    final cardOpacities = find.descendant(
+      of: find.byType(LastReadCard),
+      matching: find.byType(Opacity),
+    );
+
+    // A short drag that snaps back, so the depth effect is seen mid-animation.
+    await tester.drag(
+      find.byKey(const Key('quran-reading-hero')).hitTestable().first,
+      const Offset(-165, 0),
+    );
+    await tester.pump(const Duration(milliseconds: 60));
+    expect(
+      tester.widgetList<Opacity>(cardOpacities).any((o) => o.opacity < 1),
+      isTrue,
+    );
+    await tester.pumpAndSettle();
+    expect(
+      tester.widgetList<Opacity>(cardOpacities).every((o) => o.opacity == 1),
+      isTrue,
+    );
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('tapping a resume pill moves to that card', (tester) async {
+    await SettingsDB().put('showLastRead', true);
+    await BookmarkDB().put(
+      1,
+      ReadingEntry(surah: 1, verse: 4, timestamp: DateTime(2026, 10, 4)),
+    );
+    await BookmarkDB().put(
+      2,
+      ReadingEntry(surah: 2, verse: 50, timestamp: DateTime(2026, 10, 3)),
+    );
+    await pump(tester);
+    expect(find.text('Ayah 4'), findsOneWidget);
+
+    // The pills are the last tappable widgets inside the carousel card.
+    await tester.tap(
+      find
+          .descendant(
+            of: find.byType(LastReadCard),
+            matching: find.byType(GestureDetector),
+          )
+          .last,
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Ayah 50'), findsOneWidget);
+    expect(find.text('Ayah 4'), findsNothing);
     await tester.pumpWidget(const SizedBox());
   });
 

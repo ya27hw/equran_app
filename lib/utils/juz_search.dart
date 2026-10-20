@@ -49,15 +49,6 @@ String arabicJuzNameWithTashkil(int juzNumber) {
   return arabicJuzNamesWithTashkil[juzNumber - 1];
 }
 
-class JuzListItem {
-  const JuzListItem.group(this.group) : entry = null;
-
-  const JuzListItem.entry(this.entry) : group = null;
-
-  final JuzGroup? group;
-  final JuzEntry? entry;
-}
-
 class JuzEntry {
   const JuzEntry({
     required this.surahId,
@@ -125,15 +116,4 @@ List<JuzGroup> buildJuzGroups(String searchQuery) {
   }
 
   return groups;
-}
-
-List<JuzListItem> buildJuzListItems(List<JuzGroup> groups) {
-  final List<JuzListItem> items = <JuzListItem>[];
-  for (final JuzGroup group in groups) {
-    items.add(JuzListItem.group(group));
-    for (final JuzEntry entry in group.entries) {
-      items.add(JuzListItem.entry(entry));
-    }
-  }
-  return items;
 }

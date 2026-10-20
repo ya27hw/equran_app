@@ -152,9 +152,10 @@ void main() {
       await pump(tester, now: DateTime.utc(2026, 10, 4, 9, 12));
       await scrollTo(tester, 'statistics-prayer');
       final card = find.byKey(const ValueKey('statistics-prayer'));
+      // The legend and today's tile both name the state.
       expect(
         find.descendant(of: card, matching: find.text('Not yet')),
-        withLocation ? findsOneWidget : findsNothing,
+        withLocation ? findsWidgets : findsNothing,
       );
       // The four designed entries are always listed.
       for (final label in ['On time', 'Late', 'Missed', 'Not logged']) {

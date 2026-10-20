@@ -740,6 +740,13 @@ class AppLocalizationsId extends AppLocalizations {
       'eQuran adalah pendamping Quran modern yang dirancang untuk membaca, mendengarkan, dan refleksi harian dengan fokus.';
 
   @override
+  String get specialThanks => 'Ucapan terima kasih khusus';
+
+  @override
+  String get specialThanksBody =>
+      'Terima kasih yang tulus kepada para kontributor ini atas sumbangsih besar mereka pada eQuran, serta masukan dan umpan balik yang berharga.';
+
+  @override
   String get supportProject => 'Dukung';
 
   @override
@@ -906,6 +913,34 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get setUpLocation => 'Siapkan lokasi';
+
+  @override
+  String get locationSetupTitle => 'Di mana Anda salat?';
+
+  @override
+  String get locationSetupSubtitle =>
+      'Pilih satu cara. Waktu salat dihitung hanya untuk tempat ini.';
+
+  @override
+  String get locationOptionCurrentDescription =>
+      'Paling cepat. Kami membaca posisi Anda sekali.';
+
+  @override
+  String get locationOptionMapDescription =>
+      'Geser peta hingga pin berada di area Anda.';
+
+  @override
+  String get locationOptionManualDescription =>
+      'Masukkan lintang dan bujur sendiri.';
+
+  @override
+  String get recommendedLabel => 'Disarankan';
+
+  @override
+  String get chooseAnotherWay => 'Pilih cara lain';
+
+  @override
+  String get confirmLocationTitle => 'Konfirmasi lokasi ini';
 
   @override
   String get chooseLocationForNextPrayer =>
@@ -4215,6 +4250,16 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get todayLegend => 'Hari Ini';
+
+  @override
+  String get newMonthLegend => 'Awal bulan Hijriah';
+
+  @override
+  String get comingUp => 'Akan datang';
+
+  @override
+  String get moonSightingHint =>
+      'Menggeser tanggal Hijriah sehari jika rukyat hilal di daerah Anda berbeda.';
 
   @override
   String get eidLegend => 'Idul Fitri';
