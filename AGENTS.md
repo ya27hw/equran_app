@@ -114,5 +114,4 @@ Incoming agents and developers must strictly follow these rules when editing the
 
 ## 📎 Related Docs
 
-*   **[docs/ui_polish_roadmap.md](docs/ui_polish_roadmap.md)** -> Handoff for the ongoing UI/UX polish work: design language, guardrails, verification workflow and the next steps. Read it before doing any UI polish task.
 *   **[tool/ui_preview/README.md](tool/ui_preview/README.md)** -> How to take screenshots of the app from a web build (used for visual checks and the README screenshots).
