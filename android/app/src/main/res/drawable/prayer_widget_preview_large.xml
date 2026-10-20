@@ -16,7 +16,7 @@
     </shape>
   </item>
 
-  <!-- Header: "Muscat, Oman" Subtitle Placeholder Capsule -->
+  <!-- Header: "City, Country" Subtitle Placeholder Capsule -->
   <item android:left="16dp" android:top="28dp" android:right="174dp" android:bottom="76dp">
     <shape android:shape="rectangle">
       <corners android:radius="3dp" />

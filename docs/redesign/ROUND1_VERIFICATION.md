@@ -37,7 +37,7 @@ The strict native run catches a **3 px bottom overflow at text scale 1.3** in th
 
 This is left unchanged because it is outside the three authorized items. The PR is a draft: native verification is not clean for the entire app. The dock and requested labels pass their checks. The later Arabic/count/fallback run records the exact existing overflow while retaining failures for other errors; four occurrences are recorded in `screenshots/round1/native-check-notes.txt`. The earlier strict English 1.3 run failed on the same baseline error. The full repository widget suite passes; it did not previously cover this real-app empty card case.
 
-Startup also logs the existing device timezone lookup failure for Asia/Muscat; the prayer fixture explicitly supplies Asia/Riyadh for Makkah. The native build emits existing plugin/UIScene adoption notices. Neither subsystem is changed.
+Startup also logs the existing device timezone lookup failure for Etc/GMT-4; the prayer fixture explicitly supplies Asia/Riyadh for Makkah. The native build emits existing plugin/UIScene adoption notices. Neither subsystem is changed.
 
 ## Intentional differences from the previews
 

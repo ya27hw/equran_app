@@ -139,16 +139,16 @@ void main() {
           const PrayerLocation(
             latitude: 23.588,
             longitude: 58.3829,
-            label: 'Muscat',
+            label: 'Sample City',
             mode: PrayerLocationMode.manual,
             countryCode: 'OM',
-            timezoneId: 'Asia/Muscat',
+            timezoneId: 'Etc/GMT-4',
           ),
         );
       } else {
         await store.clearLocation();
       }
-      // 09:12 UTC is 13:12 in Muscat: Asr, Maghrib and Isha have not begun.
+      // 09:12 UTC is 13:12 in sample city: Asr, Maghrib and Isha have not begun.
       await pump(tester, now: DateTime.utc(2026, 10, 4, 9, 12));
       await scrollTo(tester, 'statistics-prayer');
       final card = find.byKey(const ValueKey('statistics-prayer'));

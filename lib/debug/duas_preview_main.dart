@@ -44,7 +44,7 @@ Future<void> main() async {
 }
 
 DateTime duasPreviewNow() =>
-    DateTime.utc(2026, 10, 3, 14); // 18:00 Muscat, after Asr.
+    DateTime.utc(2026, 10, 3, 14); // 18:00 sample city, after Asr.
 Future<void> seedDuasPreview() async {
   await SettingsDB().clear();
   await DuaInteractionsDB().clear();
@@ -54,10 +54,10 @@ Future<void> seedDuasPreview() async {
     const PrayerLocation(
       latitude: 23.588,
       longitude: 58.3829,
-      label: 'Muscat',
+      label: 'Sample City',
       mode: PrayerLocationMode.manual,
       countryCode: 'OM',
-      timezoneId: 'Asia/Muscat',
+      timezoneId: 'Etc/GMT-4',
     ),
   );
   for (var i = 0; i < 12; i++) {

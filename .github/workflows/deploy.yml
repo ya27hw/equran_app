@@ -44,9 +44,9 @@ jobs:
 
       - name: Run tests with coverage
         # Tests build dates in local time and expect the team's zone (UTC+4,
-        # the same offset as Asia/Muscat). Pin it so the runner matches.
+        # the same offset as Etc/GMT-4). Pin it so the runner matches.
         env:
-          TZ: Asia/Muscat
+          TZ: Etc/GMT-4
         run: flutter test --coverage
 
       - name: Build debug Android artifact

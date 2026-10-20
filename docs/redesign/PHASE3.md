@@ -41,7 +41,7 @@ retain their behavior. No Prayer or Statistics redesign is included.
 - All eight `lib/l10n/app_*.arb` files and generated localizations: new labels,
   navigation/search text and real count placeholders. Existing keys reused first.
 - `lib/debug/duas_preview_main.dart`: standalone debug preview on a dedicated origin
-  with synthetic favourites/session data and a fixed Muscat clock. Not in app navigation.
+  with synthetic favourites/session data and a fixed sample city clock. Not in app navigation.
 - `test/redesign/duas_page_test.dart` and 21 `duas-*.png` goldens.
 - Three screenshot matrices below. No dependency, lockfile, model or service changes.
 
