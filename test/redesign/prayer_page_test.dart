@@ -118,7 +118,7 @@ void main() {
   testWidgets(
     'Maghrib and Isha rows are dated to today, never "Passed" before they begin',
     (tester) async {
-      // Muscat is UTC+4. 13:12, 18:30 and 02:00 local.
+      // sample city is UTC+4. 13:12, 18:30 and 02:00 local.
       for (final (now, passedRows, activeKind) in [
         (DateTime.utc(2026, 10, 4, 9, 12), 2, PrayerTimeKind.dhuhr),
         (DateTime.utc(2026, 10, 4, 14, 30), 0, PrayerTimeKind.maghrib),

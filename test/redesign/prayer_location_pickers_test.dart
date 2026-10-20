@@ -90,7 +90,7 @@ void main() {
   const PrayerLocation saved = PrayerLocation(
     latitude: 23.588,
     longitude: 58.3829,
-    label: 'Muscat',
+    label: 'Sample City',
     mode: PrayerLocationMode.manual,
   );
 

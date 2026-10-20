@@ -16,10 +16,10 @@ Future<void> seedPrayerPreview() async {
     const PrayerLocation(
       latitude: 23.588,
       longitude: 58.3829,
-      label: 'Muscat',
+      label: 'Sample City',
       mode: PrayerLocationMode.manual,
       countryCode: 'OM',
-      timezoneId: 'Asia/Muscat',
+      timezoneId: 'Etc/GMT-4',
     ),
   );
   await PrayerSettingsStore().saveSettings(

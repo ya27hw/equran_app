@@ -243,7 +243,7 @@ class PrayerLocation {
     return trimmedLabel;
   }
 
-  /// [displayLabel] cut to its first part, so "Muscat, Oman" reads "Muscat".
+  /// [displayLabel] cut to its first part, so "City, Country" reads "City".
   String get cityLabel {
     final String label = displayLabel;
     final String first = label.split(RegExp('[,،]')).first.trim();

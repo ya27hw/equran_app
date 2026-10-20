@@ -10,7 +10,7 @@ PrayerLocation _at(String label) => PrayerLocation(
 
 void main() {
   test('cityLabel keeps only the city of a "city, country" label', () {
-    expect(_at('Muscat, Oman').cityLabel, 'Muscat');
+    expect(_at('City, Country').cityLabel, 'City');
     expect(_at('Riyadh, Riyadh Province, Saudi Arabia').cityLabel, 'Riyadh');
     expect(_at('الرياض، السعودية').cityLabel, 'الرياض');
     expect(_at('Makkah').cityLabel, 'Makkah');
@@ -19,6 +19,6 @@ void main() {
   test('placeholder and coordinate labels still fall back unchanged', () {
     expect(_at('').cityLabel, 'Saved location');
     expect(_at('Current location').cityLabel, 'Saved location');
-    expect(_at(', Oman').cityLabel, ', Oman');
+    expect(_at(', Country').cityLabel, ', Country');
   });
 }

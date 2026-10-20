@@ -153,7 +153,7 @@ void main() {
         return const PrayerLocation(
           latitude: 23.588,
           longitude: 58.3829,
-          label: 'Muscat',
+          label: 'Sample City',
           mode: PrayerLocationMode.manual,
         );
       },
@@ -167,13 +167,13 @@ void main() {
     await tester.pumpAndSettle();
     // The confirm step shows the place and one clear way to save it.
     expect(find.text(l.confirmLocationTitle), findsOneWidget);
-    expect(find.text('Muscat'), findsOneWidget);
+    expect(find.text('Sample City'), findsOneWidget);
     expect(find.text('23.5880, 58.3829'), findsOneWidget);
     expect(find.byKey(const ValueKey('location-setup-save')), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('location-setup-save')));
     await tester.pumpAndSettle();
     expect(find.byType(PrayerLocationSetupPage), findsNothing);
-    expect(store.getLocation()?.label, 'Muscat');
+    expect(store.getLocation()?.label, 'Sample City');
   });
 
   testWidgets('back from confirm returns to the choices, not out of setup', (
@@ -184,7 +184,7 @@ void main() {
       picker: (context, initial) async => const PrayerLocation(
         latitude: 23.588,
         longitude: 58.3829,
-        label: 'Muscat',
+        label: 'Sample City',
         mode: PrayerLocationMode.manual,
       ),
     );
@@ -206,7 +206,7 @@ void main() {
       picker: (context, initial) async => const PrayerLocation(
         latitude: 23.588,
         longitude: 58.3829,
-        label: 'Muscat',
+        label: 'Sample City',
         mode: PrayerLocationMode.manual,
       ),
     );

@@ -15,7 +15,7 @@ The owner chose the moon arc. It reuses the static arc geometry with a crescent 
 ## Verification and captures
 
 - 390×844 viewport goldens for emerald-dark, emerald-light, AMOLED black, red-dark, text scale 1.3, Arabic RTL, and Arabic RTL at text scale 1.3. Each includes a header/hero and a scrolled list/night-times capture (21 PNGs: daylight, details and night for seven variants).
-- Production PrayerTimesPage is used by a debug-only preview with isolated Hive settings and deterministic Muscat location/time. The calculated prayer times are real, not copied preview figures.
+- Production PrayerTimesPage is used by a debug-only preview with isolated Hive settings and deterministic sample city location/time. The calculated prayer times are real, not copied preview figures.
 - Behavior checks cover week selection, Today, date picker, settings from header/hero, Qibla route, daylight endpoints, prohibited-period labels, morning without an invented start time, and moon progress across midnight, completion after Fajr, and transition at sunrise.
 - Full test suite passed: 200 tests, including 14 Prayer cases. Static analysis has zero findings. Dependency policy, localization completeness, stable localization generation and whitespace checks passed. Token tests cover all 11 palettes and 13 contrast pairs.
 - Formatting reports the pre-existing unresolved `very_good_analysis` include in excluded `third_party/foil` packages; no vendor edits are made. Application analysis has zero findings.

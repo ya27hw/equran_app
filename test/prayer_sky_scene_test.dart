@@ -7,10 +7,10 @@ import 'package:flutter_test/flutter_test.dart';
 const PrayerLocation skyTestLocation = PrayerLocation(
   latitude: 23.588,
   longitude: 58.3829,
-  label: 'Muscat',
+  label: 'Sample City',
   mode: PrayerLocationMode.manual,
   countryCode: 'OM',
-  timezoneId: 'Asia/Muscat',
+  timezoneId: 'Etc/GMT-4',
 );
 const PrayerTimeSettings skyTestSettings = PrayerTimeSettings();
 const PrayerTimesService skyTestService = PrayerTimesService();

@@ -41,10 +41,10 @@ void main() {
   const location = PrayerLocation(
     latitude: 23.588,
     longitude: 58.3829,
-    label: 'Muscat',
+    label: 'Sample City',
     mode: PrayerLocationMode.manual,
     countryCode: 'OM',
-    timezoneId: 'Asia/Muscat',
+    timezoneId: 'Etc/GMT-4',
   );
   final settings = PrayerTimeSettings.fromJson(null);
   setUpAll(() async {
@@ -108,7 +108,7 @@ void main() {
         10,
         3,
         8,
-      ); // Muscat noon, regardless of host timezone.
+      ); // sample city noon, regardless of host timezone.
       final records = [
         {
           'categoryId': '030',
