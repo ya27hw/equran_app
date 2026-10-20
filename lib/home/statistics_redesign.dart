@@ -1270,9 +1270,9 @@ class _StatisticsHifz extends StatelessWidget {
   final bool expanded;
   final VoidCallback onToggle;
   final DateTime? now;
-  void _open(BuildContext context) =>
-      Navigator.of(context)
-          .push(MaterialPageRoute<void>(builder: (_) => const HifzHomePage()));
+  void _open(BuildContext context) => Navigator.of(
+    context,
+  ).push(MaterialPageRoute<void>(builder: (_) => const HifzHomePage()));
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;

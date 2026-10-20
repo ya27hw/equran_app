@@ -186,9 +186,9 @@ class _HifzSessionPageState extends State<HifzSessionPage>
     ).map((e) => _SessionCard(entry: e, track: _Track.newAyah)).toList();
 
     // Track 2 — Sabqi (recent revision)
-    final sabqiEntries = HifzDB.getSabqiAyahs(unitId)
-        .map((e) => _SessionCard(entry: e, track: _Track.sabqi))
-        .toList();
+    final sabqiEntries = HifzDB.getSabqiAyahs(
+      unitId,
+    ).map((e) => _SessionCard(entry: e, track: _Track.sabqi)).toList();
 
     // Track 3 — Manzil (older SM-2 due)
     final manzilEntries = HifzDB.getManzilAyahs(unitId)

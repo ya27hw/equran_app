@@ -299,9 +299,9 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const ValueKey('statistics-surah-quran-18')));
       final route = observer.pushed! as MaterialPageRoute<void>;
-      final page = route.builder(
-        tester.element(find.byType(StatisticsPage)),
-      ) as ReadPage;
+      final page =
+          route.builder(tester.element(find.byType(StatisticsPage)))
+              as ReadPage;
       expect(page.chapter, 18);
       await tester.pumpWidget(const SizedBox.shrink());
       await tester.pumpAndSettle();

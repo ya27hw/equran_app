@@ -325,8 +325,9 @@ class HifzPrimaryButton extends StatelessWidget {
   Widget build(BuildContext context) => SizedBox(
     width: double.infinity,
     child: FilledButton(
-      style: readerFilledButtonStyle(context)
-          .copyWith(minimumSize: const WidgetStatePropertyAll(Size(0, 52))),
+      style: readerFilledButtonStyle(
+        context,
+      ).copyWith(minimumSize: const WidgetStatePropertyAll(Size(0, 52))),
       onPressed: onPressed,
       child: Text(label),
     ),
@@ -347,8 +348,9 @@ class HifzSecondaryButton extends StatelessWidget {
   Widget build(BuildContext context) => SizedBox(
     width: double.infinity,
     child: OutlinedButton(
-      style: readerOutlinedButtonStyle(context)
-          .copyWith(minimumSize: const WidgetStatePropertyAll(Size(0, 52))),
+      style: readerOutlinedButtonStyle(
+        context,
+      ).copyWith(minimumSize: const WidgetStatePropertyAll(Size(0, 52))),
       onPressed: onPressed,
       child: Text(label),
     ),

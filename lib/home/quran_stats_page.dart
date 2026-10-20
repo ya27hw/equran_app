@@ -257,8 +257,9 @@ class _StatisticsPageState extends State<StatisticsPage> {
                       if (Navigator.of(context).canPop())
                         IconButton44(
                           icon: Icons.arrow_back_rounded,
-                          tooltip: MaterialLocalizations.of(context)
-                              .backButtonTooltip,
+                          tooltip: MaterialLocalizations.of(
+                            context,
+                          ).backButtonTooltip,
                           onPressed: () => Navigator.of(context).pop(),
                         ),
                       const Spacer(),
@@ -1436,8 +1437,10 @@ class _SalahSection extends StatelessWidget {
           duration: const Duration(seconds: 3),
           content: Text(
             localizations.somePrayersNotYetAvailable,
-            style: Theme.of(context).textTheme.bodySmall
-                ?.copyWith(color: colors.warning, fontWeight: FontWeight.w700),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: colors.warning,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ),
       );

@@ -659,10 +659,9 @@ class _PrayerThumbCarousel extends StatelessWidget {
         final double height =
             82 +
             38 *
-                MediaQuery.textScalerOf(context)
-                    .scale(1)
-                    .clamp(1.0, 1.5)
-                    .toDouble();
+                MediaQuery.textScalerOf(
+                  context,
+                ).scale(1).clamp(1.0, 1.5).toDouble();
         if (constraints.maxWidth >= 720) {
           // Wide layouts: spread the cards across the row. A fixed 88 px card
           // in a horizontal list bunches them at the left edge.
@@ -1313,10 +1312,9 @@ class _MuslimDailyQuickActionsState extends State<_MuslimDailyQuickActions> {
         final int maxItemsOnPage = pages.isEmpty
             ? 0
             : pages.map((p) => p.length).reduce((a, b) => a > b ? a : b);
-        final double textScale = MediaQuery.textScalerOf(context)
-            .scale(1)
-            .clamp(1.0, 1.5)
-            .toDouble();
+        final double textScale = MediaQuery.textScalerOf(
+          context,
+        ).scale(1).clamp(1.0, 1.5).toDouble();
         final double pageViewHeight = maxItemsOnPage == 0
             ? 0
             : 98.0 * textScale;
@@ -2617,8 +2615,9 @@ class _ReadingPlanCard extends StatelessWidget {
             activePlan.title,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleLarge
-                ?.copyWith(fontWeight: FontWeight.w900),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 8),
           Text('$done / $total ayahs completed'),
@@ -2997,8 +2996,10 @@ class _SectionLabel extends StatelessWidget {
             label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.labelLarge
-                ?.copyWith(color: colors.primary, fontWeight: FontWeight.w800),
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              color: colors.primary,
+              fontWeight: FontWeight.w800,
+            ),
           ),
         ),
       ],

@@ -706,8 +706,9 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void _showMessage(BuildContext context, String message) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   int _dailyQuranGoalAyahs() {

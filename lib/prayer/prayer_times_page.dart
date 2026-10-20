@@ -417,8 +417,9 @@ class _PrayerTimesPageState extends State<PrayerTimesPage>
         IconButton44(
           designIcon: 'compass',
           tooltip: l.qibla,
-          onPressed: () => Navigator.of(context)
-              .push(MaterialPageRoute<void>(builder: (_) => const QiblaPage())),
+          onPressed: () => Navigator.of(
+            context,
+          ).push(MaterialPageRoute<void>(builder: (_) => const QiblaPage())),
         ),
       ],
     );

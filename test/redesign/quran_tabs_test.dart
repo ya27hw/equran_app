@@ -98,8 +98,9 @@ void main() {
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         builder: (context, child) => MediaQuery(
-          data: MediaQuery.of(context)
-              .copyWith(textScaler: TextScaler.linear(scale)),
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(scale)),
           child: child!,
         ),
         home: ColoredBox(color: colors.background, child: const MainPage()),
@@ -193,9 +194,11 @@ void main() {
     expect(find.byKey(const ValueKey('juz-header-1')), findsOneWidget);
     await tester.tap(find.byType(QuranJuzTile).first);
     await tester.pump(const Duration(milliseconds: 250));
-    final target = (observer.pushed! as MaterialPageRoute<void>).builder(
-      tester.element(find.byType(MainPage)),
-    ) as ReadPage;
+    final target =
+        (observer.pushed! as MaterialPageRoute<void>).builder(
+              tester.element(find.byType(MainPage)),
+            )
+            as ReadPage;
     expect(target.chapter, 1);
     expect(target.startVerse, 1);
     expect(target.juzMode, isTrue);
@@ -212,9 +215,11 @@ void main() {
     expect(find.text('604'), findsNothing, reason: 'built lazily');
     await tester.tap(find.text('2').first);
     await tester.pump();
-    final target = (observer.pushed! as MaterialPageRoute<void>).builder(
-      tester.element(find.byType(MainPage)),
-    ) as ReadPage;
+    final target =
+        (observer.pushed! as MaterialPageRoute<void>).builder(
+              tester.element(find.byType(MainPage)),
+            )
+            as ReadPage;
     expect(target.chapter, 2);
     expect(target.startVerse, 1);
     await tester.pumpWidget(const SizedBox());
@@ -228,9 +233,11 @@ void main() {
     expect(find.text('Begin with Quran'), findsOneWidget);
     expect(find.text('Start with Al Fatiha'), findsOneWidget);
     await tester.tap(find.byKey(const Key('quran-reading-hero')));
-    final target = (observer.pushed! as MaterialPageRoute<void>).builder(
-      tester.element(find.byType(MainPage)),
-    ) as ReadPage;
+    final target =
+        (observer.pushed! as MaterialPageRoute<void>).builder(
+              tester.element(find.byType(MainPage)),
+            )
+            as ReadPage;
     expect(target.chapter, 1);
     expect(target.startVerse, 1);
     await tester.pumpWidget(const SizedBox());
@@ -258,9 +265,11 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Ayah 50'), findsOneWidget);
     await tester.tap(find.byKey(const Key('quran-reading-hero')).hitTestable());
-    final target = (observer.pushed! as MaterialPageRoute<void>).builder(
-      tester.element(find.byType(MainPage)),
-    ) as ReadPage;
+    final target =
+        (observer.pushed! as MaterialPageRoute<void>).builder(
+              tester.element(find.byType(MainPage)),
+            )
+            as ReadPage;
     expect(target.chapter, 2);
     expect(target.startVerse, 50);
     await tester.pumpWidget(const SizedBox());

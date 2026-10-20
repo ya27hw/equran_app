@@ -192,9 +192,9 @@ class _AsmaNamesContent extends StatelessWidget {
                 ? 3
                 : 2;
             // Cards grow with the text size so the meaning never clips.
-            final double textScale = MediaQuery.textScalerOf(context)
-                .scale(1)
-                .clamp(1.0, 2.0);
+            final double textScale = MediaQuery.textScalerOf(
+              context,
+            ).scale(1).clamp(1.0, 2.0);
             final double cardHeight = 176 * textScale;
 
             return CustomScrollView(
