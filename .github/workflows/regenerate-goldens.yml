@@ -28,6 +28,9 @@ jobs:
 
       - name: Regenerate goldens
         # Tests that fail for other reasons still write their goldens.
+        # Same zone as the quality job, so the images match its rendering.
+        env:
+          TZ: Asia/Muscat
         run: flutter test --update-goldens || true
 
       - name: Pack goldens

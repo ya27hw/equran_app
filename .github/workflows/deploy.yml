@@ -43,6 +43,10 @@ jobs:
         run: flutter analyze --fatal-infos
 
       - name: Run tests with coverage
+        # Tests build dates in local time and expect the team's zone (UTC+4,
+        # the same offset as Asia/Muscat). Pin it so the runner matches.
+        env:
+          TZ: Asia/Muscat
         run: flutter test --coverage
 
       - name: Build debug Android artifact
