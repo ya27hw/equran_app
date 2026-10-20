@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import 'gallery_test_support.dart' show loadGalleryFonts;
 
 /// Asma ul-Husna on the redesign system. There was no design preview; the page
@@ -19,6 +20,13 @@ void main() {
     await (FontLoader('NotoNaskhArabic')..addFont(
           rootBundle.load(
             'assets/media/fonts/noto-naskh-arabic/NotoNaskhArabic.ttf',
+          ),
+        ))
+        .load();
+    // The 99 names and hero use AmiriQuran; without it they render as tofu.
+    await (FontLoader('AmiriQuran')..addFont(
+          rootBundle.load(
+            'assets/media/fonts/amiri-quran/AmiriQuran-Regular.ttf',
           ),
         ))
         .load();

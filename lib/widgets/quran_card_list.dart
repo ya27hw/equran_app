@@ -1,11 +1,25 @@
 import 'package:dynamic_height_grid_view/dynamic_height_grid_view.dart';
 import 'package:equran/backend/surah_db.dart';
 import 'package:equran/backend/surah_model.dart';
+import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/widgets/grouped_card_sliver.dart';
 import 'package:equran/widgets/quran_card.dart';
 import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:quran/quran.dart' as quran;
+
+/// Widest the Quran tab's header and lists (surahs, juz, pages) may grow before
+/// they are centred on a wide window.
+const double quranTabMaxWidth = 820;
+
+/// Side inset that centres Quran tab content within [quranTabMaxWidth] and
+/// never drops below the phone page padding.
+double quranTabSideInset(double viewportWidth) {
+  final double centred = (viewportWidth - quranTabMaxWidth) / 2;
+  return centred > EquranSpacing.pagePadding
+      ? centred
+      : EquranSpacing.pagePadding;
+}
 
 class QuranCardList extends StatefulWidget {
   final String searchQuery;
@@ -89,31 +103,36 @@ class _QuranCardListState extends State<QuranCardList>
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final double width = constraints.maxWidth;
-        final bool isWebLike = width >= 1200;
-        final int columns = isWebLike ? 3 : (width >= 700 ? 2 : 1);
-        final bool hasHeader = widget.header != null;
+        // The insets centre the header and list within the content cap, while
+        // the scrollbar still runs along the window edge.
+        final double sideInset = quranTabSideInset(constraints.maxWidth);
+        final double contentWidth = constraints.maxWidth - sideInset * 2;
+        final int columns = contentWidth >= 700 ? 2 : 1;
 
-        Widget childList;
-        if (columns == 1) {
-          childList = Scrollbar(
-            key: ValueKey<bool>(widget.ascending),
+        // No cross-fade: while both lists are mounted they would share one
+        // PrimaryScrollController, which Flutter rejects in debug builds.
+        return Scrollbar(
+          key: ValueKey<bool>(widget.ascending),
+          controller: scrollController,
+          thumbVisibility: true,
+          interactive: true,
+          child: CustomScrollView(
             controller: scrollController,
-            thumbVisibility: true,
-            interactive: true,
-            child: CustomScrollView(
-              controller: scrollController,
-              physics: const BouncingScrollPhysics(),
-              slivers: <Widget>[
-                if (hasHeader)
-                  SliverToBoxAdapter(
+            physics: const BouncingScrollPhysics(),
+            slivers: <Widget>[
+              if (widget.header != null)
+                SliverPadding(
+                  padding: EdgeInsets.symmetric(horizontal: sideInset),
+                  sliver: SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 8),
                       child: widget.header!,
                     ),
                   ),
+                ),
+              if (columns == 1)
                 SliverPadding(
-                  padding: const EdgeInsets.only(bottom: 30),
+                  padding: EdgeInsets.fromLTRB(sideInset, 0, sideInset, 30),
                   sliver: GroupedCardSliver(
                     itemCount: data.length,
                     itemBuilder: (BuildContext context, int index) {
@@ -125,29 +144,10 @@ class _QuranCardListState extends State<QuranCardList>
                       );
                     },
                   ),
-                ),
-              ],
-            ),
-          );
-        } else {
-          childList = Scrollbar(
-            key: ValueKey<bool>(widget.ascending),
-            controller: scrollController,
-            thumbVisibility: true,
-            interactive: true,
-            child: CustomScrollView(
-              controller: scrollController,
-              physics: const BouncingScrollPhysics(),
-              slivers: <Widget>[
-                if (widget.header != null)
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: widget.header!,
-                    ),
-                  ),
+                )
+              else
                 SliverPadding(
-                  padding: const EdgeInsets.only(bottom: 16),
+                  padding: EdgeInsets.fromLTRB(sideInset, 0, sideInset, 16),
                   sliver: SliverDynamicHeightGridView(
                     itemCount: data.length,
                     crossAxisCount: columns,
@@ -162,14 +162,9 @@ class _QuranCardListState extends State<QuranCardList>
                     },
                   ),
                 ),
-              ],
-            ),
-          );
-        }
-
-        // No cross-fade: while both lists are mounted they would share one
-        // PrimaryScrollController, which Flutter rejects in debug builds.
-        return childList;
+            ],
+          ),
+        );
       },
     );
   }

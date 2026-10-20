@@ -177,7 +177,7 @@ class _DuasContent extends StatelessWidget {
                   Text(l.duas, style: duaDisplayStyle(context)),
                   const SizedBox(height: 8),
                   Text(
-                    '${l.hisnAlMuslim} · ${l.duasCount(total)}, ${l.availableOffline.toLowerCase()}',
+                    '${l.hisnAlMuslim} · ${l.duasCount(total)}',
                     style: TextStyle(fontSize: 14, color: tokens.muted),
                   ),
                   const SizedBox(height: 20),

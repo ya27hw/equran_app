@@ -1,6 +1,7 @@
 import 'package:equran/utils/text_direction.dart';
 import 'package:equran/zakat/zakat_page.dart';
 import 'package:equran/widgets/common/equran_asset_image.dart';
+
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -655,18 +656,44 @@ class _PrayerThumbCarousel extends StatelessWidget {
         prayerSummary.currentPeriod?.highlightedKind;
     return LayoutBuilder(
       builder: (context, constraints) {
+        final double height =
+            82 +
+            38 *
+                MediaQuery.textScalerOf(
+                  context,
+                ).scale(1).clamp(1.0, 1.5).toDouble();
+        if (constraints.maxWidth >= 720) {
+          // Wide layouts: spread the cards across the row. A fixed 88 px card
+          // in a horizontal list bunches them at the left edge.
+          return SizedBox(
+            height: height,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                for (
+                  int index = 0;
+                  index < day.entries.length;
+                  index++
+                ) ...<Widget>[
+                  if (index > 0) const SizedBox(width: 10),
+                  Expanded(
+                    child: PrayerTimeThumbCard(
+                      entry: day.entries[index],
+                      use24HourFormat: day.settings.use24HourFormat,
+                      isActive: day.entries[index].kind == activeKind,
+                      onTap: onOpenPrayerTimes,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          );
+        }
         // Let the strip run to the screen edges instead of clipping at the
-        // page margin, unless the dashboard is capped on a wide layout.
-        final double bleed = constraints.maxWidth >= 1000
-            ? 0
-            : EquranSpacing.pagePadding;
+        // page margin on narrow phones.
+        final double bleed = EquranSpacing.pagePadding;
         return SizedBox(
-          height:
-              82 +
-              38 *
-                  MediaQuery.textScalerOf(
-                    context,
-                  ).scale(1).clamp(1.0, 1.5).toDouble(),
+          height: height,
           child: OverflowBox(
             minWidth: constraints.maxWidth + bleed * 2,
             maxWidth: constraints.maxWidth + bleed * 2,
@@ -1982,10 +2009,18 @@ class _JourneyPreviewCard extends StatelessWidget {
             strokeWidth: 8,
             trackColor: tokens.hair2,
             color: tokens.filled,
-            child: DisplayNumeral(
-              '$progressPercent%',
-              size: 21,
-              color: colors.textPrimary,
+            // Keep the percentage inside the clear area of the ring (92 px
+            // ring, 8 px stroke on each side); scale down rather than spill.
+            child: SizedBox.square(
+              dimension: 92 - 2 * 8,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: DisplayNumeral(
+                  '$progressPercent%',
+                  size: 21,
+                  color: colors.textPrimary,
+                ),
+              ),
             ),
           ),
           const SizedBox(width: 18),

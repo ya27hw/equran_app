@@ -1,6 +1,8 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
+
 import 'appearance_settings_page.dart';
 import 'navigation_settings_page.dart';
+
 import 'package:equran/backend/library.dart'
     show
         BookmarkDB,
@@ -39,6 +41,15 @@ import 'package:equran/widgets/reader_sheet_chrome.dart';
 import 'package:equran/main.dart' show MyApp;
 import 'package:quran/quran.dart' show Translation, isTranslationLoaded;
 
+/// Side inset that holds the settings rows to a 760 px column on wide windows.
+/// Zero at phone and tablet widths.
+double _settingsSideInset(double windowWidth) {
+  const double maxContentWidth = 760;
+  return windowWidth > maxContentWidth
+      ? (windowWidth - maxContentWidth) / 2
+      : 0;
+}
+
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
@@ -67,15 +78,20 @@ class _SettingsPageState extends State<SettingsPage> {
     );
     final bool showTranslationControls = cardViewEnabled && translationEnabled;
     final localizations = AppLocalizations.of(context)!;
+    // Keep the rows to a readable column on wide windows. The inset goes in
+    // the list padding so the wheel still scrolls over the gutters.
+    final double sideInset = _settingsSideInset(
+      MediaQuery.sizeOf(context).width,
+    );
 
     return RedesignSubpage(
       title: localizations.settings,
       child: ListView(
         physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(
-          EquranSpacing.pagePadding,
+        padding: EdgeInsets.fromLTRB(
+          EquranSpacing.pagePadding + sideInset,
           4,
-          EquranSpacing.pagePadding,
+          EquranSpacing.pagePadding + sideInset,
           32,
         ),
         children: <Widget>[

@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:equran/backend/library.dart';
 import 'package:equran/duas/hisn_category_translations.dart';
 import 'package:equran/home/read.dart';
+import 'package:equran/home/settings_dialogs.dart';
 import 'package:equran/hifz/hifz.dart';
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/prayer/prayer_models.dart' as prayer_models;
@@ -22,6 +23,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:quran/quran.dart' as quran;
 import 'package:equran/theme/inter_optical_size.dart';
+import 'package:equran/widgets/reader_sheet_chrome.dart';
 
 part 'statistics_redesign.dart';
 
@@ -178,6 +180,17 @@ class _StatisticsPageState extends State<StatisticsPage> {
     });
   }
 
+  /// Same dialog and storage key as the Settings tile. The settings box
+  /// listener refreshes this page and the dashboard after the save.
+  Future<void> _editDailyGoal(BuildContext context) async {
+    final int? value = await showReaderDialog<int>(
+      context: context,
+      builder: (dialogContext) => DailyGoalDialog(initialGoal: _dailyGoal()),
+    );
+    if (value == null || !mounted) return;
+    await SettingsDB().put('dailyQuranGoalAyahs', value);
+  }
+
   void _openSurah(int surah) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
@@ -235,20 +248,29 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 // No title or greeting band above the content. A pushed route
                 // keeps only its back button, because the stats page draws
                 // no app bar of its own.
-                if (Navigator.of(context).canPop())
-                  _PageContentSliver(
-                    topPadding: 8,
-                    child: Align(
-                      alignment: AlignmentDirectional.centerStart,
-                      child: IconButton44(
-                        icon: Icons.arrow_back_rounded,
-                        tooltip: MaterialLocalizations.of(
-                          context,
-                        ).backButtonTooltip,
-                        onPressed: () => Navigator.of(context).pop(),
+                // The top row holds the back button (when pushed) and the
+                // daily goal setter, so the goal is one tap away.
+                _PageContentSliver(
+                  topPadding: 8,
+                  child: Row(
+                    children: <Widget>[
+                      if (Navigator.of(context).canPop())
+                        IconButton44(
+                          icon: Icons.arrow_back_rounded,
+                          tooltip: MaterialLocalizations.of(
+                            context,
+                          ).backButtonTooltip,
+                          onPressed: () => Navigator.of(context).pop(),
+                        ),
+                      const Spacer(),
+                      IconButton44(
+                        icon: Icons.settings_rounded,
+                        tooltip: l.dailyQuranGoal,
+                        onPressed: () => _editDailyGoal(context),
                       ),
-                    ),
+                    ],
                   ),
+                ),
                 _PageContentSliver(
                   topPadding: 12,
                   child: _RangeToggle(rangeListenable: _rangeNotifier),
@@ -1379,30 +1401,29 @@ class _SalahSection extends StatelessWidget {
   final VoidCallback onLogSaved;
   final DateTime? now;
 
-  Future<void> _openLogSheet(
+  /// Opens the sheet for one prayer only. Tapping a status saves that prayer
+  /// alone; the other four entries are kept as they are in storage.
+  Future<void> _openPrayerSheet(
     BuildContext context,
-    SalahPrayer initialPrayer,
+    SalahPrayer prayer,
   ) async {
     final AppLocalizations localizations = AppLocalizations.of(context)!;
+    final String dateKey = data.todayEntry.date;
     final _SalahLogSheetResult? result =
         await showModalBottomSheet<_SalahLogSheetResult>(
           context: context,
-          isScrollControlled: true,
           useSafeArea: true,
           backgroundColor: Colors.transparent,
-          builder: (sheetContext) => _SalahLogSheet(
-            initialEntry: data.todayEntry,
-            initialPrayer: initialPrayer,
+          builder: (sheetContext) => _SalahPrayerSheet(
+            prayer: prayer,
+            dateKey: dateKey,
+            initialStatus: prayer.statusFor(data.todayEntry),
             availability: _salahLogAvailabilityForNow(),
-            onSave: (entry) async {
-              final _SanitizedSalahLog sanitized = _sanitizeSalahLogEntry(
-                entry,
-                availability: _salahLogAvailabilityForNow(),
-              );
-              await SalahLogDB().saveEntry(sanitized.entry);
-              onLogSaved();
-              return sanitized.removedUnavailableStatuses;
-            },
+            onSelected: (status) => _savePrayerStatus(
+              prayer: prayer,
+              status: status,
+              dateKey: dateKey,
+            ),
           ),
         );
     if (result == null || !context.mounted) return;
@@ -1446,79 +1467,64 @@ class _SalahSection extends StatelessWidget {
     );
   }
 
+  /// Writes one prayer's status. The entry is read fresh from storage so a
+  /// save never overwrites the other prayers with stale values.
+  Future<_SalahLogSheetResult> _savePrayerStatus({
+    required SalahPrayer prayer,
+    required SalahStatus status,
+    required String dateKey,
+  }) async {
+    final SalahLogEntry current =
+        await SalahLogDB().getEntry(dateKey) ?? SalahLogEntry(date: dateKey);
+    final _SanitizedSalahLog sanitized = _sanitizeSalahLogEntry(
+      prayer.updateEntry(current, status),
+      availability: _salahLogAvailabilityForNow(),
+    );
+    await SalahLogDB().saveEntry(sanitized.entry);
+    onLogSaved();
+    return _SalahLogSheetResult(
+      removedUnavailableStatuses: sanitized.removedUnavailableStatuses,
+    );
+  }
+
   @override
   Widget build(BuildContext context) => _StatisticsPrayer(
     data: data,
     now: now,
-    onPrayerTap: (prayer) => _openLogSheet(context, prayer),
+    onPrayerTap: (prayer) => _openPrayerSheet(context, prayer),
   );
 }
 
-class _SalahLogSheet extends StatefulWidget {
-  const _SalahLogSheet({
-    required this.initialEntry,
-    required this.initialPrayer,
+/// A single prayer's status choice for today. Choosing a status saves it and
+/// closes the sheet; the other prayers are not shown or changed here.
+class _SalahPrayerSheet extends StatefulWidget {
+  const _SalahPrayerSheet({
+    required this.prayer,
+    required this.dateKey,
+    required this.initialStatus,
     required this.availability,
-    required this.onSave,
+    required this.onSelected,
   });
 
-  final SalahLogEntry initialEntry;
-  final SalahPrayer initialPrayer;
+  final SalahPrayer prayer;
+  final String dateKey;
+  final SalahStatus initialStatus;
   final _SalahLogAvailability availability;
-  final Future<bool> Function(SalahLogEntry entry) onSave;
+  final Future<_SalahLogSheetResult> Function(SalahStatus status) onSelected;
 
   @override
-  State<_SalahLogSheet> createState() => _SalahLogSheetState();
+  State<_SalahPrayerSheet> createState() => _SalahPrayerSheetState();
 }
 
-class _SalahLogSheetState extends State<_SalahLogSheet> {
-  late final ScrollController _scrollController;
-  late final Map<SalahPrayer, SalahStatus> _statuses;
+class _SalahPrayerSheetState extends State<_SalahPrayerSheet> {
   bool _saving = false;
 
-  @override
-  void initState() {
-    super.initState();
-    _scrollController = ScrollController();
-    _statuses = <SalahPrayer, SalahStatus>{
-      for (final SalahPrayer prayer in SalahPrayer.values)
-        prayer: prayer.statusFor(widget.initialEntry),
-    };
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!_scrollController.hasClients) return;
-      _scrollController.animateTo(
-        widget.initialPrayer.index * 68,
-        duration: MediaQuery.disableAnimationsOf(context)
-            ? Duration.zero
-            : const Duration(milliseconds: 250),
-        curve: Curves.easeOutCubic,
-      );
-    });
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _save() async {
+  Future<void> _select(SalahStatus status) async {
     if (_saving) return;
     setState(() => _saving = true);
-    SalahLogEntry entry = SalahLogEntry(date: widget.initialEntry.date);
-    for (final SalahPrayer prayer in SalahPrayer.values) {
-      entry = prayer.updateEntry(
-        entry,
-        _statuses[prayer] ?? SalahStatus.unlogged,
-      );
-    }
-    final bool removedUnavailableStatuses = await widget.onSave(entry);
+    final _SalahLogSheetResult result = await widget.onSelected(status);
     if (!mounted) return;
-    Navigator.of(context).pop(
-      _SalahLogSheetResult(
-        removedUnavailableStatuses: removedUnavailableStatuses,
-      ),
-    );
+    Navigator.of(context).pop(result);
   }
 
   @override
@@ -1526,203 +1532,119 @@ class _SalahLogSheetState extends State<_SalahLogSheet> {
     final ThemeData theme = Theme.of(context);
     final AppLocalizations localizations = AppLocalizations.of(context)!;
     final EquranColors colors = context.equranColors;
-    final BorderRadius radius = const BorderRadius.vertical(
-      top: Radius.circular(AppRadii.xl),
+    final bool loggable = widget.availability.isLoggable(widget.prayer);
+    final bool hasSavedStatus = widget.initialStatus != SalahStatus.unlogged;
+    final String? unlockLabel = widget.availability.unlockLabelFor(
+      widget.prayer,
     );
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
-      child: Align(
-        alignment: Alignment.bottomCenter,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.sizeOf(context).height * 0.85,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(AppRadii.xl),
           ),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: colors.surface,
-              borderRadius: radius,
-            ),
-            child: SafeArea(
-              top: false,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  const SizedBox(height: 10),
-                  DecoratedBox(
+        ),
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Center(
+                  child: DecoratedBox(
                     decoration: BoxDecoration(
                       color: colors.surfaceAlt,
                       borderRadius: BorderRadius.circular(AppRadii.pill),
                     ),
                     child: const SizedBox(width: 32, height: 4),
                   ),
-                  const SizedBox(height: 20),
-                  Text(
-                    localizations.todaysPrayers,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: colors.textPrimary,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    _dateChipLabel(
-                      DateTime.parse(widget.initialEntry.date),
-                      localizations,
-                    ),
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colors.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  Flexible(
-                    child: ListView.separated(
-                      controller: _scrollController,
-                      shrinkWrap: true,
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      itemCount: SalahPrayer.values.length,
-                      separatorBuilder: (context, index) => Divider(
-                        color: colors.divider,
-                        height: 1,
-                        thickness: 0.5,
-                      ),
-                      itemBuilder: (context, index) {
-                        final SalahPrayer prayer = SalahPrayer.values[index];
-                        return _SalahLogPrayerRow(
-                          prayer: prayer,
-                          selectedStatus:
-                              _statuses[prayer] ?? SalahStatus.unlogged,
-                          highlighted: prayer == widget.initialPrayer,
-                          isLoggable: widget.availability.isLoggable(prayer),
-                          unlockTimeLabel: widget.availability.unlockLabelFor(
-                            prayer,
-                          ),
-                          onSelected: (status) {
-                            setState(() => _statuses[prayer] = status);
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-                    child: _PrimaryPillButton(
-                      label: _saving
-                          ? localizations.saving
-                          : localizations.save,
-                      onPressed: _save,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SalahLogPrayerRow extends StatelessWidget {
-  const _SalahLogPrayerRow({
-    required this.prayer,
-    required this.selectedStatus,
-    required this.highlighted,
-    required this.isLoggable,
-    required this.unlockTimeLabel,
-    required this.onSelected,
-  });
-
-  final SalahPrayer prayer;
-  final SalahStatus selectedStatus;
-  final bool highlighted;
-  final bool isLoggable;
-  final String? unlockTimeLabel;
-  final ValueChanged<SalahStatus> onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final EquranColors colors = context.equranColors;
-    final bool hasSavedStatus = selectedStatus != SalahStatus.unlogged;
-    final bool locked = !isLoggable && !hasSavedStatus;
-    final bool readOnly = !isLoggable && hasSavedStatus;
-    return AnimatedContainer(
-      duration: MediaQuery.disableAnimationsOf(context)
-          ? Duration.zero
-          : const Duration(milliseconds: 250),
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      decoration: BoxDecoration(
-        color: highlighted ? colors.mint.withAlpha(128) : Colors.transparent,
-        borderRadius: BorderRadius.circular(AppRadii.medium),
-      ),
-      child: Row(
-        children: <Widget>[
-          SizedBox(
-            width: 96,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
+                ),
+                const SizedBox(height: 18),
                 Text(
-                  _salahPrayerLabel(localizations, prayer),
-                  style: theme.textTheme.titleSmall?.copyWith(
+                  _salahPrayerLabel(localizations, widget.prayer),
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.titleMedium?.copyWith(
                     color: colors.textPrimary,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
-                if (locked && unlockTimeLabel != null) ...<Widget>[
-                  const SizedBox(height: 3),
-                  Text(
-                    localizations.availableAfter(unlockTimeLabel!),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: colors.textMuted,
-                      fontStyle: FontStyle.italic,
-                      height: 1.15,
+                const SizedBox(height: 4),
+                Text(
+                  _dateChipLabel(DateTime.parse(widget.dateKey), localizations),
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                if (!loggable)
+                  Column(
+                    children: <Widget>[
+                      if (unlockLabel != null)
+                        Text(
+                          localizations.availableAfter(unlockLabel),
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colors.textMuted,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      if (hasSavedStatus) ...<Widget>[
+                        const SizedBox(height: 12),
+                        Center(
+                          child: _SalahReadOnlyStatusChip(
+                            status: widget.initialStatus,
+                          ),
+                        ),
+                      ],
+                    ],
+                  )
+                else ...<Widget>[
+                  IgnorePointer(
+                    ignoring: _saving,
+                    child: Row(
+                      children: <Widget>[
+                        for (final SalahStatus status in const <SalahStatus>[
+                          SalahStatus.onTime,
+                          SalahStatus.late,
+                          SalahStatus.notPrayed,
+                        ]) ...<Widget>[
+                          if (status != SalahStatus.onTime)
+                            const SizedBox(width: 8),
+                          Expanded(
+                            child: _SalahStatusButton(
+                              status: status,
+                              selected: widget.initialStatus == status,
+                              onTap: () => _select(status),
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                   ),
+                  if (hasSavedStatus)
+                    Align(
+                      alignment: AlignmentDirectional.center,
+                      child: TextButton(
+                        onPressed: _saving
+                            ? null
+                            : () => _select(SalahStatus.unlogged),
+                        style: TextButton.styleFrom(
+                          foregroundColor: context.equranTokens.muted,
+                          textStyle: theme.textTheme.bodySmall,
+                        ),
+                        child: Text(localizations.clear),
+                      ),
+                    ),
                 ],
               ],
             ),
           ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: readOnly
-                ? Align(
-                    alignment: AlignmentDirectional.centerEnd,
-                    child: _SalahReadOnlyStatusChip(status: selectedStatus),
-                  )
-                : IgnorePointer(
-                    ignoring: locked,
-                    child: Opacity(
-                      opacity: locked ? 0.35 : 1,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          for (final SalahStatus status in const <SalahStatus>[
-                            SalahStatus.onTime,
-                            SalahStatus.late,
-                            SalahStatus.notPrayed,
-                          ]) ...<Widget>[
-                            if (status != SalahStatus.onTime)
-                              const SizedBox(width: 6),
-                            Flexible(
-                              child: _SalahStatusButton(
-                                status: status,
-                                selected: selectedStatus == status,
-                                onTap: () => onSelected(status),
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ),
-          ),
-        ],
+        ),
       ),
     );
   }

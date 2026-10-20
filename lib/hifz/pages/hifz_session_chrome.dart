@@ -224,40 +224,91 @@ class HifzToggleButton extends StatelessWidget {
     required this.active,
     required this.onTap,
     required this.tooltip,
+    this.enabled = true,
   });
   final IconData icon;
   final bool active;
   final VoidCallback onTap;
   final String tooltip;
 
+  /// When false the button is dimmed and ignores taps.
+  final bool enabled;
+
   @override
   Widget build(BuildContext context) {
     final EquranTokens tokens = context.equranTokens;
+    final Widget button = Container(
+      width: 44,
+      height: 44,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: active ? tokens.emWash : context.equranColors.surface,
+        border: Border.all(color: active ? tokens.hair2 : tokens.hair),
+        shape: BoxShape.circle,
+      ),
+      child: Icon(icon, size: 21, color: active ? tokens.emText : tokens.text2),
+    );
     return Semantics(
       button: true,
+      enabled: enabled,
       toggled: active,
       label: tooltip,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: onTap,
-        child: Container(
-          width: 44,
-          height: 44,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: active ? tokens.emWash : context.equranColors.surface,
-            border: Border.all(color: active ? tokens.hair2 : tokens.hair),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            icon,
-            size: 21,
-            color: active ? tokens.emText : tokens.text2,
-          ),
-        ),
+        onTap: enabled ? onTap : null,
+        child: enabled ? button : Opacity(opacity: 0.35, child: button),
       ),
     );
   }
+}
+
+/// Small A-/A+ pair that resizes the translation text. Shares the stored
+/// translation size with Settings and the reader.
+class HifzTextSizeControls extends StatelessWidget {
+  const HifzTextSizeControls({
+    super.key,
+    required this.decreaseTooltip,
+    required this.increaseTooltip,
+    required this.onDecrease,
+    required this.onIncrease,
+    required this.canDecrease,
+    required this.canIncrease,
+  });
+  final String decreaseTooltip;
+  final String increaseTooltip;
+  final VoidCallback onDecrease;
+  final VoidCallback onIncrease;
+  final bool canDecrease;
+  final bool canIncrease;
+
+  @override
+  Widget build(BuildContext context) => Row(
+    mainAxisSize: MainAxisSize.min,
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: <Widget>[
+      Tooltip(
+        message: decreaseTooltip,
+        child: HifzToggleButton(
+          icon: Icons.text_decrease,
+          tooltip: decreaseTooltip,
+          active: false,
+          enabled: canDecrease,
+          onTap: onDecrease,
+        ),
+      ),
+      const SizedBox(width: 14),
+      Tooltip(
+        message: increaseTooltip,
+        child: HifzToggleButton(
+          icon: Icons.text_increase,
+          tooltip: increaseTooltip,
+          active: false,
+          enabled: canIncrease,
+          onTap: onIncrease,
+        ),
+      ),
+    ],
+  );
 }
 
 /// Primary action under the card ("I'm ready"): filled, 52 px.
@@ -401,8 +452,15 @@ class HifzActionBar extends StatelessWidget {
 
 /// The translation shown under the ayah when enabled.
 class HifzTranslationPanel extends StatelessWidget {
-  const HifzTranslationPanel({super.key, required this.text});
+  const HifzTranslationPanel({
+    super.key,
+    required this.text,
+    required this.fontSize,
+  });
   final String text;
+
+  /// The stored translation text size (`fontSizeTranslation`).
+  final double fontSize;
 
   @override
   Widget build(BuildContext context) => Container(
@@ -417,11 +475,20 @@ class HifzTranslationPanel extends StatelessWidget {
       text,
       textAlign: TextAlign.center,
       style: TextStyle(
-        fontSize: 14.5,
-        fontVariations: const [FontVariation('opsz', 14.5)],
+        fontSize: fontSize,
+        fontVariations: [FontVariation('opsz', fontSize)],
         height: 1.5,
         color: context.equranTokens.text2,
       ),
     ),
   );
+}
+
+/// Side inset that keeps session content to a readable column on a wide
+/// window. Zero at phone and tablet widths, so the phone layout is unchanged.
+double hifzSessionSideInset(double windowWidth) {
+  const double maxContentWidth = 760;
+  return windowWidth > maxContentWidth
+      ? (windowWidth - maxContentWidth) / 2
+      : 0;
 }

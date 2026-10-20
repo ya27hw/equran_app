@@ -6,6 +6,7 @@ import 'package:equran/utils/quran_display.dart';
 import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/widgets/grouped_card_sliver.dart';
+import 'package:equran/widgets/quran_card_list.dart' show quranTabSideInset;
 import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 
 import 'juz_card.dart';
@@ -58,9 +59,8 @@ class _JuzCardListState extends State<JuzCardList>
 
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        // The grouped card keeps a readable width on tablets and desktops.
-        final double width = constraints.maxWidth;
-        final double sideInset = width > 760 ? (width - 760) / 2 : 0;
+        // Centres the juz content within the Quran tab's width cap.
+        final double sideInset = quranTabSideInset(constraints.maxWidth);
         return Scrollbar(
           key: ValueKey<bool>(widget.ascending),
           controller: scrollController,

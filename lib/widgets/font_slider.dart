@@ -1,7 +1,6 @@
 import 'package:equran/backend/library.dart' show SettingsDB;
 import 'package:equran/backend/qpc_v4_font_service.dart';
 import 'package:equran/theme/equran_text_styles.dart';
-import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/widgets/settings_sheet_chrome.dart';
 import 'package:equran/utils/number_formatting.dart';
 import 'package:flutter/material.dart';
@@ -10,8 +9,12 @@ import 'package:quran/quran.dart' as quran;
 
 const double _minArabicFontSize = 25;
 const double _maxArabicFontSize = 45;
-const double _minTranslationFontSize = 10;
-const double _maxTranslationFontSize = 25;
+
+/// Translation text size shared with the reader card and the hifz session.
+/// Stored under `fontSizeTranslation`; the backup check allows 10 to 30.
+const double kMinTranslationFontSize = 10;
+const double kMaxTranslationFontSize = 25;
+const double kDefaultTranslationFontSize = 12;
 
 class FontSlider extends StatefulWidget {
   const FontSlider({super.key, required this.showTranslationControls});
@@ -41,9 +44,9 @@ class _FontSliderState extends State<FontSlider> {
     );
     _normalizeSavedFontSize(
       key: 'fontSizeTranslation',
-      defaultValue: 12,
-      min: _minTranslationFontSize,
-      max: _maxTranslationFontSize,
+      defaultValue: kDefaultTranslationFontSize,
+      min: kMinTranslationFontSize,
+      max: kMaxTranslationFontSize,
     );
   }
 
@@ -57,9 +60,9 @@ class _FontSliderState extends State<FontSlider> {
     );
     double fontSizeTranslation = _savedFontSize(
       key: 'fontSizeTranslation',
-      defaultValue: 12,
-      min: _minTranslationFontSize,
-      max: _maxTranslationFontSize,
+      defaultValue: kDefaultTranslationFontSize,
+      min: kMinTranslationFontSize,
+      max: kMaxTranslationFontSize,
     );
     final localizations = AppLocalizations.of(context)!;
 
@@ -83,8 +86,8 @@ class _FontSliderState extends State<FontSlider> {
             context: context,
             title: localizations.translationTextSize,
             value: fontSizeTranslation,
-            min: _minTranslationFontSize,
-            max: _maxTranslationFontSize,
+            min: kMinTranslationFontSize,
+            max: kMaxTranslationFontSize,
             onChanged: (value) {
               setState(() {
                 fontSizeTranslation = value;
@@ -163,9 +166,6 @@ class _FontPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final EquranTokens tokens = context.equranTokens;
-
     final int translationIndex = SettingsDB().get(
       'translation',
       defaultValue: 0,
@@ -200,9 +200,12 @@ class _FontPreview extends StatelessWidget {
                 ),
               ),
               textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: tokens.text2,
-                fontSize: fontSizeTranslation,
+              // Same resolver as the reader card (ReadQuranCard), so the
+              // preview shows the reader's translation face and colour.
+              style: EquranTextStyles.displayTranslation(
+                context,
+                size: fontSizeTranslation,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ],

@@ -412,17 +412,18 @@ class _StatisticsPrayer extends StatelessWidget {
                     color: t.emText,
                     size: 74,
                     strokeWidth: 8,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        DisplayNumeral(
+                    // Only the percentage, scaled down to fit the clear inside
+                    // the stroke (74 px ring, 8 px stroke on each side).
+                    child: SizedBox.square(
+                      dimension: 74 - 2 * 8,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: DisplayNumeral(
                           '${(rate * 100).round()}%',
                           size: 21,
                           height: 1,
                         ),
-                        const SizedBox(height: 4),
-                        _StatsText(l.onTime, size: 10),
-                      ],
+                      ),
                     ),
                   ),
                 ),

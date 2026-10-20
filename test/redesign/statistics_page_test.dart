@@ -3,6 +3,7 @@ import 'package:equran/debug/statistics_preview_main.dart';
 import 'package:equran/hifz/hifz.dart';
 import 'package:equran/home/quran_stats_page.dart';
 import 'package:equran/home/read.dart';
+import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/prayer/prayer_models.dart';
 import 'package:equran/prayer/prayer_settings_store.dart';
 import 'package:equran/theme/equran_colors.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/date_symbol_data_local.dart';
+
 import 'gallery_test_support.dart' show loadGalleryFonts;
 
 class _Observer extends NavigatorObserver {
@@ -176,7 +178,7 @@ void main() {
     expect(find.text('—'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('statistics-log-asr')));
     await tester.pumpAndSettle();
-    expect(find.text("Today's Prayers"), findsOneWidget);
+    expect(find.byType(BottomSheet), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
   testWidgets(
@@ -216,23 +218,22 @@ void main() {
     },
   );
   testWidgets(
-    'today prayer logging saves through the existing sheet and refreshes overview',
+    'today prayer logging saves one prayer from its sheet and refreshes overview',
     (tester) async {
       final repo = await pump(tester);
       await tester.tap(find.byKey(const ValueKey('statistics-log-asr')));
       await tester.pumpAndSettle();
-      expect(find.text("Today's Prayers"), findsOneWidget);
-      final asrRow = find
-          .byWidgetPredicate(
-            (w) => w.runtimeType.toString() == '_SalahLogPrayerRow',
-          )
-          .at(2);
+      expect(find.byType(BottomSheet), findsOneWidget);
+      // Choosing a status saves straight away and closes the sheet; there is
+      // no separate Save step.
       await tester.tap(
-        find.descendant(of: asrRow, matching: find.text('On time')),
+        find.descendant(
+          of: find.byType(BottomSheet),
+          matching: find.text('On time'),
+        ),
       );
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Save'));
-      await tester.pumpAndSettle();
+      expect(find.byType(BottomSheet), findsNothing);
       expect((await SalahLogDB().getEntry('2026-10-04'))!.asr, 'onTime');
       expect(repo.clearCount, greaterThan(0));
       final ring = tester
@@ -380,11 +381,16 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('statistics-log-asr')));
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
-    final save = find.text('حفظ');
-    expect(save, findsOneWidget);
-    await tester.ensureVisible(save);
-    await tester.tap(save);
+    final AppLocalizations ar = lookupAppLocalizations(const Locale('ar'));
+    final Finder onTime = find.descendant(
+      of: find.byType(BottomSheet),
+      matching: find.text(ar.onTime),
+    );
+    expect(onTime, findsOneWidget);
+    await tester.ensureVisible(onTime);
+    await tester.tap(onTime);
     await tester.pumpAndSettle();
+    expect(find.byType(BottomSheet), findsNothing);
     expect(tester.takeException(), isNull);
   });
   for (final variant in [
