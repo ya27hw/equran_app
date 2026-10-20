@@ -1,4 +1,5 @@
 import 'package:equran/backend/library.dart' show SettingsDB;
+import 'package:equran/widgets/reader_sheet_chrome.dart';
 import 'package:flutter/material.dart';
 
 class SettingsSwitch extends StatefulWidget {
@@ -38,12 +39,12 @@ class _SettingsSwitchState extends State<SettingsSwitch> {
       defaultValue: widget.defaultValue,
     );
 
-    return ListTile(
-      leading: widget.leading,
-      onTap: () => _setValue(!currentValue),
-      title: Text(widget.title),
-      subtitle: widget.subtitle != null ? Text(widget.subtitle!) : null,
-      trailing: Switch(value: currentValue, onChanged: _setValue),
+    return ReaderSwitchRow(
+      leading: widget.leading ?? const Icon(Icons.tune_rounded),
+      title: widget.title,
+      subtitle: widget.subtitle,
+      value: currentValue,
+      onChanged: _setValue,
     );
   }
 }

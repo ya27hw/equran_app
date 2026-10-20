@@ -20,13 +20,6 @@ class QiblaService {
     return normalizeDegrees180(qiblaBearing - heading);
   }
 
-  String guidanceForRelativeDirection(double relativeDirection) {
-    final int degrees = relativeDirection.abs().round();
-    if (degrees <= 5) return 'Facing Qibla';
-    if (relativeDirection > 0) return 'Turn right $degrees°';
-    return 'Turn left $degrees°';
-  }
-
   double normalizeDegrees(double degrees) {
     return normalizeDegrees360(degrees);
   }

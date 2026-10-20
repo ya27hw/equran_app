@@ -1,13 +1,93 @@
-import 'dart:ui' show PlatformDispatcher;
+import 'dart:ui' show FontFeature, FontVariation, PlatformDispatcher;
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:equran/backend/settings_db.dart';
 import 'package:equran/theme/equran_colors.dart';
+import 'package:equran/theme/equran_tokens.dart';
+import 'package:equran/theme/inter_optical_size.dart';
 import 'package:quran/quran.dart' as quran;
 
 class EquranTextStyles {
   const EquranTextStyles._();
+
+  // Opt-in styles: do not change the existing body/Arabic text themes.
+  // Ratios and tracking follow the preview CSS (36/1.08 and 24/1.15).
+  static TextStyle displayPageTitle(BuildContext context, {Color? color}) =>
+      _display(context, size: 36, height: 1.08, tracking: -0.015, color: color);
+
+  static TextStyle displaySectionTitle(BuildContext context, {Color? color}) =>
+      _display(context, size: 24, height: 1.15, tracking: -0.01, color: color);
+
+  /// The preview's 22, 28 and 40 px counts/times share lining, tabular figures.
+  static TextStyle displayNumeral(
+    BuildContext context, {
+    double size = 22,
+    double height = 1.4,
+    Color? color,
+    FontWeight fontWeight = FontWeight.w500,
+  }) =>
+      _display(
+        context,
+        size: size,
+        height: height,
+        tracking: -0.01,
+        color: color,
+        fontWeight: fontWeight,
+      ).copyWith(
+        fontFeatures: const [
+          FontFeature.liningFigures(),
+          FontFeature.tabularFigures(),
+        ],
+      );
+
+  static TextStyle displayTranslation(
+    BuildContext context, {
+    Color? color,
+    double size = 16,
+  }) => TextStyle(
+    fontFamily: 'Newsreader',
+    fontSize: size,
+    height: 1.5,
+    fontWeight: FontWeight.w400,
+    fontStyle: FontStyle.italic,
+    fontVariations: [
+      FontVariation('opsz', size),
+      const FontVariation('wght', 400),
+    ],
+    color: color ?? context.equranTokens.text2,
+  );
+
+  /// Callers uppercase the label; TextStyle cannot transform string content.
+  static TextStyle eyebrow(BuildContext context) => TextStyle(
+    fontFamily: 'Inter',
+    fontSize: 11,
+    height: 1,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 11 * 0.14,
+    color: context.equranTokens.goldText,
+  );
+
+  static TextStyle _display(
+    BuildContext context, {
+    required double size,
+    required double height,
+    required double tracking,
+    Color? color,
+    FontWeight fontWeight = FontWeight.w500,
+  }) => TextStyle(
+    fontFamily: 'Newsreader',
+    fontSize: size,
+    height: height,
+    fontWeight: fontWeight,
+    letterSpacing: size * tracking,
+    fontFeatures: const [FontFeature.liningFigures()],
+    fontVariations: [
+      FontVariation('opsz', size),
+      FontVariation('wght', fontWeight.value.toDouble()),
+    ],
+    color: color ?? context.equranColors.textPrimary,
+  );
 
   static TextTheme buildTextTheme(Brightness brightness, {Locale? locale}) {
     final TextTheme base = _baseFontTextThemeForLocale(
@@ -15,83 +95,85 @@ class EquranTextStyles {
       locale,
     );
 
-    return base.copyWith(
-      displayLarge: base.displayLarge?.copyWith(
-        fontSize: 43,
-        height: 1.05,
-        fontWeight: FontWeight.w800,
-        letterSpacing: 0,
-      ),
-      displayMedium: base.displayMedium?.copyWith(
-        fontSize: 37,
-        height: 1.08,
-        fontWeight: FontWeight.w800,
-        letterSpacing: 0,
-      ),
-      headlineLarge: base.headlineLarge?.copyWith(
-        fontSize: 31,
-        height: 1.12,
-        fontWeight: FontWeight.w800,
-        letterSpacing: 0,
-      ),
-      headlineMedium: base.headlineMedium?.copyWith(
-        fontSize: 23,
-        height: 1.18,
-        fontWeight: FontWeight.w700,
-        letterSpacing: 0,
-      ),
-      headlineSmall: base.headlineSmall?.copyWith(
-        fontSize: 21,
-        height: 1.2,
-        fontWeight: FontWeight.w700,
-        letterSpacing: 0,
-      ),
-      titleLarge: base.titleLarge?.copyWith(
-        fontSize: 18,
-        height: 1.25,
-        fontWeight: FontWeight.w700,
-        letterSpacing: 0,
-      ),
-      titleMedium: base.titleMedium?.copyWith(
-        fontSize: 16,
-        height: 1.25,
-        fontWeight: FontWeight.w700,
-        letterSpacing: 0,
-      ),
-      titleSmall: base.titleSmall?.copyWith(
-        fontSize: 14,
-        height: 1.25,
-        fontWeight: FontWeight.w700,
-        letterSpacing: 0,
-      ),
-      bodyLarge: base.bodyLarge?.copyWith(
-        fontSize: 16,
-        height: 1.45,
-        letterSpacing: 0,
-      ),
-      bodyMedium: base.bodyMedium?.copyWith(
-        fontSize: 14.5,
-        height: 1.42,
-        letterSpacing: 0,
-      ),
-      bodySmall: base.bodySmall?.copyWith(
-        fontSize: 13,
-        height: 1.35,
-        letterSpacing: 0,
-      ),
-      labelLarge: base.labelLarge?.copyWith(
-        fontSize: 14,
-        height: 1.2,
-        fontWeight: FontWeight.w700,
-        letterSpacing: 0,
-      ),
-      labelMedium: base.labelMedium?.copyWith(
-        fontSize: 12.5,
-        height: 1.2,
-        fontWeight: FontWeight.w700,
-        letterSpacing: 0,
-      ),
-    );
+    return base
+        .copyWith(
+          displayLarge: base.displayLarge?.copyWith(
+            fontSize: 43,
+            height: 1.05,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0,
+          ),
+          displayMedium: base.displayMedium?.copyWith(
+            fontSize: 37,
+            height: 1.08,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0,
+          ),
+          headlineLarge: base.headlineLarge?.copyWith(
+            fontSize: 31,
+            height: 1.12,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0,
+          ),
+          headlineMedium: base.headlineMedium?.copyWith(
+            fontSize: 23,
+            height: 1.18,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0,
+          ),
+          headlineSmall: base.headlineSmall?.copyWith(
+            fontSize: 21,
+            height: 1.2,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0,
+          ),
+          titleLarge: base.titleLarge?.copyWith(
+            fontSize: 18,
+            height: 1.25,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0,
+          ),
+          titleMedium: base.titleMedium?.copyWith(
+            fontSize: 16,
+            height: 1.25,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0,
+          ),
+          titleSmall: base.titleSmall?.copyWith(
+            fontSize: 14,
+            height: 1.25,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0,
+          ),
+          bodyLarge: base.bodyLarge?.copyWith(
+            fontSize: 16,
+            height: 1.45,
+            letterSpacing: 0,
+          ),
+          bodyMedium: base.bodyMedium?.copyWith(
+            fontSize: 14.5,
+            height: 1.42,
+            letterSpacing: 0,
+          ),
+          bodySmall: base.bodySmall?.copyWith(
+            fontSize: 13,
+            height: 1.35,
+            letterSpacing: 0,
+          ),
+          labelLarge: base.labelLarge?.copyWith(
+            fontSize: 14,
+            height: 1.2,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0,
+          ),
+          labelMedium: base.labelMedium?.copyWith(
+            fontSize: 12.5,
+            height: 1.2,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0,
+          ),
+        )
+        .withInterOpticalSizes();
   }
 
   static ThemeData localizeTheme(ThemeData theme, Locale locale) {
@@ -222,10 +304,20 @@ class EquranTextStyles {
     } else if (style == 'qpc-hafs') {
       return 'UthmanicHafs';
     } else if (style == 'qpc-v4') {
-      final String suffix = _isAppDarkMode() ? 'dark' : 'light';
-      return 'QPCV4_Page_${page}_$suffix';
+      return qpcV4FontFamilyForPage(page, darkMode: _isAppDarkMode());
     }
     return 'UthmanicHafs';
+  }
+
+  /// QPC V4 family name without touching settings: lets per-frame callers
+  /// (e.g. the reader's inline surah span loop) resolve the dark/light
+  /// suffix once from [Theme.brightness] instead of one Hive read per verse.
+  /// Matches [fontFamilyForPage] for the qpc-v4 style: the app theme's
+  /// brightness always reflects the saved theme mode (null defaults to
+  /// dark, 'auto' follows the platform).
+  static String qpcV4FontFamilyForPage(int page, {required bool darkMode}) {
+    final String suffix = darkMode ? 'dark' : 'light';
+    return 'QPCV4_Page_${page}_$suffix';
   }
 
   static const Map<String, int> _qpcV4PageOffsets = {
@@ -287,6 +379,13 @@ class EquranTextStyles {
     '100:9': 600,
   };
 
+  /// Page lookup for callers that already know the style is qpc-v4:
+  /// skips the per-call settings read in [getPageNumber].
+  static int qpcV4PageNumber(int chapter, int verse) {
+    return _qpcV4PageOffsets['$chapter:$verse'] ??
+        quran.getPageNumber(chapter, verse);
+  }
+
   static int getPageNumber(int chapter, int verse) {
     if (SettingsDB().quranScriptStyle == 'qpc-v4') {
       final String key = '$chapter:$verse';
@@ -338,6 +437,23 @@ class EquranTextStyles {
       fontSize: 19,
       height: 1.55,
       color: color ?? Theme.of(context).colorScheme.onSurface,
+    );
+  }
+
+  /// Style for Arabic surah names with full tashkeel (Amiri Quran, OFL,
+  /// Regular only). A bare style rather than one derived from the theme text
+  /// styles, so Newsreader metrics and letter spacing never reach the marks.
+  /// Weight is pinned to 400; a synthesised bold would smear the harakat.
+  /// The line height leaves room for the vowel marks above each letter.
+  static TextStyle surahTitleStyle({required double fontSize, Color? color}) {
+    return TextStyle(
+      fontFamily: 'AmiriQuran',
+      fontFamilyFallback: const <String>['UthmanicHafs'],
+      fontSize: fontSize,
+      fontWeight: FontWeight.w400,
+      height: 1.7,
+      letterSpacing: 0,
+      color: color,
     );
   }
 }

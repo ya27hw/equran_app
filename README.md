@@ -25,7 +25,7 @@
 </p>
 
 <p align="center">
-  <img alt="Flutter" src="https://img.shields.io/badge/Flutter-%E2%89%A53.41.7-02569B?logo=flutter&logoColor=white&style=flat-square">
+  <img alt="Flutter" src="https://img.shields.io/badge/Flutter-%E2%89%A53.44.0-02569B?logo=flutter&logoColor=white&style=flat-square">
   <img alt="Dart" src="https://img.shields.io/badge/Dart-%E2%89%A53.11.5-0175C2?logo=dart&logoColor=white&style=flat-square">
   <img alt="Release targets" src="https://img.shields.io/badge/targets-Android%20%7C%20Linux%20%7C%20Windows-0f766e?style=flat-square">
 </p>
@@ -43,17 +43,17 @@ The goal is simple: keep the interface quiet, keep the text central, and make th
 ## Screenshots
 
 <p align="center">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" alt="eQuran home screen" width="180">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" alt="Quran reading screen" width="180">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" alt="Surah list screen" width="180">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" alt="Audio player screen" width="180">
+  <img src="docs/screenshots/01-home.png" alt="Home dashboard with prayer times and Quran journey" width="180">
+  <img src="docs/screenshots/02-home-continue.png" alt="Continue reading card and daily tools" width="180">
+  <img src="docs/screenshots/03-quran.png" alt="Surah list" width="180">
+  <img src="docs/screenshots/04-reader.png" alt="Quran reader" width="180">
 </p>
 
 <p align="center">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/5.png" alt="Downloads screen" width="180">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/6.png" alt="Favourites screen" width="180">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/7.png" alt="Prayer times screen" width="180">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/8.png" alt="Settings screen" width="180">
+  <img src="docs/screenshots/05-prayer.png" alt="Prayer times" width="180">
+  <img src="docs/screenshots/06-duas.png" alt="Duas and Hisn al-Muslim" width="180">
+  <img src="docs/screenshots/07-home-light.png" alt="Home dashboard in light theme" width="180">
+  <img src="docs/screenshots/08-home-arabic.png" alt="Home dashboard in Arabic (right-to-left)" width="180">
 </p>
 
 ## 💖 Support the Project
@@ -111,7 +111,7 @@ Install the Flutter stable SDK and the platform tooling for the device you want 
 This project currently expects:
 
 ```text
-Flutter >=3.41.7
+Flutter >=3.44.0
 Dart >=3.11.5 <4.0.0
 ```
 
@@ -144,6 +144,13 @@ flutter run -d linux
 flutter run -d windows
 flutter run -d chrome
 ```
+
+## Appearance
+
+In Settings → Appearance, each accent palette supports a **Pitch-black background**
+toggle for dark mode. Light mode keeps its normal background. Older AMOLED selections
+load as Emerald Green with the toggle enabled; turn it off to restore the palette's
+normal dark background. The preference is included in backups.
 
 ## Build Releases
 
@@ -193,6 +200,8 @@ metadata/       Store listing metadata and app icon
 The GitHub Actions release workflow lives in [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml).
 
 On pushes to `main` or manual workflow dispatch, it reads the version from `pubspec.yaml`, builds Android split APKs plus Linux and Windows bundles, then publishes a GitHub Release when the version tag is new.
+
+What changed in each version is written up in [`CHANGELOG.md`](CHANGELOG.md). Add a section there for every release before tagging it.
 
 ## Notes For Maintainers
 

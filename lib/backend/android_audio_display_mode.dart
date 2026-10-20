@@ -43,10 +43,6 @@ class AndroidAudioDisplayMode {
     _debugLog('ignored legacy idle frame-rate toggle enabled=$enabled');
   }
 
-  static Future<void> setLimitedProgressFrameRate(double frameRate) async {
-    _debugLog('ignored legacy limited progress frame rate=$frameRate');
-  }
-
   static Future<void> setLowFpsSuppressed(bool suppressed) async {
     _policy.setTransientBlocker(
       _legacySuppressionBlocker,
@@ -76,19 +72,6 @@ class AndroidAudioDisplayMode {
       blocker,
       false,
       reason: reason.isEmpty ? 'legacy_blocker_removed_$blocker' : reason,
-    );
-  }
-
-  static Future<void> requestStaticMinimizedAudioRefreshRate({
-    bool force = false,
-  }) async {
-    _debugLog(
-      'skip mini player: static/event-driven; old low-refresh lock disabled',
-    );
-    _policy.setMiniPlayerVisible(
-      true,
-      source: _legacyVisualSource,
-      reason: 'legacy_static_minimized_request_skipped',
     );
   }
 

@@ -1,477 +1,357 @@
-import 'dart:math';
-import 'dart:ui';
+import 'dart:math' as math;
+import 'dart:ui' show PathMetric;
 
+import 'package:equran/backend/settings_db.dart';
+import 'package:equran/backend/startup_coordinator.dart';
 import 'package:equran/home/library.dart' show HomePage;
+import 'package:equran/services/device_capability_service.dart';
 import 'package:equran/theme/equran_colors.dart';
+import 'package:equran/widgets/common/geometric_pattern.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
+/// Startup gate shown by [MyApp] before the home page.
+///
+/// It always waits for [StartupCoordinator.startDeferred], because the home
+/// page reads boxes opened there. With the "startup animation" setting on, a
+/// short one-shot animation plays in parallel with that work and the screen
+/// leaves as soon as both are done (about 1.1 s on a fast device). With the
+/// setting off, or when the system asks for reduced motion, there is no
+/// animation: the screen leaves the moment startup work is done.
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  const SplashScreen({super.key, this.enabled, this.ready, this.nextBuilder});
+
+  /// Overrides the saved setting. Tests only.
+  final bool? enabled;
+
+  /// Startup work to wait for. Defaults to the deferred startup stage.
+  final Future<void> Function()? ready;
+
+  /// Destination once the splash is done. Defaults to [HomePage].
+  final WidgetBuilder? nextBuilder;
+
+  /// Total length of the intro animation.
+  static const Duration introDuration = Duration(milliseconds: 1300);
+
+  /// Cross-fade into the next page.
+  static const Duration exitDuration = Duration(milliseconds: 300);
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen>
-    with TickerProviderStateMixin {
-  late AnimationController _mainController;
-  late AnimationController _pulseController;
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _draw;
+  late final Animation<double> _fill;
+  late final Animation<double> _settle;
+  late final Animation<double> _title;
 
-  // Staggered animations
-  late Animation<double> _drawingAnimation;
-  late Animation<double> _fillAnimation;
-  late Animation<double> _textAnimation;
-  late Animation<double> _glowAnimation;
-
-  // Particles list
-  final List<FloatingParticle> _particles = [];
-  final Random _random = Random();
-  final int _particleCount = 35;
+  late final bool _enabled;
+  bool _animate = false;
+  bool _started = false;
+  bool _left = false;
 
   @override
   void initState() {
     super.initState();
-
-    // 1. Setup Controllers
-    _mainController = AnimationController(
+    _enabled = widget.enabled ?? SettingsDB().showSplashScreen;
+    _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 3200),
+      duration: SplashScreen.introDuration,
     );
-
-    _pulseController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 2400),
-    )..repeat(reverse: true);
-
-    // 2. Setup Staggered Animations
-    _drawingAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _mainController,
-        curve: const Interval(0.0, 0.45, curve: Curves.easeInOutCubic),
-      ),
-    );
-
-    _fillAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _mainController,
-        curve: const Interval(0.35, 0.65, curve: Curves.easeIn),
-      ),
-    );
-
-    _textAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _mainController,
-        curve: const Interval(0.5, 0.85, curve: Curves.easeOutBack),
-      ),
-    );
-
-    _glowAnimation = Tween<double>(begin: 0.85, end: 1.15).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
-    );
-
-    // 3. Setup Particles
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initializeParticles();
-      _mainController.forward().then((_) => _navigateToHome());
-    });
-
-    // 4. Update particles on pulse tick
-    _pulseController.addListener(() {
-      if (mounted) {
-        setState(() {
-          _updateParticles();
-        });
-      }
-    });
+    CurvedAnimation interval(double begin, double end, Curve curve) =>
+        CurvedAnimation(
+          parent: _controller,
+          curve: Interval(begin, end, curve: curve),
+        );
+    _draw = interval(0.0, 0.55, Curves.easeInOutCubic);
+    _fill = interval(0.40, 0.75, Curves.easeOut);
+    _settle = interval(0.0, 0.75, Curves.easeOutCubic);
+    _title = interval(0.55, 0.90, Curves.easeOutCubic);
   }
 
-  void _initializeParticles() {
-    final Size size = MediaQuery.of(context).size;
-    for (int i = 0; i < _particleCount; i++) {
-      _particles.add(
-        FloatingParticle(
-          x: _random.nextDouble() * size.width,
-          y: _random.nextDouble() * size.height,
-          radius: _random.nextDouble() * 2.2 + 0.8,
-          speed: _random.nextDouble() * 0.4 + 0.15,
-          opacity: _random.nextDouble() * 0.6 + 0.2,
-          angle: _random.nextDouble() * pi * 2,
-          waveSpeed: _random.nextDouble() * 0.015 + 0.005,
-        ),
-      );
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_started) return;
+    _started = true;
+    _animate = _enabled && !MediaQuery.disableAnimationsOf(context);
+    if (_enabled && !_animate) {
+      // Reduced motion: show the finished mark, no movement.
+      _controller.value = 1;
     }
+    WidgetsBinding.instance.addPostFrameCallback((_) => _run());
   }
 
-  void _updateParticles() {
-    final Size size = MediaQuery.of(context).size;
-    for (final particle in _particles) {
-      particle.y -= particle.speed;
-      particle.x += sin(particle.angle) * 0.25;
-      particle.angle += particle.waveSpeed;
-
-      // Reset when particle goes off-screen
-      if (particle.y < -10) {
-        particle.y = size.height + 10;
-        particle.x = _random.nextDouble() * size.width;
+  Future<void> _run() async {
+    final Future<void> Function() ready =
+        widget.ready ?? StartupCoordinator.instance.startDeferred;
+    final Future<void> startup = () async {
+      try {
+        await ready();
+      } catch (_) {
+        // Startup steps report their own issues; never trap the user here.
       }
+    }();
+    if (_animate && mounted) {
+      await _controller.forward();
     }
+    await startup;
+    _leave();
   }
 
-  void _navigateToHome() {
-    if (!mounted) return;
+  void _skip() {
+    // `stop(canceled: false)` completes the pending `forward()` future; the
+    // `value` setter alone would cancel it and leave `_run` waiting forever.
+    _controller
+      ..stop(canceled: false)
+      ..value = 1;
+  }
+
+  void _leave() {
+    if (!mounted || _left) return;
+    _left = true;
+    final Duration fade = _animate ? SplashScreen.exitDuration : Duration.zero;
+    final WidgetBuilder next = widget.nextBuilder ?? (_) => const HomePage();
     Navigator.of(context).pushReplacement(
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            const HomePage(),
+      PageRouteBuilder<void>(
+        pageBuilder: (context, animation, secondaryAnimation) => next(context),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          final fadeCurve = CurvedAnimation(
-            parent: animation,
-            curve: Curves.easeInOut,
-          );
-          final scaleCurve = CurvedAnimation(
-            parent: animation,
-            curve: Curves.easeOutCubic,
-          );
-
           return FadeTransition(
-            opacity: fadeCurve,
-            child: ScaleTransition(
-              scale: Tween<double>(begin: 1.06, end: 1.0).animate(scaleCurve),
-              child: child,
-            ),
+            opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
+            child: child,
           );
         },
-        transitionDuration: const Duration(milliseconds: 850),
+        transitionDuration: fade,
+        reverseTransitionDuration: fade,
       ),
     );
   }
 
   @override
   void dispose() {
-    _mainController.dispose();
-    _pulseController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final EquranColors colors = context.equranColors;
-    final Size size = MediaQuery.of(context).size;
-    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    if (!_enabled) {
+      return Scaffold(backgroundColor: colors.background);
+    }
 
-    // Premium Islamic theme colors
-    final Color goldAccent = colors.accentGold;
-    final Color deepTeal = colors.primaryGradientStart;
-    final Color darkBackground = colors.background;
+    final bool dark = Theme.of(context).brightness == Brightness.dark;
+    final Size size = MediaQuery.sizeOf(context);
+    final double markSize = math.min(size.shortestSide * 0.44, 190);
+    final bool decorative =
+        DeviceCapabilityService.instance.profile.allowsDecorativeEffects;
 
     return Scaffold(
-      backgroundColor: darkBackground,
-      body: Stack(
-        children: [
-          // 1. Sleek Gradient Backdrop with high contrast glow
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: isDark
-                      ? [
-                          darkBackground,
-                          Color.alphaBlend(
-                            deepTeal.withValues(alpha: 0.35),
-                            darkBackground,
-                          ),
-                          darkBackground,
-                        ]
-                      : [
-                          darkBackground,
-                          Color.alphaBlend(
-                            deepTeal.withValues(alpha: 0.08),
-                            darkBackground,
-                          ),
-                          darkBackground,
-                        ],
+      backgroundColor: colors.background,
+      body: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        // Tap to skip the rest of the animation.
+        onTap: _skip,
+        child: Stack(
+          fit: StackFit.expand,
+          children: <Widget>[
+            if (decorative)
+              FadeTransition(
+                opacity: _fill,
+                child: GeometricPattern(
+                  color: colors.accentGold,
+                  anchor: AlignmentDirectional.center,
+                  reach: 0.62,
+                  maxOpacity: 0.16,
                 ),
               ),
-            ),
-          ),
-
-          // 2. Animated Twinkling Particles
-          CustomPaint(
-            size: size,
-            painter: ParticlePainter(particles: _particles, color: goldAccent),
-          ),
-
-          // 3. Central Ambient Radial Glow
-          Center(
-            child: AnimatedBuilder(
-              animation: _fillAnimation,
-              builder: (context, child) {
-                final double currentGlow =
-                    _fillAnimation.value * _glowAnimation.value;
-                return Opacity(
-                  opacity: _fillAnimation.value * 0.45,
-                  child: Container(
-                    width: size.width * 0.65 * currentGlow,
-                    height: size.width * 0.65 * currentGlow,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: RadialGradient(
-                        colors: [
-                          goldAccent.withValues(alpha: 0.25),
-                          goldAccent.withValues(alpha: 0.05),
-                          Colors.transparent,
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-
-          // 4. Central Geometric Drawing
-          Center(
-            child: AnimatedBuilder(
-              animation: _mainController,
-              builder: (context, child) {
-                return SizedBox(
-                  width: 180,
-                  height: 180,
-                  child: CustomPaint(
-                    painter: RubElHizbPainter(
-                      drawProgress: _drawingAnimation.value,
-                      fillOpacity: _fillAnimation.value,
-                      primaryColor: deepTeal,
-                      goldColor: goldAccent,
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-
-          // 5. Staggered Text & Branding
-          Positioned(
-            bottom: size.height * 0.15,
-            left: 0,
-            right: 0,
-            child: AnimatedBuilder(
-              animation: _textAnimation,
-              builder: (context, child) {
-                final double slideOffset = (1.0 - _textAnimation.value) * 35;
-                return Opacity(
-                  opacity: _textAnimation.value.clamp(0.0, 1.0),
-                  child: Transform.translate(
-                    offset: Offset(0, slideOffset),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // App Title
-                        Text(
-                          "eQuran",
-                          style: GoogleFonts.outfit(
-                            fontSize: 34,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 1.5,
-                            color: isDark ? Colors.white : colors.textPrimary,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-
-                        // Sleek Gold Accent Divider line
-                        Container(
-                          width: 40,
-                          height: 1.5,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Colors.transparent,
-                                goldAccent,
-                                Colors.transparent,
-                              ],
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  RepaintBoundary(
+                    child: AnimatedBuilder(
+                      animation: _controller,
+                      builder: (context, _) {
+                        return Transform.rotate(
+                          angle: (1 - _settle.value) * -math.pi / 8,
+                          child: Transform.scale(
+                            scale: 0.9 + 0.1 * _settle.value,
+                            child: SizedBox.square(
+                              dimension: markSize,
+                              child: CustomPaint(
+                                painter: _StarMarkPainter(
+                                  draw: _draw.value,
+                                  fill: _fill.value,
+                                  gold: colors.accentGold,
+                                  glow: colors.primary,
+                                  glowAlpha: dark ? 0.28 : 0.12,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 12),
-
-                        // Subtitle
-                        Text(
-                          "The Holy Quran & Prayer Companion",
-                          style: GoogleFonts.inter(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w400,
-                            letterSpacing: 0.8,
-                            color: colors.textSecondary.withValues(alpha: 0.85),
-                          ),
-                        ),
-                      ],
+                        );
+                      },
                     ),
                   ),
-                );
-              },
+                  const SizedBox(height: 28),
+                  AnimatedBuilder(
+                    animation: _title,
+                    builder: (context, child) => Opacity(
+                      opacity: _title.value,
+                      child: Transform.translate(
+                        offset: Offset(0, (1 - _title.value) * 12),
+                        child: child,
+                      ),
+                    ),
+                    child: _Wordmark(colors: colors),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
-class FloatingParticle {
-  double x;
-  double y;
-  final double radius;
-  final double speed;
-  final double opacity;
-  double angle;
-  final double waveSpeed;
+/// The Latin brand name is fixed on purpose: the bundled Newsreader subset only
+/// covers Latin glyphs, and the wordmark should not change with the UI locale.
+class _Wordmark extends StatelessWidget {
+  const _Wordmark({required this.colors});
 
-  FloatingParticle({
-    required this.x,
-    required this.y,
-    required this.radius,
-    required this.speed,
-    required this.opacity,
-    required this.angle,
-    required this.waveSpeed,
-  });
-}
-
-class ParticlePainter extends CustomPainter {
-  final List<FloatingParticle> particles;
-  final Color color;
-
-  ParticlePainter({required this.particles, required this.color});
+  final EquranColors colors;
 
   @override
-  void paint(Canvas canvas, Size size) {
-    for (final particle in particles) {
-      final Paint paint = Paint()
-        ..color = color.withValues(alpha: particle.opacity)
-        ..style = PaintingStyle.fill;
-      canvas.drawCircle(Offset(particle.x, particle.y), particle.radius, paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant ParticlePainter oldDelegate) => true;
-}
-
-class RubElHizbPainter extends CustomPainter {
-  final double drawProgress;
-  final double fillOpacity;
-  final Color primaryColor;
-  final Color goldColor;
-
-  RubElHizbPainter({
-    required this.drawProgress,
-    required this.fillOpacity,
-    required this.primaryColor,
-    required this.goldColor,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final double cx = size.width / 2;
-    final double cy = size.height / 2;
-    final double outerRadius = size.width / 2 * 0.92;
-    final double innerRadius = outerRadius * 0.76536;
-
-    final Paint outlinePaint = Paint()
-      ..color = goldColor.withValues(alpha: 0.85)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.4
-      ..strokeCap = StrokeCap.round;
-
-    final Paint fillPaint = Paint()
-      ..shader =
-          RadialGradient(
-            colors: [
-              goldColor.withValues(alpha: 0.24 * fillOpacity),
-              goldColor.withValues(alpha: 0.01 * fillOpacity),
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Text(
+          'eQuran',
+          textDirection: TextDirection.ltr,
+          style: TextStyle(
+            fontFamily: 'Newsreader',
+            fontSize: 36,
+            fontWeight: FontWeight.w500,
+            fontVariations: const <FontVariation>[
+              FontVariation('opsz', 36),
+              FontVariation('wght', 500),
             ],
-          ).createShader(
-            Rect.fromCircle(center: Offset(cx, cy), radius: outerRadius),
-          )
-      ..style = PaintingStyle.fill;
+            letterSpacing: 1,
+            color: colors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 10),
+        SizedBox(width: 120, child: OrnamentDivider(color: colors.accentGold)),
+      ],
+    );
+  }
+}
 
-    final Paint innerStarPaint = Paint()
-      ..color = goldColor.withValues(alpha: 0.48 * fillOpacity)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
+/// Eight-pointed star (Rub el Hizb): two squares drawn in opposite directions,
+/// then a soft fill, an inner ring and a centre dot.
+class _StarMarkPainter extends CustomPainter {
+  const _StarMarkPainter({
+    required this.draw,
+    required this.fill,
+    required this.gold,
+    required this.glow,
+    required this.glowAlpha,
+  });
 
-    // 1. Construct Rub el Hizb 16-sided continuous star path
-    final Path starPath = Path();
-    for (int i = 0; i < 16; i++) {
-      double angle = i * pi / 8 - pi / 2;
-      double r = i.isEven ? outerRadius : innerRadius;
-      double x = cx + r * cos(angle);
-      double y = cy + r * sin(angle);
-      if (i == 0) {
-        starPath.moveTo(x, y);
-      } else {
-        starPath.lineTo(x, y);
-      }
-    }
-    starPath.close();
+  final double draw;
+  final double fill;
+  final Color gold;
+  final Color glow;
+  final double glowAlpha;
 
-    // 2. Draw the filled star background
-    if (fillOpacity > 0.0) {
-      canvas.drawPath(starPath, fillPaint);
-    }
+  static const double _innerRatio = 0.76536;
 
-    // 3. Draw the animated outline
-    if (drawProgress > 0.0) {
-      final Path animatedPath = Path();
-      for (final PathMetric metric in starPath.computeMetrics()) {
-        animatedPath.addPath(
-          metric.extractPath(0.0, metric.length * drawProgress),
-          Offset.zero,
-        );
-      }
-      canvas.drawPath(animatedPath, outlinePaint);
-    }
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Offset center = size.center(Offset.zero);
+    final double radius = size.width / 2 * 0.9;
 
-    // 4. Draw intricate inner details when filled
-    if (fillOpacity > 0.0) {
-      // Draw inner circle
-      final double circleRadius = innerRadius * 0.8;
-      canvas.drawCircle(Offset(cx, cy), circleRadius, innerStarPaint);
+    if (fill > 0) {
+      canvas.drawCircle(
+        center,
+        radius * 1.55,
+        Paint()
+          ..shader =
+              RadialGradient(
+                colors: <Color>[
+                  glow.withValues(alpha: glowAlpha * fill),
+                  glow.withValues(alpha: 0),
+                ],
+              ).createShader(
+                Rect.fromCircle(center: center, radius: radius * 1.55),
+              ),
+      );
 
-      // Draw a smaller inner 8-pointed star
-      final Path innerStarPath = Path();
-      final double innerOuterR = circleRadius * 0.9;
-      final double innerInnerR = innerOuterR * 0.76536;
+      final Path union = Path();
       for (int i = 0; i < 16; i++) {
-        double angle = i * pi / 8 - pi / 2;
-        double r = i.isEven ? innerOuterR : innerInnerR;
-        double x = cx + r * cos(angle);
-        double y = cy + r * sin(angle);
-        if (i == 0) {
-          innerStarPath.moveTo(x, y);
-        } else {
-          innerStarPath.lineTo(x, y);
+        final double r = i.isEven ? radius : radius * _innerRatio;
+        final double a = i * math.pi / 8 - math.pi / 2;
+        final Offset p = center + Offset(math.cos(a), math.sin(a)) * r;
+        i == 0 ? union.moveTo(p.dx, p.dy) : union.lineTo(p.dx, p.dy);
+      }
+      union.close();
+      canvas.drawPath(
+        union,
+        Paint()
+          ..shader = RadialGradient(
+            colors: <Color>[
+              gold.withValues(alpha: 0.26 * fill),
+              gold.withValues(alpha: 0.03 * fill),
+            ],
+          ).createShader(Rect.fromCircle(center: center, radius: radius)),
+      );
+
+      final Paint ring = Paint()
+        ..color = gold.withValues(alpha: 0.5 * fill)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1;
+      canvas.drawCircle(center, radius * _innerRatio * 0.78, ring);
+      canvas.drawCircle(
+        center,
+        3,
+        Paint()..color = gold.withValues(alpha: 0.95 * fill),
+      );
+    }
+
+    if (draw > 0) {
+      final Paint stroke = Paint()
+        ..color = gold
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.2
+        ..strokeCap = StrokeCap.round
+        ..strokeJoin = StrokeJoin.round;
+      for (final bool clockwise in <bool>[true, false]) {
+        final Path square = Path();
+        for (int i = 0; i < 4; i++) {
+          final int step = clockwise ? i : -i;
+          final double a =
+              (clockwise ? 0 : math.pi / 4) + step * math.pi / 2 - math.pi / 2;
+          final Offset p = center + Offset(math.cos(a), math.sin(a)) * radius;
+          i == 0 ? square.moveTo(p.dx, p.dy) : square.lineTo(p.dx, p.dy);
+        }
+        square.close();
+        for (final PathMetric metric in square.computeMetrics()) {
+          canvas.drawPath(metric.extractPath(0, metric.length * draw), stroke);
         }
       }
-      innerStarPath.close();
-      canvas.drawPath(innerStarPath, innerStarPaint);
-
-      // Solid center glowing dot
-      final Paint centerDotPaint = Paint()
-        ..color = goldColor.withValues(alpha: 0.9 * fillOpacity)
-        ..style = PaintingStyle.fill;
-      canvas.drawCircle(Offset(cx, cy), 3.2, centerDotPaint);
     }
   }
 
   @override
-  bool shouldRepaint(covariant RubElHizbPainter oldDelegate) {
-    return oldDelegate.drawProgress != drawProgress ||
-        oldDelegate.fillOpacity != fillOpacity ||
-        oldDelegate.primaryColor != primaryColor ||
-        oldDelegate.goldColor != goldColor;
-  }
+  bool shouldRepaint(_StarMarkPainter old) =>
+      old.draw != draw ||
+      old.fill != fill ||
+      old.gold != gold ||
+      old.glow != glow ||
+      old.glowAlpha != glowAlpha;
 }

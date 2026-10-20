@@ -1,0 +1,22 @@
+import 'dart:io';
+import 'package:integration_test/integration_test_driver.dart';
+
+Future<void> main() async {
+  await integrationDriver(
+    writeResponseOnFailure: true,
+    responseDataCallback: (data) async {
+      final directory = Directory('docs/redesign/screenshots/round1');
+      await directory.create(recursive: true);
+      for (final shot in (data?['screenshots'] as List<dynamic>? ?? [])) {
+        final map = shot as Map<String, dynamic>;
+        await File(
+          '${directory.path}/${map['screenshotName']}.png',
+        ).writeAsBytes((map['bytes'] as List<dynamic>).cast<int>());
+      }
+      await File('${directory.path}/native-check-notes.txt').writeAsString(
+        (data?['knownBaselineOverflows'] as List<dynamic>? ?? []).join('\n'),
+      );
+      stdout.writeln('Saved native screenshots to ${directory.path}');
+    },
+  );
+}

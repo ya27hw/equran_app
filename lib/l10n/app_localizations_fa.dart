@@ -239,6 +239,17 @@ class AppLocalizationsFa extends AppLocalizations {
   String get beginWithQuran => 'خواندن قرآن';
 
   @override
+  String get yourQuran => 'قرآن شما';
+
+  @override
+  String get beginQuranReading => 'با قرآن آغاز کنید';
+
+  @override
+  String startWithSurah(String surah) {
+    return 'با $surah آغاز کنید';
+  }
+
+  @override
   String get startReadingSubtitle =>
       'خواندن را شروع کنید تا موقعیت شما در اینجا ظاهر شود.';
 
@@ -696,11 +707,64 @@ class AppLocalizationsFa extends AppLocalizations {
       'قبله، دانلودها، تنظیمات، برنامه‌ها و ابزارها همه در یک محیط آرام جمع‌آوری شده‌اند.';
 
   @override
+  String get moreGroupWorship => 'عبادت';
+
+  @override
+  String get moreGroupReadLearn => 'خواندن و آموختن';
+
+  @override
+  String get moreGroupTools => 'ابزارها';
+
+  @override
+  String get moreGroupApp => 'برنامه';
+
+  @override
+  String get moreGroupAbout => 'درباره eQuran';
+
+  @override
+  String get edit => 'ویرایش';
+
+  @override
   String get openRoutine => 'باز کردن برنامه';
 
   @override
   String get aboutAppBody =>
       'ای‌قرآن یک همراه مدرن قرآنی است که برای خواندن متمرکز، گوش دادن و تدبر روزانه طراحی شده است.';
+
+  @override
+  String get specialThanks => 'تشکر ویژه';
+
+  @override
+  String get specialThanksBody =>
+      'از این همکاران سپاسگزاریم که سهم بزرگی در توسعه ای‌قرآن داشتند و با نظرات و بازخوردهای ارزشمند خود به آن یاری رساندند.';
+
+  @override
+  String get supportProject => 'حمایت';
+
+  @override
+  String get supportProjectDescription =>
+      'اگر eQuran برایتان مفید است، می‌توانید با اهدای رمزارز از توسعه آن حمایت کنید.';
+
+  @override
+  String get bitcoin => 'بیت‌کوین (BTC)';
+
+  @override
+  String get ethereum => 'اتریوم (ETH)';
+
+  @override
+  String get solana => 'سولانا (SOL)';
+
+  @override
+  String get usdcErc20 => 'USDC (ERC-20)';
+
+  @override
+  String get litecoin => 'لایت‌کوین (LTC)';
+
+  @override
+  String get copyAddress => 'کپی نشانی';
+
+  @override
+  String get addressCopied => 'نشانی کپی شد';
 
   @override
   String versionLabel(String version) {
@@ -767,6 +831,9 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get closeSearch => 'بستن جستجو';
+
+  @override
+  String get reverseOrder => 'معکوس کردن ترتیب';
 
   @override
   String get noSurahsFound => 'هیچ سوره‌ای پیدا نشد.';
@@ -842,6 +909,34 @@ class AppLocalizationsFa extends AppLocalizations {
   String get setUpLocation => 'تنظیم مکان';
 
   @override
+  String get locationSetupTitle => 'کجا نماز می‌خوانید؟';
+
+  @override
+  String get locationSetupSubtitle =>
+      'یک روش را انتخاب کنید. اوقات نماز فقط برای همین مکان محاسبه می‌شود.';
+
+  @override
+  String get locationOptionCurrentDescription =>
+      'سریع‌ترین روش. موقعیت شما را یک‌بار می‌خوانیم.';
+
+  @override
+  String get locationOptionMapDescription =>
+      'نقشه را جابه‌جا کنید تا سنجاق روی منطقه شما قرار گیرد.';
+
+  @override
+  String get locationOptionManualDescription =>
+      'عرض و طول جغرافیایی را خودتان وارد کنید.';
+
+  @override
+  String get recommendedLabel => 'پیشنهادی';
+
+  @override
+  String get chooseAnotherWay => 'روش دیگری انتخاب کنید';
+
+  @override
+  String get confirmLocationTitle => 'تأیید این مکان';
+
+  @override
   String get chooseLocationForNextPrayer =>
       'یک مکان انتخاب کنید تا زمان نماز بعدی در اینجا نمایش داده شود.';
 
@@ -856,12 +951,17 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
+  String prayerNextIn(String prayer, String time) {
+    return '$prayer در $time دیگر';
+  }
+
+  @override
   String minutesShort(int minutes) {
     return '$minutes دقیقه';
   }
 
   @override
-  String hoursMinutesShort(int hours, int minutes) {
+  String hoursMinutesShort(int hours, String minutes) {
     return '$hours ساعت $minutes دقیقه';
   }
 
@@ -986,6 +1086,21 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get distanceUnavailable => 'فاصله در دسترس نیست';
+
+  @override
+  String get qiblaStatBearing => 'جهت';
+
+  @override
+  String get qiblaStatDistance => 'فاصله';
+
+  @override
+  String get qiblaFixedCoordinates =>
+      'برای محاسبه از مختصات ثابت استفاده می‌شود، نه GPS زنده.';
+
+  @override
+  String kilometersValue(String distance) {
+    return '$distance کیلومتر';
+  }
 
   @override
   String kilometersToKaaba(String distance) {
@@ -1444,7 +1559,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get removeFavourite => 'حذف از علاقه‌مندی‌ها';
 
   @override
-  String get saveDuasHere => 'برای دسترسی سریع، دعاها را در اینجا ذخیره کنید';
+  String get saveDuasHere => 'ذخیره‌شده برای دسترسی سریع';
 
   @override
   String savedDuasCount(int count, String label) {
@@ -1810,7 +1925,7 @@ class AppLocalizationsFa extends AppLocalizations {
       'با استفاده از گزینه‌های خواندن، می‌توانید آیه‌ها را به سرعت مورد علاقه قرار دهید یا پوشه، برچسب و یادداشت‌های خصوصی اضافه کنید.';
 
   @override
-  String get privateNote => 'یادداشت خصوصی';
+  String get note => 'یادداشت';
 
   @override
   String get writeReflectionHint => 'تأملات خود را بنویسید...';
@@ -1896,6 +2011,16 @@ class AppLocalizationsFa extends AppLocalizations {
       locale: localeName,
       other: '$count آیه',
       one: '۱ آیه',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String prayersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count نماز',
     );
     return '$_temp0';
   }
@@ -2461,6 +2586,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get showLess => 'نمایش کمتر';
 
   @override
+  String get showMore => 'نمایش بیشتر';
+
+  @override
   String showAllSurahs(Object count) {
     return 'نمایش همه $count سوره';
   }
@@ -2776,10 +2904,6 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get rewardIsWithAllah => 'پاداش نزد الله است.';
-
-  @override
-  String get totalZakahWealth =>
-      'برای محاسبه زکات، کل دارایی باید حداقل ۲۰۰ باشد.';
 
   @override
   String get hifzTitle => 'حفظ';
@@ -3517,7 +3641,7 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String countdownInHoursMinutes(int hours, int minutes) {
+  String countdownInHoursMinutes(int hours, String minutes) {
     return 'در $hours ساعت و $minutes دقیقه دیگر';
   }
 
@@ -3949,6 +4073,10 @@ class AppLocalizationsFa extends AppLocalizations {
       'بازار آفلاین است. استفاده از مقادیر ذخیره شده استاندارد.';
 
   @override
+  String get zakatDisclaimer =>
+      'نرخ‌ها و فرضیات نصاب تقریبی هستند؛ آن‌ها را با عالم مورد اعتماد و راهنمایی‌های مربوط بررسی کنید.';
+
+  @override
   String get overridePrices => 'تغییر دستی قیمت‌ها';
 
   @override
@@ -4002,16 +4130,23 @@ class AppLocalizationsFa extends AppLocalizations {
   String get belowNisab => 'کمتر از حد نصاب';
 
   @override
+  String get zakatNisabNotChecked => 'حد نصاب نامشخص';
+
+  @override
   String get zakatDueLabel => 'زکات تعلق‌گرفته (۲.۵٪)';
 
   @override
   String get resetCalculator => 'بازنشانی محاسبه‌گر';
 
   @override
-  String get goldPriceGram => 'قیمت هر گرم طلا (USD)';
+  String goldPriceGram(String currency) {
+    return 'قیمت هر گرم طلا ($currency)';
+  }
 
   @override
-  String get silverPriceGram => 'قیمت هر گرم نقره (USD)';
+  String silverPriceGram(String currency) {
+    return 'قیمت هر گرم نقره ($currency)';
+  }
 
   @override
   String get zakatSavedLedger => 'محاسبه زکات در دفتر ثبت شخصی شما ذخیره شد';
@@ -4023,7 +4158,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get updateZakatPaidAmount => 'بروزرسانی مبلغ زکات پرداخت شده';
 
   @override
-  String get enterPaidAmountUsd => 'مبلغ پرداخت شده را به دلار (USD) وارد کنید';
+  String enterPaidAmountInCurrency(String currency) {
+    return 'مبلغ پرداخت‌شده را به $currency وارد کنید';
+  }
 
   @override
   String get calculatorTab => 'محاسبه‌گر';
@@ -4091,6 +4228,16 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get todayLegend => 'امروز';
+
+  @override
+  String get newMonthLegend => 'آغاز ماه هجری';
+
+  @override
+  String get comingUp => 'پیش رو';
+
+  @override
+  String get moonSightingHint =>
+      'اگر رؤیت ماه در منطقه شما متفاوت باشد، تاریخ‌های هجری را یک روز جابه‌جا می‌کند.';
 
   @override
   String get eidLegend => 'عید';
@@ -4229,19 +4376,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String amountInCurrency(String currency) {
     return 'مبلغ به $currency';
   }
-
-  @override
-  String get livestockSubtitle =>
-      'گوسفند/بز، گاو، شتر — ارزش‌های ساده‌شده مدرن';
-
-  @override
-  String get livestockSheepGoats => 'گوسفند و بز';
-
-  @override
-  String get livestockCowsBuffalo => 'گاو / گاومیش';
-
-  @override
-  String get livestockCamels => 'شتر';
 
   @override
   String get noHistoricalCalculations => 'هیچ محاسبات قبلی یافت نشد';
@@ -4449,4 +4583,490 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get confirmLiveLocationMessage =>
       'آیا می‌خواهید اوقات شرعی را بر اساس موقعیت مکانی زنده دستگاه خود قفل کنید؟ برنامه با سفر شما زمان‌ها را به طور خودکار بروزرسانی می‌کند.';
+
+  @override
+  String ratesLiveStatus(String source, String time) {
+    return '$source • زنده • $time';
+  }
+
+  @override
+  String ratesStaleStatus(String source, String time) {
+    return '$source • آخرین نرخ شناخته‌شده • $time';
+  }
+
+  @override
+  String get wordByWord => 'کلمه به کلمه';
+
+  @override
+  String get wordByWordDescription =>
+      'هنگام خواندن روی هر کلمه بزنید تا معنا و آوانگاری آن را ببینید.';
+
+  @override
+  String get wordMeaning => 'معنا';
+
+  @override
+  String get wordTransliteration => 'آوانگاری';
+
+  @override
+  String wordByWordProvenance(String source, String license) {
+    return 'معانی کلمات از $source ($license). ابزار کمکی برای خواندن است، نه ترجمه یا تفسیر.';
+  }
+
+  @override
+  String savedAyahsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count آیه ذخیره‌شده',
+      one: '۱ آیه ذخیره‌شده',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get allSaved => 'همه ذخیره‌شده‌ها';
+
+  @override
+  String get newestFirst => 'جدیدترین ابتدا';
+
+  @override
+  String get browseSurahs => 'مرور سوره‌ها';
+
+  @override
+  String get forThisMorning => 'برای این صبح';
+
+  @override
+  String get forThisEvening => 'برای این عصر';
+
+  @override
+  String get continueAction => 'ادامه';
+
+  @override
+  String get suggestedForYou => 'پیشنهاد برای شما';
+
+  @override
+  String get browseByTheme => 'مرور بر اساس موضوع';
+
+  @override
+  String get beginAction => 'شروع';
+
+  @override
+  String categoriesCount(int count) {
+    return '$count دسته';
+  }
+
+  @override
+  String themesCount(int count) {
+    return '$count موضوع';
+  }
+
+  @override
+  String searchCategoryCount(int count) {
+    return 'جستجو در $count دسته';
+  }
+
+  @override
+  String searchInTheme(String theme) {
+    return 'جستجو در $theme';
+  }
+
+  @override
+  String get backToDuas => 'بازگشت به دعاها';
+
+  @override
+  String get loggedToday => 'ثبت‌شده امروز';
+
+  @override
+  String get theNight => 'شب';
+
+  @override
+  String get prayerPassed => 'گذشته';
+
+  @override
+  String prayerBeganAt(String time) {
+    return 'شروع $time';
+  }
+
+  @override
+  String prayerEndsAt(String time) {
+    return 'پایان $time';
+  }
+
+  @override
+  String get tasbihAndDuas => 'تسبیح و دعاها';
+
+  @override
+  String get surahMap => 'نقشه سوره‌ها';
+
+  @override
+  String get tapCellToOpen => 'برای باز کردن روی خانه بزنید';
+
+  @override
+  String get less => 'کمتر';
+
+  @override
+  String get khatmProgress => 'پیشرفت ختم';
+
+  @override
+  String get notLogged => 'ثبت نشده';
+
+  @override
+  String get mostReadSurah => 'سوره با بیشترین خواندن';
+
+  @override
+  String get pureBlackBackground => 'پس‌زمینهٔ کاملاً سیاه';
+
+  @override
+  String get pureBlackBackgroundSubtitle =>
+      'در حالت تیره با هر پالت رنگ از پس‌زمینهٔ کاملاً سیاه استفاده کنید.';
+
+  @override
+  String get showSplashScreen => 'نمایش انیمیشن شروع';
+
+  @override
+  String get showSplashScreenSubtitle =>
+      'هنگام باز شدن برنامه یک انیمیشن کوتاه پخش شود.';
+
+  @override
+  String get savedFolderLabel => 'پوشه';
+
+  @override
+  String get savedManageFolders => 'مدیریت پوشه‌ها';
+
+  @override
+  String get zakatNisabNeedsRates =>
+      'برای بررسی نصاب، قیمت طلا و نقره را وارد کنید. بارگذاری قیمت‌ها ممکن نشد؛ آن‌ها را دستی وارد کنید.';
+
+  @override
+  String get zakatDeleteRecordQuestion => 'این محاسبه حذف شود؟';
+
+  @override
+  String get zakatDeleteRecordBody =>
+      'محاسبهٔ ذخیره‌شده از تاریخچه حذف می‌شود.';
+
+  @override
+  String get unitTola => 'تولا';
+
+  @override
+  String get hifzRatingFail => 'ناموفق';
+
+  @override
+  String get hifzRatingPass => 'موفق';
+
+  @override
+  String get shareImageFormat => 'قالب تصویر اشتراک‌گذاری';
+
+  @override
+  String get shareFormatStory => 'استوری 9:16';
+
+  @override
+  String get shareFormatSquare => 'مربع 1:1';
+
+  @override
+  String get shareFormatClassic => 'کلاسیک';
+
+  @override
+  String get unableToShareAyahImage => 'اشتراک‌گذاری تصویر آیه ممکن نشد.';
+
+  @override
+  String get reciterGroupDownloaded => 'گروه‌بندی دانلودشده‌ها';
+
+  @override
+  String get reciterShowAlphabetical => 'نمایش به ترتیب الفبا';
+
+  @override
+  String get audioConnectionInterrupted =>
+      'اتصال صوتی قطع شد. اینترنت خود را بررسی کنید و دوباره تلاش کنید.';
+
+  @override
+  String get offlineDownloadAyahOrReconnect =>
+      'شما آفلاین هستید. این آیه را دانلود کنید یا برای پخش آنلاین دوباره وصل شوید.';
+
+  @override
+  String get unableToPlayAyahAudio => 'پخش صدای آیه ممکن نشد.';
+
+  @override
+  String get repeatOnce => 'یک بار';
+
+  @override
+  String repeatTimes(int count) {
+    return '$count بار';
+  }
+
+  @override
+  String get repeatInfinite => 'بی‌نهایت';
+
+  @override
+  String get halfSecond => '0.5 ثانیه';
+
+  @override
+  String get resourceStateUpdateAvailable => 'به‌روزرسانی موجود است';
+
+  @override
+  String get resourcePhaseStarting => 'در حال شروع';
+
+  @override
+  String get resourcePhaseVerifying => 'در حال بررسی';
+
+  @override
+  String get resourcePhaseExtracting => 'در حال استخراج';
+
+  @override
+  String get resourcePhaseInstalling => 'در حال نصب';
+
+  @override
+  String get resourcePhaseFailed => 'ناموفق';
+
+  @override
+  String get resourceTypeGeneric => 'منبع';
+
+  @override
+  String get translationBundled => 'همراه برنامه';
+
+  @override
+  String get translationDownloadUnavailable => 'دانلود در دسترس نیست';
+
+  @override
+  String get navigationSettingsHint =>
+      'برای تغییر ترتیب، کاشی‌ها را بکشید. یک مورد در دسترس را روی کاشی فعال رها کنید تا جابه‌جا شوند، یا روی موردی در پایین بزنید تا سنجاق شود (کم‌استفاده‌ترین مورد جایگزین می‌شود).';
+
+  @override
+  String navigationActiveSlots(int count, int max) {
+    return 'جایگاه‌های فعال نوار پیمایش ($count/$max)';
+  }
+
+  @override
+  String get navigationAvailableItems => 'موارد در دسترس سنجاق‌نشده';
+
+  @override
+  String navigationSlot(int number) {
+    return 'جایگاه $number';
+  }
+
+  @override
+  String navigationSlotLocked(int number) {
+    return 'جایگاه $number (مرکز قفل‌شده)';
+  }
+
+  @override
+  String navigationSwapped(String first, String second) {
+    return '$first با $second جابه‌جا شد';
+  }
+
+  @override
+  String navigationRemoved(String item) {
+    return '$item از نوار پیمایش حذف شد';
+  }
+
+  @override
+  String navigationPinned(String item) {
+    return '$item سنجاق شد';
+  }
+
+  @override
+  String navigationPinnedDisplaced(String item, String displaced) {
+    return '$item سنجاق شد ($displaced جایگزین شد)';
+  }
+
+  @override
+  String get navSubtitleHome => 'داشبورد اصلی';
+
+  @override
+  String get navSubtitleQuran => 'قرآن کریم را بخوانید';
+
+  @override
+  String get navSubtitlePrayer => 'اوقات نماز و اذان';
+
+  @override
+  String get navSubtitleSettings => 'تنظیمات سامانه';
+
+  @override
+  String get dockZakat => 'زکات';
+
+  @override
+  String get dockCalendar => 'تقویم';
+
+  @override
+  String downloadsReciterCount(int count) {
+    return '$count قاری';
+  }
+
+  @override
+  String downloadsItemCount(int count) {
+    return '$count مورد';
+  }
+
+  @override
+  String downloadsDeleteReciterBody(String reciter, String surah) {
+    return 'همه دانلودهای $reciter برای $surah حذف شوند؟';
+  }
+
+  @override
+  String get downloadsAllSurahs => 'همه سوره‌ها';
+
+  @override
+  String get downloadsFilterTitle => 'فیلتر و مرتب‌سازی دانلودها';
+
+  @override
+  String get downloadsFilterSubtitle =>
+      'کنترل بیشتر بر اینکه کدام تلاوت‌ها در کتابخانه شما نمایش داده شوند';
+
+  @override
+  String get downloadsFilterSearchHint => 'جستجوی تلاوت‌ها یا سوره‌ها...';
+
+  @override
+  String get downloadsGroupBy => 'گروه‌بندی بر اساس';
+
+  @override
+  String get downloadsSortBy => 'مرتب‌سازی بر اساس';
+
+  @override
+  String get downloadsCategory => 'دسته‌بندی';
+
+  @override
+  String get downloadsContentType => 'نوع محتوا';
+
+  @override
+  String get downloadsSortReciterAsc => 'قاری (الف ← ی)';
+
+  @override
+  String get downloadsSortReciterDesc => 'قاری (ی ← الف)';
+
+  @override
+  String get downloadsSortSizeDesc => 'حجم (بزرگ‌ترین اول)';
+
+  @override
+  String get downloadsSortSizeAsc => 'حجم (کوچک‌ترین اول)';
+
+  @override
+  String get downloadsSortSurahAsc => 'سوره (1 ← 114)';
+
+  @override
+  String get downloadsSortSurahDesc => 'سوره (114 ← 1)';
+
+  @override
+  String get offsetSetPositive => 'مثبت کردن';
+
+  @override
+  String get offsetSetNegative => 'منفی کردن';
+
+  @override
+  String get notificationPermissionCheckTimedOut =>
+      'بررسی دسترسی اعلان‌ها زمان‌بر شد. برنامه را دوباره باز کنید یا اعلان‌ها را در تنظیمات سیستم فعال کنید.';
+
+  @override
+  String get notificationPermissionCheckFailed =>
+      'بررسی دسترسی اعلان‌ها ممکن نشد. دوباره تلاش کنید یا اعلان‌ها را در تنظیمات سیستم فعال کنید.';
+
+  @override
+  String get exactAlarmPermissionCheckTimedOut =>
+      'بررسی دسترسی هشدار دقیق زمان‌بر شد. برنامه را دوباره باز کنید یا «هشدارها و یادآورها» را در تنظیمات سیستم فعال کنید.';
+
+  @override
+  String get exactAlarmPermissionCheckFailed =>
+      'بررسی دسترسی هشدار دقیق ممکن نشد. دوباره تلاش کنید یا «هشدارها و یادآورها» را در تنظیمات سیستم فعال کنید.';
+
+  @override
+  String get asrMethodHanafi => 'حنفی';
+
+  @override
+  String get highLatitudeRuleAutoTitle => 'خودکار';
+
+  @override
+  String get highLatitudeRuleNoneTitle => 'هیچ‌کدام';
+
+  @override
+  String get highLatitudeRuleMiddleOfTheNightTitle => 'نیمه‌شب';
+
+  @override
+  String get highLatitudeRuleOneSeventhTitle => 'یک‌هفتم';
+
+  @override
+  String get highLatitudeRuleAngleBasedTitle => 'مبتنی بر زاویه';
+
+  @override
+  String get prayerMethodAuto => 'بهترین برای مکان';
+
+  @override
+  String get prayerMethodMuslimWorldLeague => 'رابطه جهان اسلام';
+
+  @override
+  String get prayerMethodEgyptian => 'مصری';
+
+  @override
+  String get prayerMethodUmmAlQura => 'ام‌القری';
+
+  @override
+  String get prayerMethodDubai => 'دبی / خلیج';
+
+  @override
+  String get prayerMethodKuwait => 'کویت';
+
+  @override
+  String get prayerMethodQatar => 'قطر';
+
+  @override
+  String get prayerMethodKarachi => 'کراچی';
+
+  @override
+  String get prayerMethodMoonsighting => 'کمیته رؤیت هلال';
+
+  @override
+  String get prayerMethodMorocco => 'مراکش';
+
+  @override
+  String get prayerMethodSingapore => 'سنگاپور';
+
+  @override
+  String get prayerMethodTehran => 'تهران';
+
+  @override
+  String get prayerMethodTurkey => 'ترکیه / دیانت';
+
+  @override
+  String get prayerMethodShortAuto => 'خودکار';
+
+  @override
+  String get prayerMethodShortMwl => 'MWL';
+
+  @override
+  String get prayerMethodShortDubai => 'دبی';
+
+  @override
+  String get prayerMethodShortMoonsighting => 'رؤیت هلال';
+
+  @override
+  String get prayerMethodShortTurkey => 'ترکیه';
+
+  @override
+  String get dailyToolsKeepOnePinned =>
+      'حداقل یک ابزار باید سنجاق شده باقی بماند.';
+
+  @override
+  String get zakatLivestockNotCalculated =>
+      'زکات دام در اینجا محاسبه نمی‌شود و در مجموع نیامده است. لطفاً از یک عالم صلاحیت‌دار بپرسید.';
+
+  @override
+  String get resourcesFilterTitle => 'فیلتر و مرتب‌سازی منابع';
+
+  @override
+  String get resourceSortName => 'نام (الف ← ی)';
+
+  @override
+  String get resourceSortInstalledFirst => 'نصب‌شده‌ها اول';
+
+  @override
+  String get resourceFilterStatus => 'وضعیت';
+
+  @override
+  String get resourceFilterType => 'نوع';
+
+  @override
+  String get resourceViewByType => 'بر اساس نوع';
+
+  @override
+  String get resourceViewNone => 'بدون گروه‌بندی';
+
+  @override
+  String get resourcesNoMatches => 'هیچ منبعی با این فیلترها مطابقت ندارد.';
 }

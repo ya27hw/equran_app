@@ -5,6 +5,7 @@ enum ResourceType {
   timings('timings'),
   quranFonts('quran_fonts'),
   translation('translation'),
+  wordByWord('word_by_word'),
   unknown('unknown');
 
   const ResourceType(this.value);
@@ -105,16 +106,6 @@ class DownloadableResource {
   final Map<String, Object?> metadata;
 
   ResourceType get type => ResourceType.fromString(rawType);
-
-  String get typeLabel {
-    return switch (type) {
-      ResourceType.tafsir => 'Tafsir',
-      ResourceType.timings => 'Audio Timings',
-      ResourceType.quranFonts => 'Quran Fonts',
-      ResourceType.translation => 'Translation',
-      ResourceType.unknown => rawType.isEmpty ? 'Resource' : rawType,
-    };
-  }
 
   factory DownloadableResource.fromJson(Map<String, Object?> json) {
     final Set<String> knownKeys = <String>{

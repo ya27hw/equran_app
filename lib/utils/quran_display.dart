@@ -1,11 +1,5 @@
 import 'package:equran/l10n/app_localizations.dart';
-import 'package:flutter/widgets.dart';
 import 'package:quran/quran.dart' as quran;
-
-bool isArabicLocale(BuildContext context) {
-  final String code = Localizations.localeOf(context).languageCode;
-  return code == 'ar' || code == 'fa';
-}
 
 bool isArabicLocalizations(AppLocalizations localizations) {
   final String code = localizations.localeName.split('_').first.toLowerCase();
@@ -20,14 +14,6 @@ String localizedSurahName(AppLocalizations localizations, int surah) {
     return quran.getSurahNameTurkish(surah);
   }
   return quran.getSurahName(surah);
-}
-
-String localizedSurahNameFromValues(
-  AppLocalizations localizations, {
-  required String arabicName,
-  required String transliteration,
-}) {
-  return isArabicLocalizations(localizations) ? arabicName : transliteration;
 }
 
 String localizedSurahAyahLabel(

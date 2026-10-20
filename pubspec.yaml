@@ -3,10 +3,10 @@ description: "Application for reading the Holy Quran"
 
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
-version: 3.4.1+102
+version: 4.0.0-beta.1+105
 environment:
   sdk: ">=3.11.5 <4.0.0"
-  flutter: ">=3.41.7"
+  flutter: ">=3.44.0"
 
 dependencies:
   flutter:
@@ -36,6 +36,7 @@ dependencies:
   crypto: ^3.0.7
   http: ^1.6.0
   path_provider: ^2.1.5
+  device_info_plus: ^12.4.0
   package_info_plus: ^9.0.1
   share_plus: ^12.0.1
   url_launcher: ^6.3.2
@@ -49,8 +50,6 @@ dependencies:
   timezone: ^0.11.0
   flutter_timezone: ^5.0.2
   flutter_compass: ^0.8.1
-  foil:
-    path: third_party/foil
   just_audio_media_kit: ^2.1.0
   media_kit: ^1.2.6
   media_kit_libs_linux: ^1.2.1
@@ -101,16 +100,50 @@ flutter:
     - assets/data/quran/translations/en_saheeh/
     - assets/data/transliteration/quran_en_transliteration.json
     - assets/data/dua/asma_al_husna.json
-    - assets/data/dua/daily_hadith_duas.json
     - assets/data/dua/hisn/index.json
     - assets/data/dua/hisn/categories/
     - assets/media/images/app/
     - assets/media/images/icon.webp
+    - assets/media/fonts/newsreader/OFL.txt
+    - assets/media/fonts/inter/OFL.txt
+    - assets/media/fonts/noto-naskh-arabic/OFL.txt
+    - assets/media/fonts/amiri-quran/OFL.txt
 
   fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/media/fonts/inter/Inter.ttf
+          weight: 400
+        - asset: assets/media/fonts/inter/Inter.ttf
+          weight: 500
+        - asset: assets/media/fonts/inter/Inter.ttf
+          weight: 600
+    - family: NotoNaskhArabic
+      fonts:
+        - asset: assets/media/fonts/noto-naskh-arabic/NotoNaskhArabic.ttf
+          weight: 400
+        - asset: assets/media/fonts/noto-naskh-arabic/NotoNaskhArabic.ttf
+          weight: 500
+        - asset: assets/media/fonts/noto-naskh-arabic/NotoNaskhArabic.ttf
+          weight: 600
+    - family: AmiriQuran
+      fonts:
+        - asset: assets/media/fonts/amiri-quran/AmiriQuran-Regular.ttf
+          weight: 400
     - family: QuranIndoPak
       fonts:
         - asset: assets/media/fonts/QuranIndoPak.ttf
     - family: UthmanicHafs
       fonts:
         - asset: assets/media/fonts/UthmanicHafs_V22.ttf
+    - family: Newsreader
+      fonts:
+        - asset: assets/media/fonts/newsreader/Newsreader.ttf
+          weight: 400
+        - asset: assets/media/fonts/newsreader/Newsreader.ttf
+          weight: 500
+        - asset: assets/media/fonts/newsreader/Newsreader.ttf
+          weight: 600
+        - asset: assets/media/fonts/newsreader/Newsreader-Italic.ttf
+          weight: 400
+          style: italic

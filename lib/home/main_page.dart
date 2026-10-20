@@ -3,14 +3,19 @@ import 'package:equran/home/read.dart';
 import 'package:equran/search/quran_text_search_results.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
+import 'package:equran/theme/equran_tokens.dart';
+import 'package:equran/widgets/redesign/design_icon.dart';
+import 'package:equran/widgets/redesign/pill_tag.dart' show ChipButton;
 import 'package:equran/utils/app_radii.dart';
 import 'package:equran/hifz/hifz.dart';
 import 'package:equran/utils/debouncer.dart';
 import 'package:equran/utils/quran_display.dart';
-import 'package:equran/widgets/holographic_card.dart';
+import 'package:equran/widgets/quran_reading_hero.dart';
+import 'package:equran/widgets/grouped_card_sliver.dart';
 import 'package:equran/widgets/library.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:quran/quran.dart' as quran;
@@ -35,6 +40,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage>
     with SingleTickerProviderStateMixin {
+  final FocusNode _favouritesSearchFocus = FocusNode();
   final Debouncer _debouncer = Debouncer(milliseconds: 400);
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _surahScrollController = ScrollController();
@@ -72,6 +78,7 @@ class _MainPageState extends State<MainPage>
   @override
   void dispose() {
     _debouncer.cancel();
+    _favouritesSearchFocus.dispose();
     widget.searchRequestListenable?.removeListener(
       _handleExternalSearchRequest,
     );
@@ -87,8 +94,6 @@ class _MainPageState extends State<MainPage>
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
     final double width = MediaQuery.of(context).size.width;
     final double horizontalPadding = width >= 1400
         ? 36
@@ -100,331 +105,141 @@ class _MainPageState extends State<MainPage>
       resizeToAvoidBottomInset: false,
       body: Column(
         children: <Widget>[
-          DecoratedBox(
-            decoration: _topBarDecoration(),
-            child: SafeArea(
-              bottom: false,
-              child: Material(
-                color: colors.background.withAlpha(0),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-                  child: _buildTopBar(theme),
-                ),
-              ),
+          SafeArea(
+            bottom: false,
+            child: SavedQuranHeader(
+              selectedIndex: _selectedSegment,
+              searchField: _showSearch && _selectedSegment != 3
+                  ? _buildSearchField()
+                  : null,
+              onTitleTap: _scrollToTop,
+              onSearch: () {
+                if (_selectedSegment == 3) {
+                  _favouritesSearchFocus.requestFocus();
+                } else {
+                  _openSearch();
+                }
+              },
+              onSelectSection: _selectSection,
             ),
           ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(
-              horizontalPadding,
-              10,
-              horizontalPadding,
-              15,
-            ),
-            child: _buildSectionHeader(theme),
-          ),
-
+          const SizedBox(height: 14),
           Expanded(child: _buildSegmentPager(horizontalPadding)),
         ],
       ),
-      floatingActionButton: _selectedSegment == 3
-          ? null
-          : FloatingActionButton(
-              onPressed: () {
-                setState(() {
-                  _ascending = !_ascending;
-                });
-              },
-              backgroundColor: colors.surface,
-              foregroundColor: colors.primary,
-              shape: CircleBorder(side: BorderSide(color: colors.border)),
-              elevation: 4,
-              child: AnimatedRotation(
-                duration: const Duration(milliseconds: 250),
-                turns: _ascending ? 0.0 : 0.5,
-                child: Icon(
-                  Icons.arrow_downward_rounded,
-                  color: colors.primary,
-                  size: 24,
-                ),
-              ),
-            ),
+      floatingActionButton: _showsOrderChip ? _buildOrderChip() : null,
     );
   }
 
-  Widget _buildTopBar(ThemeData theme) {
+  bool get _showsOrderChip =>
+      _selectedSegment != 3 &&
+      !(_showSearch &&
+          _activeSearchMode == QuranSearchMode.quranText &&
+          _selectedSegment == 0);
+
+  /// Flat chip that reverses the order of the active list. It shows the order
+  /// as numerals only (so it needs no per-language text); the reading
+  /// direction of the numerals is pinned to left-to-right.
+  Widget _buildOrderChip() {
     final EquranColors colors = context.equranColors;
-    final localizations = AppLocalizations.of(context)!;
-    return Row(
-      children: <Widget>[
-        const SizedBox(width: 48),
-        Expanded(
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 260),
-            switchInCurve: Curves.easeOutCubic,
-            switchOutCurve: Curves.easeInCubic,
-            transitionBuilder: (child, animation) {
-              return SizeTransition(
-                sizeFactor: animation,
-                axis: Axis.horizontal,
-                alignment: Alignment.centerLeft,
-                child: FadeTransition(opacity: animation, child: child),
-              );
-            },
-            child: _showSearch
-                ? SearchBar(
-                    key: const ValueKey<String>('header-search'),
-                    controller: _searchController,
-                    leading: const Icon(Icons.search_rounded),
-                    trailing: <Widget>[
-                      IconButton(
-                        tooltip: localizations.closeSearch,
-                        onPressed: _closeSearch,
-                        icon: const Icon(Icons.close_rounded),
-                      ),
-                    ],
-                    hintText: _searchHint(localizations),
-                    hintStyle: WidgetStatePropertyAll(
-                      theme.textTheme.bodyLarge?.copyWith(
-                        fontStyle: FontStyle.italic,
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                    onChanged: _changeSearchQuery,
-                    elevation: const WidgetStatePropertyAll(0),
-                    shape: WidgetStatePropertyAll(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(AppRadii.pill),
-                      ),
-                    ),
-                  )
-                : GestureDetector(
-                    key: const ValueKey<String>('header-title'),
-                    behavior: HitTestBehavior.opaque,
-                    onTap: _scrollToTop,
-                    child: Text(
-                      localizations.quran,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        color: colors.onPrimary,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0,
-                      ),
-                    ),
-                  ),
-          ),
-        ),
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 180),
-          child: Row(
-            key: ValueKey<bool>(_showSearch),
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              _showSearch
-                  ? const SizedBox(
-                      key: ValueKey<String>('search-button-hidden'),
-                      width: 0,
-                    )
-                  : IconButton(
-                      key: const ValueKey<String>('search-button'),
-                      tooltip: localizations.searchQuran,
-                      onPressed: _openSearch,
-                      color: colors.onPrimary,
-                      icon: const Icon(Icons.search_rounded),
-                    ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  BoxDecoration _topBarDecoration() {
-    final EquranColors colors = context.equranColors;
-
-    return BoxDecoration(
-      color: colors.background.withAlpha(0),
-      border: Border(bottom: BorderSide(color: colors.border.withAlpha(90))),
-    );
-  }
-
-  Widget _buildSectionHeader(ThemeData theme) {
-    final EquranColors colors = context.equranColors;
-    final localizations = AppLocalizations.of(context)!;
-
-    return LayoutBuilder(
-      builder: (BuildContext context, BoxConstraints constraints) {
-        final bool compact = constraints.maxWidth < 390;
-        return DecoratedBox(
-          decoration: BoxDecoration(
-            color: colors.surface.withAlpha(210),
-            borderRadius: BorderRadius.circular(AppRadii.pill),
-            border: Border.all(color: colors.border),
-            boxShadow: <BoxShadow>[
-              BoxShadow(
-                color: colors.shadow.withAlpha(
-                  theme.brightness == Brightness.light ? 8 : 14,
-                ),
-                blurRadius: 14,
-                offset: const Offset(0, 5),
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(4),
-            child: LayoutBuilder(
-              builder: (context, segmentConstraints) {
-                final double segmentWidth = segmentConstraints.maxWidth / 4;
-                final double height = compact ? 38 : 42;
-                final bool isRtl =
-                    Directionality.of(context) == TextDirection.rtl;
-                return SizedBox(
-                  height: height,
-                  child: Stack(
-                    children: <Widget>[
-                      AnimatedPositioned(
-                        duration: const Duration(milliseconds: 220),
-                        curve: Curves.easeOutCubic,
-                        left: isRtl ? null : segmentWidth * _selectedSegment,
-                        right: isRtl ? segmentWidth * _selectedSegment : null,
-                        top: 0,
-                        bottom: 0,
-                        width: segmentWidth,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: colors.primary,
-                            borderRadius: BorderRadius.circular(AppRadii.pill),
-                            boxShadow: <BoxShadow>[
-                              BoxShadow(
-                                color: colors.primarySoft.withAlpha(38),
-                                blurRadius: 14,
-                                offset: const Offset(0, 5),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Row(
-                        children: <Widget>[
-                          _buildSegmentButton(
-                            theme,
-                            index: 0,
-                            icon: Icons.menu_book_rounded,
-                            label: localizations.surahs,
-                            tooltip: localizations.browseBySurah,
-                            compact: compact,
-                          ),
-                          _buildSegmentButton(
-                            theme,
-                            index: 1,
-                            icon: Icons.format_list_numbered_rtl_rounded,
-                            label: localizations.juz,
-                            tooltip: localizations.browseByJuz,
-                            compact: compact,
-                          ),
-                          _buildSegmentButton(
-                            theme,
-                            index: 2,
-                            icon: Icons.auto_stories_rounded,
-                            label: localizations.pages,
-                            tooltip: localizations.browseByPage,
-                            compact: compact,
-                          ),
-                          _buildSegmentButton(
-                            theme,
-                            index: 3,
-                            icon: Icons.bookmark_rounded,
-                            label: localizations.saved,
-                            tooltip: localizations.savedAyahs,
-                            compact: compact,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildSegmentButton(
-    ThemeData theme, {
-    required int index,
-    required IconData icon,
-    required String label,
-    required String tooltip,
-    required bool compact,
-  }) {
-    final EquranColors colors = context.equranColors;
-    final bool selected = _selectedSegment == index;
-    final BorderRadius radius = BorderRadius.circular(AppRadii.pill);
-
-    return Expanded(
-      child: Tooltip(
-        message: tooltip,
-        child: Material(
-          color: colors.background.withAlpha(0),
-          borderRadius: radius,
-          child: InkWell(
-            borderRadius: radius,
-            onTap: () {
-              if (_tabController.index != index) {
-                _tabController.animateTo(
-                  index,
-                  duration: const Duration(milliseconds: 220),
-                  curve: Curves.easeOutCubic,
-                );
-              }
-              if (_selectedSegment != index ||
-                  _activeSearchMode != QuranSearchMode.surahs) {
-                setState(() {
-                  _selectedSegment = index;
-                  _activeSearchMode = QuranSearchMode.surahs;
-                });
-              }
-            },
-            child: SizedBox(
-              height: compact ? 38 : 42,
-              child: Center(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      if (!compact) ...<Widget>[
-                        Icon(
-                          icon,
-                          size: 17,
-                          color: selected
-                              ? colors.onPrimary
-                              : colors.textSecondary,
-                        ),
-                        const SizedBox(width: 6),
-                      ],
-                      Text(
-                        label,
-                        maxLines: 1,
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          color: selected
-                              ? colors.onPrimary
-                              : colors.textSecondary,
-                          fontSize: compact ? 12.5 : null,
-                          fontWeight: selected
-                              ? FontWeight.w900
-                              : FontWeight.w700,
-                          letterSpacing: 0,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+    final EquranTokens tokens = context.equranTokens;
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
+    final int last = switch (_selectedSegment) {
+      0 => quran.totalSurahCount,
+      1 => 30,
+      _ => quran.totalPagesCount,
+    };
+    final String label = _ascending ? '1\u2013$last' : '$last\u20131';
+    void reverse() => setState(() => _ascending = !_ascending);
+    return Tooltip(
+      message: localizations.reverseOrder,
+      child: GestureDetector(
+        // The chip is 36 px high; this widens the touch area to 44 px.
+        behavior: HitTestBehavior.translucent,
+        excludeFromSemantics: true,
+        onTap: reverse,
+        child: SizedBox(
+          height: 44,
+          child: Center(
+            widthFactor: 1,
+            child: Material(
+              color: colors.surface,
+              shape: StadiumBorder(side: BorderSide(color: tokens.hair2)),
+              clipBehavior: Clip.antiAlias,
+              child: ChipButton(
+                label,
+                icon: Icons.swap_vert_rounded,
+                labelDirection: TextDirection.ltr,
+                onPressed: reverse,
               ),
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  void _selectSection(int index) {
+    if (_tabController.index != index) {
+      _tabController.animateTo(
+        index,
+        duration: MediaQuery.disableAnimationsOf(context)
+            ? Duration.zero
+            : const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+      );
+    }
+    if (_selectedSegment != index ||
+        _activeSearchMode != QuranSearchMode.surahs) {
+      setState(() {
+        _selectedSegment = index;
+        _activeSearchMode = QuranSearchMode.surahs;
+      });
+    }
+  }
+
+  Widget _buildSearchField() {
+    final EquranColors colors = context.equranColors;
+    final EquranTokens tokens = context.equranTokens;
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
+    return Container(
+      key: const ValueKey<String>('header-search'),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(EquranRadii.large),
+        border: Border.all(color: tokens.hair),
+      ),
+      padding: const EdgeInsetsDirectional.only(start: 14, end: 2),
+      child: Row(
+        children: <Widget>[
+          DesignIcon('search', size: 19, color: tokens.muted),
+          const SizedBox(width: 10),
+          Expanded(
+            child: TextField(
+              controller: _searchController,
+              autofocus: true,
+              onChanged: _changeSearchQuery,
+              style: TextStyle(
+                fontSize: 15,
+                fontVariations: const [FontVariation('opsz', 15)],
+                color: colors.textPrimary,
+              ),
+              decoration: InputDecoration.collapsed(
+                hintText: _searchHint(localizations),
+                hintStyle: TextStyle(
+                  fontSize: 15,
+                  fontVariations: const [FontVariation('opsz', 15)],
+                  color: tokens.muted,
+                ),
+              ),
+            ),
+          ),
+          IconButton(
+            tooltip: localizations.closeSearch,
+            onPressed: _closeSearch,
+            icon: DesignIcon('x', size: 18, color: tokens.text2),
+          ),
+        ],
       ),
     );
   }
@@ -479,10 +294,26 @@ class _MainPageState extends State<MainPage>
           ),
         ),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: PrimaryScrollController(
             controller: _favouritesScrollController,
-            child: FavouritesList(searchQuery: _searchQuery),
+            child: FavouritesList(
+              searchQuery: _searchQuery,
+              searchFocusNode: _favouritesSearchFocus,
+              onSearchChanged: (value) {
+                _searchController.text = value;
+                _changeSearchQuery(value);
+              },
+              onBrowseSurahs: () {
+                _closeSearch();
+                _tabController.animateTo(
+                  0,
+                  duration: MediaQuery.disableAnimationsOf(context)
+                      ? Duration.zero
+                      : const Duration(milliseconds: 220),
+                );
+              },
+            ),
           ),
         ),
       ],
@@ -654,7 +485,8 @@ class _HifzReminderCard extends StatelessWidget {
           (u) => hasContent(u),
           orElse: () => activeUnits.first,
         );
-        final radius = BorderRadius.circular(AppRadii.large);
+        final radius = BorderRadius.circular(EquranRadii.large);
+        final tokens = context.equranTokens;
 
         return Padding(
           padding: const EdgeInsets.fromLTRB(0, 0, 0, 16),
@@ -665,34 +497,17 @@ class _HifzReminderCard extends StatelessWidget {
             child: Ink(
               decoration: BoxDecoration(
                 borderRadius: radius,
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: <Color>[
-                    colors.primary.withAlpha(20),
-                    colors.primary.withAlpha(5),
-                  ],
-                ),
-                border: Border.all(color: colors.primary.withAlpha(40)),
+                color: tokens.goldWash,
               ),
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 child: Row(
                   children: [
-                    Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: colors.primary.withAlpha(30),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.menu_book_rounded,
-                        color: colors.primary,
-                        size: 24,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
+                    DesignIcon('book', size: 22, color: tokens.goldText),
+                    const SizedBox(width: 14),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -717,8 +532,8 @@ class _HifzReminderCard extends StatelessWidget {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: colors.primary,
-                        foregroundColor: colors.onPrimary,
+                        backgroundColor: tokens.filled,
+                        foregroundColor: Colors.white,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(AppRadii.pill),
@@ -769,49 +584,70 @@ class _QuranPageList extends StatelessWidget {
         }).toList();
 
     final List<int> pages = ascending ? rawPages : rawPages.reversed.toList();
-
-    Widget child = GridView.builder(
-      key: ValueKey<bool>(ascending),
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.only(bottom: 28),
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 220,
-        mainAxisExtent: 118,
-        mainAxisSpacing: 10,
-        crossAxisSpacing: 10,
-      ),
-      itemCount: pages.length,
-      itemBuilder: (context, index) {
-        final int page = pages[index];
-        return _QuranPageTile(
-          page: page,
-          summary: _pageSummary(page, localizations),
-        );
-      },
+    final ScrollController? controller = PrimaryScrollController.maybeOf(
+      context,
     );
 
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 300),
-      child: child,
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        // The grouped card keeps a readable width on tablets and desktops.
+        final double sideInset = constraints.maxWidth > 760
+            ? (constraints.maxWidth - 760) / 2
+            : 0;
+        return Scrollbar(
+          key: ValueKey<bool>(ascending),
+          controller: controller,
+          thumbVisibility: true,
+          interactive: true,
+          child: CustomScrollView(
+            controller: controller,
+            physics: const BouncingScrollPhysics(),
+            scrollCacheExtent: const ScrollCacheExtent.pixels(900),
+            slivers: <Widget>[
+              SliverPadding(
+                padding: EdgeInsets.fromLTRB(sideInset, 0, sideInset, 30),
+                sliver: GroupedCardSliver(
+                  itemCount: pages.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final int page = pages[index];
+                    return _QuranPageTile(
+                      page: page,
+                      summary: _pageSummary(page, localizations),
+                      inkRadius: groupedInkRadius(index, pages.length),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
 
+/// One page of the Pages tab: a row of the grouped card.
 class _QuranPageTile extends StatelessWidget {
-  const _QuranPageTile({required this.page, required this.summary});
+  const _QuranPageTile({
+    required this.page,
+    required this.summary,
+    required this.inkRadius,
+  });
 
   final int page;
   final _PageSummary summary;
+  final BorderRadius inkRadius;
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final EquranColors colors = context.equranColors;
+    final EquranTokens tokens = context.equranTokens;
 
     return Material(
-      color: colors.background.withAlpha(0),
+      color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadii.large),
+        borderRadius: inkRadius,
         onTap: () => Navigator.of(context).push(
           MaterialPageRoute<void>(
             builder: (context) => ReadPage(
@@ -820,61 +656,47 @@ class _QuranPageTile extends StatelessWidget {
             ),
           ),
         ),
-        child: Ink(
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: BorderRadius.circular(AppRadii.large),
-            border: Border.all(color: colors.border),
-          ),
-          padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
             children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Container(
-                    width: 38,
-                    height: 38,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: colors.mint,
-                      borderRadius: BorderRadius.circular(AppRadii.medium),
-                    ),
-                    child: Text(
-                      page.toString(),
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        color: colors.primary,
-                        fontWeight: FontWeight.w900,
+              NumberBadge(label: page.toString(), size: 40),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      summary.primarySurah,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        color: colors.textPrimary,
+                        fontSize: 16,
+                        fontVariations: const [FontVariation('opsz', 16)],
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    summary.juzLabel,
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: colors.textMuted,
-                      fontWeight: FontWeight.w800,
+                    const SizedBox(height: 3),
+                    Text(
+                      summary.rangeLabel,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: tokens.muted,
+                        fontSize: 12.5,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Text(
-                summary.primarySurah,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  color: colors.textPrimary,
-                  fontWeight: FontWeight.w900,
+                  ],
                 ),
               ),
-              const SizedBox(height: 2),
+              const SizedBox(width: 10),
               Text(
-                summary.rangeLabel,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colors.textSecondary,
+                summary.juzLabel,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: tokens.muted,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
@@ -935,7 +757,12 @@ class _QuranLastReadSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LastReadCard(entries: entries);
+    return LastReadCard(
+      entries: entries,
+      estimatedCardHeight: 200,
+      cardBuilder: (context, entry, onTap) =>
+          QuranReadingHero(entry: entry, onTap: onTap),
+    );
   }
 }
 
@@ -944,18 +771,11 @@ class _QuranLastReadEmptySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-    return HolographicCardWrapper(
-      child: EquranResumeImageCard(
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute<void>(
-            builder: (context) => const ReadPage(chapter: 1, startVerse: 1),
-          ),
+    return QuranReadingHero(
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (context) => const ReadPage(chapter: 1, startVerse: 1),
         ),
-        primary: localizations.beginWithQuran,
-        subtitle: localizations.startReadingSubtitle,
-        actionText: localizations.startReading,
-        trailingAssetPath: equranResumeQuranAsset,
       ),
     );
   }

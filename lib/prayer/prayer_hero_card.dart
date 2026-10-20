@@ -1,3 +1,5 @@
+import 'package:equran/widgets/common/equran_asset_image.dart';
+import 'package:equran/prayer/prayer_arc_hero.dart';
 import 'package:equran/prayer/prayer_models.dart';
 import 'package:equran/prayer/prayer_localizations.dart';
 import 'package:equran/prayer/prayer_notification_service.dart';
@@ -7,6 +9,7 @@ import 'package:equran/utils/quran_display.dart';
 import 'package:equran/widgets/common/equran_components.dart';
 import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
+import 'package:equran/theme/inter_optical_size.dart';
 
 const String _appAssetBase = 'assets/media/images/app';
 const String _fallbackPrayerAsset = '$_appAssetBase/prayer_time.webp';
@@ -21,6 +24,11 @@ class PrayerHeroCard extends StatelessWidget {
     this.exactAlarmPermission,
     this.titleOverride,
     this.subtitleOverride,
+    this.useRedesign = false,
+    this.now,
+    this.followingDay,
+    this.periodEndsAt,
+    this.isViewingToday = true,
   });
 
   final PrayerDay? day;
@@ -30,6 +38,11 @@ class PrayerHeroCard extends StatelessWidget {
   final String? titleOverride;
   final String? subtitleOverride;
   final VoidCallback onTap;
+  final bool useRedesign;
+  final DateTime? now;
+  final PrayerDay? followingDay;
+  final DateTime? periodEndsAt;
+  final bool isViewingToday;
 
   String _formatTime(
     DateTime time,
@@ -53,11 +66,28 @@ class PrayerHeroCard extends StatelessWidget {
     final int hours = normalized.inHours;
     final int minutes = normalized.inMinutes.remainder(60);
     if (hours <= 0) return localizations.minutesShort(minutes);
-    return localizations.hoursMinutesShort(hours, minutes);
+    return localizations.hoursMinutesShort(hours, twoDigitMinutes(minutes));
   }
 
   @override
   Widget build(BuildContext context) {
+    if (useRedesign && (day == null || nextPrayer == null)) {
+      return PrayerArcSetupHero(onTap: onTap);
+    }
+    if (useRedesign) {
+      return PrayerArcHero(
+        day: day!,
+        nextPrayer: nextPrayer!,
+        now: now!,
+        onTap: onTap,
+        followingDay: followingDay!,
+        currentPrayer: currentPrayer,
+        titleOverride: titleOverride,
+        subtitleOverride: subtitleOverride,
+        periodEndsAt: periodEndsAt,
+        isViewingToday: isViewingToday,
+      );
+    }
     final ThemeData theme = Theme.of(context);
     final EquranColors colors = context.equranColors;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
@@ -67,6 +97,7 @@ class PrayerHeroCard extends StatelessWidget {
     if (prayerDay == null || next == null) {
       return EquranGradientCard(
         onTap: onTap,
+        showPattern: true,
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
         child: SizedBox(
           height: 176,
@@ -176,6 +207,7 @@ class PrayerHeroCard extends StatelessWidget {
 
             return EquranGradientCard(
               onTap: onTap,
+              showPattern: true,
               padding: EdgeInsets.fromLTRB(
                 compact ? 16 : 20,
                 compact ? 14 : 16,
@@ -213,12 +245,14 @@ class PrayerHeroCard extends StatelessWidget {
                                 child: Text(
                                   prayerTime,
                                   maxLines: 1,
-                                  style: theme.textTheme.titleLarge?.copyWith(
-                                    color: colors.onPrimary,
-                                    fontSize: timeSize,
-                                    fontWeight: FontWeight.w900,
-                                    height: 0.94,
-                                  ),
+                                  style: theme.textTheme.titleLarge
+                                      ?.copyWith(
+                                        color: colors.onPrimary,
+                                        fontSize: timeSize,
+                                        fontWeight: FontWeight.w900,
+                                        height: 0.94,
+                                      )
+                                      .withInterOpticalSize(),
                                 ),
                               ),
                               SizedBox(height: compact ? 6 : 8),
@@ -226,11 +260,13 @@ class PrayerHeroCard extends StatelessWidget {
                                 title,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.titleLarge?.copyWith(
-                                  color: colors.onPrimary,
-                                  fontSize: titleSize,
-                                  fontWeight: FontWeight.w900,
-                                ),
+                                style: theme.textTheme.titleLarge
+                                    ?.copyWith(
+                                      color: colors.onPrimary,
+                                      fontSize: titleSize,
+                                      fontWeight: FontWeight.w900,
+                                    )
+                                    .withInterOpticalSize(),
                               ),
                               Padding(
                                 padding: EdgeInsets.symmetric(
@@ -320,14 +356,14 @@ class _PrayerHeroDecoration extends StatelessWidget {
               padding: const EdgeInsetsDirectional.fromSTEB(4, 2, 0, 2),
               child: Align(
                 alignment: AlignmentDirectional.centerEnd,
-                child: Image.asset(
+                child: EquranAssetImage(
                   _prayerBannerAsset(kind),
                   width: constraints.maxWidth,
                   height: constraints.maxHeight,
                   fit: BoxFit.contain,
                   alignment: AlignmentDirectional.centerEnd,
                   errorBuilder: (context, error, stackTrace) {
-                    return Image.asset(
+                    return EquranAssetImage(
                       _fallbackPrayerAsset,
                       fit: BoxFit.contain,
                     );

@@ -54,7 +54,7 @@ class SchemaMigrationService {
         ),
       );
     } catch (error, stackTrace) {
-      debugPrint('Schema migration "$key" failed: $error');
+      debugPrint('Schema migration "$key" failed');
       FlutterError.reportError(
         FlutterErrorDetails(
           exception: error,
@@ -70,7 +70,7 @@ class SchemaMigrationService {
           version: version,
           migratedAt: DateTime.now(),
           success: false,
-          message: error.toString(),
+          message: 'migration failed',
         ),
       );
     }

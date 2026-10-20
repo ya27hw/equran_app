@@ -127,7 +127,12 @@ class PrayerWidgetService {
         (themeMode == 'auto' &&
             WidgetsBinding.instance.platformDispatcher.platformBrightness ==
                 Brightness.dark);
-    final resolvedColors = resolveColorsForScheme(themeScheme, isDark);
+    final bool pureBlackBackground = SettingsDB().pureBlackBackground;
+    final resolvedColors = resolveColorsForScheme(
+      themeScheme,
+      isDark,
+      pureBlackBackground: pureBlackBackground,
+    );
 
     await saveCoordinates(
       latitude: location.latitude,
@@ -141,7 +146,11 @@ class PrayerWidgetService {
     final t = widgetTranslations[langCode] ?? widgetTranslations['en']!;
 
     final lightColors = resolveColorsForScheme(themeScheme, false);
-    final darkColors = resolveColorsForScheme(themeScheme, true);
+    final darkColors = resolveColorsForScheme(
+      themeScheme,
+      true,
+      pureBlackBackground: pureBlackBackground,
+    );
 
     await Future.wait([
       HomeWidget.saveWidgetData<String>('label_header', t['header']!),
@@ -303,28 +312,15 @@ class PrayerWidgetService {
     );
   }
 
-  static EquranColors resolveColorsForScheme(String scheme, bool isDarkMode) {
-    if (scheme == 'black') {
-      return EquranColors.blackDark;
-    }
-    if (isDarkMode) {
-      return switch (scheme) {
-        'fancyBlue' => EquranColors.fancyBlueDark,
-        'fancyPurple' => EquranColors.fancyPurpleDark,
-        'sepia' => EquranColors.sepiaDark,
-        'red' => EquranColors.redDark,
-        _ => EquranColors.dark,
-      };
-    } else {
-      return switch (scheme) {
-        'fancyBlue' => EquranColors.fancyBlueLight,
-        'fancyPurple' => EquranColors.fancyPurpleLight,
-        'sepia' => EquranColors.sepiaLight,
-        'red' => EquranColors.redLight,
-        _ => EquranColors.light,
-      };
-    }
-  }
+  static EquranColors resolveColorsForScheme(
+    String scheme,
+    bool isDarkMode, {
+    bool? pureBlackBackground,
+  }) => EquranColors.forScheme(
+    scheme,
+    isDarkMode,
+    pureBlackBackground: pureBlackBackground,
+  );
 
   static String colorToHex(Color color) {
     return color.toARGB32().toRadixString(16).padLeft(8, '0').toUpperCase();

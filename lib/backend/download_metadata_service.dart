@@ -52,12 +52,6 @@ class DownloadMetadataService {
     }
   }
 
-  List<DownloadMetadataEntry> cachedEntries() {
-    return DownloadMetadataDB().box.values
-        .whereType<DownloadMetadataEntry>()
-        .toList(growable: false);
-  }
-
   String _idFor(AudioDownloadEntry entry) {
     final String ayahPart = entry.ayah == null ? 'all' : '${entry.ayah}';
     return '${entry.reciterCode}:${entry.type.name}:${entry.surah}:$ayahPart';

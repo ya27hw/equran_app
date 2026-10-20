@@ -214,7 +214,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Entfernt gespeicherte Ayahs, Ordner, Notizen, Tags und Favoriten.';
 
   @override
-  String get cancel => 'Stornieren';
+  String get cancel => 'Abbrechen';
 
   @override
   String get save => 'Speichern';
@@ -239,6 +239,17 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get beginWithQuran => 'Koranlesung';
+
+  @override
+  String get yourQuran => 'Dein Koran';
+
+  @override
+  String get beginQuranReading => 'Mit dem Koran beginnen';
+
+  @override
+  String startWithSurah(String surah) {
+    return 'Mit $surah beginnen';
+  }
 
   @override
   String get startReadingSubtitle =>
@@ -711,11 +722,64 @@ class AppLocalizationsDe extends AppLocalizations {
       'Qibla, Downloads, Einstellungen, Pläne und Tools an einem ruhigen Ort.';
 
   @override
+  String get moreGroupWorship => 'Andacht';
+
+  @override
+  String get moreGroupReadLearn => 'Lesen und Lernen';
+
+  @override
+  String get moreGroupTools => 'Werkzeuge';
+
+  @override
+  String get moreGroupApp => 'App';
+
+  @override
+  String get moreGroupAbout => 'Über eQuran';
+
+  @override
+  String get edit => 'Bearbeiten';
+
+  @override
   String get openRoutine => 'Offene Routine';
 
   @override
   String get aboutAppBody =>
       'eQuran ist ein moderner Koranbegleiter, der für konzentriertes Lesen, Zuhören und tägliches Nachdenken entwickelt wurde.';
+
+  @override
+  String get specialThanks => 'Besonderer Dank';
+
+  @override
+  String get specialThanksBody =>
+      'Ein herzliches Dankeschön an diese Mitwirkenden für ihre enormen Beiträge zu eQuran sowie für ihre wertvollen Anregungen und ihr Feedback.';
+
+  @override
+  String get supportProject => 'Unterstützen';
+
+  @override
+  String get supportProjectDescription =>
+      'Wenn Ihnen eQuran hilft, können Sie die Weiterentwicklung mit einer Krypto-Spende unterstützen.';
+
+  @override
+  String get bitcoin => 'Bitcoin (BTC)';
+
+  @override
+  String get ethereum => 'Ethereum (ETH)';
+
+  @override
+  String get solana => 'Solana (SOL)';
+
+  @override
+  String get usdcErc20 => 'USDC (ERC-20)';
+
+  @override
+  String get litecoin => 'Litecoin (LTC)';
+
+  @override
+  String get copyAddress => 'Adresse kopieren';
+
+  @override
+  String get addressCopied => 'Adresse kopiert';
 
   @override
   String versionLabel(String version) {
@@ -785,6 +849,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get closeSearch => 'Suche schließen';
+
+  @override
+  String get reverseOrder => 'Reihenfolge umkehren';
 
   @override
   String get noSurahsFound => 'Keine Suren gefunden.';
@@ -861,6 +928,34 @@ class AppLocalizationsDe extends AppLocalizations {
   String get setUpLocation => 'Standort einrichten';
 
   @override
+  String get locationSetupTitle => 'Wo betest du?';
+
+  @override
+  String get locationSetupSubtitle =>
+      'Wähle eine Möglichkeit. Die Gebetszeiten werden nur für diesen Ort berechnet.';
+
+  @override
+  String get locationOptionCurrentDescription =>
+      'Am schnellsten. Wir lesen deine Position einmal aus.';
+
+  @override
+  String get locationOptionMapDescription =>
+      'Verschiebe die Karte, bis der Pin über deiner Gegend liegt.';
+
+  @override
+  String get locationOptionManualDescription =>
+      'Gib Breiten- und Längengrad selbst ein.';
+
+  @override
+  String get recommendedLabel => 'Empfohlen';
+
+  @override
+  String get chooseAnotherWay => 'Andere Möglichkeit wählen';
+
+  @override
+  String get confirmLocationTitle => 'Diesen Standort bestätigen';
+
+  @override
   String get chooseLocationForNextPrayer =>
       'Wählen Sie hier einen Ort aus, an dem die nächste Gebetszeit angezeigt werden soll.';
 
@@ -875,12 +970,17 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String prayerNextIn(String prayer, String time) {
+    return '$prayer in $time';
+  }
+
+  @override
   String minutesShort(int minutes) {
     return '$minutes min';
   }
 
   @override
-  String hoursMinutesShort(int hours, int minutes) {
+  String hoursMinutesShort(int hours, String minutes) {
     return '${hours}h ${minutes}m';
   }
 
@@ -1007,6 +1107,21 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get distanceUnavailable => 'Entfernung nicht verfügbar';
+
+  @override
+  String get qiblaStatBearing => 'Richtung';
+
+  @override
+  String get qiblaStatDistance => 'Entfernung';
+
+  @override
+  String get qiblaFixedCoordinates =>
+      'Für die Berechnung werden feste Koordinaten verwendet, nicht das Live-GPS.';
+
+  @override
+  String kilometersValue(String distance) {
+    return '$distance km';
+  }
 
   @override
   String kilometersToKaaba(String distance) {
@@ -1475,8 +1590,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get removeFavourite => 'Favorit entfernen';
 
   @override
-  String get saveDuasHere =>
-      'Speichern Sie Duas hier für einen schnellen Zugriff';
+  String get saveDuasHere => 'Für schnellen Zugriff gespeichert';
 
   @override
   String savedDuasCount(int count, String label) {
@@ -1848,7 +1962,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Fügen Sie Ayahs schnell zu Ihren Favoriten hinzu oder fügen Sie Ordner, Tags und private Notizen aus den Leseoptionen hinzu.';
 
   @override
-  String get privateNote => 'Private Notiz';
+  String get note => 'Notiz';
 
   @override
   String get writeReflectionHint => 'Schreiben Sie eine Reflexion ...';
@@ -1934,6 +2048,17 @@ class AppLocalizationsDe extends AppLocalizations {
       locale: localeName,
       other: '$count Ayahs',
       one: '1 Ayah',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String prayersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Gebete',
+      one: '1 Gebet',
     );
     return '$_temp0';
   }
@@ -2507,6 +2632,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get showLess => 'Weniger anzeigen';
 
   @override
+  String get showMore => 'Mehr anzeigen';
+
+  @override
   String showAllSurahs(Object count) {
     return 'Alle $count Suren anzeigen';
   }
@@ -2825,10 +2953,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get rewardIsWithAllah => 'Der Lohn liegt bei Allah.';
-
-  @override
-  String get totalZakahWealth =>
-      'Zur Berechnung der Zakah muss das Gesamtvermögen mindestens 200 betragen.';
 
   @override
   String get hifzTitle => 'Hifz';
@@ -3578,7 +3702,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String countdownInHoursMinutes(int hours, int minutes) {
+  String countdownInHoursMinutes(int hours, String minutes) {
     return 'In ${hours}h ${minutes}m';
   }
 
@@ -4016,6 +4140,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Offline vermarkten. Verwendung von zwischengespeicherten Standardwerten.';
 
   @override
+  String get zakatDisclaimer =>
+      'Kurse und Nisab-Annahmen sind Schätzungen; prüfen Sie sie mit einer vertrauenswürdigen Gelehrtenperson und geltenden Richtlinien.';
+
+  @override
   String get overridePrices => 'Preise überschreiben';
 
   @override
@@ -4071,16 +4199,23 @@ class AppLocalizationsDe extends AppLocalizations {
   String get belowNisab => 'UNTER NISAB';
 
   @override
+  String get zakatNisabNotChecked => 'NISAB NICHT GEPRÜFT';
+
+  @override
   String get zakatDueLabel => 'ZAKAT-FÄLLIGKEIT (2,5 %)';
 
   @override
   String get resetCalculator => 'Rechner zurücksetzen';
 
   @override
-  String get goldPriceGram => 'Goldpreis pro Gramm (USD)';
+  String goldPriceGram(String currency) {
+    return 'Goldpreis pro Gramm ($currency)';
+  }
 
   @override
-  String get silverPriceGram => 'Silberpreis pro Gramm (USD)';
+  String silverPriceGram(String currency) {
+    return 'Silberpreis pro Gramm ($currency)';
+  }
 
   @override
   String get zakatSavedLedger =>
@@ -4094,7 +4229,9 @@ class AppLocalizationsDe extends AppLocalizations {
       'Aktualisieren Sie den gezahlten Zakat-Betrag';
 
   @override
-  String get enterPaidAmountUsd => 'Geben Sie den gezahlten Betrag in USD ein';
+  String enterPaidAmountInCurrency(String currency) {
+    return 'Gezahlten Betrag in $currency eingeben';
+  }
 
   @override
   String get calculatorTab => 'Kalkulator';
@@ -4164,6 +4301,16 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get todayLegend => 'Heute';
+
+  @override
+  String get newMonthLegend => 'Neuer Hijri-Monat';
+
+  @override
+  String get comingUp => 'Demnächst';
+
+  @override
+  String get moonSightingHint =>
+      'Verschiebt die Hijri-Daten um einen Tag, wenn die Mondsichtung in der Region abweicht.';
 
   @override
   String get eidLegend => 'Eid';
@@ -4303,19 +4450,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String amountInCurrency(String currency) {
     return 'Betrag in $currency';
   }
-
-  @override
-  String get livestockSubtitle =>
-      'Schafe/Ziegen, Rinder, Kamele — vereinfachte moderne Werte';
-
-  @override
-  String get livestockSheepGoats => 'Schafe & Ziegen';
-
-  @override
-  String get livestockCowsBuffalo => 'Rinder / Büffel';
-
-  @override
-  String get livestockCamels => 'Kamele';
 
   @override
   String get noHistoricalCalculations => 'Keine historischen Berechnungen';
@@ -4529,4 +4663,506 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get confirmLiveLocationMessage =>
       'Möchten Sie die Gebetszeiten an den Live-Standort Ihres Geräts binden? Die App aktualisiert die Zeiten automatisch, wenn Sie reisen.';
+
+  @override
+  String ratesLiveStatus(String source, String time) {
+    return '$source • live • $time';
+  }
+
+  @override
+  String ratesStaleStatus(String source, String time) {
+    return '$source • zuletzt bekannter Kurs • $time';
+  }
+
+  @override
+  String get wordByWord => 'Wort für Wort';
+
+  @override
+  String get wordByWordDescription =>
+      'Tippen Sie beim Lesen auf ein Wort, um Bedeutung und Umschrift zu sehen.';
+
+  @override
+  String get wordMeaning => 'Bedeutung';
+
+  @override
+  String get wordTransliteration => 'Umschrift';
+
+  @override
+  String wordByWordProvenance(String source, String license) {
+    return 'Wortbedeutungen von $source ($license). Eine Lesehilfe, keine Übersetzung und kein Tafsir.';
+  }
+
+  @override
+  String savedAyahsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count gespeicherte Verse',
+      one: '1 gespeicherter Vers',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get allSaved => 'Alle gespeichert';
+
+  @override
+  String get newestFirst => 'Neueste zuerst';
+
+  @override
+  String get browseSurahs => 'Suren durchsuchen';
+
+  @override
+  String get forThisMorning => 'Für diesen Morgen';
+
+  @override
+  String get forThisEvening => 'Für diesen Abend';
+
+  @override
+  String get continueAction => 'Fortsetzen';
+
+  @override
+  String get suggestedForYou => 'Für dich empfohlen';
+
+  @override
+  String get browseByTheme => 'Nach Thema stöbern';
+
+  @override
+  String get beginAction => 'Beginnen';
+
+  @override
+  String categoriesCount(int count) {
+    return '$count Kategorien';
+  }
+
+  @override
+  String themesCount(int count) {
+    return '$count Themen';
+  }
+
+  @override
+  String searchCategoryCount(int count) {
+    return '$count Kategorien durchsuchen';
+  }
+
+  @override
+  String searchInTheme(String theme) {
+    return 'In $theme suchen';
+  }
+
+  @override
+  String get backToDuas => 'Zurück zu Duas';
+
+  @override
+  String get loggedToday => 'Heute erfasst';
+
+  @override
+  String get theNight => 'Die Nacht';
+
+  @override
+  String get prayerPassed => 'Vorbei';
+
+  @override
+  String prayerBeganAt(String time) {
+    return 'Beginn $time';
+  }
+
+  @override
+  String prayerEndsAt(String time) {
+    return 'Ende $time';
+  }
+
+  @override
+  String get tasbihAndDuas => 'Tasbih und Duas';
+
+  @override
+  String get surahMap => 'Surenkarte';
+
+  @override
+  String get tapCellToOpen => 'Zum Öffnen auf ein Feld tippen';
+
+  @override
+  String get less => 'Weniger';
+
+  @override
+  String get khatmProgress => 'Khatm-Fortschritt';
+
+  @override
+  String get notLogged => 'Nicht erfasst';
+
+  @override
+  String get mostReadSurah => 'Meistgelesene Sure';
+
+  @override
+  String get pureBlackBackground => 'Tiefschwarzer Hintergrund';
+
+  @override
+  String get pureBlackBackgroundSubtitle =>
+      'Im Dunkelmodus einen tiefschwarzen Hintergrund mit jeder Farbpalette verwenden.';
+
+  @override
+  String get showSplashScreen => 'Startanimation anzeigen';
+
+  @override
+  String get showSplashScreenSubtitle =>
+      'Beim Öffnen der App eine kurze Animation abspielen.';
+
+  @override
+  String get savedFolderLabel => 'Ordner';
+
+  @override
+  String get savedManageFolders => 'Ordner verwalten';
+
+  @override
+  String get zakatNisabNeedsRates =>
+      'Gib die Gold- und Silberpreise ein, um den Nisab zu prüfen. Sie konnten nicht geladen werden, bitte manuell eintragen.';
+
+  @override
+  String get zakatDeleteRecordQuestion => 'Diese Berechnung löschen?';
+
+  @override
+  String get zakatDeleteRecordBody =>
+      'Die gespeicherte Berechnung wird aus dem Verlauf entfernt.';
+
+  @override
+  String get unitTola => 'Tola';
+
+  @override
+  String get hifzRatingFail => 'Nicht bestanden';
+
+  @override
+  String get hifzRatingPass => 'Bestanden';
+
+  @override
+  String get shareImageFormat => 'Bildformat zum Teilen';
+
+  @override
+  String get shareFormatStory => 'Story 9:16';
+
+  @override
+  String get shareFormatSquare => 'Quadrat 1:1';
+
+  @override
+  String get shareFormatClassic => 'Klassisch';
+
+  @override
+  String get unableToShareAyahImage =>
+      'Das Ayah-Bild konnte nicht geteilt werden.';
+
+  @override
+  String get reciterGroupDownloaded => 'Heruntergeladene gruppieren';
+
+  @override
+  String get reciterShowAlphabetical => 'Alphabetisch anzeigen';
+
+  @override
+  String get audioConnectionInterrupted =>
+      'Die Audioverbindung wurde unterbrochen. Prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.';
+
+  @override
+  String get offlineDownloadAyahOrReconnect =>
+      'Sie sind offline. Laden Sie diesen Ayah herunter oder stellen Sie die Verbindung wieder her, um ihn zu streamen.';
+
+  @override
+  String get unableToPlayAyahAudio =>
+      'Die Ayah-Audiodatei konnte nicht abgespielt werden.';
+
+  @override
+  String get repeatOnce => 'Einmal';
+
+  @override
+  String repeatTimes(int count) {
+    return '$count-mal';
+  }
+
+  @override
+  String get repeatInfinite => 'Unbegrenzt';
+
+  @override
+  String get halfSecond => '0,5 Sekunden';
+
+  @override
+  String get resourceStateUpdateAvailable => 'Update verfügbar';
+
+  @override
+  String get resourcePhaseStarting => 'Wird gestartet';
+
+  @override
+  String get resourcePhaseVerifying => 'Wird überprüft';
+
+  @override
+  String get resourcePhaseExtracting => 'Wird entpackt';
+
+  @override
+  String get resourcePhaseInstalling => 'Wird installiert';
+
+  @override
+  String get resourcePhaseFailed => 'Fehlgeschlagen';
+
+  @override
+  String get resourceTypeGeneric => 'Ressource';
+
+  @override
+  String get translationBundled => 'Enthalten';
+
+  @override
+  String get translationDownloadUnavailable => 'Download nicht verfügbar';
+
+  @override
+  String get navigationSettingsHint =>
+      'Ziehen Sie die Kacheln, um sie neu anzuordnen. Ziehen Sie ein verfügbares Element auf eine aktive Kachel, um sie zu tauschen, oder tippen Sie unten auf ein Element, um es anzuheften (ersetzt das am längsten nicht genutzte).';
+
+  @override
+  String navigationActiveSlots(int count, int max) {
+    return 'Aktive Navigationsplätze ($count/$max)';
+  }
+
+  @override
+  String get navigationAvailableItems =>
+      'Verfügbare nicht angeheftete Elemente';
+
+  @override
+  String navigationSlot(int number) {
+    return 'Platz $number';
+  }
+
+  @override
+  String navigationSlotLocked(int number) {
+    return 'Platz $number (gesperrter Hub)';
+  }
+
+  @override
+  String navigationSwapped(String first, String second) {
+    return '$first mit $second getauscht';
+  }
+
+  @override
+  String navigationRemoved(String item) {
+    return '$item aus der Navigationsleiste entfernt';
+  }
+
+  @override
+  String navigationPinned(String item) {
+    return '$item angeheftet';
+  }
+
+  @override
+  String navigationPinnedDisplaced(String item, String displaced) {
+    return '$item angeheftet ($displaced ersetzt)';
+  }
+
+  @override
+  String get navSubtitleHome => 'Haupt-Dashboard';
+
+  @override
+  String get navSubtitleQuran => 'Den Heiligen Koran lesen';
+
+  @override
+  String get navSubtitlePrayer => 'Gebetszeiten & Adhan';
+
+  @override
+  String get navSubtitleSettings => 'Systemeinstellungen';
+
+  @override
+  String get dockZakat => 'Zakat';
+
+  @override
+  String get dockCalendar => 'Kalender';
+
+  @override
+  String downloadsReciterCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Rezitatoren',
+      one: '1 Rezitator',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String downloadsItemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Elemente',
+      one: '1 Element',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String downloadsDeleteReciterBody(String reciter, String surah) {
+    return 'Alle Downloads von $reciter für $surah entfernen?';
+  }
+
+  @override
+  String get downloadsAllSurahs => 'Alle Suren';
+
+  @override
+  String get downloadsFilterTitle => 'Downloads filtern und sortieren';
+
+  @override
+  String get downloadsFilterSubtitle =>
+      'Mehr Kontrolle darüber, welche Rezitationen in Ihrer Bibliothek erscheinen';
+
+  @override
+  String get downloadsFilterSearchHint => 'Rezitationen oder Suren suchen ...';
+
+  @override
+  String get downloadsGroupBy => 'Gruppieren nach';
+
+  @override
+  String get downloadsSortBy => 'Sortieren nach';
+
+  @override
+  String get downloadsCategory => 'Kategorie';
+
+  @override
+  String get downloadsContentType => 'Inhaltstyp';
+
+  @override
+  String get downloadsSortReciterAsc => 'Rezitator (A → Z)';
+
+  @override
+  String get downloadsSortReciterDesc => 'Rezitator (Z → A)';
+
+  @override
+  String get downloadsSortSizeDesc => 'Größe (größte zuerst)';
+
+  @override
+  String get downloadsSortSizeAsc => 'Größe (kleinste zuerst)';
+
+  @override
+  String get downloadsSortSurahAsc => 'Sure (1 → 114)';
+
+  @override
+  String get downloadsSortSurahDesc => 'Sure (114 → 1)';
+
+  @override
+  String get offsetSetPositive => 'Positiv setzen';
+
+  @override
+  String get offsetSetNegative => 'Negativ setzen';
+
+  @override
+  String get notificationPermissionCheckTimedOut =>
+      'Die Prüfung der Benachrichtigungsberechtigung hat zu lange gedauert. Öffnen Sie die App erneut oder aktivieren Sie Benachrichtigungen in den Systemeinstellungen.';
+
+  @override
+  String get notificationPermissionCheckFailed =>
+      'Die Benachrichtigungsberechtigung konnte nicht geprüft werden. Versuchen Sie es erneut oder aktivieren Sie Benachrichtigungen in den Systemeinstellungen.';
+
+  @override
+  String get exactAlarmPermissionCheckTimedOut =>
+      'Die Prüfung der Berechtigung für exakte Alarme hat zu lange gedauert. Öffnen Sie die App erneut oder aktivieren Sie „Alarme & Erinnerungen“ in den Systemeinstellungen.';
+
+  @override
+  String get exactAlarmPermissionCheckFailed =>
+      'Die Berechtigung für exakte Alarme konnte nicht geprüft werden. Versuchen Sie es erneut oder aktivieren Sie „Alarme & Erinnerungen“ in den Systemeinstellungen.';
+
+  @override
+  String get asrMethodHanafi => 'Hanafitisch';
+
+  @override
+  String get highLatitudeRuleAutoTitle => 'Automatisch';
+
+  @override
+  String get highLatitudeRuleNoneTitle => 'Keine';
+
+  @override
+  String get highLatitudeRuleMiddleOfTheNightTitle => 'Mitte der Nacht';
+
+  @override
+  String get highLatitudeRuleOneSeventhTitle => 'Ein Siebtel';
+
+  @override
+  String get highLatitudeRuleAngleBasedTitle => 'Winkelbasiert';
+
+  @override
+  String get prayerMethodAuto => 'Beste für den Standort';
+
+  @override
+  String get prayerMethodMuslimWorldLeague => 'Islamische Weltliga';
+
+  @override
+  String get prayerMethodEgyptian => 'Ägyptisch';
+
+  @override
+  String get prayerMethodUmmAlQura => 'Umm al-Qura';
+
+  @override
+  String get prayerMethodDubai => 'Dubai / Golfregion';
+
+  @override
+  String get prayerMethodKuwait => 'Kuwait';
+
+  @override
+  String get prayerMethodQatar => 'Katar';
+
+  @override
+  String get prayerMethodKarachi => 'Karatschi';
+
+  @override
+  String get prayerMethodMoonsighting => 'Mondsichtungs-Komitee';
+
+  @override
+  String get prayerMethodMorocco => 'Marokko';
+
+  @override
+  String get prayerMethodSingapore => 'Singapur';
+
+  @override
+  String get prayerMethodTehran => 'Teheran';
+
+  @override
+  String get prayerMethodTurkey => 'Türkei / Diyanet';
+
+  @override
+  String get prayerMethodShortAuto => 'Automatisch';
+
+  @override
+  String get prayerMethodShortMwl => 'MWL';
+
+  @override
+  String get prayerMethodShortDubai => 'Dubai';
+
+  @override
+  String get prayerMethodShortMoonsighting => 'Mondsichtung';
+
+  @override
+  String get prayerMethodShortTurkey => 'Türkei';
+
+  @override
+  String get dailyToolsKeepOnePinned =>
+      'Mindestens ein Werkzeug muss angeheftet bleiben.';
+
+  @override
+  String get zakatLivestockNotCalculated =>
+      'Die Zakat auf Vieh wird hier nicht berechnet und fehlt daher in der Summe. Bitte fragen Sie einen qualifizierten Gelehrten.';
+
+  @override
+  String get resourcesFilterTitle => 'Ressourcen filtern und sortieren';
+
+  @override
+  String get resourceSortName => 'Name (A → Z)';
+
+  @override
+  String get resourceSortInstalledFirst => 'Installierte zuerst';
+
+  @override
+  String get resourceFilterStatus => 'Status';
+
+  @override
+  String get resourceFilterType => 'Typ';
+
+  @override
+  String get resourceViewByType => 'Nach Typ';
+
+  @override
+  String get resourceViewNone => 'Ohne Gruppierung';
+
+  @override
+  String get resourcesNoMatches =>
+      'Keine Ressourcen entsprechen diesen Filtern.';
 }

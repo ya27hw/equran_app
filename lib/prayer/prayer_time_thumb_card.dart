@@ -1,12 +1,14 @@
+import 'package:equran/prayer/prayer_clock_text.dart';
+import 'package:equran/theme/equran_tokens.dart';
+import 'package:equran/widgets/redesign/redesign_widgets.dart';
 import 'package:equran/prayer/prayer_models.dart';
 import 'package:equran/prayer/prayer_localizations.dart';
 import 'package:equran/theme/equran_colors.dart';
-import 'package:equran/utils/app_radii.dart';
+import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/utils/quran_display.dart';
 import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
-
-const String _appAssetBase = 'assets/media/images/app';
+import 'package:equran/utils/text_case.dart';
 
 class PrayerTimeThumbCard extends StatelessWidget {
   const PrayerTimeThumbCard({
@@ -16,6 +18,10 @@ class PrayerTimeThumbCard extends StatelessWidget {
     required this.use24HourFormat,
     this.onTap,
     this.width,
+    this.listRow = false,
+    this.now,
+    this.isViewingToday = true,
+    this.periodEndsAt,
   });
 
   final PrayerTimeEntry entry;
@@ -23,165 +29,98 @@ class PrayerTimeThumbCard extends StatelessWidget {
   final bool use24HourFormat;
   final VoidCallback? onTap;
   final double? width;
+  final bool listRow;
+  final DateTime? now;
+  final DateTime? periodEndsAt;
+  final bool isViewingToday;
 
   @override
   Widget build(BuildContext context) {
+    if (listRow) {
+      return _PrayerTimeRow(
+        entry: entry,
+        isActive: isActive,
+        use24HourFormat: use24HourFormat,
+        now: now!,
+        isViewingToday: isViewingToday,
+        periodEndsAt: periodEndsAt,
+        onTap: onTap,
+      );
+    }
     final ThemeData theme = Theme.of(context);
     final EquranColors colors = context.equranColors;
+    final EquranTokens tokens = context.equranTokens;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final bool isLight = theme.brightness == Brightness.light;
-    final BorderRadius radius = BorderRadius.circular(AppRadii.large);
+    final BorderRadius radius = BorderRadius.circular(EquranRadii.xl - 4);
+    final String time = _formatPrayerTime(
+      entry.time,
+      use24HourFormat,
+      localizations,
+    );
 
-    return Material(
-      color: Colors.transparent,
-      borderRadius: radius,
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
+    return Semantics(
+      button: onTap != null,
+      selected: isActive,
+      child: Material(
+        color: Colors.transparent,
         borderRadius: radius,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 220),
-          curve: Curves.easeOutCubic,
-          width: width,
-          decoration: BoxDecoration(
-            color: isActive ? colors.surfaceAlt : colors.surface,
-            gradient: isActive
-                ? LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: <Color>[
-                      Color.alphaBlend(
-                        colors.primary.withAlpha(isLight ? 34 : 42),
-                        colors.surfaceAlt,
-                      ),
-                      colors.surfaceAlt,
-                    ],
-                  )
-                : null,
-            borderRadius: radius,
-            border: Border.all(
-              color: isActive ? colors.primary.withAlpha(190) : colors.border,
-            ),
-            boxShadow: <BoxShadow>[
-              BoxShadow(
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: radius,
+          child: Container(
+            width: width,
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+            decoration: BoxDecoration(
+              color: isActive ? tokens.goldWash : colors.surface,
+              borderRadius: radius,
+              border: Border.all(
                 color: isActive
-                    ? colors.primaryStrong.withAlpha(isLight ? 38 : 58)
-                    : colors.shadow.withAlpha(isLight ? 12 : 26),
-                blurRadius: isActive ? 20 : 14,
-                offset: Offset(0, isActive ? 9 : 5),
+                    ? tokens.gold.withValues(alpha: 0.55)
+                    : tokens.hair,
               ),
-            ],
-          ),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final double imageWidth = (constraints.maxWidth * 0.74)
-                  .clamp(88.0, 132.0)
-                  .toDouble();
-              final double imageHeight = (constraints.maxHeight * 0.52)
-                  .clamp(58.0, 90.0)
-                  .toDouble();
-              final Color primaryText = isActive
-                  ? colors.primarySoft
-                  : colors.textPrimary;
-
-              return Padding(
-                padding: const EdgeInsets.fromLTRB(12, 11, 12, 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: Text(
-                            localizedPrayerName(localizations, entry.kind),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.start,
-                            style: theme.textTheme.labelLarge?.copyWith(
-                              color: primaryText,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                        ),
-                        if (isActive)
-                          Container(
-                            width: 7,
-                            height: 7,
-                            decoration: BoxDecoration(
-                              color: colors.primary,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                      ],
-                    ),
-                    Expanded(
-                      child: Center(
-                        child: Image.asset(
-                          _prayerThumbAsset(entry.kind),
-                          fit: BoxFit.contain,
-                          width: imageWidth,
-                          height: imageHeight,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Icon(
-                              _iconFor(entry.kind),
-                              color: colors.primary,
-                              size: imageHeight * 0.78,
-                            );
-                          },
-                        ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                SizedBox(
+                  height: 42,
+                  child: Center(
+                    child: PrayerArch(
+                      kind: entry.kind,
+                      semanticLabel: localizedPrayerName(
+                        localizations,
+                        entry.kind,
                       ),
+                      width: entry.kind == PrayerTimeKind.sunrise ? 26 : 30,
                     ),
-                    Align(
-                      alignment: AlignmentDirectional.centerStart,
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: AlignmentDirectional.centerStart,
-                        child: Text(
-                          _formatPrayerTime(
-                            entry.time,
-                            use24HourFormat,
-                            AppLocalizations.of(context)!,
-                          ),
-                          maxLines: 1,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            color: primaryText,
-                            fontWeight: FontWeight.w900,
-                            height: 1.0,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              );
-            },
+                const SizedBox(height: 8),
+                Text(
+                  localizedPrayerName(localizations, entry.kind),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: isActive ? tokens.goldText : tokens.muted,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: DisplayNumeral(
+                    time,
+                    size: 16,
+                    color: colors.textPrimary,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
-}
-
-IconData _iconFor(PrayerTimeKind kind) {
-  return switch (kind) {
-    PrayerTimeKind.fajr => Icons.nights_stay_rounded,
-    PrayerTimeKind.sunrise => Icons.wb_twilight_rounded,
-    PrayerTimeKind.dhuhr => Icons.wb_sunny_outlined,
-    PrayerTimeKind.asr => Icons.light_mode_outlined,
-    PrayerTimeKind.maghrib => Icons.wb_twilight_outlined,
-    PrayerTimeKind.isha => Icons.dark_mode_outlined,
-  };
-}
-
-String _prayerThumbAsset(PrayerTimeKind kind) {
-  return switch (kind) {
-    PrayerTimeKind.fajr => '$_appAssetBase/fajr.webp',
-    PrayerTimeKind.sunrise => '$_appAssetBase/sunrise.webp',
-    PrayerTimeKind.dhuhr => '$_appAssetBase/dhuhr.webp',
-    PrayerTimeKind.asr => '$_appAssetBase/asr.webp',
-    PrayerTimeKind.maghrib => '$_appAssetBase/maghrib.webp',
-    PrayerTimeKind.isha => '$_appAssetBase/isha.webp',
-  };
 }
 
 String _formatPrayerTime(
@@ -204,3 +143,132 @@ String _formatPrayerTime(
 }
 
 String _two(int value) => value.toString().padLeft(2, '0');
+
+class _PrayerTimeRow extends StatelessWidget {
+  const _PrayerTimeRow({
+    required this.entry,
+    required this.isActive,
+    required this.use24HourFormat,
+    required this.now,
+    required this.isViewingToday,
+    this.periodEndsAt,
+    this.onTap,
+  });
+  final PrayerTimeEntry entry;
+  final bool isActive;
+  final bool use24HourFormat;
+  final DateTime now;
+  final bool isViewingToday;
+  final DateTime? periodEndsAt;
+  final VoidCallback? onTap;
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final tokens = context.equranTokens;
+    final passed = isViewingToday && !entry.time.isAfter(now) && !isActive;
+    final text = passed ? tokens.text2 : context.equranColors.textPrimary;
+    final duration = entry.time.difference(now);
+    final String status = !isViewingToday
+        ? ''
+        : isActive
+        ? (periodEndsAt == null
+              ? l.countdownNow
+              : l.prayerEndsAt(
+                  _formatPrayerTime(periodEndsAt!, use24HourFormat, l),
+                ))
+        : passed
+        ? l.prayerPassed
+        : duration.inHours > 0
+        ? l.countdownInHoursMinutes(
+            duration.inHours,
+            twoDigitMinutes(duration.inMinutes.remainder(60)),
+          )
+        : l.countdownInMinutes(duration.inMinutes);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: isActive
+            ? LinearGradient(
+                begin: AlignmentDirectional.centerStart.resolve(
+                  Directionality.of(context),
+                ),
+                end: AlignmentDirectional.centerEnd.resolve(
+                  Directionality.of(context),
+                ),
+                colors: [tokens.emWash, tokens.emWash.withValues(alpha: 0)],
+              )
+            : null,
+      ),
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 36,
+                  child: Center(
+                    child: PrayerArch(
+                      kind: entry.kind,
+                      semanticLabel: localizedPrayerName(l, entry.kind),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 4,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Text(
+                            localizedPrayerName(l, entry.kind),
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontVariations: const [FontVariation('opsz', 17)],
+                              fontWeight: FontWeight.w600,
+                              color: text,
+                            ),
+                          ),
+                          if (isActive)
+                            PillTag(
+                              upperCaseIn(context, l.countdownNow),
+                              gold: true,
+                              compact: true,
+                            ),
+                        ],
+                      ),
+                      if (status.isNotEmpty) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          status,
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: passed
+                                ? FontWeight.w400
+                                : FontWeight.w700,
+                            color: isActive ? tokens.emText : tokens.muted,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                PrayerClockText(
+                  _formatPrayerTime(entry.time, use24HourFormat, l),
+                  size: 22,
+                  color: text,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

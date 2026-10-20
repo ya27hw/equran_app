@@ -239,6 +239,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get beginWithQuran => 'Quran Reading';
 
   @override
+  String get yourQuran => 'Your Quran';
+
+  @override
+  String get beginQuranReading => 'Begin with Quran';
+
+  @override
+  String startWithSurah(String surah) {
+    return 'Start with $surah';
+  }
+
+  @override
   String get startReadingSubtitle =>
       'Start reading and your place will appear here.';
 
@@ -697,11 +708,64 @@ class AppLocalizationsEn extends AppLocalizations {
       'Qibla, downloads, settings, plans, and tools gathered in one quiet place.';
 
   @override
+  String get moreGroupWorship => 'Worship';
+
+  @override
+  String get moreGroupReadLearn => 'Read and learn';
+
+  @override
+  String get moreGroupTools => 'Tools';
+
+  @override
+  String get moreGroupApp => 'App';
+
+  @override
+  String get moreGroupAbout => 'About eQuran';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
   String get openRoutine => 'Open routine';
 
   @override
   String get aboutAppBody =>
       'eQuran is a modern Quran companion designed for focused reading, listening, and daily reflection.';
+
+  @override
+  String get specialThanks => 'Special thanks';
+
+  @override
+  String get specialThanksBody =>
+      'A heartfelt thank you to these contributors for their massive contributions to eQuran, and for their valuable input and feedback.';
+
+  @override
+  String get supportProject => 'Support';
+
+  @override
+  String get supportProjectDescription =>
+      'If eQuran helps you, you can support its development with a crypto donation.';
+
+  @override
+  String get bitcoin => 'Bitcoin (BTC)';
+
+  @override
+  String get ethereum => 'Ethereum (ETH)';
+
+  @override
+  String get solana => 'Solana (SOL)';
+
+  @override
+  String get usdcErc20 => 'USDC (ERC-20)';
+
+  @override
+  String get litecoin => 'Litecoin (LTC)';
+
+  @override
+  String get copyAddress => 'Copy address';
+
+  @override
+  String get addressCopied => 'Address copied';
 
   @override
   String versionLabel(String version) {
@@ -766,6 +830,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get closeSearch => 'Close search';
+
+  @override
+  String get reverseOrder => 'Reverse order';
 
   @override
   String get noSurahsFound => 'No surahs found.';
@@ -841,6 +908,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get setUpLocation => 'Set up location';
 
   @override
+  String get locationSetupTitle => 'Where are you praying?';
+
+  @override
+  String get locationSetupSubtitle =>
+      'Pick one way to set it. Prayer times are calculated for this place only.';
+
+  @override
+  String get locationOptionCurrentDescription =>
+      'Fastest. We read your position once.';
+
+  @override
+  String get locationOptionMapDescription =>
+      'Move the map until the pin sits over your area.';
+
+  @override
+  String get locationOptionManualDescription =>
+      'Type the latitude and longitude yourself.';
+
+  @override
+  String get recommendedLabel => 'Recommended';
+
+  @override
+  String get chooseAnotherWay => 'Choose another way';
+
+  @override
+  String get confirmLocationTitle => 'Confirm this location';
+
+  @override
   String get chooseLocationForNextPrayer =>
       'Choose a location to show the next prayer time here.';
 
@@ -855,12 +950,17 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String prayerNextIn(String prayer, String time) {
+    return '$prayer in $time';
+  }
+
+  @override
   String minutesShort(int minutes) {
     return '$minutes min';
   }
 
   @override
-  String hoursMinutesShort(int hours, int minutes) {
+  String hoursMinutesShort(int hours, String minutes) {
     return '${hours}h ${minutes}m';
   }
 
@@ -986,6 +1086,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get distanceUnavailable => 'Distance unavailable';
+
+  @override
+  String get qiblaStatBearing => 'Bearing';
+
+  @override
+  String get qiblaStatDistance => 'Distance';
+
+  @override
+  String get qiblaFixedCoordinates =>
+      'Using fixed coordinates for calculation, not live GPS.';
+
+  @override
+  String kilometersValue(String distance) {
+    return '$distance km';
+  }
 
   @override
   String kilometersToKaaba(String distance) {
@@ -1427,7 +1542,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'The offline Hisn al Muslim file did not contain any duas.';
 
   @override
-  String get hisnAlMuslim => 'Hisn al Muslim';
+  String get hisnAlMuslim => 'Hisn al-Muslim';
 
   @override
   String arabicCategoriesDuasOffline(int categoryCount, int duaCount) {
@@ -1444,7 +1559,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get removeFavourite => 'Remove favourite';
 
   @override
-  String get saveDuasHere => 'Save duas here for quick access';
+  String get saveDuasHere => 'Saved for quick access';
 
   @override
   String savedDuasCount(int count, String label) {
@@ -1607,7 +1722,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get assalamuAlaikum => 'Assalamu Alaikum';
 
   @override
-  String get continueYourJourneyToday => 'Continue your journey today';
+  String get continueYourJourneyToday => 'Keep going today';
 
   @override
   String onStreakDay(int streak) {
@@ -1806,7 +1921,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Favourite ayahs quickly, or add folders, tags, and private notes from the reading options.';
 
   @override
-  String get privateNote => 'Private note';
+  String get note => 'Note';
 
   @override
   String get writeReflectionHint => 'Write a reflection...';
@@ -1879,8 +1994,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count day streak',
-      one: '1 day streak',
+      other: '$count-day streak',
+      one: '1-day streak',
     );
     return '$_temp0';
   }
@@ -1892,6 +2007,17 @@ class AppLocalizationsEn extends AppLocalizations {
       locale: localeName,
       other: '$count ayahs',
       one: '1 ayah',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String prayersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count prayers',
+      one: '1 prayer',
     );
     return '$_temp0';
   }
@@ -2455,6 +2581,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get showLess => 'Show less';
 
   @override
+  String get showMore => 'Show more';
+
+  @override
   String showAllSurahs(Object count) {
     return 'Show all $count surahs';
   }
@@ -2768,10 +2897,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get rewardIsWithAllah => 'Reward is with Allah.';
-
-  @override
-  String get totalZakahWealth =>
-      'Total wealth must be at least 200 to calculate Zakah.';
 
   @override
   String get hifzTitle => 'Hifz';
@@ -3507,7 +3632,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String countdownInHoursMinutes(int hours, int minutes) {
+  String countdownInHoursMinutes(int hours, String minutes) {
     return 'In ${hours}h ${minutes}m';
   }
 
@@ -3938,6 +4063,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Market offline. Using standard cached values.';
 
   @override
+  String get zakatDisclaimer =>
+      'Rates and Nisab assumptions are estimates; verify with a trusted scholar and applicable guidance.';
+
+  @override
   String get overridePrices => 'Override Prices';
 
   @override
@@ -3991,16 +4120,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get belowNisab => 'BELOW NISAB';
 
   @override
+  String get zakatNisabNotChecked => 'NISAB NOT CHECKED';
+
+  @override
   String get zakatDueLabel => 'ZAKAT DUE (2.5%)';
 
   @override
   String get resetCalculator => 'Reset Calculator';
 
   @override
-  String get goldPriceGram => 'Gold price per gram (USD)';
+  String goldPriceGram(String currency) {
+    return 'Gold price per gram ($currency)';
+  }
 
   @override
-  String get silverPriceGram => 'Silver price per gram (USD)';
+  String silverPriceGram(String currency) {
+    return 'Silver price per gram ($currency)';
+  }
 
   @override
   String get zakatSavedLedger =>
@@ -4013,7 +4149,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get updateZakatPaidAmount => 'Update Zakat Paid Amount';
 
   @override
-  String get enterPaidAmountUsd => 'Enter paid amount in USD';
+  String enterPaidAmountInCurrency(String currency) {
+    return 'Enter paid amount in $currency';
+  }
 
   @override
   String get calculatorTab => 'Calculator';
@@ -4081,6 +4219,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get todayLegend => 'Today';
+
+  @override
+  String get newMonthLegend => 'New Hijri month';
+
+  @override
+  String get comingUp => 'Coming up';
+
+  @override
+  String get moonSightingHint =>
+      'Shifts the Hijri dates by a day if moon sighting in your area is different.';
 
   @override
   String get eidLegend => 'Eid';
@@ -4219,19 +4367,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String amountInCurrency(String currency) {
     return 'Amount in $currency';
   }
-
-  @override
-  String get livestockSubtitle =>
-      'Sheep/Goats, Cows, Camels — simplified modern values';
-
-  @override
-  String get livestockSheepGoats => 'Sheep & Goats';
-
-  @override
-  String get livestockCowsBuffalo => 'Cows / Buffalo';
-
-  @override
-  String get livestockCamels => 'Camels';
 
   @override
   String get noHistoricalCalculations => 'No historical calculations';
@@ -4440,4 +4575,501 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get confirmLiveLocationMessage =>
       'Would you like to lock prayer times to your device\'s live location? The app will automatically update times as you travel.';
+
+  @override
+  String ratesLiveStatus(String source, String time) {
+    return '$source • live • $time';
+  }
+
+  @override
+  String ratesStaleStatus(String source, String time) {
+    return '$source • last known rate • $time';
+  }
+
+  @override
+  String get wordByWord => 'Word by word';
+
+  @override
+  String get wordByWordDescription =>
+      'Tap any word while reading to see its meaning and transliteration.';
+
+  @override
+  String get wordMeaning => 'Meaning';
+
+  @override
+  String get wordTransliteration => 'Transliteration';
+
+  @override
+  String wordByWordProvenance(String source, String license) {
+    return 'Word glosses from $source ($license). A reading aid, not a translation or tafsir.';
+  }
+
+  @override
+  String savedAyahsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count saved ayahs',
+      one: '1 saved ayah',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get allSaved => 'All saved';
+
+  @override
+  String get newestFirst => 'Newest first';
+
+  @override
+  String get browseSurahs => 'Browse surahs';
+
+  @override
+  String get forThisMorning => 'For this morning';
+
+  @override
+  String get forThisEvening => 'For this evening';
+
+  @override
+  String get continueAction => 'Continue';
+
+  @override
+  String get suggestedForYou => 'Suggested for you';
+
+  @override
+  String get browseByTheme => 'Browse by theme';
+
+  @override
+  String get beginAction => 'Begin';
+
+  @override
+  String categoriesCount(int count) {
+    return '$count categories';
+  }
+
+  @override
+  String themesCount(int count) {
+    return '$count themes';
+  }
+
+  @override
+  String searchCategoryCount(int count) {
+    return 'Search $count categories';
+  }
+
+  @override
+  String searchInTheme(String theme) {
+    return 'Search in $theme';
+  }
+
+  @override
+  String get backToDuas => 'Back to Duas';
+
+  @override
+  String get loggedToday => 'Counted today';
+
+  @override
+  String get theNight => 'The night';
+
+  @override
+  String get prayerPassed => 'Passed';
+
+  @override
+  String prayerBeganAt(String time) {
+    return 'Began $time';
+  }
+
+  @override
+  String prayerEndsAt(String time) {
+    return 'Ends $time';
+  }
+
+  @override
+  String get tasbihAndDuas => 'Tasbih and duas';
+
+  @override
+  String get surahMap => 'Surah map';
+
+  @override
+  String get tapCellToOpen => 'Tap a cell to open';
+
+  @override
+  String get less => 'Less';
+
+  @override
+  String get khatmProgress => 'Khatm progress';
+
+  @override
+  String get notLogged => 'Not logged';
+
+  @override
+  String get mostReadSurah => 'Most-read surah';
+
+  @override
+  String get pureBlackBackground => 'Pitch-black background';
+
+  @override
+  String get pureBlackBackgroundSubtitle =>
+      'Use a pitch-black background in dark mode with any color palette.';
+
+  @override
+  String get showSplashScreen => 'Show startup animation';
+
+  @override
+  String get showSplashScreenSubtitle =>
+      'Play a short animation when the app opens.';
+
+  @override
+  String get savedFolderLabel => 'Folder';
+
+  @override
+  String get savedManageFolders => 'Manage folders';
+
+  @override
+  String get zakatNisabNeedsRates =>
+      'Add the gold and silver rates to check the Nisab. They could not be loaded, so enter them manually.';
+
+  @override
+  String get zakatDeleteRecordQuestion => 'Delete this calculation?';
+
+  @override
+  String get zakatDeleteRecordBody =>
+      'This removes the saved calculation from your history.';
+
+  @override
+  String get unitTola => 'tola';
+
+  @override
+  String get hifzRatingFail => 'Fail';
+
+  @override
+  String get hifzRatingPass => 'Pass';
+
+  @override
+  String get shareImageFormat => 'Share image format';
+
+  @override
+  String get shareFormatStory => 'Story 9:16';
+
+  @override
+  String get shareFormatSquare => 'Square 1:1';
+
+  @override
+  String get shareFormatClassic => 'Classic';
+
+  @override
+  String get unableToShareAyahImage => 'Unable to share ayah image.';
+
+  @override
+  String get reciterGroupDownloaded => 'Group Downloaded';
+
+  @override
+  String get reciterShowAlphabetical => 'Show Alphabetical';
+
+  @override
+  String get audioConnectionInterrupted =>
+      'Audio connection was interrupted. Check your internet and try again.';
+
+  @override
+  String get offlineDownloadAyahOrReconnect =>
+      'You are offline. Download this ayah or reconnect to stream it.';
+
+  @override
+  String get unableToPlayAyahAudio => 'Unable to play ayah audio.';
+
+  @override
+  String get repeatOnce => 'Once';
+
+  @override
+  String repeatTimes(int count) {
+    return '$count times';
+  }
+
+  @override
+  String get repeatInfinite => 'Infinite';
+
+  @override
+  String get halfSecond => '0.5 seconds';
+
+  @override
+  String get resourceStateUpdateAvailable => 'Update available';
+
+  @override
+  String get resourcePhaseStarting => 'Starting';
+
+  @override
+  String get resourcePhaseVerifying => 'Verifying';
+
+  @override
+  String get resourcePhaseExtracting => 'Extracting';
+
+  @override
+  String get resourcePhaseInstalling => 'Installing';
+
+  @override
+  String get resourcePhaseFailed => 'Failed';
+
+  @override
+  String get resourceTypeGeneric => 'Resource';
+
+  @override
+  String get translationBundled => 'Bundled';
+
+  @override
+  String get translationDownloadUnavailable => 'Download unavailable';
+
+  @override
+  String get navigationSettingsHint =>
+      'Drag tiles to rearrange. Drag an available item and drop it on an active tile to swap, or tap an item below to pin it (displaces least recently used).';
+
+  @override
+  String navigationActiveSlots(int count, int max) {
+    return 'Active navbar slots ($count/$max)';
+  }
+
+  @override
+  String get navigationAvailableItems => 'Available unpinned items';
+
+  @override
+  String navigationSlot(int number) {
+    return 'Slot $number';
+  }
+
+  @override
+  String navigationSlotLocked(int number) {
+    return 'Slot $number (Locked Hub)';
+  }
+
+  @override
+  String navigationSwapped(String first, String second) {
+    return 'Swapped $first with $second';
+  }
+
+  @override
+  String navigationRemoved(String item) {
+    return 'Removed $item from navbar';
+  }
+
+  @override
+  String navigationPinned(String item) {
+    return 'Pinned $item';
+  }
+
+  @override
+  String navigationPinnedDisplaced(String item, String displaced) {
+    return 'Pinned $item (displaced $displaced)';
+  }
+
+  @override
+  String get navSubtitleHome => 'Main Dashboard';
+
+  @override
+  String get navSubtitleQuran => 'Read the Holy Quran';
+
+  @override
+  String get navSubtitlePrayer => 'Prayer Times & Adhan';
+
+  @override
+  String get navSubtitleSettings => 'System Preferences';
+
+  @override
+  String get dockZakat => 'Zakat';
+
+  @override
+  String get dockCalendar => 'Calendar';
+
+  @override
+  String downloadsReciterCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reciters',
+      one: '1 reciter',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String downloadsItemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items',
+      one: '1 item',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String downloadsDeleteReciterBody(String reciter, String surah) {
+    return 'Remove all downloads for $reciter on $surah?';
+  }
+
+  @override
+  String get downloadsAllSurahs => 'All Surahs';
+
+  @override
+  String get downloadsFilterTitle => 'Filter & Sort Downloads';
+
+  @override
+  String get downloadsFilterSubtitle =>
+      'More control over which recitations appear in your library';
+
+  @override
+  String get downloadsFilterSearchHint => 'Search recitations or surahs...';
+
+  @override
+  String get downloadsGroupBy => 'Group by';
+
+  @override
+  String get downloadsSortBy => 'Sort by';
+
+  @override
+  String get downloadsCategory => 'Category';
+
+  @override
+  String get downloadsContentType => 'Content type';
+
+  @override
+  String get downloadsSortReciterAsc => 'Reciter (A → Z)';
+
+  @override
+  String get downloadsSortReciterDesc => 'Reciter (Z → A)';
+
+  @override
+  String get downloadsSortSizeDesc => 'Size (largest first)';
+
+  @override
+  String get downloadsSortSizeAsc => 'Size (smallest first)';
+
+  @override
+  String get downloadsSortSurahAsc => 'Surah (1 → 114)';
+
+  @override
+  String get downloadsSortSurahDesc => 'Surah (114 → 1)';
+
+  @override
+  String get offsetSetPositive => 'Set positive';
+
+  @override
+  String get offsetSetNegative => 'Set negative';
+
+  @override
+  String get notificationPermissionCheckTimedOut =>
+      'Notification permission check timed out. Try reopening the app or enabling notifications in system settings.';
+
+  @override
+  String get notificationPermissionCheckFailed =>
+      'Could not check notification permission. Try again or enable notifications in system settings.';
+
+  @override
+  String get exactAlarmPermissionCheckTimedOut =>
+      'Exact alarm permission check timed out. Try reopening the app or enabling alarms & reminders in system settings.';
+
+  @override
+  String get exactAlarmPermissionCheckFailed =>
+      'Could not check exact alarm permission. Try again or enable alarms & reminders in system settings.';
+
+  @override
+  String get asrMethodHanafi => 'Hanafi';
+
+  @override
+  String get highLatitudeRuleAutoTitle => 'Auto';
+
+  @override
+  String get highLatitudeRuleNoneTitle => 'None';
+
+  @override
+  String get highLatitudeRuleMiddleOfTheNightTitle => 'Middle of the night';
+
+  @override
+  String get highLatitudeRuleOneSeventhTitle => 'One seventh';
+
+  @override
+  String get highLatitudeRuleAngleBasedTitle => 'Angle based';
+
+  @override
+  String get prayerMethodAuto => 'Best for location';
+
+  @override
+  String get prayerMethodMuslimWorldLeague => 'Muslim World League';
+
+  @override
+  String get prayerMethodEgyptian => 'Egyptian';
+
+  @override
+  String get prayerMethodUmmAlQura => 'Umm al-Qura';
+
+  @override
+  String get prayerMethodDubai => 'Dubai / Gulf';
+
+  @override
+  String get prayerMethodKuwait => 'Kuwait';
+
+  @override
+  String get prayerMethodQatar => 'Qatar';
+
+  @override
+  String get prayerMethodKarachi => 'Karachi';
+
+  @override
+  String get prayerMethodMoonsighting => 'Moonsighting Committee';
+
+  @override
+  String get prayerMethodMorocco => 'Morocco';
+
+  @override
+  String get prayerMethodSingapore => 'Singapore';
+
+  @override
+  String get prayerMethodTehran => 'Tehran';
+
+  @override
+  String get prayerMethodTurkey => 'Turkey / Diyanet';
+
+  @override
+  String get prayerMethodShortAuto => 'Auto';
+
+  @override
+  String get prayerMethodShortMwl => 'MWL';
+
+  @override
+  String get prayerMethodShortDubai => 'Dubai';
+
+  @override
+  String get prayerMethodShortMoonsighting => 'Moonsighting';
+
+  @override
+  String get prayerMethodShortTurkey => 'Turkey';
+
+  @override
+  String get dailyToolsKeepOnePinned => 'At least one tool must remain pinned.';
+
+  @override
+  String get zakatLivestockNotCalculated =>
+      'Livestock is not calculated here, so it is left out of the total. Please ask a qualified scholar.';
+
+  @override
+  String get resourcesFilterTitle => 'Filter & sort resources';
+
+  @override
+  String get resourceSortName => 'Name (A → Z)';
+
+  @override
+  String get resourceSortInstalledFirst => 'Installed first';
+
+  @override
+  String get resourceFilterStatus => 'Status';
+
+  @override
+  String get resourceFilterType => 'Type';
+
+  @override
+  String get resourceViewByType => 'By type';
+
+  @override
+  String get resourceViewNone => 'No grouping';
+
+  @override
+  String get resourcesNoMatches => 'No resources match these filters.';
 }

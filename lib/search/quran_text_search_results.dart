@@ -5,8 +5,12 @@ import 'package:equran/home/read.dart';
 import 'package:equran/search/quran_text_search_service.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_text_styles.dart';
-import 'package:equran/utils/app_radii.dart';
+import 'package:equran/theme/equran_spacing.dart';
+import 'package:equran/theme/equran_tokens.dart';
+import 'package:equran/widgets/redesign/page_typography.dart';
+import 'package:equran/widgets/redesign/redesign_widgets.dart';
 import 'package:equran/utils/quran_display.dart';
+import 'package:equran/utils/text_direction.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:equran/l10n/app_localizations.dart';
@@ -86,9 +90,9 @@ class _QuranTextSearchResultsState extends State<QuranTextSearchResults>
           child: ListView.separated(
             controller: scrollController,
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.only(bottom: 30),
+            padding: const EdgeInsets.only(top: 8, bottom: 30),
             itemCount: results.length,
-            separatorBuilder: (_, _) => const SizedBox(height: 8),
+            separatorBuilder: (_, _) => const SizedBox(height: 10),
             itemBuilder: (context, index) {
               final QuranTextSearchResult result = results[index];
               return _QuranTextSearchTile(result: result, searchQuery: query);
@@ -131,15 +135,15 @@ class _QuranTextSearchTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
     final EquranColors colors = context.equranColors;
+    final EquranTokens tokens = context.equranTokens;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
     final String surahName = localizedSurahName(localizations, result.surah);
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadii.medium),
+        borderRadius: BorderRadius.circular(EquranRadii.xl),
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute<void>(
@@ -148,79 +152,65 @@ class _QuranTextSearchTile extends StatelessWidget {
             ),
           );
         },
-        child: Ink(
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: BorderRadius.circular(AppRadii.medium),
-            border: Border.all(color: colors.border),
-            boxShadow: <BoxShadow>[
-              BoxShadow(
-                color: colors.shadow.withAlpha(12),
-                blurRadius: 12,
-                offset: const Offset(0, 3),
+        child: HairlineCard(
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: PillTag(
+                        localizations.surahLabel(surahName, result.verse),
+                        gold: true,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  // Shows whether the match was in the translation or the
+                  // Arabic text.
+                  result.translationMatch
+                      ? Icon(
+                          Icons.translate_rounded,
+                          size: 18,
+                          color: tokens.muted,
+                        )
+                      : DesignIcon('book', size: 18, color: tokens.muted),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                result.arabicPreview,
+                textDirection: TextDirection.rtl,
+                textAlign: TextAlign.right,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontFamily: EquranTextStyles.activeFontFamily,
+                  fontFamilyFallback: const <String>['UthmanicHafs'],
+                  fontSize: 22,
+                  height: 1.65,
+                  color: colors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                result.translationPreview,
+                textDirection: scriptDirectionIn(
+                  context,
+                  result.translationPreview,
+                ),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 14,
+                  height: 1.4,
+                  color: tokens.text2,
+                ),
               ),
             ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: colors.mint,
-                        borderRadius: BorderRadius.circular(AppRadii.small),
-                      ),
-                      child: Text(
-                        localizations.surahLabel(surahName, result.verse),
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: colors.primary,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                    const Spacer(),
-                    Icon(
-                      result.translationMatch
-                          ? Icons.translate_rounded
-                          : Icons.menu_book_rounded,
-                      size: 18,
-                      color: colors.textMuted,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  result.arabicPreview,
-                  textDirection: TextDirection.rtl,
-                  textAlign: TextAlign.right,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontFamily: EquranTextStyles.activeFontFamily,
-                    fontFamilyFallback: const <String>['UthmanicHafs'],
-                    height: 1.65,
-                    color: colors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  result.translationPreview,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    height: 1.35,
-                    color: colors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
           ),
         ),
       ),
@@ -258,12 +248,12 @@ class _RecentQuranSearches extends StatelessWidget {
             physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.only(bottom: 30),
             children: <Widget>[
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               const _RecentSearchHeader(),
-              const SizedBox(height: 10),
+              const SizedBox(height: 12),
               ...entries.map(
                 (RecentSearchEntry entry) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.only(bottom: 10),
                   child: _RecentSearchTile(
                     entry: entry,
                     onTap: onSearchSelected == null
@@ -285,16 +275,10 @@ class _RecentSearchHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
     final AppLocalizations localizations = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Text(
-        localizations.recentQuranTextSearches,
-        style: theme.textTheme.titleSmall?.copyWith(
-          fontWeight: FontWeight.w800,
-        ),
-      ),
+      child: RedesignEyebrow(localizations.recentQuranTextSearches),
     );
   }
 }
@@ -307,27 +291,62 @@ class _RecentSearchTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
+    final EquranTokens tokens = context.equranTokens;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
 
-    return ListTile(
-      onTap: onTap,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppRadii.medium),
-        side: BorderSide(color: colorScheme.outlineVariant),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(EquranRadii.xl),
+        onTap: onTap,
+        child: HairlineCard(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            children: <Widget>[
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: tokens.emWash,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: DesignIcon('clock', size: 19, color: tokens.emText),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      entry.query,
+                      textDirection: scriptDirectionIn(context, entry.query),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontVariations: const [FontVariation('opsz', 15)],
+                        fontWeight: FontWeight.w500,
+                        color: context.equranColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      localizations.searchResultCount(entry.resultCount),
+                      style: TextStyle(fontSize: 12.5, color: tokens.muted),
+                    ),
+                  ],
+                ),
+              ),
+              if (onTap != null) ...<Widget>[
+                const SizedBox(width: 8),
+                Icon(Icons.north_west_rounded, size: 18, color: tokens.muted),
+              ],
+            ],
+          ),
+        ),
       ),
-      tileColor: colorScheme.surfaceContainerLow,
-      leading: const Icon(Icons.history_rounded),
-      title: Text(entry.query),
-      subtitle: Text(localizations.searchResultCount(entry.resultCount)),
-      trailing: onTap == null
-          ? null
-          : Icon(
-              Icons.north_west_rounded,
-              size: 18,
-              color: colorScheme.onSurfaceVariant,
-            ),
     );
   }
 }
@@ -350,7 +369,7 @@ class _SearchLoadingState extends StatelessWidget {
             height: 34,
             child: CircularProgressIndicator(
               strokeWidth: 2.5,
-              color: Theme.of(context).colorScheme.primary,
+              color: context.equranTokens.emText,
             ),
           ),
         ),
@@ -365,7 +384,6 @@ class _EmptyModeState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _CenteredState(
-      icon: Icons.travel_explore_rounded,
       title: AppLocalizations.of(context)!.searchQuranText,
       message: AppLocalizations.of(context)!.searchQuranTextEmptyMessage,
     );
@@ -380,7 +398,6 @@ class _EmptySearchState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _CenteredState(
-      icon: Icons.search_off_rounded,
       title: AppLocalizations.of(context)!.noQuranTextResults,
       message: AppLocalizations.of(context)!.noAyahSearchResults(query),
     );
@@ -388,20 +405,14 @@ class _EmptySearchState extends StatelessWidget {
 }
 
 class _CenteredState extends StatelessWidget {
-  const _CenteredState({
-    required this.icon,
-    required this.title,
-    required this.message,
-  });
+  const _CenteredState({required this.title, required this.message});
 
-  final IconData icon;
   final String title;
   final String message;
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
+    final EquranTokens tokens = context.equranTokens;
 
     return Center(
       child: Padding(
@@ -409,21 +420,33 @@ class _CenteredState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Icon(icon, size: 44, color: colorScheme.onSurfaceVariant),
-            const SizedBox(height: 12),
+            Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: tokens.emWash,
+                shape: BoxShape.circle,
+                border: Border.all(color: tokens.hair2),
+              ),
+              child: Center(
+                child: DesignIcon('search', size: 30, color: tokens.emText),
+              ),
+            ),
+            const SizedBox(height: 18),
             Text(
               title,
               textAlign: TextAlign.center,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
+              style: redesignDisplayStyle(context, size: 24),
             ),
             const SizedBox(height: 8),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
+              style: TextStyle(
+                fontSize: 14.5,
+                fontVariations: const [FontVariation('opsz', 14.5)],
+                height: 1.45,
+                color: tokens.text2,
               ),
             ),
           ],

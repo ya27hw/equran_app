@@ -35,11 +35,6 @@ class RoutineProgressSummary {
   bool get isRoutineDone => remainingAyahs <= 0;
   bool get isTodayDone => todayRemainingAyahs <= 0;
 
-  double get totalFraction {
-    if (totalAyahs <= 0) return 0;
-    return (completedAyahs / totalAyahs).clamp(0.0, 1.0).toDouble();
-  }
-
   double get todayFraction {
     if (todayPortionAyahs <= 0) return isRoutineDone ? 1 : 0;
     return (todayCompletedAyahs / todayPortionAyahs).clamp(0.0, 1.0).toDouble();

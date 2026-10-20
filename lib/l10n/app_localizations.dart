@@ -548,6 +548,24 @@ abstract class AppLocalizations {
   /// **'Quran Reading'**
   String get beginWithQuran;
 
+  /// No description provided for @yourQuran.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Quran'**
+  String get yourQuran;
+
+  /// No description provided for @beginQuranReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Begin with Quran'**
+  String get beginQuranReading;
+
+  /// No description provided for @startWithSurah.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with {surah}'**
+  String startWithSurah(String surah);
+
   /// No description provided for @startReadingSubtitle.
   ///
   /// In en, this message translates to:
@@ -1386,6 +1404,42 @@ abstract class AppLocalizations {
   /// **'Qibla, downloads, settings, plans, and tools gathered in one quiet place.'**
   String get moreHeroSubtitle;
 
+  /// No description provided for @moreGroupWorship.
+  ///
+  /// In en, this message translates to:
+  /// **'Worship'**
+  String get moreGroupWorship;
+
+  /// No description provided for @moreGroupReadLearn.
+  ///
+  /// In en, this message translates to:
+  /// **'Read and learn'**
+  String get moreGroupReadLearn;
+
+  /// No description provided for @moreGroupTools.
+  ///
+  /// In en, this message translates to:
+  /// **'Tools'**
+  String get moreGroupTools;
+
+  /// No description provided for @moreGroupApp.
+  ///
+  /// In en, this message translates to:
+  /// **'App'**
+  String get moreGroupApp;
+
+  /// No description provided for @moreGroupAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About eQuran'**
+  String get moreGroupAbout;
+
+  /// No description provided for @edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
   /// No description provided for @openRoutine.
   ///
   /// In en, this message translates to:
@@ -1397,6 +1451,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'eQuran is a modern Quran companion designed for focused reading, listening, and daily reflection.'**
   String get aboutAppBody;
+
+  /// No description provided for @specialThanks.
+  ///
+  /// In en, this message translates to:
+  /// **'Special thanks'**
+  String get specialThanks;
+
+  /// No description provided for @specialThanksBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A heartfelt thank you to these contributors for their massive contributions to eQuran, and for their valuable input and feedback.'**
+  String get specialThanksBody;
+
+  /// No description provided for @supportProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Support'**
+  String get supportProject;
+
+  /// No description provided for @supportProjectDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'If eQuran helps you, you can support its development with a crypto donation.'**
+  String get supportProjectDescription;
+
+  /// No description provided for @bitcoin.
+  ///
+  /// In en, this message translates to:
+  /// **'Bitcoin (BTC)'**
+  String get bitcoin;
+
+  /// No description provided for @ethereum.
+  ///
+  /// In en, this message translates to:
+  /// **'Ethereum (ETH)'**
+  String get ethereum;
+
+  /// No description provided for @solana.
+  ///
+  /// In en, this message translates to:
+  /// **'Solana (SOL)'**
+  String get solana;
+
+  /// No description provided for @usdcErc20.
+  ///
+  /// In en, this message translates to:
+  /// **'USDC (ERC-20)'**
+  String get usdcErc20;
+
+  /// No description provided for @litecoin.
+  ///
+  /// In en, this message translates to:
+  /// **'Litecoin (LTC)'**
+  String get litecoin;
+
+  /// No description provided for @copyAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy address'**
+  String get copyAddress;
+
+  /// No description provided for @addressCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Address copied'**
+  String get addressCopied;
 
   /// No description provided for @versionLabel.
   ///
@@ -1517,6 +1637,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close search'**
   String get closeSearch;
+
+  /// No description provided for @reverseOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Reverse order'**
+  String get reverseOrder;
 
   /// No description provided for @noSurahsFound.
   ///
@@ -1650,6 +1776,54 @@ abstract class AppLocalizations {
   /// **'Set up location'**
   String get setUpLocation;
 
+  /// No description provided for @locationSetupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Where are you praying?'**
+  String get locationSetupTitle;
+
+  /// No description provided for @locationSetupSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick one way to set it. Prayer times are calculated for this place only.'**
+  String get locationSetupSubtitle;
+
+  /// No description provided for @locationOptionCurrentDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Fastest. We read your position once.'**
+  String get locationOptionCurrentDescription;
+
+  /// No description provided for @locationOptionMapDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Move the map until the pin sits over your area.'**
+  String get locationOptionMapDescription;
+
+  /// No description provided for @locationOptionManualDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Type the latitude and longitude yourself.'**
+  String get locationOptionManualDescription;
+
+  /// No description provided for @recommendedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended'**
+  String get recommendedLabel;
+
+  /// No description provided for @chooseAnotherWay.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose another way'**
+  String get chooseAnotherWay;
+
+  /// No description provided for @confirmLocationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm this location'**
+  String get confirmLocationTitle;
+
   /// No description provided for @chooseLocationForNextPrayer.
   ///
   /// In en, this message translates to:
@@ -1668,6 +1842,12 @@ abstract class AppLocalizations {
   /// **'{prayer} begins in {countdown}'**
   String prayerBeginsIn(String prayer, String countdown);
 
+  /// Hero subtitle under the current prayer, e.g. 'Asr in 2h 08m'. The time is shown as a larger numeral.
+  ///
+  /// In en, this message translates to:
+  /// **'{prayer} in {time}'**
+  String prayerNextIn(String prayer, String time);
+
   /// No description provided for @minutesShort.
   ///
   /// In en, this message translates to:
@@ -1678,7 +1858,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{hours}h {minutes}m'**
-  String hoursMinutesShort(int hours, int minutes);
+  String hoursMinutesShort(int hours, String minutes);
 
   /// No description provided for @exactAlarmPermissionOff.
   ///
@@ -1877,6 +2057,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Distance unavailable'**
   String get distanceUnavailable;
+
+  /// No description provided for @qiblaStatBearing.
+  ///
+  /// In en, this message translates to:
+  /// **'Bearing'**
+  String get qiblaStatBearing;
+
+  /// No description provided for @qiblaStatDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get qiblaStatDistance;
+
+  /// No description provided for @qiblaFixedCoordinates.
+  ///
+  /// In en, this message translates to:
+  /// **'Using fixed coordinates for calculation, not live GPS.'**
+  String get qiblaFixedCoordinates;
+
+  /// No description provided for @kilometersValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance} km'**
+  String kilometersValue(String distance);
 
   /// No description provided for @kilometersToKaaba.
   ///
@@ -2667,7 +2871,7 @@ abstract class AppLocalizations {
   /// No description provided for @hisnAlMuslim.
   ///
   /// In en, this message translates to:
-  /// **'Hisn al Muslim'**
+  /// **'Hisn al-Muslim'**
   String get hisnAlMuslim;
 
   /// No description provided for @arabicCategoriesDuasOffline.
@@ -2697,7 +2901,7 @@ abstract class AppLocalizations {
   /// No description provided for @saveDuasHere.
   ///
   /// In en, this message translates to:
-  /// **'Save duas here for quick access'**
+  /// **'Saved for quick access'**
   String get saveDuasHere;
 
   /// No description provided for @savedDuasCount.
@@ -2985,7 +3189,7 @@ abstract class AppLocalizations {
   /// No description provided for @continueYourJourneyToday.
   ///
   /// In en, this message translates to:
-  /// **'Continue your journey today'**
+  /// **'Keep going today'**
   String get continueYourJourneyToday;
 
   /// No description provided for @onStreakDay.
@@ -3305,11 +3509,11 @@ abstract class AppLocalizations {
   /// **'Favourite ayahs quickly, or add folders, tags, and private notes from the reading options.'**
   String get savedAyahLibraryHint;
 
-  /// No description provided for @privateNote.
+  /// No description provided for @note.
   ///
   /// In en, this message translates to:
-  /// **'Private note'**
-  String get privateNote;
+  /// **'Note'**
+  String get note;
 
   /// No description provided for @writeReflectionHint.
   ///
@@ -3428,7 +3632,7 @@ abstract class AppLocalizations {
   /// No description provided for @dayStreakCount.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{1 day streak} other{{count} day streak}}'**
+  /// **'{count, plural, =1{1-day streak} other{{count}-day streak}}'**
   String dayStreakCount(num count);
 
   /// No description provided for @ayahsCount.
@@ -3436,6 +3640,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 ayah} other{{count} ayahs}}'**
   String ayahsCount(num count);
+
+  /// No description provided for @prayersCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 prayer} other{{count} prayers}}'**
+  String prayersCount(int count);
 
   /// No description provided for @daysCount.
   ///
@@ -4355,6 +4565,12 @@ abstract class AppLocalizations {
   /// **'Show less'**
   String get showLess;
 
+  /// No description provided for @showMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Show more'**
+  String get showMore;
+
   /// No description provided for @showAllSurahs.
   ///
   /// In en, this message translates to:
@@ -4904,12 +5120,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reward is with Allah.'**
   String get rewardIsWithAllah;
-
-  /// No description provided for @totalZakahWealth.
-  ///
-  /// In en, this message translates to:
-  /// **'Total wealth must be at least 200 to calculate Zakah.'**
-  String get totalZakahWealth;
 
   /// No description provided for @hifzTitle.
   ///
@@ -6175,7 +6385,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'In {hours}h {minutes}m'**
-  String countdownInHoursMinutes(int hours, int minutes);
+  String countdownInHoursMinutes(int hours, String minutes);
 
   /// No description provided for @countdownInMinutes.
   ///
@@ -6903,6 +7113,12 @@ abstract class AppLocalizations {
   /// **'Market offline. Using standard cached values.'**
   String get ratesSyncOffline;
 
+  /// No description provided for @zakatDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Rates and Nisab assumptions are estimates; verify with a trusted scholar and applicable guidance.'**
+  String get zakatDisclaimer;
+
   /// No description provided for @overridePrices.
   ///
   /// In en, this message translates to:
@@ -7005,6 +7221,12 @@ abstract class AppLocalizations {
   /// **'BELOW NISAB'**
   String get belowNisab;
 
+  /// No description provided for @zakatNisabNotChecked.
+  ///
+  /// In en, this message translates to:
+  /// **'NISAB NOT CHECKED'**
+  String get zakatNisabNotChecked;
+
   /// No description provided for @zakatDueLabel.
   ///
   /// In en, this message translates to:
@@ -7020,14 +7242,14 @@ abstract class AppLocalizations {
   /// No description provided for @goldPriceGram.
   ///
   /// In en, this message translates to:
-  /// **'Gold price per gram (USD)'**
-  String get goldPriceGram;
+  /// **'Gold price per gram ({currency})'**
+  String goldPriceGram(String currency);
 
   /// No description provided for @silverPriceGram.
   ///
   /// In en, this message translates to:
-  /// **'Silver price per gram (USD)'**
-  String get silverPriceGram;
+  /// **'Silver price per gram ({currency})'**
+  String silverPriceGram(String currency);
 
   /// No description provided for @zakatSavedLedger.
   ///
@@ -7047,11 +7269,11 @@ abstract class AppLocalizations {
   /// **'Update Zakat Paid Amount'**
   String get updateZakatPaidAmount;
 
-  /// No description provided for @enterPaidAmountUsd.
+  /// No description provided for @enterPaidAmountInCurrency.
   ///
   /// In en, this message translates to:
-  /// **'Enter paid amount in USD'**
-  String get enterPaidAmountUsd;
+  /// **'Enter paid amount in {currency}'**
+  String enterPaidAmountInCurrency(String currency);
 
   /// No description provided for @calculatorTab.
   ///
@@ -7172,6 +7394,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Today'**
   String get todayLegend;
+
+  /// No description provided for @newMonthLegend.
+  ///
+  /// In en, this message translates to:
+  /// **'New Hijri month'**
+  String get newMonthLegend;
+
+  /// No description provided for @comingUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming up'**
+  String get comingUp;
+
+  /// No description provided for @moonSightingHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Shifts the Hijri dates by a day if moon sighting in your area is different.'**
+  String get moonSightingHint;
 
   /// No description provided for @eidLegend.
   ///
@@ -7418,30 +7658,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Amount in {currency}'**
   String amountInCurrency(String currency);
-
-  /// No description provided for @livestockSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Sheep/Goats, Cows, Camels — simplified modern values'**
-  String get livestockSubtitle;
-
-  /// No description provided for @livestockSheepGoats.
-  ///
-  /// In en, this message translates to:
-  /// **'Sheep & Goats'**
-  String get livestockSheepGoats;
-
-  /// No description provided for @livestockCowsBuffalo.
-  ///
-  /// In en, this message translates to:
-  /// **'Cows / Buffalo'**
-  String get livestockCowsBuffalo;
-
-  /// No description provided for @livestockCamels.
-  ///
-  /// In en, this message translates to:
-  /// **'Camels'**
-  String get livestockCamels;
 
   /// No description provided for @noHistoricalCalculations.
   ///
@@ -7820,6 +8036,852 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Would you like to lock prayer times to your device\'s live location? The app will automatically update times as you travel.'**
   String get confirmLiveLocationMessage;
+
+  /// No description provided for @ratesLiveStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'{source} • live • {time}'**
+  String ratesLiveStatus(String source, String time);
+
+  /// No description provided for @ratesStaleStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'{source} • last known rate • {time}'**
+  String ratesStaleStatus(String source, String time);
+
+  /// No description provided for @wordByWord.
+  ///
+  /// In en, this message translates to:
+  /// **'Word by word'**
+  String get wordByWord;
+
+  /// No description provided for @wordByWordDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap any word while reading to see its meaning and transliteration.'**
+  String get wordByWordDescription;
+
+  /// No description provided for @wordMeaning.
+  ///
+  /// In en, this message translates to:
+  /// **'Meaning'**
+  String get wordMeaning;
+
+  /// No description provided for @wordTransliteration.
+  ///
+  /// In en, this message translates to:
+  /// **'Transliteration'**
+  String get wordTransliteration;
+
+  /// No description provided for @wordByWordProvenance.
+  ///
+  /// In en, this message translates to:
+  /// **'Word glosses from {source} ({license}). A reading aid, not a translation or tafsir.'**
+  String wordByWordProvenance(String source, String license);
+
+  /// No description provided for @savedAyahsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 saved ayah} other{{count} saved ayahs}}'**
+  String savedAyahsCount(int count);
+
+  /// No description provided for @allSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'All saved'**
+  String get allSaved;
+
+  /// No description provided for @newestFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest first'**
+  String get newestFirst;
+
+  /// No description provided for @browseSurahs.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse surahs'**
+  String get browseSurahs;
+
+  /// No description provided for @forThisMorning.
+  ///
+  /// In en, this message translates to:
+  /// **'For this morning'**
+  String get forThisMorning;
+
+  /// No description provided for @forThisEvening.
+  ///
+  /// In en, this message translates to:
+  /// **'For this evening'**
+  String get forThisEvening;
+
+  /// No description provided for @continueAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueAction;
+
+  /// No description provided for @suggestedForYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested for you'**
+  String get suggestedForYou;
+
+  /// No description provided for @browseByTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse by theme'**
+  String get browseByTheme;
+
+  /// No description provided for @beginAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Begin'**
+  String get beginAction;
+
+  /// No description provided for @categoriesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} categories'**
+  String categoriesCount(int count);
+
+  /// No description provided for @themesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} themes'**
+  String themesCount(int count);
+
+  /// No description provided for @searchCategoryCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Search {count} categories'**
+  String searchCategoryCount(int count);
+
+  /// No description provided for @searchInTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Search in {theme}'**
+  String searchInTheme(String theme);
+
+  /// No description provided for @backToDuas.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Duas'**
+  String get backToDuas;
+
+  /// No description provided for @loggedToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Counted today'**
+  String get loggedToday;
+
+  /// No description provided for @theNight.
+  ///
+  /// In en, this message translates to:
+  /// **'The night'**
+  String get theNight;
+
+  /// No description provided for @prayerPassed.
+  ///
+  /// In en, this message translates to:
+  /// **'Passed'**
+  String get prayerPassed;
+
+  /// No description provided for @prayerBeganAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Began {time}'**
+  String prayerBeganAt(String time);
+
+  /// No description provided for @prayerEndsAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Ends {time}'**
+  String prayerEndsAt(String time);
+
+  /// Statistics redesign interface label.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasbih and duas'**
+  String get tasbihAndDuas;
+
+  /// Statistics redesign interface label.
+  ///
+  /// In en, this message translates to:
+  /// **'Surah map'**
+  String get surahMap;
+
+  /// Statistics redesign interface label.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a cell to open'**
+  String get tapCellToOpen;
+
+  /// Statistics redesign interface label.
+  ///
+  /// In en, this message translates to:
+  /// **'Less'**
+  String get less;
+
+  /// Statistics redesign interface label.
+  ///
+  /// In en, this message translates to:
+  /// **'Khatm progress'**
+  String get khatmProgress;
+
+  /// Statistics redesign interface label.
+  ///
+  /// In en, this message translates to:
+  /// **'Not logged'**
+  String get notLogged;
+
+  /// Statistics label for the surah read most often.
+  ///
+  /// In en, this message translates to:
+  /// **'Most-read surah'**
+  String get mostReadSurah;
+
+  /// No description provided for @pureBlackBackground.
+  ///
+  /// In en, this message translates to:
+  /// **'Pitch-black background'**
+  String get pureBlackBackground;
+
+  /// No description provided for @pureBlackBackgroundSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a pitch-black background in dark mode with any color palette.'**
+  String get pureBlackBackgroundSubtitle;
+
+  /// No description provided for @showSplashScreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Show startup animation'**
+  String get showSplashScreen;
+
+  /// No description provided for @showSplashScreenSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Play a short animation when the app opens.'**
+  String get showSplashScreenSubtitle;
+
+  /// No description provided for @savedFolderLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Folder'**
+  String get savedFolderLabel;
+
+  /// No description provided for @savedManageFolders.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage folders'**
+  String get savedManageFolders;
+
+  /// No description provided for @zakatNisabNeedsRates.
+  ///
+  /// In en, this message translates to:
+  /// **'Add the gold and silver rates to check the Nisab. They could not be loaded, so enter them manually.'**
+  String get zakatNisabNeedsRates;
+
+  /// No description provided for @zakatDeleteRecordQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this calculation?'**
+  String get zakatDeleteRecordQuestion;
+
+  /// No description provided for @zakatDeleteRecordBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This removes the saved calculation from your history.'**
+  String get zakatDeleteRecordBody;
+
+  /// No description provided for @unitTola.
+  ///
+  /// In en, this message translates to:
+  /// **'tola'**
+  String get unitTola;
+
+  /// No description provided for @hifzRatingFail.
+  ///
+  /// In en, this message translates to:
+  /// **'Fail'**
+  String get hifzRatingFail;
+
+  /// No description provided for @hifzRatingPass.
+  ///
+  /// In en, this message translates to:
+  /// **'Pass'**
+  String get hifzRatingPass;
+
+  /// No description provided for @shareImageFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Share image format'**
+  String get shareImageFormat;
+
+  /// No description provided for @shareFormatStory.
+  ///
+  /// In en, this message translates to:
+  /// **'Story 9:16'**
+  String get shareFormatStory;
+
+  /// No description provided for @shareFormatSquare.
+  ///
+  /// In en, this message translates to:
+  /// **'Square 1:1'**
+  String get shareFormatSquare;
+
+  /// No description provided for @shareFormatClassic.
+  ///
+  /// In en, this message translates to:
+  /// **'Classic'**
+  String get shareFormatClassic;
+
+  /// No description provided for @unableToShareAyahImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to share ayah image.'**
+  String get unableToShareAyahImage;
+
+  /// No description provided for @reciterGroupDownloaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Group Downloaded'**
+  String get reciterGroupDownloaded;
+
+  /// No description provided for @reciterShowAlphabetical.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Alphabetical'**
+  String get reciterShowAlphabetical;
+
+  /// No description provided for @audioConnectionInterrupted.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio connection was interrupted. Check your internet and try again.'**
+  String get audioConnectionInterrupted;
+
+  /// No description provided for @offlineDownloadAyahOrReconnect.
+  ///
+  /// In en, this message translates to:
+  /// **'You are offline. Download this ayah or reconnect to stream it.'**
+  String get offlineDownloadAyahOrReconnect;
+
+  /// No description provided for @unableToPlayAyahAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to play ayah audio.'**
+  String get unableToPlayAyahAudio;
+
+  /// No description provided for @repeatOnce.
+  ///
+  /// In en, this message translates to:
+  /// **'Once'**
+  String get repeatOnce;
+
+  /// No description provided for @repeatTimes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} times'**
+  String repeatTimes(int count);
+
+  /// No description provided for @repeatInfinite.
+  ///
+  /// In en, this message translates to:
+  /// **'Infinite'**
+  String get repeatInfinite;
+
+  /// No description provided for @halfSecond.
+  ///
+  /// In en, this message translates to:
+  /// **'0.5 seconds'**
+  String get halfSecond;
+
+  /// No description provided for @resourceStateUpdateAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Update available'**
+  String get resourceStateUpdateAvailable;
+
+  /// No description provided for @resourcePhaseStarting.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting'**
+  String get resourcePhaseStarting;
+
+  /// No description provided for @resourcePhaseVerifying.
+  ///
+  /// In en, this message translates to:
+  /// **'Verifying'**
+  String get resourcePhaseVerifying;
+
+  /// No description provided for @resourcePhaseExtracting.
+  ///
+  /// In en, this message translates to:
+  /// **'Extracting'**
+  String get resourcePhaseExtracting;
+
+  /// No description provided for @resourcePhaseInstalling.
+  ///
+  /// In en, this message translates to:
+  /// **'Installing'**
+  String get resourcePhaseInstalling;
+
+  /// No description provided for @resourcePhaseFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get resourcePhaseFailed;
+
+  /// No description provided for @resourceTypeGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Resource'**
+  String get resourceTypeGeneric;
+
+  /// No description provided for @translationBundled.
+  ///
+  /// In en, this message translates to:
+  /// **'Bundled'**
+  String get translationBundled;
+
+  /// No description provided for @translationDownloadUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Download unavailable'**
+  String get translationDownloadUnavailable;
+
+  /// No description provided for @navigationSettingsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag tiles to rearrange. Drag an available item and drop it on an active tile to swap, or tap an item below to pin it (displaces least recently used).'**
+  String get navigationSettingsHint;
+
+  /// No description provided for @navigationActiveSlots.
+  ///
+  /// In en, this message translates to:
+  /// **'Active navbar slots ({count}/{max})'**
+  String navigationActiveSlots(int count, int max);
+
+  /// No description provided for @navigationAvailableItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Available unpinned items'**
+  String get navigationAvailableItems;
+
+  /// No description provided for @navigationSlot.
+  ///
+  /// In en, this message translates to:
+  /// **'Slot {number}'**
+  String navigationSlot(int number);
+
+  /// No description provided for @navigationSlotLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Slot {number} (Locked Hub)'**
+  String navigationSlotLocked(int number);
+
+  /// No description provided for @navigationSwapped.
+  ///
+  /// In en, this message translates to:
+  /// **'Swapped {first} with {second}'**
+  String navigationSwapped(String first, String second);
+
+  /// No description provided for @navigationRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed {item} from navbar'**
+  String navigationRemoved(String item);
+
+  /// No description provided for @navigationPinned.
+  ///
+  /// In en, this message translates to:
+  /// **'Pinned {item}'**
+  String navigationPinned(String item);
+
+  /// No description provided for @navigationPinnedDisplaced.
+  ///
+  /// In en, this message translates to:
+  /// **'Pinned {item} (displaced {displaced})'**
+  String navigationPinnedDisplaced(String item, String displaced);
+
+  /// No description provided for @navSubtitleHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Main Dashboard'**
+  String get navSubtitleHome;
+
+  /// No description provided for @navSubtitleQuran.
+  ///
+  /// In en, this message translates to:
+  /// **'Read the Holy Quran'**
+  String get navSubtitleQuran;
+
+  /// No description provided for @navSubtitlePrayer.
+  ///
+  /// In en, this message translates to:
+  /// **'Prayer Times & Adhan'**
+  String get navSubtitlePrayer;
+
+  /// No description provided for @navSubtitleSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'System Preferences'**
+  String get navSubtitleSettings;
+
+  /// No description provided for @dockZakat.
+  ///
+  /// In en, this message translates to:
+  /// **'Zakat'**
+  String get dockZakat;
+
+  /// No description provided for @dockCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar'**
+  String get dockCalendar;
+
+  /// No description provided for @downloadsReciterCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 reciter} other{{count} reciters}}'**
+  String downloadsReciterCount(int count);
+
+  /// No description provided for @downloadsItemCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 item} other{{count} items}}'**
+  String downloadsItemCount(int count);
+
+  /// No description provided for @downloadsDeleteReciterBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove all downloads for {reciter} on {surah}?'**
+  String downloadsDeleteReciterBody(String reciter, String surah);
+
+  /// No description provided for @downloadsAllSurahs.
+  ///
+  /// In en, this message translates to:
+  /// **'All Surahs'**
+  String get downloadsAllSurahs;
+
+  /// No description provided for @downloadsFilterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter & Sort Downloads'**
+  String get downloadsFilterTitle;
+
+  /// No description provided for @downloadsFilterSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'More control over which recitations appear in your library'**
+  String get downloadsFilterSubtitle;
+
+  /// No description provided for @downloadsFilterSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search recitations or surahs...'**
+  String get downloadsFilterSearchHint;
+
+  /// No description provided for @downloadsGroupBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Group by'**
+  String get downloadsGroupBy;
+
+  /// No description provided for @downloadsSortBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by'**
+  String get downloadsSortBy;
+
+  /// No description provided for @downloadsCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get downloadsCategory;
+
+  /// No description provided for @downloadsContentType.
+  ///
+  /// In en, this message translates to:
+  /// **'Content type'**
+  String get downloadsContentType;
+
+  /// No description provided for @downloadsSortReciterAsc.
+  ///
+  /// In en, this message translates to:
+  /// **'Reciter (A → Z)'**
+  String get downloadsSortReciterAsc;
+
+  /// No description provided for @downloadsSortReciterDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Reciter (Z → A)'**
+  String get downloadsSortReciterDesc;
+
+  /// No description provided for @downloadsSortSizeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Size (largest first)'**
+  String get downloadsSortSizeDesc;
+
+  /// No description provided for @downloadsSortSizeAsc.
+  ///
+  /// In en, this message translates to:
+  /// **'Size (smallest first)'**
+  String get downloadsSortSizeAsc;
+
+  /// No description provided for @downloadsSortSurahAsc.
+  ///
+  /// In en, this message translates to:
+  /// **'Surah (1 → 114)'**
+  String get downloadsSortSurahAsc;
+
+  /// No description provided for @downloadsSortSurahDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Surah (114 → 1)'**
+  String get downloadsSortSurahDesc;
+
+  /// No description provided for @offsetSetPositive.
+  ///
+  /// In en, this message translates to:
+  /// **'Set positive'**
+  String get offsetSetPositive;
+
+  /// No description provided for @offsetSetNegative.
+  ///
+  /// In en, this message translates to:
+  /// **'Set negative'**
+  String get offsetSetNegative;
+
+  /// No description provided for @notificationPermissionCheckTimedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification permission check timed out. Try reopening the app or enabling notifications in system settings.'**
+  String get notificationPermissionCheckTimedOut;
+
+  /// No description provided for @notificationPermissionCheckFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not check notification permission. Try again or enable notifications in system settings.'**
+  String get notificationPermissionCheckFailed;
+
+  /// No description provided for @exactAlarmPermissionCheckTimedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Exact alarm permission check timed out. Try reopening the app or enabling alarms & reminders in system settings.'**
+  String get exactAlarmPermissionCheckTimedOut;
+
+  /// No description provided for @exactAlarmPermissionCheckFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not check exact alarm permission. Try again or enable alarms & reminders in system settings.'**
+  String get exactAlarmPermissionCheckFailed;
+
+  /// No description provided for @asrMethodHanafi.
+  ///
+  /// In en, this message translates to:
+  /// **'Hanafi'**
+  String get asrMethodHanafi;
+
+  /// No description provided for @highLatitudeRuleAutoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto'**
+  String get highLatitudeRuleAutoTitle;
+
+  /// No description provided for @highLatitudeRuleNoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get highLatitudeRuleNoneTitle;
+
+  /// No description provided for @highLatitudeRuleMiddleOfTheNightTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Middle of the night'**
+  String get highLatitudeRuleMiddleOfTheNightTitle;
+
+  /// No description provided for @highLatitudeRuleOneSeventhTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'One seventh'**
+  String get highLatitudeRuleOneSeventhTitle;
+
+  /// No description provided for @highLatitudeRuleAngleBasedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Angle based'**
+  String get highLatitudeRuleAngleBasedTitle;
+
+  /// No description provided for @prayerMethodAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Best for location'**
+  String get prayerMethodAuto;
+
+  /// No description provided for @prayerMethodMuslimWorldLeague.
+  ///
+  /// In en, this message translates to:
+  /// **'Muslim World League'**
+  String get prayerMethodMuslimWorldLeague;
+
+  /// No description provided for @prayerMethodEgyptian.
+  ///
+  /// In en, this message translates to:
+  /// **'Egyptian'**
+  String get prayerMethodEgyptian;
+
+  /// No description provided for @prayerMethodUmmAlQura.
+  ///
+  /// In en, this message translates to:
+  /// **'Umm al-Qura'**
+  String get prayerMethodUmmAlQura;
+
+  /// No description provided for @prayerMethodDubai.
+  ///
+  /// In en, this message translates to:
+  /// **'Dubai / Gulf'**
+  String get prayerMethodDubai;
+
+  /// No description provided for @prayerMethodKuwait.
+  ///
+  /// In en, this message translates to:
+  /// **'Kuwait'**
+  String get prayerMethodKuwait;
+
+  /// No description provided for @prayerMethodQatar.
+  ///
+  /// In en, this message translates to:
+  /// **'Qatar'**
+  String get prayerMethodQatar;
+
+  /// No description provided for @prayerMethodKarachi.
+  ///
+  /// In en, this message translates to:
+  /// **'Karachi'**
+  String get prayerMethodKarachi;
+
+  /// No description provided for @prayerMethodMoonsighting.
+  ///
+  /// In en, this message translates to:
+  /// **'Moonsighting Committee'**
+  String get prayerMethodMoonsighting;
+
+  /// No description provided for @prayerMethodMorocco.
+  ///
+  /// In en, this message translates to:
+  /// **'Morocco'**
+  String get prayerMethodMorocco;
+
+  /// No description provided for @prayerMethodSingapore.
+  ///
+  /// In en, this message translates to:
+  /// **'Singapore'**
+  String get prayerMethodSingapore;
+
+  /// No description provided for @prayerMethodTehran.
+  ///
+  /// In en, this message translates to:
+  /// **'Tehran'**
+  String get prayerMethodTehran;
+
+  /// No description provided for @prayerMethodTurkey.
+  ///
+  /// In en, this message translates to:
+  /// **'Turkey / Diyanet'**
+  String get prayerMethodTurkey;
+
+  /// No description provided for @prayerMethodShortAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto'**
+  String get prayerMethodShortAuto;
+
+  /// No description provided for @prayerMethodShortMwl.
+  ///
+  /// In en, this message translates to:
+  /// **'MWL'**
+  String get prayerMethodShortMwl;
+
+  /// No description provided for @prayerMethodShortDubai.
+  ///
+  /// In en, this message translates to:
+  /// **'Dubai'**
+  String get prayerMethodShortDubai;
+
+  /// No description provided for @prayerMethodShortMoonsighting.
+  ///
+  /// In en, this message translates to:
+  /// **'Moonsighting'**
+  String get prayerMethodShortMoonsighting;
+
+  /// No description provided for @prayerMethodShortTurkey.
+  ///
+  /// In en, this message translates to:
+  /// **'Turkey'**
+  String get prayerMethodShortTurkey;
+
+  /// No description provided for @dailyToolsKeepOnePinned.
+  ///
+  /// In en, this message translates to:
+  /// **'At least one tool must remain pinned.'**
+  String get dailyToolsKeepOnePinned;
+
+  /// No description provided for @zakatLivestockNotCalculated.
+  ///
+  /// In en, this message translates to:
+  /// **'Livestock is not calculated here, so it is left out of the total. Please ask a qualified scholar.'**
+  String get zakatLivestockNotCalculated;
+
+  /// No description provided for @resourcesFilterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter & sort resources'**
+  String get resourcesFilterTitle;
+
+  /// No description provided for @resourceSortName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name (A → Z)'**
+  String get resourceSortName;
+
+  /// No description provided for @resourceSortInstalledFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Installed first'**
+  String get resourceSortInstalledFirst;
+
+  /// No description provided for @resourceFilterStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get resourceFilterStatus;
+
+  /// No description provided for @resourceFilterType.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get resourceFilterType;
+
+  /// No description provided for @resourceViewByType.
+  ///
+  /// In en, this message translates to:
+  /// **'By type'**
+  String get resourceViewByType;
+
+  /// No description provided for @resourceViewNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No grouping'**
+  String get resourceViewNone;
+
+  /// No description provided for @resourcesNoMatches.
+  ///
+  /// In en, this message translates to:
+  /// **'No resources match these filters.'**
+  String get resourcesNoMatches;
 }
 
 class _AppLocalizationsDelegate

@@ -1,5 +1,8 @@
+import 'package:equran/widgets/common/equran_asset_image.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
+import 'package:equran/widgets/common/geometric_pattern.dart';
+import 'package:equran/widgets/common/pressable_scale.dart';
 import 'package:flutter/material.dart';
 
 class EquranSurfaceCard extends StatelessWidget {
@@ -23,7 +26,7 @@ class EquranSurfaceCard extends StatelessWidget {
     final EquranColors colors = context.equranColors;
     final BorderRadius borderRadius = BorderRadius.circular(EquranRadii.large);
 
-    return Material(
+    final Widget card = Material(
       color: Colors.transparent,
       borderRadius: borderRadius,
       clipBehavior: Clip.antiAlias,
@@ -58,6 +61,8 @@ class EquranSurfaceCard extends StatelessWidget {
         ),
       ),
     );
+
+    return onTap == null ? card : PressableScale(child: card);
   }
 }
 
@@ -68,6 +73,7 @@ class EquranGradientCard extends StatelessWidget {
     this.onTap,
     this.padding = const EdgeInsets.all(EquranSpacing.cardPadding),
     this.borderRadius = EquranRadii.xl,
+    this.showPattern = false,
   });
 
   final Widget child;
@@ -75,12 +81,15 @@ class EquranGradientCard extends StatelessWidget {
   final EdgeInsetsGeometry padding;
   final double borderRadius;
 
+  /// Adds a soft glow and a faded eight-pointed-star lattice behind [child].
+  final bool showPattern;
+
   @override
   Widget build(BuildContext context) {
     final EquranColors colors = context.equranColors;
     final BorderRadius radius = BorderRadius.circular(borderRadius);
 
-    return Material(
+    final Widget card = Material(
       color: Colors.transparent,
       borderRadius: radius,
       clipBehavior: Clip.antiAlias,
@@ -101,10 +110,44 @@ class EquranGradientCard extends StatelessWidget {
               ),
             ],
           ),
-          child: Padding(padding: padding, child: child),
+          child: Stack(
+            fit: StackFit.passthrough,
+            children: <Widget>[
+              if (showPattern) ...<Widget>[
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: RadialGradient(
+                          center: AlignmentDirectional.topStart.resolve(
+                            Directionality.of(context),
+                          ),
+                          radius: 1.1,
+                          colors: <Color>[
+                            colors.onPrimary.withAlpha(34),
+                            colors.onPrimary.withAlpha(0),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned.fill(
+                  child: GeometricPattern(
+                    color: colors.onPrimary,
+                    anchor: AlignmentDirectional.bottomStart,
+                    maxOpacity: 0.2,
+                  ),
+                ),
+              ],
+              Padding(padding: padding, child: child),
+            ],
+          ),
         ),
       ),
     );
+
+    return onTap == null ? card : PressableScale(child: card);
   }
 }
 
@@ -140,6 +183,7 @@ class EquranSectionHeader extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.headlineSmall?.copyWith(
               fontSize: 18,
+              fontVariations: const [FontVariation('opsz', 18)],
               fontWeight: FontWeight.w800,
               color: colors.textPrimary,
             ),
@@ -240,7 +284,7 @@ class EquranShortcutTile extends StatelessWidget {
                   ? Icon(icon, color: colors.primary, size: 30)
                   : ClipRRect(
                       borderRadius: BorderRadius.circular(EquranRadii.small),
-                      child: Image.asset(
+                      child: EquranAssetImage(
                         assetPath!,
                         fit: BoxFit.contain,
                         errorBuilder: (context, error, stackTrace) {

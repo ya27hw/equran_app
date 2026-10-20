@@ -1,7 +1,12 @@
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/prayer/prayer_models.dart';
 import 'package:equran/theme/equran_colors.dart';
-import 'package:equran/utils/app_radii.dart';
+import 'package:equran/theme/equran_tokens.dart';
+import 'package:equran/widgets/reader_sheet_chrome.dart';
+import 'package:equran/widgets/redesign/design_icon.dart';
+import 'package:equran/widgets/redesign/hairline_card.dart';
+import 'package:equran/widgets/redesign/redesign_subpage.dart';
+import 'package:equran/widgets/settings_sheet_chrome.dart';
 import 'package:flutter/material.dart';
 
 String? validatePrayerCoordinate(
@@ -74,32 +79,41 @@ class _ManualPrayerLocationPageState extends State<ManualPrayerLocationPage> {
     super.dispose();
   }
 
+  InputDecoration _decoration({
+    required String label,
+    required String hint,
+    String? helper,
+    required Widget icon,
+  }) {
+    final EquranTokens tokens = context.equranTokens;
+    return readerInputDecoration(context, label: label, hint: hint).copyWith(
+      helperText: helper,
+      helperMaxLines: 3,
+      helperStyle: TextStyle(fontSize: 12.5, color: tokens.muted),
+      prefixIcon: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        child: IconTheme(
+          data: IconThemeData(color: tokens.muted, size: 20),
+          child: icon,
+        ),
+      ),
+      prefixIconConstraints: const BoxConstraints(minWidth: 48),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colors = theme.colorScheme;
-    final EquranColors equranColors = context.equranColors;
+    final EquranTokens tokens = context.equranTokens;
+    final EquranColors colors = context.equranColors;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(localizations.chooseLocationManually),
-        backgroundColor: equranColors.background,
-        foregroundColor: equranColors.textPrimary,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        titleTextStyle: theme.textTheme.titleLarge?.copyWith(
-          color: equranColors.textPrimary,
-          fontWeight: FontWeight.w600,
-        ),
-        iconTheme: IconThemeData(color: equranColors.textSecondary),
-        actionsIconTheme: IconThemeData(color: equranColors.textSecondary),
-      ),
-      body: Form(
+    return RedesignSubpage(
+      title: localizations.chooseLocationManually,
+      child: Form(
         key: _formKey,
         child: ListView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
+          padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
           children: <Widget>[
             Center(
               child: ConstrainedBox(
@@ -107,146 +121,114 @@ class _ManualPrayerLocationPageState extends State<ManualPrayerLocationPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: colors.surfaceContainerLow,
-                        borderRadius: BorderRadius.circular(AppRadii.large),
-                        border: Border.all(color: colors.outlineVariant),
+                    HairlineCard(
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                        18,
+                        18,
+                        18,
+                        20,
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                Icon(
-                                  Icons.add_location_alt_outlined,
-                                  color: colors.primary,
-                                ),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: Text(
-                                    localizations.coordinatesForPrayerTimes,
-                                    style: theme.textTheme.titleMedium
-                                        ?.copyWith(fontWeight: FontWeight.w800),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              const ReaderIconWell(icon: DesignIcon('pin')),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Text(
+                                  localizations.coordinatesForPrayerTimes,
+                                  style: TextStyle(
+                                    fontSize: 15.5,
+                                    fontVariations: const [
+                                      FontVariation('opsz', 15.5),
+                                    ],
+                                    fontWeight: FontWeight.w600,
+                                    color: colors.textPrimary,
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              localizations.manualLocationDescription,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: colors.onSurfaceVariant,
-                              ),
-                            ),
-                            const SizedBox(height: 18),
-                            TextFormField(
-                              controller: _labelController,
-                              textInputAction: TextInputAction.next,
-                              decoration: InputDecoration(
-                                labelText: localizations.locationLabel,
-                                hintText: localizations.locationLabelHint,
-                                prefixIcon: const Icon(
-                                  Icons.label_outline_rounded,
                                 ),
                               ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            localizations.manualLocationDescription,
+                            style: TextStyle(
+                              fontSize: 13.5,
+                              height: 1.45,
+                              color: tokens.text2,
                             ),
-                            const SizedBox(height: 14),
-                            TextFormField(
-                              controller: _latitudeController,
-                              keyboardType:
-                                  const TextInputType.numberWithOptions(
-                                    signed: true,
-                                    decimal: true,
-                                  ),
-                              textInputAction: TextInputAction.next,
-                              decoration: InputDecoration(
-                                labelText: localizations.latitude,
-                                hintText: localizations.exampleCoordinate(
-                                  '25.2048',
+                          ),
+                          const SizedBox(height: 20),
+                          TextFormField(
+                            controller: _labelController,
+                            textInputAction: TextInputAction.next,
+                            decoration: _decoration(
+                              label: localizations.locationLabel,
+                              hint: localizations.locationLabelHint,
+                              icon: const DesignIcon('tag'),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          TextFormField(
+                            controller: _latitudeController,
+                            keyboardType: const TextInputType.numberWithOptions(
+                              signed: true,
+                              decimal: true,
+                            ),
+                            textInputAction: TextInputAction.next,
+                            decoration: _decoration(
+                              label: localizations.latitude,
+                              hint: localizations.exampleCoordinate('25.2048'),
+                              helper: localizations.latitudeHelperText,
+                              icon: const DesignIcon('compass'),
+                            ),
+                            validator: (String? value) =>
+                                validatePrayerCoordinate(
+                                  value,
+                                  min: -90,
+                                  max: 90,
+                                  label: localizations.latitude,
+                                  localizations: localizations,
                                 ),
-                                helperText: localizations.latitudeHelperText,
-                                prefixIcon: const Icon(Icons.explore_outlined),
-                              ),
-                              validator: (String? value) =>
-                                  validatePrayerCoordinate(
-                                    value,
-                                    min: -90,
-                                    max: 90,
-                                    label: localizations.latitude,
-                                    localizations: localizations,
-                                  ),
+                          ),
+                          const SizedBox(height: 16),
+                          TextFormField(
+                            controller: _longitudeController,
+                            keyboardType: const TextInputType.numberWithOptions(
+                              signed: true,
+                              decimal: true,
                             ),
-                            const SizedBox(height: 14),
-                            TextFormField(
-                              controller: _longitudeController,
-                              keyboardType:
-                                  const TextInputType.numberWithOptions(
-                                    signed: true,
-                                    decimal: true,
-                                  ),
-                              textInputAction: TextInputAction.done,
-                              decoration: InputDecoration(
-                                labelText: localizations.longitude,
-                                hintText: localizations.exampleCoordinate(
-                                  '55.2708',
+                            textInputAction: TextInputAction.done,
+                            decoration: _decoration(
+                              label: localizations.longitude,
+                              hint: localizations.exampleCoordinate('55.2708'),
+                              helper: localizations.longitudeHelperText,
+                              icon: const Icon(Icons.public_rounded),
+                            ),
+                            validator: (String? value) =>
+                                validatePrayerCoordinate(
+                                  value,
+                                  min: -180,
+                                  max: 180,
+                                  label: localizations.longitude,
+                                  localizations: localizations,
                                 ),
-                                helperText: localizations.longitudeHelperText,
-                                prefixIcon: const Icon(Icons.public_rounded),
-                              ),
-                              validator: (String? value) =>
-                                  validatePrayerCoordinate(
-                                    value,
-                                    min: -180,
-                                    max: 180,
-                                    label: localizations.longitude,
-                                    localizations: localizations,
-                                  ),
-                              onFieldSubmitted: (_) => _save(),
-                            ),
-                          ],
-                        ),
+                            onFieldSubmitted: (_) => _save(),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 14),
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: colors.secondaryContainer.withValues(alpha: 0.3),
-                        borderRadius: BorderRadius.circular(AppRadii.medium),
-                        border: Border.all(
-                          color: colors.outlineVariant.withValues(alpha: 0.7),
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(14),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Icon(
-                              Icons.map_outlined,
-                              color: colors.onSecondaryContainer,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                localizations.manualLocationPrivacyNotice,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: colors.onSurfaceVariant,
-                                  height: 1.35,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                    ReaderNotice(
+                      icon: const DesignIcon('info'),
+                      text: localizations.manualLocationPrivacyNotice,
                     ),
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 20),
                     FilledButton.icon(
                       onPressed: _save,
-                      icon: const Icon(Icons.check_rounded),
+                      style: readerFilledButtonStyle(context),
+                      icon: const DesignIcon('check', size: 18, strokeWidth: 2),
                       label: Text(localizations.saveLocation),
                     ),
                   ],

@@ -5,9 +5,11 @@
 *.swp
 .DS_Store
 .atom/
+.build/
 .buildlog/
 .history
 .svn/
+.swiftpm/
 migrate_working_dir/
 
 # IntelliJ related
@@ -55,3 +57,6 @@ app.*.map.json
 scratch/
 lib/l10n/untranslated.json
 
+
+# Golden test failure artifacts (written by flutter test on mismatch)
+test/redesign/failures/

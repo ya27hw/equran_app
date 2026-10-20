@@ -363,14 +363,6 @@ class PrayerLocationService {
     return _provider.openAppSettings();
   }
 
-  Future<String?> resolveShortAddress(double latitude, double longitude) async {
-    final PrayerResolvedAddress? address = await resolveAddress(
-      latitude,
-      longitude,
-    );
-    return address?.label;
-  }
-
   Future<PrayerResolvedAddress?> resolveAddress(
     double latitude,
     double longitude,

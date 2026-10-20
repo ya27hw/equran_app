@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:equran/backend/library.dart';
+import 'package:equran/backend/qpc_v4_font_service.dart';
 import 'package:equran/widgets/prayer_widget_service.dart';
 import 'package:equran/duas/asma_ul_husna_page.dart';
 import 'package:equran/duas/duas_page.dart';
@@ -14,15 +15,18 @@ import 'package:equran/home/settings.dart';
 import 'package:equran/home_dashboard/home_dashboard_page.dart';
 import 'package:equran/hifz/hifz.dart';
 import 'package:equran/prayer/prayer_times_page.dart';
-import 'package:equran/prayer/prayer_times_settings_page.dart';
 import 'package:equran/prayer/qibla_page.dart';
 import 'package:equran/reading_plans/reading_plans_page.dart';
 import 'package:equran/services/frame_rate_policy_manager.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/utils/responsive_nav.dart';
+import 'package:equran/widgets/common/tab_entrance.dart';
+import 'package:equran/widgets/redesign/floating_dock.dart';
 import 'package:equran/zakat/zakat_page.dart';
 import 'package:equran/prayer/islamic_calendar_page.dart';
+import 'package:equran/widgets/redesign/nav_item_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:equran/l10n/app_localizations.dart';
 
 const String _homePointerRefreshBlocker = 'home.userPointerActive';
@@ -78,23 +82,32 @@ class _HomePageState extends State<HomePage> {
         label = localizations.duas;
       } else if (T == DownloadsPage) {
         label = localizations.downloads;
+        showAppBar = false;
       } else if (T == SettingsPage) {
         label = localizations.settings;
+        showAppBar = false;
       } else if (T == StatisticsPage) {
         label = localizations.statistics;
+        showAppBar = false;
       } else if (T == ReadingPlansPage) {
         label = localizations.readingRoutine;
+        showAppBar = false;
       } else if (T == TasbihPage) {
         label = localizations.tasbih;
+        showAppBar = false;
       } else if (T == AsmaUlHusnaPage) {
         label = localizations.asmaUlHusna;
+        // The page draws its own header, so the route must not add an app bar.
+        showAppBar = false;
       } else if (T == QiblaPage) {
         label = localizations.qibla;
         showAppBar = false;
       } else if (T == ZakatCalculatorPage) {
-        label = 'Zakat';
+        label = localizations.zakatCalculator;
+        showAppBar = false;
       } else if (T == IslamicCalendarPage) {
-        label = 'Calendar';
+        label = localizations.islamicCalendar;
+        showAppBar = false;
       }
 
       _pushSecondaryPage(
@@ -227,14 +240,14 @@ class _HomePageState extends State<HomePage> {
         );
       case NavItem.zakat:
         return Destinations(
-          'Zakat',
+          localizations.dockZakat,
           const Icon(Icons.calculate_outlined),
           const Icon(Icons.calculate_rounded),
           const ZakatCalculatorPage(showAppBar: false),
         );
       case NavItem.calendar:
         return Destinations(
-          'Calendar',
+          localizations.dockCalendar,
           const Icon(Icons.calendar_month_outlined),
           const Icon(Icons.calendar_month_rounded),
           const IslamicCalendarPage(),
@@ -295,9 +308,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final double navIconSize = ResponsiveNav.iconSize(context);
-    final EquranColors equranColors = context.equranColors;
-
     return ValueListenableBuilder<NavigationState>(
       valueListenable: NavigationBloc.instance,
       builder: (context, state, child) {
@@ -317,58 +327,25 @@ class _HomePageState extends State<HomePage> {
           onPointerCancel: (_) => _handleGlobalPointerReleased(),
           onPointerSignal: (_) => AndroidAudioDisplayMode.notifyUserActivity(),
           child: Scaffold(
-            appBar:
-                (destinations[selectedIdx].destination is PrayerTimesPage ||
-                    destinations[selectedIdx].destination is DuasPage ||
-                    destinations[selectedIdx].destination is MorePage)
-                ? AppBar(
-                    toolbarHeight: ResponsiveNav.toolbarHeight(context),
-                    title: Text(destinations[selectedIdx].label),
-                    centerTitle: true,
-                    backgroundColor:
-                        destinations[selectedIdx].destination is PrayerTimesPage
-                        ? Colors.transparent
-                        : equranColors.background,
-                    foregroundColor: equranColors.textPrimary,
-                    elevation: 0,
-                    scrolledUnderElevation: 0,
-                    surfaceTintColor: Colors.transparent,
-                    titleTextStyle: Theme.of(context).textTheme.titleLarge
-                        ?.copyWith(
-                          color: equranColors.textPrimary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                    iconTheme: IconThemeData(
-                      color: equranColors.textSecondary,
-                      size: navIconSize,
-                    ),
-                    actionsIconTheme: IconThemeData(
-                      color: equranColors.textSecondary,
-                      size: navIconSize,
-                    ),
-                    actions: <Widget>[
-                      if (destinations[selectedIdx].destination
-                          is PrayerTimesPage) ...<Widget>[
-                        IconButton(
-                          tooltip: AppLocalizations.of(
-                            context,
-                          )!.prayerTimesSettings,
-                          onPressed: _openPrayerSettingsPage,
-                          icon: const Icon(Icons.settings_outlined),
-                        ),
-                        Padding(
-                          padding: const EdgeInsetsDirectional.only(end: 6),
-                          child: IconButton(
-                            tooltip: AppLocalizations.of(context)!.qibla,
-                            onPressed: _openQiblaPage,
-                            icon: const Icon(Icons.explore_outlined),
-                          ),
-                        ),
-                      ],
-                    ],
-                  )
-                : null,
-            body: destinations[selectedIdx].destination,
+            extendBody: true,
+            // Reserve the dock and safe-area space for every active page,
+            // including customized destinations and their floating controls.
+            body: Padding(
+              padding: EdgeInsets.only(
+                bottom:
+                    FloatingDock.height +
+                    FloatingDock.bottomGap * 2 +
+                    MediaQuery.viewPaddingOf(context).bottom,
+              ),
+              child: MediaQuery.removePadding(
+                context: context,
+                removeBottom: true,
+                child: TabEntrance(
+                  key: ValueKey<int>(selectedIdx),
+                  child: destinations[selectedIdx].destination,
+                ),
+              ),
+            ),
             bottomNavigationBar: _buildBottomNavigation(state, destinations),
           ),
         );
@@ -380,34 +357,36 @@ class _HomePageState extends State<HomePage> {
     NavigationState state,
     List<Destinations> destinations,
   ) {
-    final EquranColors colors = context.equranColors;
     final int selectedIdx = state.selectedIndex.clamp(
       0,
       destinations.length - 1,
     );
 
-    return ColoredBox(
-      color: colors.primary,
-      child: SafeArea(
-        top: false,
-        child: NavigationBar(
-          height: 68,
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: FloatingDock.bottomGap),
+        child: FloatingDock(
+          items: [
+            for (int i = 0; i < state.activeNavbarItems.length; i++)
+              FloatingDockItem(
+                icon: _dockIcon(state.activeNavbarItems[i]),
+                label: destinations[i].label,
+              ),
+          ],
           selectedIndex: selectedIdx,
-          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-          onDestinationSelected: (int index) {
+          onSelected: (int index) {
+            if (index != selectedIdx) {
+              unawaited(HapticFeedback.selectionClick());
+            }
             _onItemTapped(index);
           },
-          destinations: destinations.map((d) {
-            return NavigationDestination(
-              icon: d.icon,
-              selectedIcon: d.selectedIcon,
-              label: d.label,
-            );
-          }).toList(),
         ),
       ),
     );
   }
+
+  String _dockIcon(NavItem item) => navItemDesignIcon(item);
 
   void _handleGlobalPointerDown() {
     FrameRatePolicyManager.instance.setPointerActive(
@@ -616,25 +595,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _openPrayerSettingsPage() {
-    FrameRatePolicyManager.instance.setRouteTransitionActive(
-      true,
-      reason: 'prayer_settings_route_opening',
-    );
-    Navigator.of(context)
-        .push(
-          MaterialPageRoute<void>(
-            builder: (BuildContext context) => const PrayerTimesSettingsPage(),
-          ),
-        )
-        .whenComplete(() {
-          FrameRatePolicyManager.instance.setRouteTransitionActive(
-            false,
-            reason: 'prayer_settings_route_closed',
-          );
-        });
-  }
-
   Future<void> _toggleQuickTheme() async {
     final ThemeData theme = Theme.of(context);
     final AdaptiveThemeMode mode = AdaptiveTheme.of(context).mode;
@@ -646,6 +606,7 @@ class _HomePageState extends State<HomePage> {
         : AdaptiveThemeMode.dark;
 
     await SettingsDB().put('themeMode', nextMode.isDark ? 'dark' : 'light');
+    QpcV4FontService.instance.clearCache();
     if (!mounted) return;
     AdaptiveTheme.of(context).setThemeMode(nextMode);
     WidgetsBinding.instance.addPostFrameCallback((_) {

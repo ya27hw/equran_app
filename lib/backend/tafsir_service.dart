@@ -88,22 +88,6 @@ class TafsirService {
     return results;
   }
 
-  Future<String> verseTafsir({
-    required DownloadableResource resource,
-    required int surah,
-    required int ayah,
-  }) async {
-    final InstalledResource? installed = ResourceInstallStore.instance
-        .installedFor(resource);
-    if (installed == null) return '';
-    final Map<int, String> surahTafsir = await _loadSurahTafsir(
-      resource: resource,
-      installed: installed,
-      surah: surah,
-    );
-    return surahTafsir[ayah]?.trim() ?? '';
-  }
-
   Future<Map<int, String>> _loadSurahTafsir({
     required DownloadableResource resource,
     required InstalledResource installed,

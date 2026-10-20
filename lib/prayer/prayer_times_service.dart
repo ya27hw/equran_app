@@ -375,29 +375,6 @@ class PrayerTimesService {
     );
   }
 
-  NextPrayer calculateNextPrayer({
-    required DateTime now,
-    required PrayerLocation location,
-    required PrayerTimeSettings settings,
-  }) {
-    final DateTime todayDate = calendarDateForInstant(
-      instant: now,
-      location: location,
-      settings: settings,
-    );
-    final PrayerDay today = calculateDay(
-      date: todayDate,
-      location: location,
-      settings: settings,
-    );
-    final PrayerDay tomorrow = calculateDay(
-      date: DateTime(todayDate.year, todayDate.month, todayDate.day + 1),
-      location: location,
-      settings: settings,
-    );
-    return nextPrayer(day: today, tomorrow: tomorrow, now: now);
-  }
-
   adhan.CalculationParameters _parametersFor({
     required PrayerCalculationMethod method,
     required PrayerTimeSettings settings,

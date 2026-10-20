@@ -4,8 +4,13 @@
 /// Sighting offset allows manual adjustment for local moon sighting.
 class HijriCalendar {
   HijriCalendar.fromDate(DateTime date, {int offset = 0}) {
-    // Add manual sighting offset in days
-    final DateTime adjustedDate = date.add(Duration(days: offset));
+    // Add the manual sighting offset in whole calendar days. Adding a
+    // Duration of 24 h would land on the wrong date across a DST change.
+    final DateTime adjustedDate = DateTime(
+      date.year,
+      date.month,
+      date.day + offset,
+    );
 
     int year = adjustedDate.year;
     int month = adjustedDate.month;
@@ -47,6 +52,49 @@ class HijriCalendar {
   late final int hYear;
   late final int hMonth;
   late final int hDay;
+
+  /// The Gregorian date on which Hijri month [hMonth] of year [hYear] starts,
+  /// as shown with the same sighting [offset] that [HijriCalendar.fromDate]
+  /// receives. Derived from [HijriCalendar.fromDate] itself, so a month grid
+  /// always agrees with the date conversion.
+  static DateTime firstGregorianDayOf(int hYear, int hMonth, {int offset = 0}) {
+    // 1 Muharram 1448 fell on 17 Jun 2026 in this algorithm.
+    final int estimate = ((hYear - 1448) * 354.367 + (hMonth - 1) * 29.53)
+        .round();
+    DateTime guess = DateTime(2026, 6, 17 + estimate - offset);
+    for (int i = 0; i < 200; i++) {
+      final HijriCalendar h = HijriCalendar.fromDate(guess, offset: offset);
+      final int months = (hYear - h.hYear) * 12 + (hMonth - h.hMonth);
+      int step;
+      if (months == 0) {
+        step = -(h.hDay - 1);
+      } else if (months.abs() > 1) {
+        // Jump to within about a month of the target, then walk day by day
+        // so the search cannot overshoot back and forth across the boundary.
+        step = ((months - months.sign) * 29.5).round();
+      } else {
+        step = months.sign;
+      }
+      if (step == 0) return DateTime(guess.year, guess.month, guess.day);
+      guess = DateTime(guess.year, guess.month, guess.day + step);
+    }
+    return DateTime(guess.year, guess.month, guess.day);
+  }
+
+  /// Number of days (29 or 30) in Hijri month [hMonth] of [hYear], measured
+  /// between the start of that month and the start of the next one.
+  static int daysInMonth(int hYear, int hMonth, {int offset = 0}) {
+    final int nextYear = hMonth == 12 ? hYear + 1 : hYear;
+    final int nextMonth = hMonth == 12 ? 1 : hMonth + 1;
+    final DateTime start = firstGregorianDayOf(hYear, hMonth, offset: offset);
+    final DateTime next = firstGregorianDayOf(
+      nextYear,
+      nextMonth,
+      offset: offset,
+    );
+    // Both are local midnights; round() absorbs a DST hour.
+    return (next.difference(start).inHours / 24).round();
+  }
 
   // English month names (existing, kept for compatibility)
   static const List<String> monthNames = <String>[
@@ -173,28 +221,24 @@ class HijriCalendar {
   String get monthName => monthNames[hMonth - 1];
   String get monthNameArabic => monthNamesArabic[hMonth - 1];
 
-  /// Get the localized month name according to the provided language code.
-  String getLocalizedMonthName(String lang) {
+  /// Month name (1 to 12) for a language code such as `tr` or `ar_SA`.
+  static String monthNameFor(int month, String lang) {
     final String langCode = lang.split('_').first.toLowerCase();
-    switch (langCode) {
-      case 'tr':
-        return _monthNamesTurkish[hMonth - 1];
-      case 'id':
-        return _monthNamesIndonesian[hMonth - 1];
-      case 'bn':
-        return _monthNamesBengali[hMonth - 1];
-      case 'de':
-        return _monthNamesGerman[hMonth - 1];
-      case 'ur':
-        return _monthNamesUrdu[hMonth - 1];
-      case 'fa':
-        return _monthNamesFarsi[hMonth - 1];
-      case 'ar':
-        return monthNamesArabic[hMonth - 1];
-      default:
-        return monthName;
-    }
+    final List<String> names = switch (langCode) {
+      'tr' => _monthNamesTurkish,
+      'id' => _monthNamesIndonesian,
+      'bn' => _monthNamesBengali,
+      'de' => _monthNamesGerman,
+      'ur' => _monthNamesUrdu,
+      'fa' => _monthNamesFarsi,
+      'ar' => monthNamesArabic,
+      _ => monthNames,
+    };
+    return names[month - 1];
   }
+
+  /// Get the localized month name according to the provided language code.
+  String getLocalizedMonthName(String lang) => monthNameFor(hMonth, lang);
 
   /// Short "D Month Y" representation (English)
   @override
@@ -238,14 +282,6 @@ class HijriCalendar {
     return null;
   }
 
-  /// Returns a short label suitable for small calendar badges.
-  String? get shortEventLabel {
-    final occasion = majorOccasion;
-    if (occasion != null) return occasion;
-    if (isRecommendedFastingDay) return 'Fast';
-    return null;
-  }
-
   /// Very rough moon phase estimate (0=new, 1=waxing crescent, 2=full-ish, 3=waning).
   /// Good enough for beautiful UI indicators. Not astronomically precise.
   int get estimatedMoonPhase {
@@ -256,21 +292,5 @@ class HijriCalendar {
     if (hDay < 18) return 2; // Near full
     if (hDay < 23) return 3; // Waning
     return 3;
-  }
-
-  /// Human friendly moon phase name for details view.
-  String get moonPhaseName {
-    switch (estimatedMoonPhase) {
-      case 0:
-        return 'New Moon';
-      case 1:
-        return 'Waxing Crescent';
-      case 2:
-        return 'Full Moon';
-      case 3:
-        return 'Waning Crescent';
-      default:
-        return 'Crescent';
-    }
   }
 }

@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui' show Brightness, PlatformDispatcher;
 
 import 'package:equran/backend/qcf_cpal_patcher.dart';
 import 'package:equran/backend/resource_install_store.dart';
 import 'package:equran/backend/resource_models.dart';
+import 'package:equran/backend/settings_db.dart';
 import 'package:flutter/services.dart';
 
 class QpcV4FontService {
@@ -23,71 +25,64 @@ class QpcV4FontService {
     metadata: <String, Object?>{'requiredPages': 604},
   );
 
-  final Set<int> _loadedPages = <int>{};
-  final Set<int> _loadingPages = <int>{};
+  // Tracks loaded families per page AND theme variant ('page:variant'):
+  // light and dark palettes are distinct FontLoader families, so caching
+  // only the page number would wrongly report a theme-switched page as
+  // loaded and skip registering its family.
+  final Set<String> _loadedPages = <String>{};
+  final Map<String, Future<bool>> _loadingPages = <String, Future<bool>>{};
   Map<int, File>? _fontFileIndex;
   String? _fontFileIndexRoot;
-
-  /// Preloads a list of pages.
-  Future<void> preloadFontsForPages(List<int> pages) async {
-    for (final int page in pages) {
-      unawaited(ensureFontLoadedForPage(page));
-    }
-  }
 
   /// Dynamically loads a font for a specific page if not already loaded.
   /// Returns true only when the page font is installed and loaded.
   Future<bool> ensureFontLoadedForPage(int pageNumber) async {
     if (pageNumber < 1 || pageNumber > 604) return false;
 
-    if (_loadedPages.contains(pageNumber)) {
+    final bool darkMode = _isDarkMode();
+    final String variant = darkMode ? 'dark' : 'light';
+    final String loadKey = '$pageNumber:$variant';
+    if (_loadedPages.contains(loadKey)) {
       return await fontFileForPage(pageNumber) != null;
     }
 
     // Avoid duplicate download/load requests for the same page
-    if (_loadingPages.contains(pageNumber)) {
-      while (_loadingPages.contains(pageNumber)) {
-        await Future<void>.delayed(const Duration(milliseconds: 100));
-      }
-      return _loadedPages.contains(pageNumber);
+    final Future<bool>? activeLoad = _loadingPages[loadKey];
+    if (activeLoad != null) {
+      return activeLoad;
     }
 
-    _loadingPages.add(pageNumber);
+    final Future<bool> load = _loadVariant(pageNumber, darkMode: darkMode);
+    _loadingPages[loadKey] = load;
+    try {
+      return await load;
+    } finally {
+      if (identical(_loadingPages[loadKey], load)) {
+        _loadingPages.remove(loadKey);
+      }
+    }
+  }
 
+  Future<bool> _loadVariant(int pageNumber, {required bool darkMode}) async {
     try {
       final File? fontFile = await fontFileForPage(pageNumber);
       if (fontFile == null) return false;
       final Uint8List bytes = await fontFile.readAsBytes();
-
-      // Register light variant (original bytes)
-      final FontLoader lightLoader = FontLoader(
-        'QPCV4_Page_${pageNumber}_light',
+      // readAsBytes already yields a fresh mutable buffer and the patcher
+      // works in place, so patch it directly instead of copying the whole
+      // file a second time.
+      final Uint8List activeBytes = darkMode
+          ? QcfCpalPatcher.patchForDarkMode(bytes)
+          : bytes;
+      final FontLoader loader = FontLoader(
+        'QPCV4_Page_${pageNumber}_${darkMode ? 'dark' : 'light'}',
       );
-      lightLoader.addFont(Future<ByteData>.value(ByteData.sublistView(bytes)));
-
-      // Register dark variant (patched bytes)
-      // Clone the bytes before patching to avoid mutating the light variant's buffer
-      final Uint8List darkBytes = Uint8List.fromList(bytes);
-      final Uint8List patchedBytes = QcfCpalPatcher.patchForDarkMode(darkBytes);
-
-      final FontLoader darkLoader = FontLoader('QPCV4_Page_${pageNumber}_dark');
-      darkLoader.addFont(
-        Future<ByteData>.value(ByteData.sublistView(patchedBytes)),
-      );
-
-      // Wait for both to load
-      await Future.wait<void>(<Future<void>>[
-        lightLoader.load(),
-        darkLoader.load(),
-      ]);
-
-      _loadedPages.add(pageNumber);
+      loader.addFont(Future<ByteData>.value(ByteData.sublistView(activeBytes)));
+      await loader.load();
+      _loadedPages.add('$pageNumber:${darkMode ? 'dark' : 'light'}');
       return true;
-    } catch (e) {
-      // Graceful fallback if loading fails (e.g. offline).
+    } catch (_) {
       return false;
-    } finally {
-      _loadingPages.remove(pageNumber);
     }
   }
 
@@ -105,9 +100,20 @@ class QpcV4FontService {
   }
 
   void clearCache() {
+    // In-flight work is owned by its future and will finish safely; removing
+    // the map entries prevents stale requests from blocking a new theme load.
     _loadingPages.clear();
+    _loadedPages.clear();
     _fontFileIndex = null;
     _fontFileIndexRoot = null;
+  }
+
+  bool _isDarkMode() {
+    final String? themeMode = SettingsDB().get('themeMode') as String?;
+    return themeMode == 'dark' ||
+        (themeMode == null) ||
+        (themeMode == 'auto' &&
+            PlatformDispatcher.instance.platformBrightness == Brightness.dark);
   }
 
   Future<Map<int, File>> _installedFontFileIndex() async {

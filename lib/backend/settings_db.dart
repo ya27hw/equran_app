@@ -21,10 +21,21 @@ class SettingsDB extends BaseDB {
     quran.setQuranTextAssetBase('assets/data/quran/text/$activeStyle');
   }
 
+  /// Old AMOLED selections become the default accent with pure black enabled.
+  /// Keep this fallback for older backups as well as existing installations.
+  bool get pureBlackBackground {
+    final dynamic saved = get('pureBlackBackground');
+    return saved is bool ? saved : get('themeScheme') == 'black';
+  }
+
+  /// Whether the short startup animation plays. On unless the user turned it
+  /// off; only takes effect on the next launch.
+  bool get showSplashScreen => get('showSplash', defaultValue: true) != false;
+
   /// Getter for tracking the script style preference key
   String get quranScriptStyle {
-    final String style =
-        get('quran_script_style', defaultValue: 'qpc-hafs') as String;
+    final dynamic raw = get('quran_script_style', defaultValue: 'qpc-hafs');
+    final String style = raw is String ? raw : 'qpc-hafs';
     return style == 'uthmani' ? 'qpc-hafs' : style;
   }
 
@@ -38,8 +49,8 @@ class SettingsDB extends BaseDB {
 
   /// Get visible daily tools from settings
   List<DailyToolType> getVisibleDailyTools() {
-    final List<dynamic>? saved = get('daily_tools_visible') as List<dynamic>?;
-    if (saved == null) {
+    final dynamic saved = get('daily_tools_visible');
+    if (saved is! List) {
       return List<DailyToolType>.from(DailyToolType.defaultTools);
     }
     return List<DailyToolType>.from(

@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:equran/theme/equran_colors.dart';
+import 'package:equran/theme/equran_spacing.dart';
+import 'package:equran/theme/equran_tokens.dart';
+import 'package:equran/widgets/reader_sheet_chrome.dart';
+import 'package:equran/widgets/redesign/page_typography.dart';
+import 'package:equran/widgets/redesign/redesign_widgets.dart';
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/backend/settings_db.dart';
 import 'package:equran/backend/daily_tools_config.dart';
@@ -8,10 +13,8 @@ class DailyToolsEditSheet extends StatefulWidget {
   const DailyToolsEditSheet({super.key});
 
   static Future<void> show(BuildContext context) {
-    return showModalBottomSheet<void>(
+    return showReaderSheet<void>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (context) => const DailyToolsEditSheet(),
     );
   }
@@ -85,15 +88,7 @@ class _DailyToolsEditSheetState extends State<DailyToolsEditSheet> {
     if (isCurrentlyVisible && _visibleTools.length <= 1) {
       // Prevent disabling the last tool
       final AppLocalizations localizations = AppLocalizations.of(context)!;
-      final String locale = localizations.localeName
-          .split('_')
-          .first
-          .toLowerCase();
-      final String msg = locale == 'ar'
-          ? 'يجب أن تظل أداة واحدة على الأقل مثبتة.'
-          : locale == 'fa'
-          ? 'حداقل یک ابزار باید سنجاق شده باقی بماند.'
-          : 'At least one tool must remain pinned.';
+      final String msg = localizations.dailyToolsKeepOnePinned;
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(msg), behavior: SnackBarBehavior.floating),
@@ -121,11 +116,9 @@ class _DailyToolsEditSheetState extends State<DailyToolsEditSheet> {
     });
   }
 
+  /// [newIndex] is already adjusted for the removed item (`onReorderItem`).
   void _onReorder(int oldIndex, int newIndex) {
     setState(() {
-      if (oldIndex < newIndex) {
-        newIndex -= 1;
-      }
       final DailyToolType item = _allToolsOrdered.removeAt(oldIndex);
       _allToolsOrdered.insert(newIndex, item);
 
@@ -145,179 +138,177 @@ class _DailyToolsEditSheetState extends State<DailyToolsEditSheet> {
   @override
   Widget build(BuildContext context) {
     final EquranColors colors = context.equranColors;
+    final EquranTokens tokens = context.equranTokens;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
     final String lang = localizations.localeName.split('_').first.toLowerCase();
-    final ThemeData theme = Theme.of(context);
 
-    return DraggableScrollableSheet(
-      initialChildSize: 0.75,
-      minChildSize: 0.5,
-      maxChildSize: 0.95,
-      builder: (context, scrollController) {
-        return Container(
-          decoration: BoxDecoration(
-            color: colors.background,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-            boxShadow: [
-              BoxShadow(
-                color: colors.shadow.withAlpha(50),
-                blurRadius: 20,
-                offset: const Offset(0, -4),
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              // Bottom sheet handle bar
-              const SizedBox(height: 12),
-              Center(
-                child: Container(
-                  width: 42,
-                  height: 5,
-                  decoration: BoxDecoration(
-                    color: colors.border.withAlpha(160),
-                    borderRadius: BorderRadius.circular(10),
+    return SafeArea(
+      top: false,
+      child: DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.75,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (context, scrollController) {
+          return RedesignPageTypography(
+            child: Column(
+              children: [
+                const ReaderSheetHandle(),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        DailyToolsEditSheet.translateCustomizeTitle(lang),
+                        style: redesignDisplayStyle(context, size: 30),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        DailyToolsEditSheet.translateCustomizeDesc(lang),
+                        style: TextStyle(
+                          fontSize: 14,
+                          height: 1.35,
+                          color: tokens.muted,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              const SizedBox(height: 20),
 
-              // Title and Description Header
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      DailyToolsEditSheet.translateCustomizeTitle(lang),
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        color: colors.textPrimary,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      DailyToolsEditSheet.translateCustomizeDesc(lang),
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: colors.textSecondary,
-                        height: 1.3,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Divider(height: 1),
+                // Reorderable list
+                Expanded(
+                  child: ReorderableListView.builder(
+                    buildDefaultDragHandles: false,
+                    scrollController: scrollController,
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: _allToolsOrdered.length,
+                    onReorderItem: _onReorder,
+                    proxyDecorator: (child, index, animation) =>
+                        Material(color: Colors.transparent, child: child),
+                    itemBuilder: (context, index) {
+                      final DailyToolType tool = _allToolsOrdered[index];
+                      final bool isPinned = _visibleTools.contains(tool);
 
-              // Reorderable list
-              Expanded(
-                child: ReorderableListView.builder(
-                  buildDefaultDragHandles: false,
-                  scrollController: scrollController,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: _allToolsOrdered.length,
-                  // ignore: deprecated_member_use
-                  onReorder: _onReorder,
-                  itemBuilder: (context, index) {
-                    final DailyToolType tool = _allToolsOrdered[index];
-                    final bool isPinned = _visibleTools.contains(tool);
-
-                    return Container(
-                      key: ValueKey<DailyToolType>(tool),
-                      margin: const EdgeInsets.symmetric(vertical: 4),
-                      decoration: BoxDecoration(
-                        color: colors.surface,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: isPinned
-                              ? colors.primary.withAlpha(80)
-                              : colors.border.withAlpha(110),
-                        ),
-                      ),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        leading: Container(
-                          width: 42,
-                          height: 42,
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: colors.mint.withAlpha(isPinned ? 135 : 60),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: tool.assetPath == null
-                              ? Icon(
-                                  tool.icon,
-                                  color: isPinned
-                                      ? colors.primary
-                                      : colors.textSecondary,
-                                  size: 24,
-                                )
-                              : Opacity(
-                                  opacity: isPinned ? 1.0 : 0.6,
-                                  child: Image.asset(
-                                    tool.assetPath!,
-                                    fit: BoxFit.contain,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Icon(
-                                        tool.icon,
-                                        color: colors.primary,
-                                        size: 24,
-                                      );
-                                    },
-                                  ),
-                                ),
-                        ),
-                        title: Text(
-                          tool.getTitle(localizations),
-                          style: theme.textTheme.titleSmall?.copyWith(
-                            color: isPinned
-                                ? colors.textPrimary
-                                : colors.textSecondary,
-                            fontWeight: FontWeight.w800,
+                      return Container(
+                        key: ValueKey<DailyToolType>(tool),
+                        margin: const EdgeInsets.only(bottom: 10),
+                        constraints: const BoxConstraints(minHeight: 68),
+                        decoration: BoxDecoration(
+                          color: colors.surface,
+                          borderRadius: BorderRadius.circular(EquranRadii.xl),
+                          border: Border.all(
+                            color: isPinned ? tokens.hair2 : tokens.hair,
                           ),
                         ),
-                        subtitle: Text(
-                          tool.getSubtitle(localizations),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colors.textMuted,
-                          ),
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                          14,
+                          8,
+                          4,
+                          8,
                         ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
+                        child: Row(
                           children: [
+                            Opacity(
+                              opacity: isPinned ? 1 : 0.55,
+                              child: ReaderIconWell(
+                                icon: DesignIcon(
+                                  _dailyToolDesignIcons[tool] ?? 'grid',
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    tool.getTitle(localizations),
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontVariations: const [
+                                        FontVariation('opsz', 15),
+                                      ],
+                                      fontWeight: FontWeight.w600,
+                                      color: isPinned
+                                          ? colors.textPrimary
+                                          : tokens.text2,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 3),
+                                  Text(
+                                    tool.getSubtitle(localizations),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 12.5,
+                                      height: 1.3,
+                                      color: tokens.muted,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                             Switch(
                               value: isPinned,
-                              activeThumbColor: colors.primary,
                               onChanged: (_) => _toggleTool(tool),
+                              activeTrackColor: tokens.filled,
+                              activeThumbColor: Colors.white,
+                              inactiveTrackColor: tokens.hair,
+                              inactiveThumbColor: tokens.muted,
+                              trackOutlineColor:
+                                  WidgetStateProperty.resolveWith(
+                                    (Set<WidgetState> states) =>
+                                        states.contains(WidgetState.selected)
+                                        ? Colors.transparent
+                                        : tokens.hair2,
+                                  ),
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.padded,
                             ),
-                            const SizedBox(width: 4),
                             ReorderableDragStartListener(
                               index: index,
-                              child: Icon(
-                                Icons.drag_handle_rounded,
-                                color: colors.textMuted,
+                              child: SizedBox(
+                                width: 44,
+                                height: 44,
+                                // The design has no drag-grip icon.
+                                child: Icon(
+                                  Icons.drag_handle_rounded,
+                                  size: 22,
+                                  color: tokens.muted,
+                                ),
                               ),
                             ),
                           ],
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
-          ),
-        );
-      },
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }
+
+/// The same icons Home shows for each tool.
+const Map<DailyToolType, String> _dailyToolDesignIcons =
+    <DailyToolType, String>{
+      DailyToolType.quran: 'quran',
+      DailyToolType.prayer: 'clock',
+      DailyToolType.qibla: 'compass',
+      DailyToolType.tasbih: 'beads',
+      DailyToolType.dua: 'arch',
+      DailyToolType.downloads: 'download',
+      DailyToolType.search: 'search',
+      DailyToolType.readingPlans: 'route',
+      DailyToolType.hifz: 'book',
+      DailyToolType.asmaUlHusna: 'diamond',
+      DailyToolType.statistics: 'bars',
+      DailyToolType.calendar: 'calendar',
+      DailyToolType.zakah: 'calc',
+    };

@@ -145,7 +145,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get translation => 'Terjemahan';
 
   @override
-  String get reciter => 'Tukang deklamasi';
+  String get reciter => 'Qari';
 
   @override
   String get audio => 'Audio';
@@ -239,6 +239,17 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get beginWithQuran => 'Membaca Alquran';
+
+  @override
+  String get yourQuran => 'Al-Quran Anda';
+
+  @override
+  String get beginQuranReading => 'Mulai dengan Al-Quran';
+
+  @override
+  String startWithSurah(String surah) {
+    return 'Mulai dengan $surah';
+  }
 
   @override
   String get startReadingSubtitle =>
@@ -704,11 +715,64 @@ class AppLocalizationsId extends AppLocalizations {
       'Kiblat, unduhan, pengaturan, rencana, dan alat berkumpul di satu tempat yang tenang.';
 
   @override
+  String get moreGroupWorship => 'Ibadah';
+
+  @override
+  String get moreGroupReadLearn => 'Baca dan belajar';
+
+  @override
+  String get moreGroupTools => 'Alat';
+
+  @override
+  String get moreGroupApp => 'Aplikasi';
+
+  @override
+  String get moreGroupAbout => 'Tentang eQuran';
+
+  @override
+  String get edit => 'Ubah';
+
+  @override
   String get openRoutine => 'Rutinitas terbuka';
 
   @override
   String get aboutAppBody =>
       'eQuran adalah pendamping Quran modern yang dirancang untuk membaca, mendengarkan, dan refleksi harian dengan fokus.';
+
+  @override
+  String get specialThanks => 'Ucapan terima kasih khusus';
+
+  @override
+  String get specialThanksBody =>
+      'Terima kasih yang tulus kepada para kontributor ini atas sumbangsih besar mereka pada eQuran, serta masukan dan umpan balik yang berharga.';
+
+  @override
+  String get supportProject => 'Dukung';
+
+  @override
+  String get supportProjectDescription =>
+      'Jika eQuran bermanfaat bagi Anda, Anda dapat mendukung pengembangannya dengan donasi kripto.';
+
+  @override
+  String get bitcoin => 'Bitcoin (BTC)';
+
+  @override
+  String get ethereum => 'Ethereum (ETH)';
+
+  @override
+  String get solana => 'Solana (SOL)';
+
+  @override
+  String get usdcErc20 => 'USDC (ERC-20)';
+
+  @override
+  String get litecoin => 'Litecoin (LTC)';
+
+  @override
+  String get copyAddress => 'Salin alamat';
+
+  @override
+  String get addressCopied => 'Alamat disalin';
 
   @override
   String versionLabel(String version) {
@@ -773,6 +837,9 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get closeSearch => 'Tutup pencarian';
+
+  @override
+  String get reverseOrder => 'Balik urutan';
 
   @override
   String get noSurahsFound => 'Tidak ada surat yang ditemukan.';
@@ -848,6 +915,34 @@ class AppLocalizationsId extends AppLocalizations {
   String get setUpLocation => 'Siapkan lokasi';
 
   @override
+  String get locationSetupTitle => 'Di mana Anda salat?';
+
+  @override
+  String get locationSetupSubtitle =>
+      'Pilih satu cara. Waktu salat dihitung hanya untuk tempat ini.';
+
+  @override
+  String get locationOptionCurrentDescription =>
+      'Paling cepat. Kami membaca posisi Anda sekali.';
+
+  @override
+  String get locationOptionMapDescription =>
+      'Geser peta hingga pin berada di area Anda.';
+
+  @override
+  String get locationOptionManualDescription =>
+      'Masukkan lintang dan bujur sendiri.';
+
+  @override
+  String get recommendedLabel => 'Disarankan';
+
+  @override
+  String get chooseAnotherWay => 'Pilih cara lain';
+
+  @override
+  String get confirmLocationTitle => 'Konfirmasi lokasi ini';
+
+  @override
   String get chooseLocationForNextPrayer =>
       'Pilih lokasi untuk menampilkan waktu sholat berikutnya di sini.';
 
@@ -862,12 +957,17 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
+  String prayerNextIn(String prayer, String time) {
+    return '$prayer dalam $time';
+  }
+
+  @override
   String minutesShort(int minutes) {
     return '$minutes menit';
   }
 
   @override
-  String hoursMinutesShort(int hours, int minutes) {
+  String hoursMinutesShort(int hours, String minutes) {
     return '${hours}jam ${minutes}m';
   }
 
@@ -993,6 +1093,21 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get distanceUnavailable => 'Jarak tidak tersedia';
+
+  @override
+  String get qiblaStatBearing => 'Arah';
+
+  @override
+  String get qiblaStatDistance => 'Jarak';
+
+  @override
+  String get qiblaFixedCoordinates =>
+      'Menggunakan koordinat tetap untuk perhitungan, bukan GPS langsung.';
+
+  @override
+  String kilometersValue(String distance) {
+    return '$distance km';
+  }
 
   @override
   String kilometersToKaaba(String distance) {
@@ -1454,7 +1569,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get removeFavourite => 'Hapus favorit';
 
   @override
-  String get saveDuasHere => 'Simpan doa di sini untuk akses cepat';
+  String get saveDuasHere => 'Disimpan untuk akses cepat';
 
   @override
   String savedDuasCount(int count, String label) {
@@ -1822,7 +1937,7 @@ class AppLocalizationsId extends AppLocalizations {
       'Favorit ayah dengan cepat, atau tambahkan folder, tag, dan catatan pribadi dari opsi membaca.';
 
   @override
-  String get privateNote => 'Catatan pribadi';
+  String get note => 'Catatan';
 
   @override
   String get writeReflectionHint => 'Tulis refleksi...';
@@ -1908,6 +2023,16 @@ class AppLocalizationsId extends AppLocalizations {
       locale: localeName,
       other: '$count ayat',
       one: '1 ayat',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String prayersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count shalat',
     );
     return '$_temp0';
   }
@@ -2473,6 +2598,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get showLess => 'Tampilkan lebih sedikit';
 
   @override
+  String get showMore => 'Tampilkan lebih banyak';
+
+  @override
   String showAllSurahs(Object count) {
     return 'Tampilkan semua surah $count';
   }
@@ -2788,10 +2916,6 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get rewardIsWithAllah => 'Pahala ada di sisi Allah.';
-
-  @override
-  String get totalZakahWealth =>
-      'Total kekayaan harus minimal 200 untuk menghitung Zakat.';
 
   @override
   String get hifzTitle => 'Hifz';
@@ -3537,7 +3661,7 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String countdownInHoursMinutes(int hours, int minutes) {
+  String countdownInHoursMinutes(int hours, String minutes) {
     return 'Dalam ${hours}h ${minutes}m';
   }
 
@@ -3968,6 +4092,10 @@ class AppLocalizationsId extends AppLocalizations {
       'Pasar luring. Menggunakan nilai standar tersimpan.';
 
   @override
+  String get zakatDisclaimer =>
+      'Kurs dan asumsi nisab adalah perkiraan; verifikasi dengan ulama tepercaya dan panduan yang berlaku.';
+
+  @override
   String get overridePrices => 'Ubah Harga';
 
   @override
@@ -4022,16 +4150,23 @@ class AppLocalizationsId extends AppLocalizations {
   String get belowNisab => 'DI BAWAH NISAB';
 
   @override
+  String get zakatNisabNotChecked => 'NISAB BELUM DICEK';
+
+  @override
   String get zakatDueLabel => 'ZAKAT WAJIB (2.5%)';
 
   @override
   String get resetCalculator => 'Reset Kalkulator';
 
   @override
-  String get goldPriceGram => 'Harga emas per gram (USD)';
+  String goldPriceGram(String currency) {
+    return 'Harga emas per gram ($currency)';
+  }
 
   @override
-  String get silverPriceGram => 'Harga perak per gram (USD)';
+  String silverPriceGram(String currency) {
+    return 'Harga perak per gram ($currency)';
+  }
 
   @override
   String get zakatSavedLedger =>
@@ -4044,7 +4179,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get updateZakatPaidAmount => 'Perbarui Jumlah Zakat Terbayar';
 
   @override
-  String get enterPaidAmountUsd => 'Masukkan jumlah terbayar dalam USD';
+  String enterPaidAmountInCurrency(String currency) {
+    return 'Masukkan jumlah terbayar dalam $currency';
+  }
 
   @override
   String get calculatorTab => 'Kalkulator';
@@ -4113,6 +4250,16 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get todayLegend => 'Hari Ini';
+
+  @override
+  String get newMonthLegend => 'Awal bulan Hijriah';
+
+  @override
+  String get comingUp => 'Akan datang';
+
+  @override
+  String get moonSightingHint =>
+      'Menggeser tanggal Hijriah sehari jika rukyat hilal di daerah Anda berbeda.';
 
   @override
   String get eidLegend => 'Idul Fitri';
@@ -4202,10 +4349,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get bookmarksAndNotes => 'Bookmark & catatan';
 
   @override
-  String get hideSettings => 'Hide settings';
+  String get hideSettings => 'Sembunyikan pengaturan';
 
   @override
-  String get showSettings => 'Show settings';
+  String get showSettings => 'Tampilkan pengaturan';
 
   @override
   String get zakatCategoryCash => 'Tunai & Piutang';
@@ -4251,19 +4398,6 @@ class AppLocalizationsId extends AppLocalizations {
   String amountInCurrency(String currency) {
     return 'Jumlah dalam $currency';
   }
-
-  @override
-  String get livestockSubtitle =>
-      'Domba/Kambing, Sapi, Unta — nilai modern disederhanakan';
-
-  @override
-  String get livestockSheepGoats => 'Domba & Kambing';
-
-  @override
-  String get livestockCowsBuffalo => 'Sapi / Kerbau';
-
-  @override
-  String get livestockCamels => 'Unta';
 
   @override
   String get noHistoricalCalculations => 'Tidak ada riwayat perhitungan';
@@ -4472,4 +4606,491 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get confirmLiveLocationMessage =>
       'Apakah Anda ingin mengunci waktu sholat ke lokasi langsung perangkat Anda? Aplikasi akan memperbarui waktu secara otomatis saat Anda bepergian.';
+
+  @override
+  String ratesLiveStatus(String source, String time) {
+    return '$source • langsung • $time';
+  }
+
+  @override
+  String ratesStaleStatus(String source, String time) {
+    return '$source • harga terakhir diketahui • $time';
+  }
+
+  @override
+  String get wordByWord => 'Kata per kata';
+
+  @override
+  String get wordByWordDescription =>
+      'Ketuk kata mana pun saat membaca untuk melihat arti dan transliterasinya.';
+
+  @override
+  String get wordMeaning => 'Arti';
+
+  @override
+  String get wordTransliteration => 'Transliterasi';
+
+  @override
+  String wordByWordProvenance(String source, String license) {
+    return 'Arti kata dari $source ($license). Alat bantu baca, bukan terjemahan atau tafsir.';
+  }
+
+  @override
+  String savedAyahsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ayat tersimpan',
+      one: '1 ayat tersimpan',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get allSaved => 'Semua tersimpan';
+
+  @override
+  String get newestFirst => 'Terbaru dahulu';
+
+  @override
+  String get browseSurahs => 'Jelajahi surah';
+
+  @override
+  String get forThisMorning => 'Untuk pagi ini';
+
+  @override
+  String get forThisEvening => 'Untuk sore ini';
+
+  @override
+  String get continueAction => 'Lanjutkan';
+
+  @override
+  String get suggestedForYou => 'Disarankan untuk Anda';
+
+  @override
+  String get browseByTheme => 'Jelajahi berdasarkan tema';
+
+  @override
+  String get beginAction => 'Mulai';
+
+  @override
+  String categoriesCount(int count) {
+    return '$count kategori';
+  }
+
+  @override
+  String themesCount(int count) {
+    return '$count tema';
+  }
+
+  @override
+  String searchCategoryCount(int count) {
+    return 'Cari dalam $count kategori';
+  }
+
+  @override
+  String searchInTheme(String theme) {
+    return 'Cari dalam $theme';
+  }
+
+  @override
+  String get backToDuas => 'Kembali ke Doa';
+
+  @override
+  String get loggedToday => 'Dicatat hari ini';
+
+  @override
+  String get theNight => 'Malam';
+
+  @override
+  String get prayerPassed => 'Berlalu';
+
+  @override
+  String prayerBeganAt(String time) {
+    return 'Dimulai $time';
+  }
+
+  @override
+  String prayerEndsAt(String time) {
+    return 'Berakhir $time';
+  }
+
+  @override
+  String get tasbihAndDuas => 'Tasbih dan doa';
+
+  @override
+  String get surahMap => 'Peta surah';
+
+  @override
+  String get tapCellToOpen => 'Ketuk sel untuk membuka';
+
+  @override
+  String get less => 'Lebih sedikit';
+
+  @override
+  String get khatmProgress => 'Kemajuan khatam';
+
+  @override
+  String get notLogged => 'Belum dicatat';
+
+  @override
+  String get mostReadSurah => 'Surah yang paling sering dibaca';
+
+  @override
+  String get pureBlackBackground => 'Latar belakang hitam pekat';
+
+  @override
+  String get pureBlackBackgroundSubtitle =>
+      'Gunakan latar belakang hitam pekat dalam mode gelap dengan palet warna apa pun.';
+
+  @override
+  String get showSplashScreen => 'Tampilkan animasi pembuka';
+
+  @override
+  String get showSplashScreenSubtitle =>
+      'Putar animasi singkat saat aplikasi dibuka.';
+
+  @override
+  String get savedFolderLabel => 'Folder';
+
+  @override
+  String get savedManageFolders => 'Kelola folder';
+
+  @override
+  String get zakatNisabNeedsRates =>
+      'Tambahkan harga emas dan perak untuk memeriksa nisab. Harga tidak dapat dimuat, jadi masukkan secara manual.';
+
+  @override
+  String get zakatDeleteRecordQuestion => 'Hapus perhitungan ini?';
+
+  @override
+  String get zakatDeleteRecordBody =>
+      'Perhitungan tersimpan ini akan dihapus dari riwayat.';
+
+  @override
+  String get unitTola => 'tola';
+
+  @override
+  String get hifzRatingFail => 'Gagal';
+
+  @override
+  String get hifzRatingPass => 'Lulus';
+
+  @override
+  String get shareImageFormat => 'Format gambar untuk dibagikan';
+
+  @override
+  String get shareFormatStory => 'Story 9:16';
+
+  @override
+  String get shareFormatSquare => 'Persegi 1:1';
+
+  @override
+  String get shareFormatClassic => 'Klasik';
+
+  @override
+  String get unableToShareAyahImage => 'Gambar ayah tidak dapat dibagikan.';
+
+  @override
+  String get reciterGroupDownloaded => 'Kelompokkan yang diunduh';
+
+  @override
+  String get reciterShowAlphabetical => 'Tampilkan urut abjad';
+
+  @override
+  String get audioConnectionInterrupted =>
+      'Koneksi audio terputus. Periksa internet Anda dan coba lagi.';
+
+  @override
+  String get offlineDownloadAyahOrReconnect =>
+      'Anda sedang offline. Unduh ayah ini atau sambungkan kembali untuk memutarnya secara streaming.';
+
+  @override
+  String get unableToPlayAyahAudio => 'Audio ayah tidak dapat diputar.';
+
+  @override
+  String get repeatOnce => 'Sekali';
+
+  @override
+  String repeatTimes(int count) {
+    return '$count kali';
+  }
+
+  @override
+  String get repeatInfinite => 'Tanpa batas';
+
+  @override
+  String get halfSecond => '0,5 detik';
+
+  @override
+  String get resourceStateUpdateAvailable => 'Pembaruan tersedia';
+
+  @override
+  String get resourcePhaseStarting => 'Memulai';
+
+  @override
+  String get resourcePhaseVerifying => 'Memverifikasi';
+
+  @override
+  String get resourcePhaseExtracting => 'Mengekstrak';
+
+  @override
+  String get resourcePhaseInstalling => 'Memasang';
+
+  @override
+  String get resourcePhaseFailed => 'Gagal';
+
+  @override
+  String get resourceTypeGeneric => 'Sumber daya';
+
+  @override
+  String get translationBundled => 'Bawaan';
+
+  @override
+  String get translationDownloadUnavailable => 'Unduhan tidak tersedia';
+
+  @override
+  String get navigationSettingsHint =>
+      'Seret kartu untuk mengatur ulang. Seret item yang tersedia lalu lepaskan di kartu aktif untuk menukar, atau ketuk item di bawah untuk menyematkannya (menggantikan yang paling lama tidak dipakai).';
+
+  @override
+  String navigationActiveSlots(int count, int max) {
+    return 'Slot bilah navigasi aktif ($count/$max)';
+  }
+
+  @override
+  String get navigationAvailableItems => 'Item tersedia yang belum disematkan';
+
+  @override
+  String navigationSlot(int number) {
+    return 'Slot $number';
+  }
+
+  @override
+  String navigationSlotLocked(int number) {
+    return 'Slot $number (hub terkunci)';
+  }
+
+  @override
+  String navigationSwapped(String first, String second) {
+    return '$first ditukar dengan $second';
+  }
+
+  @override
+  String navigationRemoved(String item) {
+    return '$item dihapus dari bilah navigasi';
+  }
+
+  @override
+  String navigationPinned(String item) {
+    return '$item disematkan';
+  }
+
+  @override
+  String navigationPinnedDisplaced(String item, String displaced) {
+    return '$item disematkan (menggantikan $displaced)';
+  }
+
+  @override
+  String get navSubtitleHome => 'Dasbor utama';
+
+  @override
+  String get navSubtitleQuran => 'Baca Al-Quran';
+
+  @override
+  String get navSubtitlePrayer => 'Waktu salat & azan';
+
+  @override
+  String get navSubtitleSettings => 'Preferensi sistem';
+
+  @override
+  String get dockZakat => 'Zakat';
+
+  @override
+  String get dockCalendar => 'Kalender';
+
+  @override
+  String downloadsReciterCount(int count) {
+    return '$count qari';
+  }
+
+  @override
+  String downloadsItemCount(int count) {
+    return '$count item';
+  }
+
+  @override
+  String downloadsDeleteReciterBody(String reciter, String surah) {
+    return 'Hapus semua unduhan $reciter untuk $surah?';
+  }
+
+  @override
+  String get downloadsAllSurahs => 'Semua surat';
+
+  @override
+  String get downloadsFilterTitle => 'Filter & urutkan unduhan';
+
+  @override
+  String get downloadsFilterSubtitle =>
+      'Kendali lebih atas lantunan yang tampil di pustaka Anda';
+
+  @override
+  String get downloadsFilterSearchHint => 'Cari lantunan atau surat...';
+
+  @override
+  String get downloadsGroupBy => 'Kelompokkan menurut';
+
+  @override
+  String get downloadsSortBy => 'Urutkan menurut';
+
+  @override
+  String get downloadsCategory => 'Kategori';
+
+  @override
+  String get downloadsContentType => 'Jenis konten';
+
+  @override
+  String get downloadsSortReciterAsc => 'Qari (A → Z)';
+
+  @override
+  String get downloadsSortReciterDesc => 'Qari (Z → A)';
+
+  @override
+  String get downloadsSortSizeDesc => 'Ukuran (terbesar dulu)';
+
+  @override
+  String get downloadsSortSizeAsc => 'Ukuran (terkecil dulu)';
+
+  @override
+  String get downloadsSortSurahAsc => 'Surat (1 → 114)';
+
+  @override
+  String get downloadsSortSurahDesc => 'Surat (114 → 1)';
+
+  @override
+  String get offsetSetPositive => 'Jadikan positif';
+
+  @override
+  String get offsetSetNegative => 'Jadikan negatif';
+
+  @override
+  String get notificationPermissionCheckTimedOut =>
+      'Pemeriksaan izin notifikasi melewati batas waktu. Coba buka ulang aplikasi atau aktifkan notifikasi di pengaturan sistem.';
+
+  @override
+  String get notificationPermissionCheckFailed =>
+      'Tidak dapat memeriksa izin notifikasi. Coba lagi atau aktifkan notifikasi di pengaturan sistem.';
+
+  @override
+  String get exactAlarmPermissionCheckTimedOut =>
+      'Pemeriksaan izin alarm yang tepat melewati batas waktu. Coba buka ulang aplikasi atau aktifkan alarm & pengingat di pengaturan sistem.';
+
+  @override
+  String get exactAlarmPermissionCheckFailed =>
+      'Tidak dapat memeriksa izin alarm yang tepat. Coba lagi atau aktifkan alarm & pengingat di pengaturan sistem.';
+
+  @override
+  String get asrMethodHanafi => 'Hanafi';
+
+  @override
+  String get highLatitudeRuleAutoTitle => 'Otomatis';
+
+  @override
+  String get highLatitudeRuleNoneTitle => 'Tidak ada';
+
+  @override
+  String get highLatitudeRuleMiddleOfTheNightTitle => 'Tengah malam';
+
+  @override
+  String get highLatitudeRuleOneSeventhTitle => 'Sepertujuh';
+
+  @override
+  String get highLatitudeRuleAngleBasedTitle => 'Berbasis sudut';
+
+  @override
+  String get prayerMethodAuto => 'Terbaik untuk lokasi';
+
+  @override
+  String get prayerMethodMuslimWorldLeague => 'Liga Muslim Dunia';
+
+  @override
+  String get prayerMethodEgyptian => 'Mesir';
+
+  @override
+  String get prayerMethodUmmAlQura => 'Umm al-Qura';
+
+  @override
+  String get prayerMethodDubai => 'Dubai / Teluk';
+
+  @override
+  String get prayerMethodKuwait => 'Kuwait';
+
+  @override
+  String get prayerMethodQatar => 'Qatar';
+
+  @override
+  String get prayerMethodKarachi => 'Karachi';
+
+  @override
+  String get prayerMethodMoonsighting => 'Komite Rukyat Hilal';
+
+  @override
+  String get prayerMethodMorocco => 'Maroko';
+
+  @override
+  String get prayerMethodSingapore => 'Singapura';
+
+  @override
+  String get prayerMethodTehran => 'Teheran';
+
+  @override
+  String get prayerMethodTurkey => 'Turki / Diyanet';
+
+  @override
+  String get prayerMethodShortAuto => 'Otomatis';
+
+  @override
+  String get prayerMethodShortMwl => 'MWL';
+
+  @override
+  String get prayerMethodShortDubai => 'Dubai';
+
+  @override
+  String get prayerMethodShortMoonsighting => 'Rukyat';
+
+  @override
+  String get prayerMethodShortTurkey => 'Turki';
+
+  @override
+  String get dailyToolsKeepOnePinned =>
+      'Setidaknya satu alat harus tetap disematkan.';
+
+  @override
+  String get zakatLivestockNotCalculated =>
+      'Zakat ternak tidak dihitung di sini, sehingga tidak termasuk dalam total. Silakan tanyakan kepada ulama yang berkompeten.';
+
+  @override
+  String get resourcesFilterTitle => 'Filter & urutkan sumber daya';
+
+  @override
+  String get resourceSortName => 'Nama (A → Z)';
+
+  @override
+  String get resourceSortInstalledFirst => 'Yang dipasang dulu';
+
+  @override
+  String get resourceFilterStatus => 'Status';
+
+  @override
+  String get resourceFilterType => 'Jenis';
+
+  @override
+  String get resourceViewByType => 'Menurut jenis';
+
+  @override
+  String get resourceViewNone => 'Tanpa pengelompokan';
+
+  @override
+  String get resourcesNoMatches =>
+      'Tidak ada sumber daya yang cocok dengan filter ini.';
 }

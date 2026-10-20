@@ -53,6 +53,13 @@ class AudioDownloadEntry {
 
 enum AudioDownloadType { surah, ayah, ayahSurah }
 
+class _TempAyahCacheEntry {
+  const _TempAyahCacheEntry(this.file, this.modified);
+
+  final File file;
+  final DateTime modified;
+}
+
 class AudioDownloadsSummary {
   const AudioDownloadsSummary({
     required this.surahDownloads,
@@ -153,11 +160,6 @@ class AudioDownloadService {
 
   Future<bool> hasAyah(int surah, int ayah) async {
     final File file = await ayahFile(surah, ayah);
-    return _isCompleteDownload(file);
-  }
-
-  Future<bool> hasTempAyah(int surah, int ayah) async {
-    final File file = await tempAyahFile(surah, ayah);
     return _isCompleteDownload(file);
   }
 
@@ -382,46 +384,67 @@ class AudioDownloadService {
         ),
       );
 
-      final Archive archive = ZipDecoder().decodeBytes(
-        await zipFile.readAsBytes(),
-      );
-      for (final ArchiveFile entry in archive.files) {
-        if (!entry.isFile || entry.isSymbolicLink) continue;
+      // Decode lazily from disk instead of duplicating the whole ZIP in a
+      // UI-isolate byte array. Each selected ayah is decompressed directly to
+      // its temporary output file.
+      final InputFileStream zipInput = InputFileStream(zipFile.path);
+      final Archive archive;
+      try {
+        archive = ZipDecoder().decodeStream(zipInput);
+      } catch (_) {
+        zipInput.closeSync();
+        rethrow;
+      }
+      if (archive.files.length > totalAyahs * 2 + 32) {
+        zipInput.closeSync();
+        throw const FormatException('Audio archive contains too many files.');
+      }
+      try {
+        for (final ArchiveFile entry in archive.files) {
+          if (!entry.isFile || entry.isSymbolicLink) continue;
+          if (entry.size > 25 * 1024 * 1024) {
+            throw const FormatException('Audio archive entry is too large.');
+          }
 
-        final RegExpMatch? match = RegExp(
-          r'(\d{3})(\d{3})\.mp3$',
-        ).firstMatch(entry.name);
-        if (match == null) continue;
+          final RegExpMatch? match = RegExp(
+            r'(\d{3})(\d{3})\.mp3$',
+          ).firstMatch(entry.name);
+          if (match == null) continue;
 
-        final int? entrySurah = int.tryParse(match.group(1)!);
-        final int? entryAyah = int.tryParse(match.group(2)!);
-        if (entrySurah == null || entryAyah == null) continue;
-        if (entrySurah != surah) continue;
-        if (entryAyah < 1 || entryAyah > totalAyahs) continue;
+          final int? entrySurah = int.tryParse(match.group(1)!);
+          final int? entryAyah = int.tryParse(match.group(2)!);
+          if (entrySurah == null || entryAyah == null) continue;
+          if (entrySurah != surah) continue;
+          if (entryAyah < 1 || entryAyah > totalAyahs) continue;
 
-        final File finalFile = await ayahFile(surah, entryAyah);
-        final File tempExtractFile = File(
-          '${extractDir.path}${Platform.pathSeparator}${entrySurah}_$entryAyah.mp3',
-        );
-        await tempExtractFile.parent.create(recursive: true);
+          final File finalFile = await ayahFile(surah, entryAyah);
+          final File tempExtractFile = File(
+            '${extractDir.path}${Platform.pathSeparator}${entrySurah}_$entryAyah.mp3',
+          );
+          await tempExtractFile.parent.create(recursive: true);
 
-        final OutputFileStream output = OutputFileStream(tempExtractFile.path);
-        try {
-          entry.writeContent(output);
-        } finally {
-          output.closeSync();
+          final OutputFileStream output = OutputFileStream(
+            tempExtractFile.path,
+          );
+          try {
+            entry.writeContent(output, freeMemory: true);
+          } finally {
+            output.closeSync();
+          }
+
+          if (await finalFile.exists()) {
+            await finalFile.delete();
+          }
+          try {
+            await tempExtractFile.rename(finalFile.path);
+          } on FileSystemException {
+            await tempExtractFile.copy(finalFile.path);
+            await tempExtractFile.delete();
+          }
+          files[entryAyah - 1] = finalFile;
         }
-
-        if (await finalFile.exists()) {
-          await finalFile.delete();
-        }
-        try {
-          await tempExtractFile.rename(finalFile.path);
-        } on FileSystemException {
-          await tempExtractFile.copy(finalFile.path);
-          await tempExtractFile.delete();
-        }
-        files[entryAyah - 1] = finalFile;
+      } finally {
+        zipInput.closeSync();
       }
     } finally {
       try {
@@ -503,9 +526,11 @@ class AudioDownloadService {
   }
 
   Future<void> _enforceTempAyahCacheLimit() async {
+    // Async FS access: the sync variants (listSync/lastModifiedSync) block
+    // the UI isolate and stall scrolling/playback on low-end devices.
     final Directory dir = await tempAyahDirectory();
-    final List<File> files = <File>[];
-    for (final FileSystemEntity entity in dir.listSync()) {
+    final List<_TempAyahCacheEntry> entries = <_TempAyahCacheEntry>[];
+    await for (final FileSystemEntity entity in dir.list()) {
       if (entity is! File) continue;
       if (entity.path.endsWith('.part')) {
         try {
@@ -515,18 +540,25 @@ class AudioDownloadService {
         }
         continue;
       }
-      if (!_isCompleteDownload(entity)) continue;
-      files.add(entity);
+      final FileStat stat;
+      try {
+        stat = await entity.stat();
+      } catch (_) {
+        continue;
+      }
+      if (stat.type != FileSystemEntityType.file || stat.size <= 0) continue;
+      entries.add(_TempAyahCacheEntry(entity, stat.modified));
     }
 
-    files.sort((File a, File b) {
-      return a.lastModifiedSync().compareTo(b.lastModifiedSync());
-    });
+    entries.sort(
+      (_TempAyahCacheEntry a, _TempAyahCacheEntry b) =>
+          a.modified.compareTo(b.modified),
+    );
 
-    while (files.length > _maxTempCachedAyahs) {
-      final File oldest = files.removeAt(0);
+    while (entries.length > _maxTempCachedAyahs) {
+      final _TempAyahCacheEntry oldest = entries.removeAt(0);
       try {
-        await oldest.delete();
+        await oldest.file.delete();
       } catch (_) {
         // Temporary cache cleanup is best-effort and must never affect user
         // downloads, which live in a separate documents directory.
@@ -691,10 +723,6 @@ class AudioDownloadService {
 
   String _basename(String path) {
     return path.split(Platform.pathSeparator).last;
-  }
-
-  bool isCompleteDownload(File file) {
-    return _isCompleteDownload(file);
   }
 
   bool _isCompleteDownload(File file) {

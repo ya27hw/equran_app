@@ -37,32 +37,6 @@ class QuranTranslationService {
     return null;
   }
 
-  bool isTranslationAvailable(
-    quran.Translation translation,
-    ResourceManifest manifest,
-  ) {
-    if (translation.isBundled) return true;
-    final DownloadableResource? resource = resourceForTranslation(
-      translation,
-      manifest,
-    );
-    return resource != null &&
-        ResourceInstallStore.instance.isInstalled(resource);
-  }
-
-  String availabilityLabel(
-    quran.Translation translation,
-    ResourceManifest manifest,
-  ) {
-    if (translation.isBundled) return 'Bundled';
-    final DownloadableResource? resource = resourceForTranslation(
-      translation,
-      manifest,
-    );
-    if (resource == null) return 'Download unavailable';
-    return ResourceInstallStore.instance.installStateFor(resource).label;
-  }
-
   Future<void> preloadSelectedTranslation() async {
     final quran.Translation translation = selectedTranslation();
     if (translation.isBundled) return;

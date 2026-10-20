@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:equran/services/android_frame_rate_hints.dart';
 import 'package:flutter/foundation.dart' show debugPrint, kDebugMode;
 
-enum _AppliedFrameRateHint { clear, audioIdle30, interactive60 }
+enum _AppliedFrameRateHint { clear, audioIdle30 }
 
 class FrameRatePolicyManager {
   FrameRatePolicyManager._();
@@ -28,7 +28,6 @@ class FrameRatePolicyManager {
   bool _powerSavingsBalancedRequested = false;
   bool _miniSkipLogged = false;
   bool _restoreDebouncePending = false;
-  double? _requestedPreferredRefreshRate;
   Timer? _restoreTimer;
   _AppliedFrameRateHint _appliedHint = _AppliedFrameRateHint.clear;
   String? _lastRepeatedClearReason;
@@ -60,18 +59,6 @@ class FrameRatePolicyManager {
       _setSource(_miniPlayerSources, source, false);
     } else if (miniPlayerVisible) {
       _setSource(_expandedPlayerSources, source, false);
-    }
-    _evaluate(reason);
-  }
-
-  void setExpandedPlayerVisible(
-    bool visible, {
-    required String source,
-    required String reason,
-  }) {
-    _setSource(_expandedPlayerSources, source, visible);
-    if (visible) {
-      _setSource(_miniPlayerSources, source, false);
     }
     _evaluate(reason);
   }
@@ -175,19 +162,6 @@ class FrameRatePolicyManager {
     _evaluate(reason);
   }
 
-  Future<void> printDebugDiagnostics({String reason = 'diagnostics'}) async {
-    if (!kDebugMode) return;
-    final Map<String, Object?>? diagnostics =
-        await AndroidFrameRateHints.debugDiagnostics(
-          requestedPreferredRefreshRate: _requestedPreferredRefreshRate,
-        );
-    _debugLog(
-      'diagnostics reason=$reason requestedPreferredRefreshRate='
-      '$_requestedPreferredRefreshRate state=${_stateSummary()} '
-      'android=$diagnostics',
-    );
-  }
-
   static void debugLogExpandedProgressTicker({
     required String owner,
     required Duration interval,
@@ -275,7 +249,6 @@ class FrameRatePolicyManager {
     if (_appliedHint == _AppliedFrameRateHint.audioIdle30) return;
     _appliedHint = _AppliedFrameRateHint.audioIdle30;
     _lastRepeatedClearReason = null;
-    _requestedPreferredRefreshRate = 30;
     _debugLog(
       'set preferredRefreshRate=30 reason=$reason '
       'state=${_stateSummary()}',
@@ -294,7 +267,6 @@ class FrameRatePolicyManager {
         _isImportantClearReason(reason) ||
         _lastRepeatedClearReason != reason;
     _appliedHint = _AppliedFrameRateHint.clear;
-    _requestedPreferredRefreshRate = null;
 
     if (shouldLog) {
       _lastRepeatedClearReason = reason;
@@ -306,18 +278,6 @@ class FrameRatePolicyManager {
 
     if (alreadyClear) return;
     unawaited(AndroidFrameRateHints.clear());
-  }
-
-  void _applyInteractive60({required String reason}) {
-    if (_appliedHint == _AppliedFrameRateHint.interactive60) return;
-    _appliedHint = _AppliedFrameRateHint.interactive60;
-    _lastRepeatedClearReason = null;
-    _requestedPreferredRefreshRate = 60;
-    _debugLog(
-      'set preferredRefreshRate=60 reason=$reason '
-      'state=${_stateSummary()}',
-    );
-    unawaited(AndroidFrameRateHints.setInteractive());
   }
 
   List<String> get _activeBlockers {
@@ -364,12 +324,6 @@ class FrameRatePolicyManager {
     } else {
       sources.remove(source);
     }
-  }
-
-  void preferInteractive60Temporarily({required String reason}) {
-    _cancelRestore();
-    _applyInteractive60(reason: reason);
-    _scheduleRestore('$reason settled');
   }
 
   void _debugLog(String message) {

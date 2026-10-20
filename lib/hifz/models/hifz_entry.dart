@@ -48,7 +48,4 @@ class HifzEntry extends HiveObject {
 
   @override
   String get key => '$surah:$ayah';
-
-  bool get isDue =>
-      dueDate.isBefore(DateTime.now().add(const Duration(hours: 1)));
 }

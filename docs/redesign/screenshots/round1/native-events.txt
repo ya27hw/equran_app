@@ -1,0 +1,80 @@
+english-and-palettes
+CAPTURE emerald-dark-home
+CAPTURE emerald-dark-quran
+CAPTURE emerald-dark-prayer
+CAPTURE emerald-dark-duas
+CAPTURE emerald-dark-more
+CAPTURE emerald-dark-saved
+CAPTURE emerald-dark-note
+CAPTURE emerald-dark-note-editor
+CAPTURE emerald-dark-statistics
+CAPTURE emerald-light-home
+CAPTURE emerald-light-quran
+CAPTURE emerald-light-prayer
+CAPTURE emerald-light-duas
+CAPTURE emerald-light-more
+CAPTURE emerald-light-saved
+CAPTURE emerald-light-note
+CAPTURE emerald-light-note-editor
+CAPTURE emerald-light-statistics
+CAPTURE black-dark-home
+CAPTURE black-dark-quran
+CAPTURE black-dark-prayer
+CAPTURE black-dark-duas
+CAPTURE black-dark-more
+CAPTURE black-dark-saved
+CAPTURE black-dark-note
+CAPTURE black-dark-note-editor
+CAPTURE black-dark-statistics
+CAPTURE red-dark-home
+CAPTURE red-dark-quran
+CAPTURE red-dark-prayer
+CAPTURE red-dark-duas
+CAPTURE red-dark-more
+CAPTURE red-dark-saved
+CAPTURE red-dark-note
+CAPTURE red-dark-note-editor
+CAPTURE red-dark-statistics
+CAPTURE scale-1.3-home
+KNOWN_BASELINE_OVERFLOW scale-1.3: A RenderFlex overflowed by 3.0 pixels on the bottom.
+CAPTURE scale-1.3-quran
+CAPTURE scale-1.3-prayer
+CAPTURE scale-1.3-duas
+CAPTURE scale-1.3-more
+KNOWN_BASELINE_OVERFLOW scale-1.3: A RenderFlex overflowed by 3.0 pixels on the bottom.
+CAPTURE scale-1.3-saved
+CAPTURE scale-1.3-note
+CAPTURE scale-1.3-note-editor
+CAPTURE scale-1.3-statistics
+  Actual: FlutterError:<A RenderFlex overflowed by 3.0 pixels on the bottom.>
+  Actual: FlutterError:<A RenderFlex overflowed by 3.0 pixels on
+arabic-and-stress
+CAPTURE arabic-home
+CAPTURE arabic-quran
+CAPTURE arabic-prayer
+CAPTURE arabic-duas
+CAPTURE arabic-more
+CAPTURE arabic-saved
+CAPTURE arabic-note
+CAPTURE arabic-note-editor
+CAPTURE arabic-statistics
+KNOWN_BASELINE_OVERFLOW arabic-scale-1.3: A RenderFlex overflowed by 3.0 pixels on the bottom.
+CAPTURE arabic-scale-1.3-home
+KNOWN_BASELINE_OVERFLOW arabic-scale-1.3: A RenderFlex overflowed by 3.0 pixels on the bottom.
+CAPTURE arabic-scale-1.3-quran
+CAPTURE arabic-scale-1.3-prayer
+CAPTURE arabic-scale-1.3-duas
+CAPTURE arabic-scale-1.3-more
+KNOWN_BASELINE_OVERFLOW arabic-scale-1.3: A RenderFlex overflowed by 3.0 pixels on the bottom.
+CAPTURE arabic-scale-1.3-saved
+CAPTURE arabic-scale-1.3-note
+CAPTURE arabic-scale-1.3-note-editor
+CAPTURE arabic-scale-1.3-statistics
+KNOWN_BASELINE_OVERFLOW arabic-scale-1.3: A RenderFlex overflowed by 3.0 pixels on the bottom.
+CAPTURE dock-4-arabic-scale-1.3
+CAPTURE dock-5-arabic-scale-1.3
+CAPTURE dock-6-arabic-scale-1.3
+CAPTURE dock-solid-fallback
+KNOWN_BASELINE_OVERFLOW_COUNT 4
+00:46 +2: All tests passed!
+All tests passed.

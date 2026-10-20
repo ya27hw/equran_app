@@ -1,14 +1,20 @@
+import 'package:equran/utils/text_direction.dart';
 import 'package:equran/backend/dua_favourites_db.dart';
 import 'package:equran/backend/settings_db.dart';
 import 'package:equran/duas/hisn_al_muslim_models.dart';
 import 'package:equran/l10n/app_localizations.dart';
+import 'package:equran/theme/equran_colors.dart';
+import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/theme/equran_text_styles.dart';
-import 'package:equran/utils/app_radii.dart';
+import 'package:equran/theme/equran_tokens.dart';
+import 'package:equran/widgets/redesign/design_icon.dart';
+import 'package:equran/widgets/redesign/pill_tag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:like_button/like_button.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:equran/theme/inter_optical_size.dart';
 
 enum _DuaOverflowAction { copy, share }
 
@@ -30,10 +36,9 @@ class DuaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colors = theme.colorScheme;
+    final EquranColors colors = context.equranColors;
+    final EquranTokens tokens = context.equranTokens;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
-    final bool isLight = theme.brightness == Brightness.light;
     final List<String> metadata = <String>[
       if (dua.count != null && dua.count! > 1)
         '${localizations.repeat} ${dua.count}x',
@@ -45,6 +50,9 @@ class DuaCard extends StatelessWidget {
     return ValueListenableBuilder<Box<dynamic>>(
       valueListenable: SettingsDB().listener,
       builder: (BuildContext context, Box<dynamic> settingsBox, Widget? child) {
+        final double translationFontSize =
+            (settingsBox.get('fontSizeTranslation', defaultValue: 12.0) as num)
+                .toDouble();
         final bool showTranslation =
             settingsBox.get('duaShowTranslation', defaultValue: true) as bool;
         final bool showTransliteration =
@@ -62,120 +70,95 @@ class DuaCard extends StatelessWidget {
                 DuaFavouritesDB().contains(dua.id) ||
                 DuaFavouritesDB().contains(dua.legacyFavouriteId);
 
-            return Card(
-              elevation: isLight ? 3 : 0,
-              color: Colors.transparent,
-              surfaceTintColor: Colors.transparent,
-              clipBehavior: Clip.antiAlias,
-              margin: EdgeInsets.zero,
+            return Material(
+              color: colors.surface,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppRadii.medium),
-                side: BorderSide(
-                  color: isLight
-                      ? colors.primary.withAlpha(26)
-                      : colors.outlineVariant.withAlpha(86),
-                ),
+                borderRadius: BorderRadius.circular(EquranRadii.xl),
+                side: BorderSide(color: tokens.hair),
               ),
+              clipBehavior: Clip.antiAlias,
               child: InkWell(
                 onTap: onTap,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: theme.cardTheme.color ?? colors.surfaceContainerLow,
-                    borderRadius: BorderRadius.circular(AppRadii.medium),
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: <Color>[
-                        Color.alphaBlend(
-                          colors.primary.withAlpha(isLight ? 10 : 16),
-                          theme.cardTheme.color ?? colors.surfaceContainerLow,
-                        ),
-                        Color.alphaBlend(
-                          colors.tertiary.withAlpha(isLight ? 8 : 12),
-                          theme.cardTheme.color ?? colors.surfaceContainerLow,
-                        ),
-                      ],
-                    ),
-                    boxShadow: <BoxShadow>[
-                      BoxShadow(
-                        color: Colors.black.withAlpha(isLight ? 10 : 20),
-                        blurRadius: 18,
-                        offset: const Offset(0, 6),
+                child: Padding(
+                  padding: contentPadding,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      _DuaCardHeader(
+                        dua: dua,
+                        number: number,
+                        categoryTitle: categoryTitle,
+                        isFavourite: isFavourite,
                       ),
-                    ],
-                  ),
-                  child: Padding(
-                    padding: contentPadding,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        _DuaCardHeader(
-                          dua: dua,
-                          number: number,
-                          categoryTitle: categoryTitle,
-                          isFavourite: isFavourite,
+                      const SizedBox(height: 18),
+                      Text(
+                        dua.text,
+                        textDirection: TextDirection.rtl,
+                        textAlign: TextAlign.justify,
+                        style: TextStyle(
+                          fontFamily: EquranTextStyles.activeFontFamily,
+                          fontFamilyFallback: const <String>['Hafs'],
+                          height: 1.95,
+                          fontSize:
+                              settingsBox.get("fontSize", defaultValue: 31.0)
+                                  as double,
+                          letterSpacing: 0,
+                          color: colors.textPrimary,
                         ),
-                        const SizedBox(height: 18),
+                      ),
+                      if (showTransliteration &&
+                          dua.transliteration != null) ...<Widget>[
+                        const SizedBox(height: 14),
                         Text(
-                          dua.text,
-                          textDirection: TextDirection.rtl,
+                          dua.transliteration!,
+                          textDirection: scriptDirectionIn(
+                            context,
+                            dua.transliteration!,
+                          ),
                           textAlign: TextAlign.justify,
                           style: TextStyle(
-                            fontFamily: EquranTextStyles.activeFontFamily,
-                            fontFamilyFallback: const <String>['Hafs'],
-                            height: 1.95,
-                            fontSize:
-                                settingsBox.get("fontSize", defaultValue: 31.0)
-                                    as double,
-                            letterSpacing: 0,
-                            color: colors.onSurface,
-                          ),
+                            fontSize: (translationFontSize - 2)
+                                .clamp(12.0, 18.0)
+                                .toDouble(),
+                            color: tokens.muted,
+                            height: 1.45,
+                            fontStyle: FontStyle.italic,
+                          ).withInterOpticalSize(),
                         ),
-                        if (showTransliteration &&
-                            dua.transliteration != null) ...<Widget>[
-                          const SizedBox(height: 14),
-                          Text(
-                            dua.transliteration!,
-                            textAlign: TextAlign.justify,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: colors.onSurfaceVariant.withAlpha(190),
-                              height: 1.45,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                        ],
-                        if (showTranslation &&
-                            dua.localizedTranslation(translationLang) !=
-                                null) ...<Widget>[
-                          const SizedBox(height: 14),
-                          Divider(
-                            height: 1,
-                            color: colors.outlineVariant.withAlpha(118),
-                          ),
-                          const SizedBox(height: 14),
-                          Text(
-                            dua.localizedTranslation(translationLang)!,
-                            textAlign: TextAlign.justify,
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              color: colors.onSurfaceVariant,
-                              height: 1.55,
-                            ),
-                          ),
-                        ],
-                        if (metadata.isNotEmpty) ...<Widget>[
-                          const SizedBox(height: 14),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: metadata
-                                .map(
-                                  (String item) => _DuaMetadataPill(text: item),
-                                )
-                                .toList(growable: false),
-                          ),
-                        ],
                       ],
-                    ),
+                      if (showTranslation &&
+                          dua.localizedTranslation(translationLang) !=
+                              null) ...<Widget>[
+                        const SizedBox(height: 14),
+                        Divider(height: 1, thickness: 1, color: tokens.hair),
+                        const SizedBox(height: 14),
+                        Text(
+                          dua.localizedTranslation(translationLang)!,
+                          textDirection: scriptDirectionIn(
+                            context,
+                            dua.localizedTranslation(translationLang)!,
+                          ),
+                          textAlign: TextAlign.justify,
+                          style: TextStyle(
+                            fontSize: translationFontSize,
+                            color: tokens.text2,
+                            height: 1.55,
+                          ).withInterOpticalSize(),
+                        ),
+                      ],
+                      if (metadata.isNotEmpty) ...<Widget>[
+                        const SizedBox(height: 14),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: metadata
+                              .map(
+                                (String item) => _DuaMetadataPill(text: item),
+                              )
+                              .toList(growable: false),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
               ),
@@ -202,28 +185,13 @@ class _DuaCardHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colors = theme.colorScheme;
+    final EquranTokens tokens = context.equranTokens;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
 
     return Row(
       children: <Widget>[
         if (number != null)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
-            decoration: BoxDecoration(
-              color: colors.primary.withAlpha(14),
-              borderRadius: BorderRadius.circular(AppRadii.medium),
-              border: Border.all(color: colors.primary.withAlpha(24)),
-            ),
-            child: Text(
-              '${localizations.dua} $number',
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: colors.onSurfaceVariant.withAlpha(205),
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
+          PillTag('${localizations.dua} $number', selected: true),
         if (categoryTitle != null) ...<Widget>[
           if (number != null) const SizedBox(width: 8),
           Expanded(
@@ -231,10 +199,12 @@ class _DuaCardHeader extends StatelessWidget {
               categoryTitle!,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              textDirection: TextDirection.rtl,
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: colors.onSurfaceVariant.withAlpha(190),
-                fontWeight: FontWeight.w700,
+              textAlign: TextAlign.end,
+              textDirection: scriptDirectionIn(context, categoryTitle!),
+              style: TextStyle(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+                color: tokens.text2,
               ),
             ),
           ),
@@ -242,7 +212,7 @@ class _DuaCardHeader extends StatelessWidget {
           const Spacer(),
         const SizedBox(width: 10),
         _DuaFavouriteButton(dua: dua, isFavourite: isFavourite),
-        const SizedBox(width: 6),
+        const SizedBox(width: 2),
         _DuaMoreMenu(dua: dua),
       ],
     );
@@ -257,7 +227,7 @@ class _DuaFavouriteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme colors = Theme.of(context).colorScheme;
+    final EquranTokens tokens = context.equranTokens;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
 
     return Tooltip(
@@ -265,24 +235,25 @@ class _DuaFavouriteButton extends StatelessWidget {
           ? localizations.removeFavourite
           : localizations.favourite,
       child: SizedBox(
-        height: 34,
-        width: 34,
+        height: 44,
+        width: 44,
         child: Center(
           child: LikeButton(
             size: 22,
             isLiked: isFavourite,
             circleColor: CircleColor(
-              start: colors.primary.withAlpha(180),
-              end: colors.primary,
+              start: tokens.emText.withAlpha(180),
+              end: tokens.emText,
             ),
             bubblesColor: BubblesColor(
-              dotPrimaryColor: colors.primary,
-              dotSecondaryColor: colors.secondary,
+              dotPrimaryColor: tokens.emText,
+              dotSecondaryColor: tokens.gold,
             ),
             likeBuilder: (bool liked) {
-              return Icon(
-                liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                color: liked ? colors.primary : colors.onSurface.withAlpha(168),
+              return DesignIcon(
+                'heart',
+                filled: liked,
+                color: liked ? tokens.emText : tokens.text2,
                 size: 21,
               );
             },
@@ -321,22 +292,23 @@ class _DuaMoreMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme colors = Theme.of(context).colorScheme;
+    final EquranTokens tokens = context.equranTokens;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
 
     return SizedBox(
-      height: 34,
-      width: 34,
+      height: 44,
+      width: 44,
       child: PopupMenuButton<_DuaOverflowAction>(
         tooltip: localizations.moreActions,
         position: PopupMenuPosition.under,
         padding: EdgeInsets.zero,
-        borderRadius: BorderRadius.circular(10),
-        icon: Icon(
-          Icons.more_horiz_rounded,
-          size: 19,
-          color: colors.onSurface.withAlpha(168),
+        color: context.equranColors.surface,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(EquranRadii.large),
+          side: BorderSide(color: tokens.hair2),
         ),
+        icon: DesignIcon('dots', size: 20, color: tokens.text2),
         onSelected: (action) async {
           switch (action) {
             case _DuaOverflowAction.copy:
@@ -365,14 +337,14 @@ class _DuaMoreMenu extends StatelessWidget {
             PopupMenuItem<_DuaOverflowAction>(
               value: _DuaOverflowAction.copy,
               child: _OverflowMenuItem(
-                icon: Icons.copy_rounded,
+                icon: 'copy',
                 label: localizations.copyText,
               ),
             ),
             PopupMenuItem<_DuaOverflowAction>(
               value: _DuaOverflowAction.share,
               child: _OverflowMenuItem(
-                icon: Icons.ios_share_outlined,
+                icon: 'share',
                 label: localizations.shareText,
               ),
             ),
@@ -390,26 +362,21 @@ class _DuaMetadataPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colors = theme.colorScheme;
+    final EquranTokens tokens = context.equranTokens;
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppRadii.small),
-        border: Border.all(color: colors.outlineVariant),
+        borderRadius: BorderRadius.circular(EquranRadii.large),
+        border: Border.all(color: tokens.hair),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         child: Text(
           text,
           textDirection: _looksArabic(text)
               ? TextDirection.rtl
               : TextDirection.ltr,
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: colors.onSurfaceVariant,
-            height: 1.25,
-          ),
+          style: TextStyle(fontSize: 12, height: 1.3, color: tokens.text2),
         ),
       ),
     );
@@ -423,18 +390,28 @@ class _DuaMetadataPill extends StatelessWidget {
 class _OverflowMenuItem extends StatelessWidget {
   const _OverflowMenuItem({required this.icon, required this.label});
 
-  final IconData icon;
+  final String icon;
   final String label;
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme colors = Theme.of(context).colorScheme;
+    final EquranTokens tokens = context.equranTokens;
 
     return Row(
       children: <Widget>[
-        Icon(icon, size: 19, color: colors.onSurface.withAlpha(190)),
+        DesignIcon(icon, size: 19, color: tokens.text2),
         const SizedBox(width: 12),
-        Flexible(child: Text(label, overflow: TextOverflow.ellipsis)),
+        Flexible(
+          child: Text(
+            label,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 14.5,
+              fontVariations: const [FontVariation('opsz', 14.5)],
+              color: context.equranColors.textPrimary,
+            ),
+          ),
+        ),
       ],
     );
   }

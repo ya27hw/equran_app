@@ -6,9 +6,17 @@ import 'package:equran/backend/library.dart'
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
+import 'package:equran/theme/equran_tokens.dart';
+import 'package:equran/widgets/reader_sheet_chrome.dart' show showReaderDialog;
+import 'package:equran/widgets/reader_sheets.dart' show ReaderNoteDialog;
+import 'package:equran/widgets/redesign/design_icon.dart';
 import 'package:equran/theme/equran_text_styles.dart' show EquranTextStyles;
 import 'package:equran/utils/app_radii.dart';
 import 'package:equran/utils/quran_display.dart';
+import 'package:equran/widgets/number_badge.dart';
+import 'package:equran/word_by_word/word_alignment.dart';
+import 'package:equran/word_by_word/word_by_word_pack.dart';
+import 'package:equran/word_by_word/word_by_word_text.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
 
@@ -30,6 +38,13 @@ class ReadQuranCard extends StatelessWidget {
   final String transliteration;
   final String verse;
   final String? basmala;
+
+  /// Word-by-word glosses for this ayah, with the pack provenance and the
+  /// active Quran script. When all are set and the glosses line up with the
+  /// rendered words, the ayah text becomes tappable; otherwise it is plain.
+  final List<WordGloss>? wordGlosses;
+  final WordByWordPackMeta? wordByWordMeta;
+  final String? quranScript;
 
   final double fontSize;
   final double fontSizeTranslation;
@@ -62,6 +77,9 @@ class ReadQuranCard extends StatelessWidget {
     required this.translation,
     this.transliteration = '',
     this.basmala,
+    this.wordGlosses,
+    this.wordByWordMeta,
+    this.quranScript,
     required this.verse,
     this.showActions = true,
     this.showTransliteration = false,
@@ -81,6 +99,51 @@ class ReadQuranCard extends StatelessWidget {
     this.isDownloaded = false,
   });
 
+  /// Brackets a sheet with the same overlay handling as the card's dialogs, so
+  /// the reader stops animating live progress while it is open.
+  Future<void> _withVisualOverlay(Future<void> Function() open) async {
+    AndroidAudioDisplayMode.notifyUserActivity();
+    onVisualOverlayChanged?.call(true);
+    unawaited(AndroidAudioDisplayMode.setLowFpsSuppressed(true));
+    try {
+      await open();
+    } finally {
+      onVisualOverlayChanged?.call(false);
+      unawaited(AndroidAudioDisplayMode.setLowFpsSuppressed(false));
+    }
+  }
+
+  /// Tappable words when glosses are available and line up; plain text
+  /// otherwise (and always for share images).
+  Widget _buildVerseText(TextStyle style) {
+    final List<WordGloss>? glosses = wordGlosses;
+    final WordByWordPackMeta? meta = wordByWordMeta;
+    final String? script = quranScript;
+    if (!shareImageMode && glosses != null && meta != null && script != null) {
+      final List<WordRange>? ranges = alignWordRanges(
+        text: verse,
+        script: script,
+        wordCount: glosses.length,
+      );
+      if (ranges != null) {
+        return WordByWordText(
+          text: verse,
+          ranges: ranges,
+          glosses: glosses,
+          style: style,
+          meta: meta,
+          wrapSheet: _withVisualOverlay,
+        );
+      }
+    }
+    return Text(
+      verse,
+      textDirection: TextDirection.rtl,
+      textAlign: TextAlign.justify,
+      style: style,
+    );
+  }
+
   Future<bool> _showInputPrompt(BuildContext context) async {
     final TextEditingController textController = TextEditingController();
     bool saved = false;
@@ -89,45 +152,30 @@ class ReadQuranCard extends StatelessWidget {
     onVisualOverlayChanged?.call(true);
     unawaited(AndroidAudioDisplayMode.setLowFpsSuppressed(true));
     try {
-      await showDialog<void>(
+      await showReaderDialog<void>(
         context: context,
         builder: (context) {
-          return AlertDialog(
-            title: Text(localizations.savedAyah),
-            content: TextField(
-              maxLength: _favouriteNoteMaxLength,
-              maxLines: null,
-              controller: textController,
-              decoration: InputDecoration(hintText: localizations.optionalNote),
-            ),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text(localizations.cancel),
-              ),
-              FilledButton(
-                onPressed: () async {
-                  final NavigatorState navigator = Navigator.of(context);
-                  try {
-                    await const QuranBookmarkService().saveFavourite(
-                      currentChapter,
-                      currentVerse,
-                      note: textController.text,
-                    );
-                    saved = true;
-                  } catch (_) {
-                    saved = false;
-                  }
-                  navigator.pop();
-                },
-                style: FilledButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                child: Text(localizations.save),
-              ),
-            ],
+          return ReaderNoteDialog(
+            controller: textController,
+            title: localizations.savedAyah,
+            hint: localizations.optionalNote,
+            maxLength: _favouriteNoteMaxLength,
+            cancelLabel: localizations.cancel,
+            saveLabel: localizations.save,
+            onSave: () async {
+              final NavigatorState navigator = Navigator.of(context);
+              try {
+                await const QuranBookmarkService().saveFavourite(
+                  currentChapter,
+                  currentVerse,
+                  note: textController.text,
+                );
+                saved = true;
+              } catch (_) {
+                saved = false;
+              }
+              navigator.pop();
+            },
           );
         },
       );
@@ -158,6 +206,19 @@ class ReadQuranCard extends StatelessWidget {
     final String ayahLabel = shareImageMode
         ? localizations.ayahNumber(currentVerse)
         : localizations.ayahOfTotal(currentVerse, totalVerses);
+
+    if (!shareImageMode) {
+      return Row(
+        children: <Widget>[
+          SurahNumberBadge(number: currentVerse, size: 36, active: true),
+          const Spacer(),
+          if (showActions) ...<Widget>[
+            const SizedBox(width: 12),
+            _buildHeaderActions(context),
+          ],
+        ],
+      );
+    }
 
     return Row(
       children: <Widget>[
@@ -198,6 +259,11 @@ class ReadQuranCard extends StatelessWidget {
     );
   }
 
+  /// Minimum touch target of a header action. The visible button stays 34 px
+  /// (38 px on wide screens); the layout box is this size so the whole box
+  /// takes hits.
+  static const double _actionTarget = 44;
+
   Widget _buildActionButton({
     required BuildContext context,
     required Widget child,
@@ -205,24 +271,35 @@ class ReadQuranCard extends StatelessWidget {
     required VoidCallback? onPressed,
     bool isPrimary = false,
   }) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final bool wideActions = MediaQuery.sizeOf(context).width >= 700;
     final double actionSize = wideActions ? 38 : 34;
     final BorderRadius radius = BorderRadius.circular(10);
 
-    return Material(
-      color: isPrimary ? colorScheme.primary.withAlpha(10) : Colors.transparent,
-      borderRadius: radius,
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: radius,
-        child: Tooltip(
-          message: tooltip,
-          child: SizedBox(
-            height: actionSize,
-            width: actionSize,
-            child: Center(child: child),
+    return GestureDetector(
+      // Catches taps in the ring around the visible button; the button's own
+      // InkWell wins inside it.
+      behavior: HitTestBehavior.translucent,
+      excludeFromSemantics: true,
+      onTap: onPressed,
+      child: SizedBox.square(
+        dimension: _actionTarget,
+        child: Center(
+          child: Material(
+            color: isPrimary ? context.equranTokens.emWash : Colors.transparent,
+            borderRadius: radius,
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: onPressed,
+              borderRadius: radius,
+              child: Tooltip(
+                message: tooltip,
+                child: SizedBox(
+                  height: actionSize,
+                  width: actionSize,
+                  child: Center(child: child),
+                ),
+              ),
+            ),
           ),
         ),
       ),
@@ -233,14 +310,15 @@ class ReadQuranCard extends StatelessWidget {
     return ValueListenableBuilder(
       valueListenable: FavouritesDB().listener,
       builder: (context, favouritesBox, child) {
-        final ColorScheme colorScheme = Theme.of(context).colorScheme;
         final AppLocalizations localizations = AppLocalizations.of(context)!;
         final bool isFavourite = const QuranBookmarkService().isFavourite(
           currentChapter,
           currentVerse,
         );
         final bool wideActions = MediaQuery.sizeOf(context).width >= 700;
-        final double actionGap = wideActions ? 10 : 6;
+        // The targets are 44 px wide, so the gap shrinks by the same amount
+        // the buttons' boxes grew: wide screens keep their 48 px pitch.
+        final double actionGap = wideActions ? 4 : 0;
         final double playIconSize = wideActions ? 23 : 21;
         final double actionIconSize = wideActions ? 20 : 18;
 
@@ -255,7 +333,7 @@ class ReadQuranCard extends StatelessWidget {
               child: Icon(
                 isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
                 size: playIconSize,
-                color: colorScheme.primary,
+                color: context.equranTokens.emText,
               ),
             ),
             if (onTafsir != null) ...<Widget>[
@@ -264,10 +342,10 @@ class ReadQuranCard extends StatelessWidget {
                 context: context,
                 tooltip: localizations.tafsir,
                 onPressed: onTafsir,
-                child: Icon(
-                  Icons.chrome_reader_mode_rounded,
-                  size: actionIconSize,
-                  color: colorScheme.onSurface.withAlpha(168),
+                child: DesignIcon(
+                  'quran',
+                  size: actionIconSize + 2,
+                  color: context.equranTokens.text2,
                 ),
               ),
             ],
@@ -283,36 +361,40 @@ class ReadQuranCard extends StatelessWidget {
     BuildContext context, {
     required bool isFavourite,
   }) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final AppLocalizations localizations = AppLocalizations.of(context)!;
     final bool wideActions = MediaQuery.sizeOf(context).width >= 700;
-    final double buttonSize = wideActions ? 38 : 34;
     final double iconSize = wideActions ? 22 : 20;
 
     return Tooltip(
       message: isFavourite ? localizations.remove : localizations.favourites,
       child: SizedBox(
-        height: buttonSize,
-        width: buttonSize,
+        height: _actionTarget,
+        width: _actionTarget,
         child: Center(
           child: LikeButton(
             size: iconSize,
+            // LikeButton's own tap area is its icon plus this padding: fill
+            // the 44 px target.
+            padding: EdgeInsets.all((_actionTarget - iconSize) / 2),
+            // The default 3 px count gap would push the box past 44 px.
+            likeCountPadding: EdgeInsets.zero,
             isLiked: isFavourite,
             circleColor: CircleColor(
-              start: colorScheme.primary.withAlpha(180),
-              end: colorScheme.primary,
+              start: context.equranTokens.filled.withAlpha(180),
+              end: context.equranTokens.filled,
             ),
             bubblesColor: BubblesColor(
-              dotPrimaryColor: colorScheme.primary,
-              dotSecondaryColor: colorScheme.secondary,
+              dotPrimaryColor: context.equranTokens.filled,
+              dotSecondaryColor: context.equranTokens.gold,
             ),
             likeBuilder: (bool liked) {
-              return Icon(
-                liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+              return DesignIcon(
+                'heart',
+                filled: liked,
                 color: liked
-                    ? colorScheme.primary
-                    : colorScheme.onSurface.withAlpha(168),
-                size: iconSize,
+                    ? context.equranTokens.emText
+                    : context.equranTokens.text2,
+                size: iconSize + 1,
               );
             },
             onTap: (bool liked) async {
@@ -325,7 +407,7 @@ class ReadQuranCard extends StatelessWidget {
                   );
                   return false;
                 }
-                return _showInputPrompt(context);
+                return await _showInputPrompt(context);
               } catch (_) {
                 return liked;
               }
@@ -446,11 +528,8 @@ class ReadQuranCard extends StatelessWidget {
               if (hasVerse)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 6),
-                  child: Text(
-                    verse,
-                    textDirection: TextDirection.rtl,
-                    textAlign: TextAlign.justify,
-                    style: TextStyle(
+                  child: _buildVerseText(
+                    TextStyle(
                       fontFamily: EquranTextStyles.fontFamilyForVerse(
                         currentChapter,
                         currentVerse,
@@ -496,11 +575,17 @@ class ReadQuranCard extends StatelessWidget {
                   child: Text(
                     translation,
                     textAlign: TextAlign.justify,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontSize: fontSizeTranslation,
-                      color: colorScheme.onSurfaceVariant,
-                      height: 1.55,
-                    ),
+                    style: shareImageMode
+                        ? theme.textTheme.bodyLarge?.copyWith(
+                            fontSize: fontSizeTranslation,
+                            color: colorScheme.onSurfaceVariant,
+                            height: 1.55,
+                          )
+                        : EquranTextStyles.displayTranslation(
+                            context,
+                            size: fontSizeTranslation,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
                   ),
                 ),
               ],

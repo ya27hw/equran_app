@@ -1,12 +1,24 @@
 import 'dart:math' as math;
 
+import 'package:equran/hifz/hifz_unit_labels.dart';
+import 'package:equran/theme/equran_colors.dart';
+import 'package:equran/theme/equran_spacing.dart';
+import 'package:equran/theme/equran_tokens.dart';
+import 'package:equran/widgets/reader_sheet_chrome.dart';
+import 'package:equran/widgets/redesign/design_icon.dart';
+import 'package:equran/widgets/redesign/display_numeral.dart';
+import 'package:equran/widgets/redesign/hairline_card.dart';
+import 'package:equran/widgets/redesign/hero_panel.dart';
+import 'package:equran/widgets/redesign/hero_parts.dart';
+import 'package:equran/widgets/redesign/icon_button44.dart';
+import 'package:equran/widgets/redesign/page_typography.dart';
+import 'package:equran/widgets/redesign/pill_tag.dart';
+import 'package:equran/widgets/redesign/redesign_subpage.dart';
+import 'package:equran/widgets/redesign/segmented_control.dart';
+import 'package:equran/widgets/settings_sheet_chrome.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:quran/quran.dart' as quran;
-import 'package:equran/theme/equran_colors.dart';
-import 'package:equran/utils/app_radii.dart';
-import 'package:equran/home/quran_stats_page.dart'
-    show IslamicPatternPainter, HeroCornerOrnamentsPainter;
 import 'package:equran/l10n/app_localizations.dart';
 import 'package:equran/backend/hifz_db.dart';
 import '../hifz.dart';
@@ -45,9 +57,8 @@ class _HifzHomePageState extends State<HifzHomePage> {
       HifzDB.getManzilAyahs(u.id).isNotEmpty;
 
   void _showSettingsSheet() {
-    showModalBottomSheet<void>(
+    showReaderSheet<void>(
       context: context,
-      backgroundColor: Colors.transparent,
       builder: (context) => const _HifzSettingsSheet(),
     );
   }
@@ -80,46 +91,33 @@ class _HifzHomePageState extends State<HifzHomePage> {
   }
 
   Widget _buildSectionLabel(String label) {
-    final theme = Theme.of(context);
-    final colors = context.equranColors;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Text(
-        label.toUpperCase(),
-        style: theme.textTheme.labelSmall?.copyWith(
-          color: colors.textMuted,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 1.2,
-        ),
-      ),
+      padding: const EdgeInsetsDirectional.only(start: 4, bottom: 10),
+      child: RedesignEyebrow(label),
     );
   }
 
-  Widget _buildSelectedPreview(EquranColors colors, ThemeData theme) {
+  Widget _buildSelectedPreview() {
+    final EquranTokens tokens = context.equranTokens;
+    final EquranColors colors = context.equranColors;
     final n = _selectedNumber!;
     final isAlreadyActive = HifzDB.getUnit(_unitId(n)) != null;
     final l10n = AppLocalizations.of(context)!;
 
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: isAlreadyActive
-            ? colors.goldSoft
-            : colors.mint.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(AppRadii.large),
-        border: Border.all(
-          color: isAlreadyActive
-              ? colors.accentGold.withValues(alpha: 0.4)
-              : colors.primary.withValues(alpha: 0.3),
-          width: 1,
-        ),
+        color: isAlreadyActive ? tokens.goldWash : tokens.emWash,
+        borderRadius: BorderRadius.circular(EquranRadii.large),
+        border: Border.all(color: tokens.hair),
       ),
       child: Row(
         children: [
-          Icon(
-            isAlreadyActive ? Icons.info_outline : Icons.check_circle_outline,
-            color: isAlreadyActive ? colors.warning : colors.primary,
+          DesignIcon(
+            isAlreadyActive ? 'info' : 'check',
+            color: isAlreadyActive ? tokens.goldText : tokens.emText,
             size: 18,
+            strokeWidth: 1.9,
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -130,9 +128,11 @@ class _HifzHomePageState extends State<HifzHomePage> {
                   _selectedType == HifzUnitType.surah
                       ? HifzSurahData.name(n)
                       : l10n.juzNumber(n),
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    color: colors.textPrimary,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontVariations: const [FontVariation('opsz', 15)],
                     fontWeight: FontWeight.w600,
+                    color: colors.textPrimary,
                   ),
                 ),
                 Text(
@@ -149,9 +149,7 @@ class _HifzHomePageState extends State<HifzHomePage> {
                                 (sum, range) => sum + (range[1] - range[0] + 1),
                               ),
                         ),
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colors.textSecondary,
-                  ),
+                  style: TextStyle(fontSize: 13, color: tokens.text2),
                 ),
               ],
             ),
@@ -161,34 +159,116 @@ class _HifzHomePageState extends State<HifzHomePage> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = context.equranColors;
-    final l10n = AppLocalizations.of(context)!;
-
-    return Scaffold(
-      backgroundColor: colors.background,
-      appBar: AppBar(
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        backgroundColor: Colors.transparent,
-        title: Text(
-          l10n.hifzTitle,
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: colors.textPrimary,
-            fontWeight: FontWeight.w600,
+  /// The summary card: memorised ayahs, active units and progress.
+  Widget _buildHero({
+    required AppLocalizations l10n,
+    required int masteredCount,
+    required int activeUnitsCount,
+    required int inProgressCount,
+    required double progressFraction,
+  }) {
+    final EquranTokens tokens = context.equranTokens;
+    final Color gold = tokens.featGold;
+    Widget stat(String value, String label) => Expanded(
+      child: Column(
+        children: [
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: DisplayNumeral(value, size: 34, height: 1.1),
           ),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            color: colors.textSecondary,
-            onPressed: _showSettingsSheet,
+          const SizedBox(height: 4),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 12.5,
+              height: 1.3,
+              color: tokens.featText2,
+            ),
           ),
         ],
       ),
-      body: SafeArea(
+    );
+
+    return HeroPanel(
+      padding: const EdgeInsetsDirectional.fromSTEB(20, 20, 20, 22),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              DesignIcon('sparkle', size: 16, color: gold),
+              const SizedBox(width: 8),
+              Expanded(
+                child: RedesignEyebrow(
+                  l10n.hifzJourneyTitle,
+                  color: tokens.featText2,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: HeroPill(
+              l10n.hifzNewTodayLabel(
+                HifzLimits.todayNewCount,
+                HifzLimits.maxNewPerDay,
+              ),
+            ),
+          ),
+          const SizedBox(height: 18),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              stat('$masteredCount', l10n.hifzMemorized),
+              stat('$activeUnitsCount', l10n.hifzActiveUnits),
+              stat('$inProgressCount', l10n.hifzInProgress),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  l10n.hifzAyahsMemorized(masteredCount),
+                  style: TextStyle(fontSize: 13, color: tokens.featText2),
+                ),
+              ),
+              Text(
+                '${(progressFraction * 100).toStringAsFixed(1)}%',
+                textDirection: TextDirection.ltr,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: tokens.onFeat,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          HeroProgressBar(value: progressFraction, color: gold),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.equranColors;
+    final tokens = context.equranTokens;
+    final l10n = AppLocalizations.of(context)!;
+
+    return RedesignSubpage(
+      title: l10n.hifzTitle,
+      actions: [
+        IconButton44(
+          designIcon: 'gear',
+          tooltip: l10n.hifzSettingsSheetTitle,
+          onPressed: _showSettingsSheet,
+        ),
+      ],
+      child: SafeArea(
         child: ValueListenableBuilder<Box<HifzEntry>>(
           valueListenable: HifzDB.entriesListenable,
           builder: (context, box, _) {
@@ -227,217 +307,39 @@ class _HifzHomePageState extends State<HifzHomePage> {
               physics: const BouncingScrollPhysics(),
               slivers: [
                 SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.fromLTRB(
+                    EquranSpacing.pagePadding,
+                    4,
+                    EquranSpacing.pagePadding,
+                    0,
+                  ),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
                       // SECTION A - HERO SUMMARY CARD
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              colors.primaryGradientStart,
-                              colors.primaryGradientEnd,
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(AppRadii.xl),
-                        ),
-                        clipBehavior: Clip.hardEdge,
-                        child: Stack(
-                          children: [
-                            Positioned(
-                              top: -20,
-                              right: -20,
-                              width: 160,
-                              height: 160,
-                              child: CustomPaint(
-                                painter: IslamicPatternPainter(
-                                  color: colors.onPrimary,
-                                  opacity: 0.06,
-                                ),
-                              ),
-                            ),
-                            Positioned.fill(
-                              child: CustomPaint(
-                                painter: HeroCornerOrnamentsPainter(
-                                  color: colors.accentGold.withAlpha(128),
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        l10n.hifzJourneyTitle,
-                                        style: theme.textTheme.titleLarge
-                                            ?.copyWith(
-                                              color: colors.onPrimary,
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                      ),
-                                      const Spacer(),
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: colors.mint.withAlpha(38),
-                                          borderRadius: BorderRadius.circular(
-                                            AppRadii.pill,
-                                          ),
-                                        ),
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 12,
-                                          vertical: 6,
-                                        ),
-                                        child: Text(
-                                          l10n.hifzNewTodayLabel(
-                                            HifzLimits.todayNewCount,
-                                            HifzLimits.maxNewPerDay,
-                                          ),
-                                          style: theme.textTheme.labelMedium
-                                              ?.copyWith(
-                                                color: colors.onPrimaryMuted,
-                                              ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Column(
-                                        children: [
-                                          Text(
-                                            '$masteredCount',
-                                            style: theme
-                                                .textTheme
-                                                .headlineMedium
-                                                ?.copyWith(
-                                                  color: colors.onPrimary,
-                                                  fontWeight: FontWeight.w700,
-                                                ),
-                                          ),
-                                          Text(
-                                            l10n.hifzMemorized,
-                                            style: theme.textTheme.labelSmall
-                                                ?.copyWith(
-                                                  color: colors.onPrimaryMuted,
-                                                ),
-                                          ),
-                                        ],
-                                      ),
-                                      Column(
-                                        children: [
-                                          Text(
-                                            '$activeUnitsCount',
-                                            style: theme
-                                                .textTheme
-                                                .headlineMedium
-                                                ?.copyWith(
-                                                  color: colors.onPrimary,
-                                                  fontWeight: FontWeight.w700,
-                                                ),
-                                          ),
-                                          Text(
-                                            l10n.hifzActiveUnits,
-                                            style: theme.textTheme.labelSmall
-                                                ?.copyWith(
-                                                  color: colors.onPrimaryMuted,
-                                                ),
-                                          ),
-                                        ],
-                                      ),
-                                      Column(
-                                        children: [
-                                          Text(
-                                            '$inProgressCount',
-                                            style: theme
-                                                .textTheme
-                                                .headlineMedium
-                                                ?.copyWith(
-                                                  color: colors.onPrimary,
-                                                  fontWeight: FontWeight.w700,
-                                                ),
-                                          ),
-                                          Text(
-                                            l10n.hifzInProgress,
-                                            style: theme.textTheme.labelSmall
-                                                ?.copyWith(
-                                                  color: colors.onPrimaryMuted,
-                                                ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        l10n.hifzAyahsMemorized(masteredCount),
-                                        style: theme.textTheme.labelMedium
-                                            ?.copyWith(
-                                              color: colors.onPrimaryMuted,
-                                            ),
-                                      ),
-                                      const Spacer(),
-                                      Text(
-                                        '${(progressFraction * 100).toStringAsFixed(1)}%',
-                                        style: theme.textTheme.labelMedium
-                                            ?.copyWith(
-                                              color: colors.accentGold,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 8),
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(
-                                      AppRadii.pill,
-                                    ),
-                                    child: LinearProgressIndicator(
-                                      value: progressFraction,
-                                      backgroundColor: colors.onPrimary
-                                          .withAlpha(51),
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        colors.onPrimary,
-                                      ),
-                                      minHeight: 6,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                      _buildHero(
+                        l10n: l10n,
+                        masteredCount: masteredCount,
+                        activeUnitsCount: activeUnitsCount,
+                        inProgressCount: inProgressCount,
+                        progressFraction: progressFraction,
                       ),
                       const SizedBox(height: 24),
 
                       // SECTION B - REMINDER CARD
                       if (activeUnits.any(_hasContent)) ...[
-                        Container(
-                          decoration: BoxDecoration(
-                            color: colors.surface,
-                            borderRadius: BorderRadius.circular(AppRadii.large),
-                            border: Border.all(
-                              color: colors.primary.withAlpha(51),
-                            ),
+                        HairlineCard(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
+                            16,
+                            14,
+                            14,
+                            14,
                           ),
-                          padding: const EdgeInsets.all(16),
                           child: Row(
                             children: [
-                              Icon(
-                                Icons.local_fire_department_rounded,
-                                color: colors.primary,
-                                size: 22,
+                              const ReaderIconWell(
+                                icon: DesignIcon('flame', strokeWidth: 1.8),
                               ),
-                              const SizedBox(width: 12),
+                              const SizedBox(width: 14),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -446,37 +348,44 @@ class _HifzHomePageState extends State<HifzHomePage> {
                                       l10n.hifzReminderTitle(
                                         HifzFrontierService.totalDueCount(),
                                       ),
-                                      style: theme.textTheme.titleSmall
-                                          ?.copyWith(
-                                            color: colors.textPrimary,
-                                            fontWeight: FontWeight.w600,
-                                          ),
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontVariations: const [
+                                          FontVariation('opsz', 15),
+                                        ],
+                                        fontWeight: FontWeight.w600,
+                                        color: colors.textPrimary,
+                                      ),
                                     ),
+                                    const SizedBox(height: 2),
                                     Text(
                                       l10n.hifzStartYourSession,
-                                      style: theme.textTheme.bodySmall
-                                          ?.copyWith(
-                                            color: colors.textSecondary,
-                                          ),
+                                      style: TextStyle(
+                                        fontSize: 12.5,
+                                        height: 1.3,
+                                        color: tokens.muted,
+                                      ),
                                     ),
                                   ],
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: colors.primary,
-                                  foregroundColor: colors.onPrimary,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      AppRadii.pill,
+                              FilledButton(
+                                style: readerFilledButtonStyle(context)
+                                    .copyWith(
+                                      minimumSize:
+                                          const WidgetStatePropertyAll<Size>(
+                                            Size(0, 44),
+                                          ),
+                                      padding:
+                                          const WidgetStatePropertyAll<
+                                            EdgeInsetsGeometry
+                                          >(
+                                            EdgeInsets.symmetric(
+                                              horizontal: 18,
+                                            ),
+                                          ),
                                     ),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 18,
-                                    vertical: 10,
-                                  ),
-                                ),
                                 onPressed: () {
                                   final unitWithDue = activeUnits.firstWhere(
                                     (u) => _hasContent(u),
@@ -490,45 +399,38 @@ class _HifzHomePageState extends State<HifzHomePage> {
                                     ),
                                   );
                                 },
+                                child: Text(l10n.hifzStart),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 28),
+                      ] else ...[
+                        HairlineCard(
+                          padding: const EdgeInsets.all(18),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              DesignIcon(
+                                'check',
+                                color: tokens.emText,
+                                size: 18,
+                                strokeWidth: 1.9,
+                              ),
+                              const SizedBox(width: 12),
+                              Flexible(
                                 child: Text(
-                                  l10n.hifzStart,
-                                  style: theme.textTheme.titleSmall?.copyWith(
-                                    color: colors.onPrimary,
-                                    fontWeight: FontWeight.w600,
+                                  l10n.hifzAllCaughtUp,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: tokens.text2,
                                   ),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 24),
-                      ] else ...[
-                        Container(
-                          decoration: BoxDecoration(
-                            color: colors.surface,
-                            borderRadius: BorderRadius.circular(AppRadii.large),
-                            border: Border.all(color: colors.border),
-                          ),
-                          padding: const EdgeInsets.all(20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.check_circle_outline,
-                                color: colors.primary,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 12),
-                              Text(
-                                l10n.hifzAllCaughtUp,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: colors.textSecondary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 28),
                       ],
 
                       // SECTION C - ACTIVE UNITS
@@ -539,31 +441,24 @@ class _HifzHomePageState extends State<HifzHomePage> {
                           final activeUnitsList = HifzDB.getActiveUnits();
 
                           if (activeUnitsList.isEmpty) {
-                            return Container(
-                              decoration: BoxDecoration(
-                                color: colors.surface,
-                                border: Border.all(
-                                  color: colors.border,
-                                  width: 1,
-                                ),
-                                borderRadius: BorderRadius.circular(
-                                  AppRadii.large,
-                                ),
-                              ),
-                              padding: const EdgeInsets.all(20),
+                            return HairlineCard(
+                              padding: const EdgeInsets.all(18),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(
-                                    Icons.menu_book_rounded,
-                                    color: colors.primary,
-                                    size: 20,
+                                  DesignIcon(
+                                    'book',
+                                    color: tokens.emText,
+                                    size: 18,
                                   ),
                                   const SizedBox(width: 12),
-                                  Text(
-                                    l10n.hifzNoActiveUnits,
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: colors.textSecondary,
+                                  Flexible(
+                                    child: Text(
+                                      l10n.hifzNoActiveUnits,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: tokens.text2,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -585,103 +480,31 @@ class _HifzHomePageState extends State<HifzHomePage> {
                           );
                         },
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 28),
 
                       // SECTION D - ADD A UNIT
                       _buildSectionLabel(l10n.hifzAddUnitSection),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: colors.surface,
-                          border: Border.all(color: colors.border, width: 1),
-                          borderRadius: BorderRadius.circular(AppRadii.large),
-                        ),
+                      HairlineCard(
                         padding: const EdgeInsets.all(16),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             // UNIT TYPE TOGGLE
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: GestureDetector(
-                                    onTap: () => setState(() {
-                                      _selectedType = HifzUnitType.surah;
-                                      _selectedNumber = null;
-                                      _searchController.clear();
-                                    }),
-                                    child: Container(
-                                      height: 40,
-                                      decoration: BoxDecoration(
-                                        color:
-                                            _selectedType == HifzUnitType.surah
-                                            ? colors.primary
-                                            : colors.surfaceAlt,
-                                        borderRadius: const BorderRadius.only(
-                                          topLeft: Radius.circular(
-                                            AppRadii.pill,
-                                          ),
-                                          bottomLeft: Radius.circular(
-                                            AppRadii.pill,
-                                          ),
-                                        ),
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          l10n.hifzUnitTypeSurah,
-                                          style: theme.textTheme.labelLarge
-                                              ?.copyWith(
-                                                color:
-                                                    _selectedType ==
-                                                        HifzUnitType.surah
-                                                    ? colors.onPrimary
-                                                    : colors.textSecondary,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: GestureDetector(
-                                    onTap: () => setState(() {
-                                      _selectedType = HifzUnitType.juz;
-                                      _selectedNumber = null;
-                                      _searchController.clear();
-                                    }),
-                                    child: Container(
-                                      height: 40,
-                                      decoration: BoxDecoration(
-                                        color: _selectedType == HifzUnitType.juz
-                                            ? colors.primary
-                                            : colors.surfaceAlt,
-                                        borderRadius: const BorderRadius.only(
-                                          topRight: Radius.circular(
-                                            AppRadii.pill,
-                                          ),
-                                          bottomRight: Radius.circular(
-                                            AppRadii.pill,
-                                          ),
-                                        ),
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          l10n.hifzUnitTypeJuz,
-                                          style: theme.textTheme.labelLarge
-                                              ?.copyWith(
-                                                color:
-                                                    _selectedType ==
-                                                        HifzUnitType.juz
-                                                    ? colors.onPrimary
-                                                    : colors.textSecondary,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                            RedesignSegmentedControl(
+                              labels: [
+                                l10n.hifzUnitTypeSurah,
+                                l10n.hifzUnitTypeJuz,
                               ],
+                              selectedIndex: _selectedType == HifzUnitType.surah
+                                  ? 0
+                                  : 1,
+                              onChanged: (index) => setState(() {
+                                _selectedType = index == 0
+                                    ? HifzUnitType.surah
+                                    : HifzUnitType.juz;
+                                _selectedNumber = null;
+                                _searchController.clear();
+                              }),
                             ),
                             const SizedBox(height: 12),
                             // SEARCHABLE DROPDOWN
@@ -694,19 +517,36 @@ class _HifzHomePageState extends State<HifzHomePage> {
                               hintText: _selectedType == HifzUnitType.surah
                                   ? l10n.hifzSearchSurahs
                                   : l10n.hifzSearchJuz,
-                              textStyle: theme.textTheme.bodyMedium?.copyWith(
+                              textStyle: TextStyle(
+                                fontSize: 15,
+                                fontVariations: const [
+                                  FontVariation('opsz', 15),
+                                ],
                                 color: colors.textPrimary,
+                              ),
+                              trailingIcon: DesignIcon(
+                                'chevd',
+                                size: 18,
+                                color: tokens.muted,
+                              ),
+                              selectedTrailingIcon: DesignIcon(
+                                'chevd',
+                                size: 18,
+                                color: tokens.emText,
                               ),
                               menuStyle: MenuStyle(
                                 backgroundColor: WidgetStatePropertyAll(
                                   colors.surface,
                                 ),
+                                surfaceTintColor: const WidgetStatePropertyAll(
+                                  Colors.transparent,
+                                ),
                                 shape: WidgetStatePropertyAll(
                                   RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(
-                                      AppRadii.large,
+                                      EquranRadii.large,
                                     ),
-                                    side: BorderSide(color: colors.border),
+                                    side: BorderSide(color: tokens.hair2),
                                   ),
                                 ),
                                 maximumSize: const WidgetStatePropertyAll(
@@ -715,16 +555,29 @@ class _HifzHomePageState extends State<HifzHomePage> {
                               ),
                               inputDecorationTheme: InputDecorationTheme(
                                 filled: true,
-                                fillColor: colors.surfaceAlt,
+                                fillColor: colors.surface,
+                                hintStyle: TextStyle(
+                                  color: tokens.muted,
+                                  fontSize: 15,
+                                  fontVariations: const [
+                                    FontVariation('opsz', 15),
+                                  ],
+                                ),
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(
-                                    AppRadii.pill,
-                                  ),
-                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide(color: tokens.hair2),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide(color: tokens.hair2),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide(color: tokens.emText),
                                 ),
                                 contentPadding: const EdgeInsets.symmetric(
                                   horizontal: 16,
-                                  vertical: 12,
+                                  vertical: 14,
                                 ),
                               ),
                               onSelected: (val) =>
@@ -738,10 +591,11 @@ class _HifzHomePageState extends State<HifzHomePage> {
                                         value: n,
                                         label: '$n. ${HifzSurahData.name(n)}',
                                         trailingIcon: active
-                                            ? Icon(
-                                                Icons.check_circle,
-                                                color: colors.primary,
+                                            ? DesignIcon(
+                                                'check',
+                                                color: tokens.emText,
                                                 size: 16,
+                                                strokeWidth: 2,
                                               )
                                             : null,
                                       );
@@ -753,10 +607,11 @@ class _HifzHomePageState extends State<HifzHomePage> {
                                         value: n,
                                         label: l10n.juzNumber(n),
                                         trailingIcon: active
-                                            ? Icon(
-                                                Icons.check_circle,
-                                                color: colors.primary,
+                                            ? DesignIcon(
+                                                'check',
+                                                color: tokens.emText,
                                                 size: 16,
+                                                strokeWidth: 2,
                                               )
                                             : null,
                                       );
@@ -765,79 +620,70 @@ class _HifzHomePageState extends State<HifzHomePage> {
                             const SizedBox(height: 12),
                             // SELECTED UNIT PREVIEW
                             AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 200),
+                              duration: MediaQuery.disableAnimationsOf(context)
+                                  ? Duration.zero
+                                  : const Duration(milliseconds: 200),
                               child: _selectedNumber == null
                                   ? const SizedBox.shrink()
-                                  : _buildSelectedPreview(colors, theme),
+                                  : _buildSelectedPreview(),
                             ),
                             const SizedBox(height: 16),
                             // START BUTTON
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: colors.primary,
-                                  foregroundColor: colors.onPrimary,
-                                  shape: const StadiumBorder(),
-                                  minimumSize: const Size.fromHeight(52),
+                            FilledButton(
+                              style: readerFilledButtonStyle(context).copyWith(
+                                minimumSize: const WidgetStatePropertyAll<Size>(
+                                  Size.fromHeight(52),
                                 ),
-                                onPressed: _selectedNumber == null
-                                    ? null
-                                    : _startUnit,
-                                child: Text(
-                                  _selectedNumber == null
-                                      ? l10n.hifzSelectAbove
-                                      : _selectedType == HifzUnitType.surah
-                                      ? l10n.hifzStartMemorizingSurah(
-                                          HifzSurahData.name(_selectedNumber!),
-                                        )
-                                      : l10n.hifzStartMemorizingJuz(
-                                          _selectedNumber!,
-                                        ),
-                                  style: theme.textTheme.titleSmall?.copyWith(
-                                    color: colors.onPrimary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
+                              ),
+                              onPressed: _selectedNumber == null
+                                  ? null
+                                  : _startUnit,
+                              child: Text(
+                                _selectedNumber == null
+                                    ? l10n.hifzSelectAbove
+                                    : _selectedType == HifzUnitType.surah
+                                    ? l10n.hifzStartMemorizingSurah(
+                                        HifzSurahData.name(_selectedNumber!),
+                                      )
+                                    : l10n.hifzStartMemorizingJuz(
+                                        _selectedNumber!,
+                                      ),
+                                textAlign: TextAlign.center,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 28),
 
                       // SECTION E - SURAH PROGRESS GRID
                       _buildSectionLabel(l10n.hifzSurahProgress),
-                      ClipRect(
-                        child: AnimatedSize(
-                          duration: const Duration(milliseconds: 350),
-                          curve: Curves.easeInOutCubic,
-                          child: SizedBox(
-                            height: _gridExpanded ? null : 160.0,
-                            child: Stack(
-                              children: [
-                                GridView.count(
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  crossAxisCount: 10,
-                                  childAspectRatio: 1.0,
-                                  mainAxisSpacing: 4,
-                                  crossAxisSpacing: 4,
-                                  children: List.generate(114, (index) {
-                                    final surah = index + 1;
-                                    final unit = HifzDB.getUnit('surah_$surah');
-                                    final total = HifzSurahData.ayahCount(
-                                      surah,
-                                    );
-
-                                    Color cellBg;
-                                    Color cellText;
-                                    bool hasActiveDot = false;
-
-                                    if (unit == null) {
-                                      cellBg = colors.surfaceAlt;
-                                      cellText = colors.textMuted;
-                                    } else {
+                      HairlineCard(
+                        padding: const EdgeInsets.all(12),
+                        child: ClipRect(
+                          child: AnimatedSize(
+                            duration: const Duration(milliseconds: 350),
+                            curve: Curves.easeInOutCubic,
+                            child: SizedBox(
+                              height: _gridExpanded ? null : 160.0,
+                              child: Stack(
+                                children: [
+                                  GridView.count(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    crossAxisCount: 10,
+                                    childAspectRatio: 1.0,
+                                    mainAxisSpacing: 4,
+                                    crossAxisSpacing: 4,
+                                    children: List.generate(114, (index) {
+                                      final surah = index + 1;
+                                      final unit = HifzDB.getUnit(
+                                        'surah_$surah',
+                                      );
+                                      final total = HifzSurahData.ayahCount(
+                                        surah,
+                                      );
                                       final masteredCellCount =
                                           entriesBySurah[surah]
                                               ?.where(
@@ -846,178 +692,171 @@ class _HifzHomePageState extends State<HifzHomePage> {
                                               .length ??
                                           0;
 
-                                      if (masteredCellCount == total) {
-                                        cellBg = colors.accentGold;
-                                        cellText = const Color(0xFF1a1408);
-                                      } else if (unit.introducedAyahs == 0) {
-                                        cellBg = colors.primary.withValues(
-                                          alpha: 0.15,
-                                        );
-                                        cellText = colors.primary;
-                                        hasActiveDot = !unit.isComplete;
-                                      } else {
-                                        cellBg = colors.primary.withValues(
-                                          alpha: 0.5,
-                                        );
-                                        cellText = colors.onPrimary;
-                                        hasActiveDot = !unit.isComplete;
+                                      // Not started: an empty hairline cell.
+                                      // Started: an emerald wash, then solid
+                                      // emerald once ayahs are introduced.
+                                      // Fully memorised: solid gold. A gold dot
+                                      // marks an active surah, so state is not
+                                      // carried by colour alone.
+                                      Color cellBg = Colors.transparent;
+                                      Color cellBorder = tokens.hair;
+                                      Color cellText = tokens.muted;
+                                      bool hasActiveDot = false;
+
+                                      if (unit != null) {
+                                        cellBorder = Colors.transparent;
+                                        if (masteredCellCount == total) {
+                                          cellBg = tokens.gold;
+                                          cellText =
+                                              EquranColors.blackDark.background;
+                                        } else if (unit.introducedAyahs == 0) {
+                                          cellBg = tokens.emWash;
+                                          cellText = tokens.emText;
+                                          hasActiveDot = !unit.isComplete;
+                                        } else {
+                                          cellBg = tokens.filled;
+                                          cellText = Colors.white;
+                                          hasActiveDot = !unit.isComplete;
+                                        }
                                       }
-                                    }
 
-                                    final masteredCellCount =
-                                        entriesBySurah[surah]
-                                            ?.where(
-                                              (e) => e.status == 'mastered',
-                                            )
-                                            .length ??
-                                        0;
+                                      final String languageCode =
+                                          Localizations.localeOf(
+                                            context,
+                                          ).languageCode;
+                                      final isArabic =
+                                          languageCode == 'ar' ||
+                                          languageCode == 'fa' ||
+                                          languageCode == 'ur';
+                                      final surahName = isArabic
+                                          ? quran.getSurahNameArabic(surah)
+                                          : HifzSurahData.name(surah);
 
-                                    final String languageCode =
-                                        Localizations.localeOf(
-                                          context,
-                                        ).languageCode;
-                                    final isArabic =
-                                        languageCode == 'ar' ||
-                                        languageCode == 'fa' ||
-                                        languageCode == 'ur';
-                                    final surahName = isArabic
-                                        ? quran.getSurahNameArabic(surah)
-                                        : HifzSurahData.name(surah);
-
-                                    Widget cellChild = Center(
-                                      child: Text(
-                                        '$surah',
-                                        style: theme.textTheme.labelSmall
-                                            ?.copyWith(
-                                              color: cellText,
+                                      Widget cellChild = Center(
+                                        child: FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Text(
+                                            '$surah',
+                                            style: TextStyle(
+                                              fontSize: 11,
                                               fontWeight: FontWeight.w700,
-                                            ),
-                                      ),
-                                    );
-
-                                    if (hasActiveDot) {
-                                      cellChild = Stack(
-                                        children: [
-                                          cellChild,
-                                          Positioned(
-                                            top: 4,
-                                            right: 4,
-                                            child: Container(
-                                              width: 3,
-                                              height: 3,
-                                              decoration: BoxDecoration(
-                                                color: colors.accentGold,
-                                                shape: BoxShape.circle,
-                                              ),
+                                              color: cellText,
+                                              fontFeatures: const [
+                                                FontFeature.tabularFigures(),
+                                              ],
                                             ),
                                           ),
-                                        ],
+                                        ),
                                       );
-                                    }
 
-                                    return Tooltip(
-                                      message:
-                                          '$surahName: ${l10n.hifzSessionProgress(masteredCellCount, total)}',
-                                      child: Material(
-                                        color: cellBg,
-                                        borderRadius: BorderRadius.circular(
-                                          AppRadii.small,
-                                        ),
-                                        child: InkWell(
-                                          borderRadius: BorderRadius.circular(
-                                            AppRadii.small,
-                                          ),
-                                          onTap: () {
-                                            final name = isArabic
-                                                ? quran.getSurahNameArabic(
-                                                    surah,
-                                                  )
-                                                : HifzSurahData.name(surah);
-                                            ScaffoldMessenger.of(
-                                              context,
-                                            ).clearSnackBars();
-                                            ScaffoldMessenger.of(
-                                              context,
-                                            ).showSnackBar(
-                                              SnackBar(
-                                                content: Text(
-                                                  '$name: ${l10n.hifzSessionProgress(masteredCellCount, total)}',
+                                      if (hasActiveDot) {
+                                        cellChild = Stack(
+                                          children: [
+                                            cellChild,
+                                            PositionedDirectional(
+                                              top: 3,
+                                              end: 3,
+                                              child: Container(
+                                                width: 4,
+                                                height: 4,
+                                                decoration: BoxDecoration(
+                                                  color: tokens.gold,
+                                                  shape: BoxShape.circle,
                                                 ),
-                                                duration: const Duration(
-                                                  seconds: 2,
-                                                ),
-                                                behavior:
-                                                    SnackBarBehavior.floating,
                                               ),
-                                            );
-                                          },
-                                          child: cellChild,
-                                        ),
-                                      ),
-                                    );
-                                  }),
-                                ),
-                                if (!_gridExpanded)
-                                  Positioned(
-                                    left: 0,
-                                    right: 0,
-                                    bottom: 0,
-                                    height: 60,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          begin: Alignment.topCenter,
-                                          end: Alignment.bottomCenter,
-                                          colors: [
-                                            colors.background.withValues(
-                                              alpha: 0.0,
                                             ),
-                                            colors.background,
                                           ],
+                                        );
+                                      }
+
+                                      return Tooltip(
+                                        message:
+                                            '$surahName: ${l10n.hifzSessionProgress(masteredCellCount, total)}',
+                                        child: Material(
+                                          color: cellBg,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                            side: BorderSide(color: cellBorder),
+                                          ),
+                                          clipBehavior: Clip.antiAlias,
+                                          child: InkWell(
+                                            onTap: () {
+                                              final name = isArabic
+                                                  ? quran.getSurahNameArabic(
+                                                      surah,
+                                                    )
+                                                  : HifzSurahData.name(surah);
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).clearSnackBars();
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    '$name: ${l10n.hifzSessionProgress(masteredCellCount, total)}',
+                                                  ),
+                                                  duration: const Duration(
+                                                    seconds: 2,
+                                                  ),
+                                                  behavior:
+                                                      SnackBarBehavior.floating,
+                                                ),
+                                              );
+                                            },
+                                            child: cellChild,
+                                          ),
+                                        ),
+                                      );
+                                    }),
+                                  ),
+                                  if (!_gridExpanded)
+                                    Positioned(
+                                      left: 0,
+                                      right: 0,
+                                      bottom: 0,
+                                      height: 60,
+                                      child: DecoratedBox(
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                            colors: [
+                                              colors.surface.withValues(
+                                                alpha: 0.0,
+                                              ),
+                                              colors.surface,
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
                       const SizedBox(height: 12),
                       Center(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: colors.surfaceAlt,
-                            foregroundColor: colors.textPrimary,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                AppRadii.pill,
-                              ),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                          ),
+                        child: ChipButton(
+                          _gridExpanded
+                              ? l10n.hifzShowLess
+                              : l10n.hifzShowAllSurahs,
                           onPressed: () {
                             setState(() {
                               _gridExpanded = !_gridExpanded;
                             });
                           },
-                          child: Text(
-                            _gridExpanded
-                                ? l10n.hifzShowLess
-                                : l10n.hifzShowAllSurahs,
-                          ),
                         ),
                       ),
                       const SizedBox(height: 12),
                       Center(
                         child: Text(
                           l10n.hifzSurahsMastered(masteredSurahCount),
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colors.textSecondary,
-                          ),
+                          style: TextStyle(fontSize: 13, color: tokens.text2),
                         ),
                       ),
                       const SizedBox(height: 24),
@@ -1048,6 +887,13 @@ class _HifzSettingsSheetState extends State<_HifzSettingsSheet> {
   late bool _autoPlayAudio;
   late String _blankingLevel;
 
+  static const List<String> _blankingLevels = <String>[
+    'auto',
+    'easy',
+    'medium',
+    'hard',
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -1070,247 +916,96 @@ class _HifzSettingsSheetState extends State<_HifzSettingsSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final EquranColors colors = context.equranColors;
     final l10n = AppLocalizations.of(context)!;
-    return SafeArea(
-      top: false,
-      child: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: colors.surface,
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(AppRadii.xl),
-          ),
-          border: Border(top: BorderSide(color: colors.border)),
-        ),
-        padding: const EdgeInsets.fromLTRB(24, 26, 24, 24),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    l10n.hifzSettingsSheetTitle,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      color: colors.textPrimary,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.close),
-                    color: colors.textSecondary,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              // New ayahs slider
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    l10n.hifzSettingsNewPerDay,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colors.textPrimary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                    '$_maxNewPerDay',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colors.primary,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-              Slider(
+    final List<String> blankingLabels = <String>[
+      l10n.hifzSettingsBlankingAuto,
+      l10n.hifzSettingsBlankingEasy,
+      l10n.hifzSettingsBlankingMedium,
+      l10n.hifzSettingsBlankingHard,
+    ];
+    return ReaderSheetFrame(
+      title: l10n.hifzSettingsSheetTitle,
+      trailing: IconButton44(
+        designIcon: 'x',
+        tooltip: l10n.close,
+        ghost: true,
+        onPressed: () => Navigator.of(context).pop(),
+      ),
+      children: [
+        ReaderSheetGroup(
+          children: [
+            ReaderSliderBlock(
+              title: l10n.hifzSettingsNewPerDay,
+              valueLabel: '$_maxNewPerDay',
+              slider: Slider(
                 value: _maxNewPerDay.toDouble(),
                 min: 1.0,
                 max: 50.0,
                 divisions: 49,
-                activeColor: colors.primary,
-                inactiveColor: colors.primary.withAlpha(50),
                 onChanged: (val) {
                   setState(() {
                     _maxNewPerDay = val.round();
                   });
                 },
               ),
-              const SizedBox(height: 12),
-              // Reviews per day slider
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    l10n.hifzSettingsReviewsPerDay,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colors.textPrimary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                    '$_maxReviewPerDay',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colors.primary,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-              Slider(
+            ),
+            ReaderSliderBlock(
+              title: l10n.hifzSettingsReviewsPerDay,
+              valueLabel: '$_maxReviewPerDay',
+              slider: Slider(
                 value: _maxReviewPerDay.toDouble(),
                 min: 5.0,
                 max: 200.0,
                 divisions: 195,
-                activeColor: colors.primary,
-                inactiveColor: colors.primary.withAlpha(50),
                 onChanged: (val) {
                   setState(() {
                     _maxReviewPerDay = val.round();
                   });
                 },
               ),
-              const SizedBox(height: 16),
-              // Toggles
-              SwitchListTile(
-                title: Text(
-                  l10n.hifzSettingsShowTranslit,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colors.textPrimary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                value: _showTransliteration,
-                activeThumbColor: colors.primary,
-                activeTrackColor: colors.primary.withAlpha(128),
-                onChanged: (val) {
-                  setState(() {
-                    _showTransliteration = val;
-                  });
-                },
-                contentPadding: EdgeInsets.zero,
-              ),
-              SwitchListTile(
-                title: Text(
-                  l10n.hifzSettingsShowTranslation,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colors.textPrimary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                value: _showTranslation,
-                activeThumbColor: colors.primary,
-                activeTrackColor: colors.primary.withAlpha(128),
-                onChanged: (val) {
-                  setState(() {
-                    _showTranslation = val;
-                  });
-                },
-                contentPadding: EdgeInsets.zero,
-              ),
-              SwitchListTile(
-                title: Text(
-                  l10n.hifzSettingsAutoPlayAudio,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colors.textPrimary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                value: _autoPlayAudio,
-                activeThumbColor: colors.primary,
-                activeTrackColor: colors.primary.withAlpha(128),
-                onChanged: (val) {
-                  setState(() {
-                    _autoPlayAudio = val;
-                  });
-                },
-                contentPadding: EdgeInsets.zero,
-              ),
-              const SizedBox(height: 16),
-              // Blanking level
-              Text(
-                l10n.hifzSettingsBlankingLevel,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colors.textPrimary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  _blankingChip(l10n.hifzSettingsBlankingAuto, 'auto'),
-                  const SizedBox(width: 8),
-                  _blankingChip(l10n.hifzSettingsBlankingEasy, 'easy'),
-                  const SizedBox(width: 8),
-                  _blankingChip(l10n.hifzSettingsBlankingMedium, 'medium'),
-                  const SizedBox(width: 8),
-                  _blankingChip(l10n.hifzSettingsBlankingHard, 'hard'),
-                ],
-              ),
-              const SizedBox(height: 24),
-              FilledButton(
-                onPressed: () async {
-                  final navigator = Navigator.of(context);
-                  await _saveSettings();
-                  navigator.pop();
-                },
-                style: FilledButton.styleFrom(
-                  backgroundColor: colors.primary,
-                  foregroundColor: colors.onPrimary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppRadii.pill),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-                child: Text(
-                  l10n.hifzSettingsDone,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _blankingChip(String label, String value) {
-    final colors = context.equranColors;
-    final theme = Theme.of(context);
-    final isSelected = _blankingLevel == value;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          setState(() {
-            _blankingLevel = value;
-          });
-        },
-        child: Container(
-          decoration: BoxDecoration(
-            color: isSelected ? colors.primary : colors.surfaceAlt,
-            borderRadius: BorderRadius.circular(AppRadii.medium),
-            border: Border.all(
-              color: isSelected ? colors.primary : colors.border,
             ),
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          alignment: Alignment.center,
-          child: Text(
-            label,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: isSelected ? colors.onPrimary : colors.textSecondary,
-              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-            ),
-          ),
+          ],
         ),
-      ),
+        ReaderSheetGroup(
+          children: [
+            ReaderSwitchRow(
+              leading: const DesignIcon('sparkle'),
+              title: l10n.hifzSettingsShowTranslit,
+              value: _showTransliteration,
+              onChanged: (val) => setState(() => _showTransliteration = val),
+            ),
+            ReaderSwitchRow(
+              leading: const DesignIcon('chat'),
+              title: l10n.hifzSettingsShowTranslation,
+              value: _showTranslation,
+              onChanged: (val) => setState(() => _showTranslation = val),
+            ),
+            ReaderSwitchRow(
+              leading: const DesignIcon('headphones'),
+              title: l10n.hifzSettingsAutoPlayAudio,
+              value: _autoPlayAudio,
+              onChanged: (val) => setState(() => _autoPlayAudio = val),
+            ),
+          ],
+        ),
+        ReaderFieldLabel(l10n.hifzSettingsBlankingLevel),
+        RedesignSegmentedControl(
+          labels: blankingLabels,
+          selectedIndex: math.max(0, _blankingLevels.indexOf(_blankingLevel)),
+          onChanged: (index) =>
+              setState(() => _blankingLevel = _blankingLevels[index]),
+        ),
+        const SizedBox(height: 24),
+        FilledButton(
+          onPressed: () async {
+            final navigator = Navigator.of(context);
+            await _saveSettings();
+            navigator.pop();
+          },
+          style: readerFilledButtonStyle(context),
+          child: Text(l10n.hifzSettingsDone),
+        ),
+      ],
     );
   }
 }
@@ -1328,7 +1023,7 @@ class _UnitProgressCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.equranColors;
-    final theme = Theme.of(context);
+    final tokens = context.equranTokens;
     final l10n = AppLocalizations.of(context)!;
 
     final newCount = math.min(
@@ -1337,65 +1032,55 @@ class _UnitProgressCard extends StatelessWidget {
     );
     final sabqiCount = HifzDB.getSabqiAyahs(unit.id).length;
     final manzilCount = HifzDB.getManzilAyahs(unit.id).length;
+    final bool hasContent = _hasSessionContent(unit);
 
-    return Container(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        border: Border.all(color: colors.border, width: 1),
-        borderRadius: BorderRadius.circular(AppRadii.large),
-      ),
+    return HairlineCard(
       padding: const EdgeInsets.all(16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Row 1: title + session button
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        unit.type == HifzUnitType.surah
-                            ? Icons.menu_book_rounded
-                            : Icons.format_list_numbered,
-                        color: colors.primary,
-                        size: 16,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        unit.type == HifzUnitType.surah
-                            ? l10n.hifzUnitTypeSurah
-                            : l10n.hifzUnitTypeJuz,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: colors.textMuted,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    unit.displayName,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: colors.textPrimary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
+              ReaderIconWell(
+                icon: DesignIcon(
+                  unit.type == HifzUnitType.surah ? 'book' : 'grid',
+                  strokeWidth: 1.8,
+                ),
               ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.primary,
-                  foregroundColor: colors.onPrimary,
-                  shape: const StadiumBorder(),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 10,
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      unit.type == HifzUnitType.surah
+                          ? l10n.hifzUnitTypeSurah
+                          : l10n.hifzUnitTypeJuz,
+                      style: TextStyle(fontSize: 12, color: tokens.muted),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      hifzUnitLabel(unit, l10n),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontVariations: const [FontVariation('opsz', 16)],
+                        fontWeight: FontWeight.w600,
+                        color: colors.textPrimary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              FilledButton(
+                style: readerFilledButtonStyle(context).copyWith(
+                  minimumSize: const WidgetStatePropertyAll<Size>(Size(0, 44)),
+                  padding: const WidgetStatePropertyAll<EdgeInsetsGeometry>(
+                    EdgeInsets.symmetric(horizontal: 16),
                   ),
                 ),
-                onPressed: _hasSessionContent(unit)
+                onPressed: hasContent
                     ? () => Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -1404,39 +1089,31 @@ class _UnitProgressCard extends StatelessWidget {
                       )
                     : null,
                 child: Text(
-                  _hasSessionContent(unit)
-                      ? l10n.hifzUnitReview
-                      : l10n.hifzUnitUpToDate,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: colors.onPrimary,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  hasContent ? l10n.hifzUnitReview : l10n.hifzUnitUpToDate,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           // Row 2: frontier info
           Text(
             l10n.hifzUnitNextAyah(
               HifzSurahData.name(unit.frontierSurah),
               unit.frontierAyah,
             ),
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colors.textSecondary,
-            ),
+            style: TextStyle(fontSize: 13, color: tokens.text2),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           // Row 3: progress bar + fraction
           Row(
             children: [
               Expanded(
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(AppRadii.pill),
+                  borderRadius: BorderRadius.circular(EquranRadii.pill),
                   child: LinearProgressIndicator(
                     value: unit.progressFraction,
-                    backgroundColor: colors.surfaceAlt,
-                    valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
+                    backgroundColor: tokens.hair2,
+                    valueColor: AlwaysStoppedAnimation<Color>(tokens.filled),
                     minHeight: 6,
                   ),
                 ),
@@ -1444,57 +1121,36 @@ class _UnitProgressCard extends StatelessWidget {
               const SizedBox(width: 12),
               Text(
                 l10n.hifzUnitProgress(unit.introducedAyahs, unit.totalAyahs),
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: colors.textMuted,
-                ),
+                textDirection: TextDirection.ltr,
+                style: TextStyle(fontSize: 12.5, color: tokens.muted),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           // Row 4: due counts
-          Row(
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
             children: [
               if (newCount > 0)
-                _DueChip(l10n.hifzDueNew(newCount), colors.primary),
-              if (sabqiCount > 0)
-                _DueChip(l10n.hifzDueRevision(sabqiCount), colors.accentGold),
-              if (manzilCount > 0)
-                _DueChip(
-                  l10n.hifzDueMaintenance(manzilCount),
-                  colors.textSecondary,
+                PillTag(
+                  l10n.hifzDueNew(newCount),
+                  selected: true,
+                  compact: true,
                 ),
+              if (sabqiCount > 0)
+                PillTag(
+                  l10n.hifzDueRevision(sabqiCount),
+                  gold: true,
+                  compact: true,
+                ),
+              if (manzilCount > 0)
+                PillTag(l10n.hifzDueMaintenance(manzilCount), compact: true),
               if (newCount == 0 && sabqiCount == 0 && manzilCount == 0)
-                _DueChip(l10n.hifzDueAllCaughtUp, colors.primary),
+                PillTag(l10n.hifzDueAllCaughtUp, selected: true, compact: true),
             ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _DueChip extends StatelessWidget {
-  final String label;
-  final Color color;
-
-  const _DueChip(this.label, this.color);
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      margin: const EdgeInsets.only(right: 6),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(AppRadii.pill),
-      ),
-      child: Text(
-        label,
-        style: theme.textTheme.labelSmall?.copyWith(
-          color: color,
-          fontWeight: FontWeight.w600,
-        ),
       ),
     );
   }

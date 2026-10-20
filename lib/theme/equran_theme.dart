@@ -1,6 +1,8 @@
 import 'package:equran/theme/equran_colors.dart';
 import 'package:equran/theme/equran_spacing.dart';
 import 'package:equran/theme/equran_text_styles.dart';
+import 'package:equran/theme/equran_tokens.dart';
+import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 
 class EquranTheme {
@@ -40,6 +42,10 @@ class EquranTheme {
   static ThemeData redDark() => _build(EquranColors.redDark, Brightness.dark);
 
   static ThemeData _build(EquranColors tokens, Brightness brightness) {
+    return fromColors(tokens, brightness);
+  }
+
+  static ThemeData fromColors(EquranColors tokens, Brightness brightness) {
     final bool isDark = brightness == Brightness.dark;
     final ColorScheme colorScheme = ColorScheme(
       brightness: brightness,
@@ -91,7 +97,10 @@ class EquranTheme {
       useMaterial3: true,
       brightness: brightness,
       colorScheme: colorScheme,
-      extensions: <ThemeExtension<dynamic>>[tokens],
+      extensions: <ThemeExtension<dynamic>>[
+        tokens,
+        EquranTokens.fromColors(tokens),
+      ],
       textTheme: textTheme,
       primaryTextTheme: textTheme,
       scaffoldBackgroundColor: tokens.background,
@@ -230,9 +239,102 @@ class EquranTheme {
         labelStyle: textTheme.labelLarge,
         unselectedLabelStyle: textTheme.labelLarge,
       ),
+      pageTransitionsTheme: PageTransitionsTheme(
+        builders: <TargetPlatform, PageTransitionsBuilder>{
+          TargetPlatform.android: const PredictiveBackPageTransitionsBuilder(),
+          TargetPlatform.iOS: const CupertinoPageTransitionsBuilder(),
+          for (final TargetPlatform platform in <TargetPlatform>[
+            TargetPlatform.fuchsia,
+            TargetPlatform.linux,
+            TargetPlatform.macOS,
+            TargetPlatform.windows,
+          ])
+            platform: FadeForwardsPageTransitionsBuilder(
+              backgroundColor: tokens.background,
+            ),
+        },
+      ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: colorScheme.inverseSurface,
+        contentTextStyle: textTheme.bodyMedium?.copyWith(
+          color: colorScheme.onInverseSurface,
+        ),
+        actionTextColor: tokens.accentGold,
+        insetPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(EquranRadii.large),
+        ),
+      ),
+      listTileTheme: ListTileThemeData(
+        iconColor: tokens.textSecondary,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(EquranRadii.medium),
+        ),
+      ),
+      dividerTheme: DividerThemeData(
+        color: tokens.divider,
+        thickness: 1,
+        space: 1,
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.disabled)) return tokens.textMuted;
+          return states.contains(WidgetState.selected)
+              ? tokens.onPrimary
+              : tokens.textMuted;
+        }),
+        trackColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return states.contains(WidgetState.disabled)
+                ? tokens.border
+                : tokens.primary;
+          }
+          return tokens.surfaceAlt;
+        }),
+        trackOutlineColor: WidgetStateProperty.resolveWith((states) {
+          return states.contains(WidgetState.selected)
+              ? Colors.transparent
+              : tokens.border;
+        }),
+      ),
+      sliderTheme: SliderThemeData(
+        activeTrackColor: tokens.primary,
+        inactiveTrackColor: tokens.border,
+        thumbColor: tokens.primary,
+        overlayColor: tokens.primary.withAlpha(isDark ? 40 : 28),
+        trackHeight: 4,
+      ),
+      progressIndicatorTheme: ProgressIndicatorThemeData(
+        color: tokens.primary,
+        linearTrackColor: tokens.border,
+        linearMinHeight: 6,
+      ),
+      popupMenuTheme: PopupMenuThemeData(
+        color: tokens.surface,
+        surfaceTintColor: Colors.transparent,
+        elevation: 6,
+        shadowColor: tokens.shadow.withAlpha(isDark ? 120 : 50),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(EquranRadii.large),
+          side: BorderSide(color: tokens.border),
+        ),
+        textStyle: textTheme.bodyMedium,
+      ),
+      tooltipTheme: TooltipThemeData(
+        decoration: BoxDecoration(
+          color: colorScheme.inverseSurface,
+          borderRadius: BorderRadius.circular(EquranRadii.medium),
+        ),
+        textStyle: textTheme.labelMedium?.copyWith(
+          color: colorScheme.onInverseSurface,
+        ),
+        waitDuration: const Duration(milliseconds: 400),
+      ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: tokens.primary,
-        indicatorColor: tokens.onPrimary.withAlpha(26),
+        indicatorColor: tokens.onPrimary.withAlpha(38),
+        indicatorShape: const StadiumBorder(),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           final bool selected = states.contains(WidgetState.selected);
           return textTheme.labelMedium?.copyWith(

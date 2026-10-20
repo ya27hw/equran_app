@@ -1,6 +1,7 @@
 import 'package:dynamic_height_grid_view/dynamic_height_grid_view.dart';
 import 'package:equran/backend/surah_db.dart';
 import 'package:equran/backend/surah_model.dart';
+import 'package:equran/widgets/grouped_card_sliver.dart';
 import 'package:equran/widgets/quran_card.dart';
 import 'package:flutter/material.dart';
 import 'package:equran/l10n/app_localizations.dart';
@@ -100,27 +101,32 @@ class _QuranCardListState extends State<QuranCardList>
             controller: scrollController,
             thumbVisibility: true,
             interactive: true,
-            child: ListView.builder(
+            child: CustomScrollView(
               controller: scrollController,
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.only(bottom: 30),
-              itemCount: data.length + (hasHeader ? 1 : 0),
-              itemBuilder: (BuildContext context, int index) {
-                if (hasHeader && index == 0) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: widget.header!,
-                  );
-                }
-
-                final int dataIndex = index - (hasHeader ? 1 : 0);
-                return Padding(
-                  padding: EdgeInsets.only(
-                    bottom: dataIndex == data.length - 1 ? 0 : 6,
+              slivers: <Widget>[
+                if (hasHeader)
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: widget.header!,
+                    ),
                   ),
-                  child: QuranCard(surah: data[dataIndex], compact: false),
-                );
-              },
+                SliverPadding(
+                  padding: const EdgeInsets.only(bottom: 30),
+                  sliver: GroupedCardSliver(
+                    itemCount: data.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return QuranCard(
+                        surah: data[index],
+                        compact: false,
+                        grouped: true,
+                        inkRadius: groupedInkRadius(index, data.length),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
           );
         } else {
@@ -161,10 +167,9 @@ class _QuranCardListState extends State<QuranCardList>
           );
         }
 
-        return AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          child: childList,
-        );
+        // No cross-fade: while both lists are mounted they would share one
+        // PrimaryScrollController, which Flutter rejects in debug builds.
+        return childList;
       },
     );
   }

@@ -6,6 +6,7 @@ import 'package:archive/archive_io.dart';
 import 'package:crypto/crypto.dart';
 import 'package:equran/backend/resource_install_store.dart';
 import 'package:equran/backend/resource_models.dart';
+import 'package:equran/word_by_word/word_by_word_pack.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
@@ -326,24 +327,51 @@ class ResourceDownloadService {
   }
 
   Future<void> _extractZip(File zipFile, Directory destination) async {
+    // Decode from a file-backed stream instead of duplicating the whole ZIP
+    // in a UI-isolate byte array first. This drops one full-archive copy
+    // from peak RSS (the 69MB font pack otherwise transiently holds raw
+    // bytes plus the inflated archive on 2GB devices); entries are freed
+    // as they are written out via freeMemory below. Mirrors the ayah-audio
+    // ZIP path in AudioDownloadService.
+    final InputFileStream zipInput = InputFileStream(zipFile.path);
     final Archive archive;
     try {
-      archive = ZipDecoder().decodeBytes(await zipFile.readAsBytes());
+      archive = ZipDecoder().decodeStream(zipInput);
     } catch (_) {
+      zipInput.closeSync();
       throw const ResourceInstallException(
         'The downloaded ZIP could not be opened.',
       );
     }
-
     final List<ArchiveFile> files = archive.files
         .where((ArchiveFile entry) => entry.isFile && !entry.isSymbolicLink)
         .toList(growable: false);
+    zipInput.closeSync();
     if (files.isEmpty) {
       throw const ResourceInstallException('The ZIP did not contain files.');
     }
+    // Strictest caps (EQ-1) on top of streaming decode (EQ-2): 2000 entries,
+    // 50MB per entry, 300MB total — orders of magnitude above legit packs
+    // (604 TTFs, small JSON/TXT/MP3) while blocking size bombs on 2GB devices.
+    if (files.length > 2000) {
+      throw const ResourceInstallException('The ZIP contains too many files.');
+    }
 
+    int totalDecompressedBytes = 0;
     final String? rootToStrip = _singleArchiveRoot(files);
     for (final ArchiveFile entry in files) {
+      if (entry.size > 50 * 1024 * 1024) {
+        throw const ResourceInstallException(
+          'The ZIP contains an entry that is too large.',
+        );
+      }
+      totalDecompressedBytes += entry.size;
+      if (totalDecompressedBytes > 300 * 1024 * 1024) {
+        throw const ResourceInstallException(
+          'The decompressed ZIP exceeds maximum allowed size.',
+        );
+      }
+
       final List<String> pathSegments = _safeArchiveSegments(
         entry.name,
         rootToStrip: rootToStrip,
@@ -361,7 +389,7 @@ class ResourceDownloadService {
       await outputFile.parent.create(recursive: true);
       final OutputFileStream output = OutputFileStream(outputFile.path);
       try {
-        entry.writeContent(output);
+        entry.writeContent(output, freeMemory: true);
       } finally {
         output.closeSync();
       }
@@ -384,6 +412,9 @@ class ResourceDownloadService {
         return;
       case ResourceType.translation:
         await _validateTranslation(directory);
+        return;
+      case ResourceType.wordByWord:
+        await _validateWordByWord(directory);
         return;
       case ResourceType.unknown:
         await _validateGeneric(directory);
@@ -445,6 +476,14 @@ class ResourceDownloadService {
           );
         }
       }
+    }
+  }
+
+  Future<void> _validateWordByWord(Directory directory) async {
+    try {
+      await validateWordByWordPack(directory);
+    } on WordByWordPackException catch (error) {
+      throw ResourceInstallException(error.message);
     }
   }
 
