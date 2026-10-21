@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.0.0-beta.3 (build 107)
+
+Build-only update for F-Droid. There are no changes to the app itself.
+
+- **F-Droid build fix.** `pubspec.lock` is regenerated with Flutter 3.47.7 so `flutter pub get --enforce-lockfile` passes in the F-Droid build.
+
 ## 4.0.0-beta.2 (build 106)
 
 Follow-up to the beta with the redesigned screens that were still in progress:
