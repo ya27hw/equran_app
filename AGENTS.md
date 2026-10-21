@@ -110,6 +110,9 @@ Incoming agents and developers must strictly follow these rules when editing the
 5.  **F-Droid Compliance (No Google GMS/Firebase):**
     *   Do not integrate libraries or plugins that depend on Google Mobile Services (GMS), Firebase SDKs (such as analytics, crash reporting, or push notifications), or other proprietary non-free frameworks. The codebase must remain 100% compliant with F-Droid inclusion policies.
 
+6.  **Release Lockfile (F-Droid):**
+    *   F-Droid builds from tags with `flutter pub get --enforce-lockfile`. Before a release, `pubspec.lock` must be regenerated with the Flutter version F-Droid uses and `--enforce-lockfile` must pass. Never hand-edit it, and never re-point a published tag. Follow "Releases and F-Droid" in `CLAUDE.md`.
+
 ---
 
 ## 📎 Related Docs
