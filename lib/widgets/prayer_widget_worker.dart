@@ -114,7 +114,7 @@ void _callbackDispatcher() {
         final now = DateTime.now();
         final prayerTimes = PrayerTimes(
           coordinates: coordinates,
-          date: now,
+          date: DateTime.utc(now.year, now.month, now.day),
           calculationParameters: params,
           precision: true,
         );
