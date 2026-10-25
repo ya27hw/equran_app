@@ -34,9 +34,16 @@ class PrayerTimesService {
     final DateTime localDate = prayerTimezone == null
         ? DateTime(date.year, date.month, date.day)
         : timezone.TZDateTime(prayerTimezone, date.year, date.month, date.day);
+    // adhan_dart expects a UTC calendar date so that its internal
+    // day-arithmetic (date.add/subtract(Duration(days: 1))) does not drift
+    // or land on the same calendar day across daylight saving time transitions
+    // (such as autumn 25-hour days). Astronomical coordinates and sunrise/sunset
+    // are date-based; passing a UTC date prevents safeFajr from seeing a
+    // negative night duration and corrupting Fajr time.
+    final DateTime baseUtcDate = DateTime.utc(date.year, date.month, date.day);
     final adhan.PrayerTimes baseTimes = adhan.PrayerTimes(
       coordinates: adhan.Coordinates(location.latitude, location.longitude),
-      date: localDate,
+      date: baseUtcDate,
       calculationParameters: parameters,
       precision: true,
     );
@@ -46,10 +53,17 @@ class PrayerTimesService {
     );
 
     // Maghrib, Isha are calculated for day D - 1 (prevLocalDate)
-    final DateTime prevLocalDate = localDate.subtract(const Duration(days: 1));
+    final DateTime prevLocalDate = prayerTimezone == null
+        ? DateTime(date.year, date.month, date.day - 1)
+        : timezone.TZDateTime(
+            prayerTimezone,
+            date.year,
+            date.month,
+            date.day - 1,
+          );
     final adhan.PrayerTimes prevTimes = adhan.PrayerTimes(
       coordinates: adhan.Coordinates(location.latitude, location.longitude),
-      date: prevLocalDate,
+      date: DateTime.utc(date.year, date.month, date.day - 1),
       calculationParameters: parameters,
       precision: true,
     );
@@ -153,18 +167,9 @@ class PrayerTimesService {
       highLatitudeRule: highLatitudeRule,
     );
 
-    final DateTime localDate = prayerTimezone == null
-        ? baseDate
-        : timezone.TZDateTime(
-            prayerTimezone,
-            baseDate.year,
-            baseDate.month,
-            baseDate.day,
-          );
-
     final adhan.PrayerTimes baseTimes = adhan.PrayerTimes(
       coordinates: adhan.Coordinates(location.latitude, location.longitude),
-      date: localDate,
+      date: DateTime.utc(baseDate.year, baseDate.month, baseDate.day),
       calculationParameters: parameters,
       precision: true,
     );
@@ -179,7 +184,7 @@ class PrayerTimesService {
     );
 
     if (!zonedInstant.isBefore(maghribTime)) {
-      return baseDate.add(const Duration(days: 1));
+      return DateTime(baseDate.year, baseDate.month, baseDate.day + 1);
     }
     return baseDate;
   }
@@ -265,12 +270,18 @@ class PrayerTimesService {
       }
     }
 
-    final PrayerTimeEntry fajr = (tomorrow ?? day).entryFor(
-      PrayerTimeKind.fajr,
-    );
-    final DateTime nextFajr = tomorrow == null
-        ? fajr.time.add(const Duration(days: 1))
-        : fajr.time;
+    final PrayerTimeEntry fajr;
+    if (tomorrow != null) {
+      fajr = tomorrow.entryFor(PrayerTimeKind.fajr);
+    } else {
+      final PrayerDay tomorrowDay = calculateDay(
+        date: DateTime(day.date.year, day.date.month, day.date.day + 1),
+        location: day.location,
+        settings: day.settings,
+      );
+      fajr = tomorrowDay.entryFor(PrayerTimeKind.fajr);
+    }
+    final DateTime nextFajr = fajr.time;
     final DateTime displayNextFajr = _floorToMinute(nextFajr);
     return NextPrayer(
       entry: PrayerTimeEntry(
@@ -343,7 +354,15 @@ class PrayerTimesService {
     required PrayerDay today,
     required PrayerDay yesterday,
     required DateTime now,
+    PrayerDay? tomorrow,
   }) {
+    final PrayerDay following =
+        tomorrow ??
+        calculateDay(
+          date: DateTime(today.date.year, today.date.month, today.date.day + 1),
+          location: today.location,
+          settings: today.settings,
+        );
     final List<PrayerCurrentPeriod> periods = <PrayerCurrentPeriod>[
       ..._periodsForDay(
         yesterday,
@@ -352,11 +371,8 @@ class PrayerTimesService {
       ),
       ..._periodsForDay(
         today,
-        today.entryFor(PrayerTimeKind.fajr).time.add(const Duration(days: 1)),
-        today
-            .entryFor(PrayerTimeKind.maghrib)
-            .time
-            .add(const Duration(days: 1)),
+        following.entryFor(PrayerTimeKind.fajr).time,
+        following.entryFor(PrayerTimeKind.maghrib).time,
       ),
     ];
 
@@ -368,10 +384,7 @@ class PrayerTimesService {
 
     return _normalPrayerPeriod(
       entry: today.entryFor(PrayerTimeKind.isha),
-      endsAt: today
-          .entryFor(PrayerTimeKind.fajr)
-          .time
-          .add(const Duration(days: 1)),
+      endsAt: following.entryFor(PrayerTimeKind.fajr).time,
     );
   }
 
