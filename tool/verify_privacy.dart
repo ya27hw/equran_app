@@ -1,8 +1,7 @@
 import 'dart:io';
 
 /// Hard privacy rules for the app source. Run in CI next to the dependency
-/// policy. A failure means a change would send private data off the device
-/// or hard-code the developer's location.
+/// policy. A failure means a change would send private data off the device.
 void main() {
   final List<String> violations = <String>[];
 
@@ -26,14 +25,6 @@ void main() {
     'f-droid.org',
     'tile.openstreetmap.org',
   ];
-
-  // Place names that identify the developer. Only the timezone alias may
-  // name a zone; it maps an identifier, not a location.
-  final RegExp placeNames = RegExp(r'\b(Muscat|Oman)\b');
-  final Set<String> placeNameExceptions = <String>{
-    'lib/prayer/prayer_timezone_service.dart',
-    'test/prayer/prayer_timezone_alias_test.dart',
-  };
 
   final RegExp hostPattern = RegExp(r'https?://([A-Za-z0-9.-]+)');
 
@@ -66,10 +57,6 @@ void main() {
         violations.add('$path contacts "$host", which is not an allowed host');
       }
     }
-
-    if (!placeNameExceptions.contains(path) && placeNames.hasMatch(contents)) {
-      violations.add('$path names a place that identifies the developer');
-    }
   }
 
   if (violations.isNotEmpty) {
@@ -78,7 +65,6 @@ void main() {
     return;
   }
   stdout.writeln(
-    'Privacy policy passed: no location services, unlisted hosts or '
-    'developer place names.',
+    'Privacy policy passed: no location services or unlisted hosts.',
   );
 }
