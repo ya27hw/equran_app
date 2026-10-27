@@ -5,6 +5,7 @@ import 'package:equran/theme/equran_tokens.dart';
 import 'package:equran/widgets/redesign/redesign_widgets.dart';
 import 'package:equran/widgets/redesign/page_typography.dart';
 import 'package:equran/widgets/common/pressable_scale.dart';
+import 'package:equran/widgets/whats_new_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:equran/hifz/hifz.dart';
@@ -195,6 +196,12 @@ class MorePage extends StatelessWidget {
                       _MoreGroup(
                         title: localizations.moreGroupAbout,
                         items: <_MoreAction>[
+                          _MoreAction(
+                            icon: 'sparkle',
+                            title: "What's New",
+                            subtitle: 'Recent updates, improvements and fixes',
+                            onTap: () => WhatsNewDialog.show(context),
+                          ),
                           _MoreAction(
                             icon: 'info',
                             title: localizations.aboutThisApp,
@@ -885,6 +892,16 @@ class _CustomAboutDialogState extends State<_CustomAboutDialog> {
         ),
       ),
       actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+            WhatsNewDialog.show(context);
+          },
+          child: Text(
+            "What's New",
+            style: TextStyle(color: theme.colorScheme.primary),
+          ),
+        ),
         TextButton(
           onPressed: () {
             showLicensePage(

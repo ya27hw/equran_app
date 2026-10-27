@@ -78,7 +78,8 @@ import 'package:equran/widgets/library.dart'
         readQuranCardHorizontalMarginForWidth,
         ReadPlayerMiniBar,
         ReadPlayerMiniContent,
-        ReadVersePlayerBar;
+        ReadVersePlayerBar,
+        kDefaultTranslationFontSize;
 import 'package:flutter/foundation.dart'
     show TargetPlatform, debugPrint, defaultTargetPlatform, kDebugMode, kIsWeb;
 import 'package:flutter/gestures.dart'
@@ -7003,10 +7004,14 @@ class _ReadPageState extends State<ReadPage> with WidgetsBindingObserver {
                               "fontSize",
                               defaultValue: 31.0,
                             ),
-                            fontSizeTranslation: SettingsDB().get(
-                              "fontSizeTranslation",
-                              defaultValue: 12.0,
-                            ),
+                            fontSizeTranslation:
+                                (SettingsDB().get(
+                                          "fontSizeTranslation",
+                                          defaultValue:
+                                              kDefaultTranslationFontSize,
+                                        )
+                                        as num)
+                                    .toDouble(),
                             onPlay: _togglePageViewPlayback,
                             onVisualOverlayChanged:
                                 _handleCardVisualOverlayChanged,

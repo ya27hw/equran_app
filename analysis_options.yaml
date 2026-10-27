@@ -13,6 +13,13 @@ analyzer:
   exclude:
     - "third_party/**"
     - "scratch/**"
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
 
 
 linter:

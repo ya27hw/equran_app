@@ -15,6 +15,8 @@ import 'package:hive/hive.dart';
 import 'package:like_button/like_button.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:equran/theme/inter_optical_size.dart';
+import 'package:equran/widgets/font_slider.dart'
+    show kDefaultTranslationFontSize;
 
 enum _DuaOverflowAction { copy, share }
 
@@ -51,7 +53,11 @@ class DuaCard extends StatelessWidget {
       valueListenable: SettingsDB().listener,
       builder: (BuildContext context, Box<dynamic> settingsBox, Widget? child) {
         final double translationFontSize =
-            (settingsBox.get('fontSizeTranslation', defaultValue: 12.0) as num)
+            (settingsBox.get(
+                      'fontSizeTranslation',
+                      defaultValue: kDefaultTranslationFontSize,
+                    )
+                    as num)
                 .toDouble();
         final bool showTranslation =
             settingsBox.get('duaShowTranslation', defaultValue: true) as bool;

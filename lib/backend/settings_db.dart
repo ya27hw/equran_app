@@ -67,4 +67,49 @@ class SettingsDB extends BaseDB {
   Future<void> setVisibleDailyTools(List<DailyToolType> tools) async {
     await put('daily_tools_visible', tools.map((t) => t.name).toList());
   }
+
+  /// Translation font family (defaults to 'Newsreader', options: 'Newsreader', 'Inter')
+  String get translationFontFamily {
+    try {
+      final dynamic saved = get(
+        'translationFontFamily',
+        defaultValue: 'Newsreader',
+      );
+      return saved is String ? saved : 'Newsreader';
+    } catch (_) {
+      return 'Newsreader';
+    }
+  }
+
+  Future<void> setTranslationFontFamily(String family) async {
+    await put('translationFontFamily', family);
+  }
+
+  /// Whether translation font is rendered bold for enhanced accessibility
+  bool get translationFontBold {
+    try {
+      final dynamic saved = get('translationFontBold', defaultValue: false);
+      return saved is bool ? saved : false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> setTranslationFontBold(bool bold) async {
+    await put('translationFontBold', bold);
+  }
+
+  /// Whether translation font is rendered in high contrast (pure white/black)
+  bool get translationHighContrast {
+    try {
+      final dynamic saved = get('translationHighContrast', defaultValue: false);
+      return saved is bool ? saved : false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> setTranslationHighContrast(bool highContrast) async {
+    await put('translationHighContrast', highContrast);
+  }
 }

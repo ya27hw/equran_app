@@ -45,18 +45,38 @@ class EquranTextStyles {
     BuildContext context, {
     Color? color,
     double size = 16,
-  }) => TextStyle(
-    fontFamily: 'Newsreader',
-    fontSize: size,
-    height: 1.5,
-    fontWeight: FontWeight.w400,
-    fontStyle: FontStyle.italic,
-    fontVariations: [
-      FontVariation('opsz', size),
-      const FontVariation('wght', 400),
-    ],
-    color: color ?? context.equranTokens.text2,
-  );
+    String? fontFamily,
+    bool? isBold,
+    bool? highContrast,
+  }) {
+    final String activeFamily =
+        fontFamily ?? SettingsDB().translationFontFamily;
+    final bool bold = isBold ?? SettingsDB().translationFontBold;
+    final bool contrast = highContrast ?? SettingsDB().translationHighContrast;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final Color resolvedColor = contrast
+        ? (isDark ? Colors.white : Colors.black)
+        : (color ?? context.equranTokens.text2);
+
+    final FontWeight weight = bold ? FontWeight.w700 : FontWeight.w400;
+    final FontStyle style = (activeFamily == 'Newsreader')
+        ? FontStyle.italic
+        : FontStyle.normal;
+
+    return TextStyle(
+      fontFamily: activeFamily,
+      fontSize: size,
+      height: 1.5,
+      fontWeight: weight,
+      fontStyle: style,
+      fontVariations: [
+        FontVariation('opsz', size),
+        FontVariation('wght', bold ? 700 : 400),
+      ],
+      color: resolvedColor,
+    );
+  }
 
   /// Callers uppercase the label; TextStyle cannot transform string content.
   static TextStyle eyebrow(BuildContext context) => TextStyle(
