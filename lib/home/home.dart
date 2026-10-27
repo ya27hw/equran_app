@@ -3,7 +3,10 @@ import 'dart:async';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:equran/backend/library.dart';
 import 'package:equran/backend/qpc_v4_font_service.dart';
+import 'package:equran/backend/whats_new_service.dart';
 import 'package:equran/widgets/prayer_widget_service.dart';
+import 'package:equran/widgets/whats_new_dialog.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:equran/duas/asma_ul_husna_page.dart';
 import 'package:equran/duas/duas_page.dart';
 import 'package:equran/duas/tasbih_page.dart';
@@ -58,6 +61,27 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final ValueNotifier<QuranSearchRequest?> _quranSearchRequest =
       ValueNotifier<QuranSearchRequest?>(null);
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkWhatsNew();
+    });
+  }
+
+  Future<void> _checkWhatsNew() async {
+    if (!mounted) return;
+    try {
+      final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      if (!mounted) return;
+      if (WhatsNewService.instance.shouldShowWhatsNew(packageInfo.version)) {
+        await WhatsNewDialog.show(context);
+      }
+    } catch (_) {
+      // Ignore if PackageInfo is unavailable (e.g. testing environments).
+    }
+  }
 
   void _selectTabByWidgetType<T>(Widget Function() fallbackBuilder) {
     final state = NavigationBloc.instance.value;
